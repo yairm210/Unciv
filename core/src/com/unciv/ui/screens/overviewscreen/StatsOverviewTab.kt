@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -16,10 +15,11 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import com.unciv.view.CivView
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     private val happinessTable = Table()
@@ -31,7 +31,7 @@ class StatsOverviewTab(
     private val faithTable = Table()
     private val greatPeopleTable = Table()
     private val scoreTable = Table()
-    private val isReligionEnabled = gameInfo.isReligionEnabled()
+    private val isReligionEnabled = viewingPlayer.isReligionEnabled()
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         overviewScreen.game.settings.addCompletedTutorialTask("See your stats breakdown")
@@ -52,7 +52,7 @@ class StatsOverviewTab(
         unhappinessTable.update()
 
         goldAndSliderTable.add(goldTable).row()
-        if (gameInfo.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
+        if (viewingPlayer.ruleset.modOptions.hasUnique(UniqueType.ConvertGoldToScience))
             goldAndSliderTable.addGoldSlider()
 
         update()
@@ -92,7 +92,7 @@ class StatsOverviewTab(
     }
 
     fun update() {
-        val statMap = viewingPlayer.stats.getStatMapForNextTurn()
+        val statMap = viewingPlayer.getStatMapForNextTurn()
         updateHappinessTable()
         goldTable.updateStatTable(Stat.Gold, statMap)
         scienceTable.updateStatTable(Stat.Science, statMap)
@@ -121,7 +121,7 @@ class StatsOverviewTab(
 
     private fun updateHappinessTable() = happinessTable.apply {
         addHeading("Happiness")
-        val happinessBreakdown = viewingPlayer.stats.getHappinessBreakdown()
+        val happinessBreakdown = viewingPlayer.getHappinessBreakdown()
         for ((key, value) in happinessBreakdown)
             addLabeledValue(key, value)
         addTotal(happinessBreakdown.values.sum())
@@ -178,11 +178,11 @@ class StatsOverviewTab(
         sliderTable.add("Convert gold to science".toLabel()).row()
 
         val slider = UncivSlider(0f, 1f, 0.1f,
-            initial = viewingPlayer.tech.goldPercentConvertedToScience,
+            initial = viewingPlayer.getGoldPercentConvertedToScience(),
             getTipText = UncivSlider::formatPercent
         ) {
-            viewingPlayer.tech.goldPercentConvertedToScience = it
-            for (city in viewingPlayer.cities) { city.cityStats.update() }
+            viewingPlayer.trySetGoldPercentConvertedToScience(it)
+            viewingPlayer.tryUpdateAllCityStats()
             update()
         }
         slider.isDisabled = !GUI.isAllowedChangeState()
@@ -204,17 +204,17 @@ class StatsOverviewTab(
         add("Current points".toLabel())
         add("Points per turn".toLabel()).row()
 
-        val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
-        val greatPersonPointsPerTurn = viewingPlayer.greatPeople.getGreatPersonPointsForNextTurn()
+        val greatPersonPoints = viewingPlayer.getGreatPersonPointsCounter()
+        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
         for ((greatPerson, points) in greatPersonPoints) {
-            val pointsToGreatPerson = viewingPlayer.greatPeople.getPointsRequiredForGreatPerson(greatPerson)
+            val pointsToGreatPerson = viewingPlayer.getPointsRequiredForGreatPerson(greatPerson)
             add(greatPerson.toLabel()).left()
             add("$points/$pointsToGreatPerson".toLabel())
             add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()
         }
 
-        val greatGeneralPoints = viewingPlayer.greatPeople.greatGeneralPointsCounter
-        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneralCounter
+        val greatGeneralPoints = viewingPlayer.getGreatGeneralPointsCounter()
+        val pointsForNextGreatGeneral = viewingPlayer.getPointsForNextGreatGeneralCounter()
         for ((unit, points) in greatGeneralPoints) {
             val pointsToGreatGeneral = pointsForNextGreatGeneral[unit]
             add(unit.toLabel()).left()

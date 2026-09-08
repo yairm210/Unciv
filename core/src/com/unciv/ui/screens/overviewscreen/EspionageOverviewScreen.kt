@@ -16,12 +16,14 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
+import com.unciv.ui.components.extensions.addCapitalIndicator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -76,6 +78,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         rightSideButton.isVisible = false
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia("Tutorial/Espionage") }
     }
 
     private fun getPrefSplitAmount(): Float {
@@ -122,8 +126,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private fun addSpyToSelectionTable(spy: Spy) {
         // "Spy" column
         spySelectionTable.add(spy.name.toLabel(hideIcons = true))
-        // "Rank" column
-        spySelectionTable.add(spy.rank.toLabel())
+        // "Rank" column — show effective rank (includes counter-intel building bonuses)
+        spySelectionTable.add(spy.getEffectiveRank().toLabel())
         // icon column
         val spyLocation = spy.getCityOrNull()
         spySelectionTable.add(spyLocation.getIcon()).padRight(5f)
@@ -211,17 +215,19 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             else -> Color.GOLD
         }
 
+        val displayRank = spy.getEffectiveRank()
+
         // If we have 10 or more ranks, display them with a bigger star
-        if (spy.rank >= 10) {
+        if (displayRank >= 10) {
             val star = ImageGetter.getImage("OtherIcons/Star")
-            star.color = getColor(spy.rank / 10)
+            star.color = getColor(displayRank / 10)
             add(star).size(20f).pad(3f)
         }
 
-        val color = getColor(spy.rank)
+        val color = getColor(displayRank)
         val starTable = Table()
         // Create a grid of up to 9 stars
-        repeat(spy.rank % 10) {
+        repeat(displayRank % 10) {
             val star = ImageGetter.getImage("OtherIcons/Star")
             star.color = color
             starTable.add(star).size(8f).pad(1f)
@@ -262,17 +268,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             return ImageGetter.getImage("OtherIcons/Hideout").apply { setSize(33f) }
 
         val icon = ImageGetter.getNationPortrait(civ.nation, 30f)
-        if (!isCapital() || civ.isCityState) return icon
-
-        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
-            color = Color.BLACK.cpy().apply { a = 0.4f }
-            setSize(22f)
-            setPosition(29f, 27f, Align.center)
-        })
-        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
-            setSize(18f)
-            setPosition(28f, 28f, Align.center)
-        })
+        if (isCapital() && !civ.isCityState)
+            icon.addCapitalIndicator()
         return icon
     }
     //endregion

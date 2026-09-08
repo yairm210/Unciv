@@ -141,10 +141,10 @@ Note textures provided for such codepoints *do* respect aspect ratio, they do *n
 |   ∞    |  U+221E   | infinity                           | EmojiIcons/Infinity         |    *     |
 |   ⚙    |  U+2699   | gear                               | EmojiIcons/Production       |          |
 |   ⍾    |  U+237E   | bell symbol                        | EmojiIcons/Science          |          |
-|   ￪    |  U+FFEA   | halfwidth upwards arrow            | EmojiIcons/SortedAscending  |    *     |
+|   ↑    |  U+2191   | upwards arrow                      | EmojiIcons/SortedAscending  |    *     |
 |   ◉    |  U+25C9   | fisheye                            | EmojiIcons/SortedByStatus   |    *     |
 |   ⌚    |  U+231A   | watch                              | EmojiIcons/SortedByTime     |    *     |
-|   ￬    |  U+FFEC   | halfwidth upwards arrow            | EmojiIcons/SortedDescending |    *     |
+|   ↓    |  U+2193   | upwards arrow                      | EmojiIcons/SortedDescending |    *     |
 |   ✯    |  U+272F   | pinwheel star                      | EmojiIcons/Star             |    *     |
 |   ⏳    |  U+23F3   | hourglass                          | EmojiIcons/Turn             |          |
 |   ⅰ    |  U+2170   | small roman numeral one            | MayaCalendar/0              |          |

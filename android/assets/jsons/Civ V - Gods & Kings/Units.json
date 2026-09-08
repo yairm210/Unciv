@@ -1580,6 +1580,7 @@
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
 		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "[+4] Sight", "Can see over obstacles"],
+		"promotions": ["Evasion"], // Not technically in Civ V, but this way new players / AI won't select this promotion which does nothing for this unit
 		"attackSound": "bombing"
 	},
 

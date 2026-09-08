@@ -22,7 +22,7 @@ object TargetHelper {
         val attackableTiles = ArrayList<AttackableTile>()
 
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
-        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits)
+        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.isAirUnit())
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
         else getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles, unitMustBeSetUp, unit)
 
@@ -40,7 +40,7 @@ object TargetHelper {
 
             val tilesInAttackRange =
                 if (unit.baseUnit.isMelee()) reachableTile.neighbors
-                else if (unit.baseUnit.movesLikeAirUnits || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
+                else if (unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 

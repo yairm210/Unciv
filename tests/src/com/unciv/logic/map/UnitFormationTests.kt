@@ -7,7 +7,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
 import org.junit.After
@@ -15,7 +15,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 internal class UnitFormationTests {
     private lateinit var civInfo: Civilization
 

@@ -1,0 +1,11 @@
+En snabb och liten nytolkning av världens mest kända civilisationsbyggarspel – helt gratis, utan reklam och fri för alltid!
+
+Bygg din civilisation, forska fram tekniker, utvidga dina städer och besegra dina fiender!
+
+Har du önskemål eller hittat ett fel? Skriv gärna på https://github.com/yairm210/Unciv/issues – inget är för litet!
+
+För frågor, synpunkter eller bara trevligt umgänge kan du gå med i vår gemenskap på https://discord.gg/bjrB4Xw. Vill du hjälpa till med översättningen finns anvisningar på https://yairm210.github.io/Unciv/Other/Translating/.
+
+Kan du Java eller Kotlin får du gärna bidra till utvecklingen på https://github.com/yairm210/Unciv. Världen väntar! Kan du bygga en civilisation som står emot tidens prövningar?
+
+Behörigheten ”fullständig nätverksåtkomst” krävs för hämtningar som användaren startar och för flerspelarläget. Övriga behörigheter används för aviseringar om drag i flerspelarläget. Nätverksåtkomst används för att importera och hämta moddar, hämta musik samt ladda upp och hämta flerspelarspel. Utöver detta initierar Unciv inga internetanslutningar.

@@ -195,11 +195,12 @@ class Terrain : RulesetStatsObject() {
         return when (filter) {
             "all", "All" -> true
             "Terrain" -> true
+            Constants.impassable -> impassable
             "Open terrain" -> !isRough
             "Rough terrain" -> isRough
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
-            else -> when(filter){ // non-constants
+            else -> when(filter) { // non-constants
                 name -> true
                 type.name -> true
                 else -> false

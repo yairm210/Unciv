@@ -5,6 +5,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Mutated
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Appends user-visible Uniques as translated text to a [line collection][lineList].
@@ -14,8 +16,9 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  *  @return the [lineList] with added, translated info on [this.uniques] - for chaining
  */
+@Readonly
 fun IHasUniques.uniquesToDescription(
-    lineList: MutableCollection<String> = mutableListOf(),
+    @Mutated lineList: MutableCollection<String> = mutableListOf(),
     exclude: Unique.() -> Boolean = {false}
 ): MutableCollection<String> {
     for (unique in uniqueObjects) {

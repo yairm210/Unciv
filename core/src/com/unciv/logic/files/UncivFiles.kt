@@ -19,7 +19,6 @@ import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
-import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
@@ -29,11 +28,12 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.Writer
 
-private const val SAVE_FILES_FOLDER = "SaveFiles"
+const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+const val EXCLUDED_MOD_AUTHORS_FILE_NAME = "ExcludedModAuthors.txt"
 
 class UncivFiles(
     /**
@@ -176,8 +176,8 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            val string = gameInfoToString(game)
-            file.writeString(string, false, Charsets.UTF_8.name())
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+            FileConversions.writeJson(file, game, saveZipped)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -246,15 +246,26 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString(Charsets.UTF_8.name())
-        if (gameData.isNullOrBlank()) {
-            throw emptyFile(gameFile)
+        if (gameFile.length() == 0L) throw emptyFile(gameFile)
+
+        val gameInfo = try {
+            FileConversions.readJson(gameFile, GameInfo::class.java)
+        } catch (ex: Exception) {
+            Log.error("Exception while deserializing GameInfo JSON", ex)
+            val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!
+            throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+        } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+        if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+            // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+            throw IncompatibleGameInfoVersionException(gameInfo.version)
         }
-        return gameInfoFromString(gameData)
+        gameInfo.setTransients()
+        return gameInfo
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = FileConversions.readJson(gameFile, GameInfoPreview::class.java)
             ?: throw emptyFile(gameFile)
         preview.migrateCivID()
         return preview
@@ -366,6 +377,17 @@ class UncivFiles(
             return emptyList()
         }
     }
+    
+    fun loadExcludedModAuthors(): Iterable<String> {
+        val file = getLocalFile(EXCLUDED_MOD_AUTHORS_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        try {
+            return file.reader().readLines()
+        } catch (ex: Exception) {
+            Log.error("Error loading mod author exclusion list", ex)
+            return emptyList()
+        }
+    }
 
 
     //endregion
@@ -407,7 +429,7 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
-                Gzip.unzip(fixedData)
+                FileConversions.unzip(fixedData)
             } catch (ex: Exception) {
                 fixedData
             }
@@ -432,7 +454,7 @@ class UncivFiles(
          * @throws SerializationException
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            val preview = json().fromJson(GameInfoPreview::class.java, FileConversions.unzip(gameData))
             preview.migrateCivID()
             return preview
         }
@@ -444,12 +466,12 @@ class UncivFiles(
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
 
-            return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
+            return if (forceZip ?: saveZipped) FileConversions.zip(plainJson) else plainJson
         }
 
         /** Returns gzipped serialization of preview [game] */
         fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
+            return FileConversions.zip(json().toJson(game))
         }
 
         private val charsForbiddenInFileNames = setOf('\\', '/', ':')

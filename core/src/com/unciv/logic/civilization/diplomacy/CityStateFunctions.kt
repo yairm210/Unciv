@@ -182,7 +182,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Point to the gifted unit, then to the other places mentioned in the message
         val unitAction = sequenceOf(MapUnitAction(placedUnit))
-        val notificationActions = unitAction + LocationAction(city.location, city.location)
+        val notificationActions = unitAction + LocationAction(city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             notificationActions,
@@ -323,7 +323,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         if (oldAlly != null && civInfo.isAlive()) {
-            val text = "We have lost alliance with [${civInfo.civName}]."
+            val text = 
+                if (newAlly != null) "We have lost our alliance with [${civInfo.civName}] to [${newAlly.civName}]."
+                else "We have lost our alliance with [${civInfo.civName}]."
             oldAlly.addNotification(text,
                 getNotificationActions(),
                 NotificationCategory.Diplomacy, civInfo.civName,
@@ -699,7 +701,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (cityState.isAtWarWith(attacker))
                 probability += 50
 
-            if (rng.nextInt(100) <= probability) {
+            if (rng.nextInt(100) < probability) {
                 cityState.getDiplomacyManager(attacker)!!.becomeWary()
             }
         }
@@ -810,46 +812,20 @@ class CityStateFunctions(val civInfo: Civilization) {
         return resourceSupplyList
     }
 
-    // TODO: Optimize, update whenever status changes, otherwise retain the same list
     @Readonly
     @Deprecated(message = "forEachUniqueProvidedByCityStates is faster. If not viable, then this can still be used",
         replaceWith = ReplaceWith("forEachUniqueProvidedByCityStates"))
-    fun getUniquesProvidedByCityStates(
-        uniqueType: UniqueType,
-        gameContext: GameContext
-    ):Sequence<Unique> {
+    fun getUniquesProvidedByCityStates(uniqueType: UniqueType, gameContext: GameContext): Sequence<Unique> {
         if (civInfo.isCityState) return emptySequence()
-
-        return civInfo.getKnownCivs().filter { it.isCityState }
-            .flatMap {
-                // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
-                val relationshipLevel =
-                        if (it.allyCiv == civInfo) RelationshipLevel.Ally
-                        else if (it.getDiplomacyManager(civInfo)!!.getInfluence() >= 30) RelationshipLevel.Friend
-                        else RelationshipLevel.Neutral
-                getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)
-            }
-            .filter { it.conditionalsApply(gameContext) }
-            .flatMap { it.getMultiplied(gameContext) }
+        return civInfo.cache.cityStateBonusUniqueMaps.asSequence()
+            .flatMap { it.getMatchingUniques(uniqueType, gameContext) }
     }
 
     @Readonly
     fun forEachUniqueProvidedByCityStates(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique) -> Unit) {
         if (civInfo.isCityState) return
-        civInfo.forEachKnownCiv {
-            if (!it.isCityState) return@forEachKnownCiv
-            // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
-            val relationshipLevel =
-                if (it.allyCiv == civInfo) RelationshipLevel.Ally
-                else if (it.getDiplomacyManager(civInfo)!!.getInfluence() >= 30) RelationshipLevel.Friend
-                else RelationshipLevel.Neutral
-            val cityStateUniqueMap = when (relationshipLevel) {
-                RelationshipLevel.Ally -> it.cityStateType.allyBonusUniqueMap
-                RelationshipLevel.Friend -> it.cityStateType.friendBonusUniqueMap
-                else -> return@forEachKnownCiv
-            }
-            cityStateUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
-        }
+        for (uniqueMap in civInfo.cache.cityStateBonusUniqueMaps)
+            uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
     }
 
     companion object {

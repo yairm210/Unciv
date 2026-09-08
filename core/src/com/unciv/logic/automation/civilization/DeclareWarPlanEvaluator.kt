@@ -52,7 +52,7 @@ object DeclareWarPlanEvaluator {
         } else if (civForce + teamCivForce > targetForce * 2) {
             // Why gang up on such a weaker enemy when we can declare war ourselves?
             // If our combined force is twice their force we will have -20 motivation
-            motivation -= 20 * ((civForce + teamCivForce) / targetForce * 2) - 1
+            motivation -= 20 * ((civForce + teamCivForce) / targetForce - 1)
         }
 
         val civScore = civInfo.getStatForRanking(RankingType.Score)
@@ -83,13 +83,13 @@ object DeclareWarPlanEvaluator {
         // We need to be able to trust the thirdCiv at least somewhat
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
-            motivation -= 80f - thirdCivDiplo.opinionOfOtherCiv() + motivation * 2
+            motivation -= 80f - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2)
         }
         if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 20f
         }
 
-        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(100)
+        val targetForce = (target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size, and we need to be stronger than the target together
@@ -108,7 +108,7 @@ object DeclareWarPlanEvaluator {
             else -> 0.8f
         }
         if (civToJoinForce + civForce < targetForce * multiplier) {
-            motivation -= 20 * (targetForce * multiplier) / (civToJoinForce + civForce).coerceIn(-1000f, 1000f)
+            motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).coerceIn(-1000f, 1000f)
         }
 
         return motivation - 15

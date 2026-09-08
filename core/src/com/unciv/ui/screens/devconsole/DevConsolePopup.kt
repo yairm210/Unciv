@@ -217,7 +217,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
         innerTable.validate()
         val newHeight = innerTable.prefHeight.coerceIn(120f, maxPopupHeight)
         getCell(getScrollPane()).height(newHeight)  // Gdx quirks: Or else the ScrollPane's new prefHeight won't be respected
-        textField.onscreenKeyboard.show(true)
+        textField.onscreenKeyboard.show(textField)
         fitOrCenterContentIntoVisibleArea()
     }
 
@@ -243,7 +243,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
     internal fun getCivByNameOrNull(name: CliInput): Civilization? =
         gameInfo.civilizations.firstOrNull { name.equals(it.civID) }
 
-    internal fun getSelectedTile() = screen.mapHolder.selectedTile
+    internal fun getSelectedTile() = screen.mapHolder.selectedTile?.getTile()
         ?: throw ConsoleErrorException("Select tile")
 
     /** Gets city by selected tile */
@@ -257,7 +257,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
         val selectedTile = getSelectedTile()
         if (selectedTile.getFirstUnit() == null) throw ConsoleErrorException("Select tile with units")
         val units = selectedTile.getUnits().toList()
-        val selectedUnit = screen.bottomUnitTable.selectedUnit
+        val selectedUnit = screen.bottomUnitTable.selectedUnit?.getUnit()
         return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
         else units.first()
     }

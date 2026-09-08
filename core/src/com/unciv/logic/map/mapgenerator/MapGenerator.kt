@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.*
+import com.unciv.logic.map.MapSize.Companion.auto
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -28,6 +29,7 @@ import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.ulp
 import kotlin.sequences.filter
@@ -146,7 +148,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
     fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
-        val mapSize = mapParameters.mapSize
+        val mapSize = if (mapParameters.mapSize.name != auto) mapParameters.mapSize else resolveAutoMapSize(mapParameters, gameParameters, gameInfo)
         val mapType = mapParameters.type
 
         if (mapParameters.seed == 0L)
@@ -203,7 +205,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         // Region based map generation - not used when generating maps in map editor
         val civilizations = gameInfo?.civilizations
-        if (civilizations?.isNotEmpty() ?: false) {
+        val isMapEditor = civilizations?.isEmpty() ?: true
+        if (! isMapEditor) {
             map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
@@ -227,23 +230,41 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             runAndMeasure("spreadResources") { spreadResources(map) }
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
-        
-        mirror(map)
 
+        if (isMapEditor)
+            mirror(map)
+        
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
 
         return map
     }
-    
-    private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
+    private fun resolveAutoMapSize(mapParameters: MapParameters, gameParameters: GameParameters, gameInfo: GameInfo?): MapSize {
+        if (gameInfo == null) return mapParameters.mapSize
+
+        val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv() }
+        val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
+        // This is mostly just vibes, tries to make the average minimum distance between major civs equal to 13
+        val majorCivContribution = 7.6 * numberOfMajorCivs.toFloat().pow(2) + 
+            522 * numberOfMajorCivs - 360 + 120 * sin( 2.48 * numberOfMajorCivs.toFloat())
+        val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
+
+        // Calculates mapsize from tile number, simple algebra reversing area formulas
+        val aspectRatio = 1.55 // This is around the default aspect ratios
+        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) - 1.0/2).toInt()
+        mapParameters.mapSize.height = sqrt(2.0/3 * targetNumberOfTiles).toInt()
+        mapParameters.mapSize.width = (sqrt(2.0/3 * targetNumberOfTiles) * aspectRatio).toInt()
+
+        return mapParameters.mapSize
+    }
     private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
-    private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
     private fun flipLeftRight(vector: HexCoord): HexCoord = HexCoord.of(vector.y, vector.x)
 
     private fun mirror(map: TileMap) {
-        fun getMirrorTile(tile: Tile, mirroringType: String): Tile? {
+        val mirroringType = map.mapParameters.mirroring
+        
+        fun getMirrorTile(tile: Tile): Tile? {
             val mirrorTileVector = when (mirroringType) {
                 MirroringType.topbottom -> if (tile.getRow() <= 0) return null else flipTopBottom(tile.position)
                 MirroringType.leftright -> if (tile.getColumn() <= 0) return null else flipLeftRight(tile.position)
@@ -260,8 +281,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             return map.getIfTileExistsOrNull(mirrorTileVector.x, mirrorTileVector.y)
         }
         
-        fun copyTile(tile: Tile, mirroringType: String) {
-            val mirrorTile = getMirrorTile(tile, mirroringType) ?: return
+        fun copyTile(tile: Tile) {
+            val mirrorTile = getMirrorTile(tile) ?: return
             
             tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             tile.naturalWonder = mirrorTile.naturalWonder
@@ -271,7 +292,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
-                val neighborMirror = getMirrorTile(neighbor, mirroringType) ?: continue
+                val neighborMirror = getMirrorTile(neighbor) ?: continue
                 if (neighborMirror !in mirrorTile.neighbors) continue // we landed on the edge here
                 tile.setConnectedByRiver(neighbor, mirrorTile.isConnectedByRiver(neighborMirror))
             }
@@ -279,7 +300,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         if (map.mapParameters.mirroring == MirroringType.none) return
         for (tile in map.values) {
-            copyTile(tile, map.mapParameters.mirroring)
+            copyTile(tile)
         }
     }
 
@@ -373,24 +394,25 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val lakeTerrains = terrainConditions.filter { it.isFreshwater && !it.rareFeature && it.terrain.type == TerrainType.Water }
         if (lakeTerrains.isNotEmpty()) {
             //define lakes
-            val waterTiles = map.values.filter { it.isWater }.toMutableList()
+            val waterTiles = map.values.filter { it.isWater }.toHashSet()
 
-            val tilesInArea = ArrayList<Tile>()
-            val tilesToCheck = ArrayList<Tile>()
+            val tilesInArea = HashSet<Tile>()
+            val tilesToCheck = ArrayDeque<Tile>()
 
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeAt(0)
+                val initialWaterTile = waterTiles.first()
+                waterTiles.remove(initialWaterTile)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeAt(0)
+                    val tileWeAreChecking = tilesToCheck.removeFirst()
                     for (vector in tileWeAreChecking.neighbors){
-                        if (tilesInArea.contains(vector)) continue
-                        if (!waterTiles.contains(vector)) continue
+                        if (vector in tilesInArea) continue
+                        if (vector !in waterTiles) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector
@@ -656,11 +678,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
         val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
+        if (iceTerrains.isEmpty()) return
+
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             spawnFlatEarthIceWalls(tileMap, iceTerrains, oceanTerrains)
         }
-
-        if (iceTerrains.isEmpty()) return
 
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()

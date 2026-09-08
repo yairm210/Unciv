@@ -3,7 +3,6 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.logic.civilization.PlayerType
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
@@ -80,7 +79,7 @@ internal class AutomationTab(
     private fun allCitiesChooseNextConstruction(shouldAutoAssignCityProduction: Boolean) {
         if (!shouldAutoAssignCityProduction) return
         val worldScreen = GUI.getWorldScreenIfActive() ?: return
-        if (!worldScreen.viewingCiv.isCurrentPlayer() || worldScreen.viewingCiv.playerType != PlayerType.Human) return
+        if (!worldScreen.selectedGameView.civView.isCurrentPlayer() || !worldScreen.selectedGameView.civView.isHuman()) return
         for (city in worldScreen.gameInfo.getCurrentPlayerCivilization().cities) {
             city.cityConstructions.chooseNextConstruction()
         }

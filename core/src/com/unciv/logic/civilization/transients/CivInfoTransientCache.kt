@@ -46,6 +46,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, EnumSet<CapitalConnectionMedium>>()
 
+    /** Ally/friend city-state bonus UniqueMaps */
+    @Transient
+    var cityStateBonusUniqueMaps: List<UniqueMap> = emptyList()
+        private set
+
     fun updateState() {
         civInfo.state = GameContext(civInfo)
     }
@@ -182,19 +187,19 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     private fun setNewViewableTiles() {
+        // while spectating (or defeated in singleplayer, which grants the same rights) all map is visible
+        if (civInfo.hasSpectatorVision() || DebugUtils.VISIBLE_MAP) {
+            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
+            civInfo.viewableTiles = allTiles
+            civInfo.viewableInvisibleUnitsTiles = allTiles
+            return
+        }
+
         if (civInfo.isDefeated()) {
             // Avoid meeting dead city states when entering a tile owned by their former ally (#9245)
             // In that case ourTilesAndNeighboringTiles and getCivUnits will be empty, but the for
             // loop getKnownCivs/getAllyCiv would add tiles.
             civInfo.viewableTiles = emptySet()
-            return
-        }
-
-        // while spectating all map is visible
-        if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
-            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
-            civInfo.viewableTiles = allTiles
-            civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
 
@@ -317,7 +322,25 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             city.connectedToCapitalStatus = city in newConnectedCities
     }
 
+    private fun updateCityStateBonuses() {
+        if (civInfo.isCityState) return
+        
+        val newMaps = ArrayList<UniqueMap>()
+        for (diplomacyManager in civInfo.diplomacy.values) {
+            val cityState = diplomacyManager.otherCiv
+            if (!cityState.isCityState || cityState.isDefeated()) continue
+            val uniqueMap = when {
+                cityState.allyCiv == civInfo -> cityState.cityStateType.allyBonusUniqueMap
+                cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 30 -> cityState.cityStateType.friendBonusUniqueMap
+                else -> continue
+            }
+            newMaps.add(uniqueMap)
+        }
+        cityStateBonusUniqueMaps = newMaps
+    }
+
     fun updateCivResources():Unit = timeThis("CivInfoTransientCache.updateCivResources") {
+        updateCityStateBonuses()
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity())
 

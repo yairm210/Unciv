@@ -152,11 +152,12 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 val civilizations = console.gameInfo.civilizations
                 civilizations.remove(civ)
                 (console.gameInfo.civMap as LinkedHashMap<String, Civilization>).remove(civ.civID)
-                // Make othe civs forget the victim
+                // Make othe civs forget the victim and recall spies
                 for (otherCiv in civilizations) {
                     otherCiv.diplomacy.remove(civ.civID)
                     if (otherCiv.isCityState)
                         otherCiv.questManager.removeQuestsFor(civ)
+                    otherCiv.espionageManager.recallAllSpiesFrom(civ)
                 }
                 console.screen.shouldUpdate = true
             }

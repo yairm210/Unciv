@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
@@ -20,10 +19,11 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.view.CivView
 import kotlin.math.max
 
 class ReligionOverviewTab(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -68,9 +68,9 @@ class ReligionOverviewTab(
     private fun Table.addCivSpecificStats() {
         // This is not Civ-specific, but -oh well- still fits
         val minWidth = max(religionButtonLabel.prefWidth, overviewScreen.stage.width / 3)
-        val manager = viewingPlayer.religionManager
+        val manager = viewingPlayer.getCiv().religionManager
         val headerText =
-            if (viewingPlayer.shouldHideCivCount()) "Religions to be founded: [?]"
+            if (viewingPlayer.getCiv().shouldHideCivCount()) "Religions to be founded: [?]"
             else "Religions to be founded: [${manager.remainingFoundableReligions()}]"
         val religionCountExpander = ExpanderTab(
             headerText, fontSize = 18, headerPad =  5f,
@@ -105,7 +105,7 @@ class ReligionOverviewTab(
         val existingReligions: List<Religion> = gameInfo.civilizations.mapNotNull { it.religionManager.religion }
         for (religion in existingReligions) {
             val image = if (religion.isPantheon()) {
-                if (viewingPlayer.knows(religion.foundingCiv) || viewingPlayer == religion.foundingCiv)
+                if (viewingPlayer.getCiv().knows(religion.foundingCiv) || viewingPlayer.getCiv() == religion.foundingCiv)
                     ImageGetter.getNationPortrait(religion.foundingCiv.nation, 60f)
                 else
                     ImageGetter.getRandomNationPortrait(60f)
@@ -153,7 +153,7 @@ class ReligionOverviewTab(
         statsTable.add(religion.getReligionDisplayName().toLabel()).right().row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
-            if (viewingPlayer.knows(religion.foundingCiv) || viewingPlayer == religion.foundingCiv)
+            if (viewingPlayer.getCiv().knows(religion.foundingCiv) || viewingPlayer.getCiv() == religion.foundingCiv)
                 religion.foundingCivName
             else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().row()
@@ -162,7 +162,7 @@ class ReligionOverviewTab(
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
                 val cityName =
-                    if (viewingPlayer.hasExplored(holyCity.getCenterTile()))
+                    if (viewingPlayer.getCiv().hasExplored(holyCity.getCenterTile()))
                         holyCity.name
                     else Constants.unknownNationName
                 statsTable.add(cityName.toLabel(hideIcons = true)).right().row()

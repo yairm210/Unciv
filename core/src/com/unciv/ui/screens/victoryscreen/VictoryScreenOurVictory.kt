@@ -27,7 +27,7 @@ class VictoryScreenOurVictory(
         defaults().pad(10f)
         for ((victoryName, victory) in victoriesToShow) {
             header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(victory, worldScreen.viewingCiv)).top()
+            add(getColumn(victory, worldScreen.selectedGameView.civView.getCiv())).top()
         }
 
         row()

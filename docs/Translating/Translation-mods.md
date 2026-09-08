@@ -2,8 +2,12 @@
 
 ## Generating "needs translation" entries
 If you can run desktop with the mod installed, then provide at least one valid translation of something that is present in your mod or the base game in that file. The file can be empty otherwise. Do this for each language you want to support.
+
 Now run Unciv and use options-advanced-"Generate translation files". Note you can and should choose your mod here to limit what the generator processes. Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod.
 (I repeat, works only if there's at least one valid entry already there).
+
+The "backup" option copies the existing translation files to "*.bak" before replacing them, to allow simple comparisons with diff tools (Meld, WinMerge) and is not meant to replace using a fully git-controlled IDE for your modding. 
+
 You can also override base game translations, but those won't be output by the "Generate translation files" tool.
 
 Here's an example:

@@ -55,7 +55,7 @@ class WorldScreenMenuPopup(
             }.nextColumn()
         addButton("Load game", KeyboardBinding.LoadGame) {
             close()
-            worldScreen.game.pushScreen(LoadGameScreen())
+            worldScreen.game.pushScreen{ LoadGameScreen() }
         }.nextColumn()
         addButton("Start new game", KeyboardBinding.NewGame) {
             close()
@@ -63,7 +63,7 @@ class WorldScreenMenuPopup(
         }.nextColumn()
         addButton("Victory status", KeyboardBinding.VictoryScreen) {
             close()
-            worldScreen.game.pushScreen(VictoryScreen(worldScreen))
+            worldScreen.game.pushScreen{ VictoryScreen(worldScreen) }
         }.nextColumn()
         val optionsCell = addButton("Options", KeyboardBinding.Options) {
             close()

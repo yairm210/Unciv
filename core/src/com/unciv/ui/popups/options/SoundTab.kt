@@ -21,7 +21,7 @@ internal class SoundTab(
         addCitySoundsVolumeSlider(settings)
 
         if (music.isVoicesAvailable())
-            addVoicesVolumeSlider(settings)
+            addVoicesVolumeSlider(settings, music)
 
         if (music.isMusicAvailable())
             addMusicControls(settings, music)

@@ -72,6 +72,8 @@ allprojects {
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
+
+            "java.util.BitSet.clone",
         )
         wellKnownPureClasses = setOf(
         )
@@ -153,7 +155,6 @@ private fun getSdkPath(): String? {
 if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
-        apply(plugin = "kotlin-android")
 
         val natives by configurations.creating
 

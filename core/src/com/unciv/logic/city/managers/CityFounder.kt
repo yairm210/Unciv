@@ -86,6 +86,8 @@ class CityFounder {
         triggerCitiesSettledNearOtherCiv(city)
 
         addStartingBuildings(city, civInfo, startingEra)
+        
+        city.resetDisabledConstructions()
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
             GameContext(civInfo, city, unit)

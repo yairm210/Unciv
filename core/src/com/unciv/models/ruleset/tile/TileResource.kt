@@ -152,10 +152,7 @@ class TileResource : RulesetStatsObject(), GameResource {
         val largerLandmassUniques = getMatchingUniques(UniqueType.NaturalWonderLargerLandmass, gameContext).toList()
 
         if (smallerLandmassUniques.any() || largerLandmassUniques.any()) {
-            val sortedContinents = tile.tileMap.continentSizes.asSequence()
-                .sortedByDescending { it.value }
-                .map { it.key }
-                .toList()
+            val sortedContinents = tile.tileMap.continentsSortedBySize
 
             for (unique in smallerLandmassUniques) {
                 if (tile.getContinent() in sortedContinents.take(unique.params[0].toInt())) return false

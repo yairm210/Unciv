@@ -1,0 +1,19 @@
+CPU performance improvements for map lag and map generation latency
+
+perf: improve fps in technology picker screen - By shwwwa
+
+By Angais:
+- Fix city-state wary probability calculation 
+- Fix join-war penalty calculation
+
+By WhoIsJohannes:
+- Fix two AI evaluation bugs: inverted WLTKD luxury priority, defensive-pact ally force using wrong civ 
+- Fix two AI spaceship-race bugs: dead space-resource reserve, war push overwriting parts
+
+By Fanfblrik:
+- City-states found first city in place by default (opt-out unique) 
+- Start bias unique (Maritime Coast via CityStateType uniques) 
+
+By SomeTroglodyte:
+- Ruleset validator: Warn about potential infinite loops Free building -> Remove building
+- Allow specific commit links in "Download mod from URL"

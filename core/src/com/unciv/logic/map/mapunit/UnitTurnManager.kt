@@ -42,9 +42,8 @@ class UnitTurnManager(val unit: MapUnit) {
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
-                    unit.getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-                        .map { it.params[0].toInt() }
-                        .minOrNull()
+                unit.getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+                    .minOfOrNull { it.params[0].toInt() }
             if (lostReligiousStrength != null)
                 unit.religiousStrengthLost += lostReligiousStrength
             if (unit.religiousStrengthLost >= unit.baseUnit.religiousStrength) {

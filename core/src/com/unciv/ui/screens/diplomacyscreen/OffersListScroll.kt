@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.logic.trade.TradeOfferType.*
@@ -18,6 +17,7 @@ import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.ForeignCivView
 import kotlin.math.min
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -49,8 +49,8 @@ class OffersListScroll(
         offersToDisplay: TradeOffersList,
         otherSideOffers: TradeOffersList,
         untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList,
-        ourCiv: Civilization,
-        theirCiv: Civilization
+        ourCiv: ForeignCivView,
+        theirCiv: ForeignCivView
     ) {
         table.clear()
         expanderTabs.clear()
@@ -93,7 +93,7 @@ class OffersListScroll(
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration, PeaceProposal ->
-                        ImageGetter.getNationPortrait(ourCiv.gameInfo.ruleset.nations[offer.name]!!, 30f)
+                        ImageGetter.getNationPortrait(ourCiv.ruleset.nations[offer.name]!!, 30f)
                     else -> null
                 }
                 val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {
@@ -113,7 +113,7 @@ class OffersListScroll(
                 if (offer.isTradable() && offer.name != Constants.peaceTreaty // can't disable peace treaty!
                     && (offer.name != Constants.researchAgreement // If we have a research agreement make sure the total gold of both Civs is higher than the total cost
                         // If both civs combined can pay for the research agreement, don't disable it. One can offer the other it's gold.
-                        || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost(theirCiv) * 2))) {
+                        || (ourCiv.gold + theirCiv.gold > ourCiv.getResearchAgreementCost(theirCiv) * 2))) {
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)

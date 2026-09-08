@@ -95,7 +95,7 @@ class PackrConfig(
     var bundleIdentifier: String? = null
 )
 
-for (platform in Platform.values()) {
+for (platform in Platform.entries) {
     val platformName = platform.toString()
 
     tasks.create("packr${platformName}") {

@@ -1,0 +1,15 @@
+Fix: Defeated singleplayer players again have full map visibility
+
+Fixed crash ewhen clicking on civ relationships lines
+
+Prevent natural-wonder coast conversion artifacts - By mvanhorn
+
+By ssamt:
+- hide spectator in global politics
+- AI avoid selling spaceship parts for resource
+
+Fix WLTKD demand rewrite mid-celebration - By Fanfblrik
+
+Mention which civ took our CS alliance in notification - By unciv-loof
+
+Puppet city in console - By BobbyCobby

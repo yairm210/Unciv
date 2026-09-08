@@ -67,8 +67,8 @@ class DetailedStatsPopup(
         headerTable.clear()
         totalTable.clear()
 
-        val cityStats = cityScreen.city.cityStats
-        val showFaith = cityScreen.city.civ.gameInfo.isReligionEnabled()
+        val cityView = cityScreen.cityView
+        val showFaith = cityView.viewingCiv().isReligionEnabled()
 
         val stats = when {
             onlyWithStat != null -> listOfNotNull(onlyWithStat)
@@ -95,13 +95,13 @@ class DetailedStatsPopup(
         totalTable.add("Base values".toLabel().apply { setAlignment(Align.center) })
             .colspan(columnCount).growX().row()
         totalTable.addSeparator(colSpan = columnCount).padTop(2f)
-        traverseTree(totalTable, stats, cityStats.baseStatTree, mergeHappiness = true, percentage = false)
+        traverseTree(totalTable, stats, cityView.getBaseStatTree(), mergeHappiness = true, percentage = false)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Bonuses".toLabel().apply { setAlignment(Align.center) })
             .colspan(columnCount).growX().row()
         totalTable.addSeparator().padTop(2f)
-        traverseTree(totalTable, stats, cityStats.statPercentBonusTree, percentage = true)
+        traverseTree(totalTable, stats, cityView.getStatPercentBonusTree(), percentage = true)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Final".toLabel().apply { setAlignment(Align.center) })
@@ -109,9 +109,9 @@ class DetailedStatsPopup(
         totalTable.addSeparator().padTop(2f)
 
         val final = LinkedHashMap<Stat, Float>()
-        val map = cityStats.finalStatList.toSortedMap()
+        val map = cityView.getFinalStatList().toSortedMap()
 
-        for ((key, value) in cityScreen.city.cityStats.happinessList) {
+        for ((key, value) in cityView.getHappinessList()) {
             if (!map.containsKey(key)) {
                 map[key] = Stats(happiness = value)
             } else if (map[key]!![Stat.Happiness] == 0f) {
@@ -201,7 +201,7 @@ class DetailedStatsPopup(
         val map = statTreeNode.children.toSortedMap()
 
         if (mergeHappiness) {
-            for ((key, value) in cityScreen.city.cityStats.happinessList) {
+            for ((key, value) in cityScreen.cityView.getHappinessList()) {
                 if (!map.containsKey(key)) {
                     map[key] = StatTreeNode()
                     map[key]?.setInnerStat(Stat.Happiness, value)

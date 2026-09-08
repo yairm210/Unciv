@@ -32,13 +32,14 @@ class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
         }).size(30f)
 
         separator.isVisible = true
-        val color = when (spy.rank) {
+        val displayRank = spy.getEffectiveRank()
+        val color = when (displayRank) {
             1 -> Color.BROWN
             2 -> Color.LIGHT_GRAY
             3 -> Color.GOLD
             else -> ImageGetter.CHARCOAL
         }
-        repeat(spy.rank) {
+        repeat(displayRank) {
             val star = ImageGetter.getImage("OtherIcons/Star")
             star.color = color
             descriptionTable.add(star).size(20f).pad(1f)

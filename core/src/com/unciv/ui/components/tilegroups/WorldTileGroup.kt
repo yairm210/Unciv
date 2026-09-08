@@ -2,36 +2,36 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.darken
 
 
-class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
-    : TileGroup(tile,tileSetStrings) {
+class WorldTileGroup(tileView: TileView, tileSetStrings: TileSetStrings)
+    : TileGroup(tileView, tileSetStrings) {
 
-    override fun update(viewingCiv: Civilization?) {
+    override fun update(viewingCiv: CivView?) {
         super.update(viewingCiv)
 
         updateWorkedIcon(viewingCiv!!)
     }
 
-    private fun updateWorkedIcon(viewingCiv: Civilization) {
+    private fun updateWorkedIcon(viewingCiv: CivView) {
 
         layerMisc.removeWorkedIcon()
 
         val shouldShowWorkedIcon = UncivGame.Current.settings.showWorkedTiles   // Overlay enabled;
                 && isViewable(viewingCiv)                                       // We see tile;
-                && tile.getCity()?.civ == viewingCiv                            // Tile belongs to us;
-                && tile.isWorked()                                              // Tile is worked;
+                && tileView.owningCity()?.let { viewingCiv.isOwnerOf(it) } == true // Tile belongs to us;
+                && tileView.isWorked()                                          // Tile is worked;
 
         if (!shouldShowWorkedIcon)
             return
 
         val icon = when {
-            tile.isLocked() -> ImageGetter.getImage("TileIcons/Locked").apply { color = Color.WHITE.darken(0.5f) }
-            tile.isWorked() && tile.providesYield() -> ImageGetter.getImage("TileIcons/Worked").apply { color = Color.WHITE.darken(0.5f) }
+            tileView.isLocked() -> ImageGetter.getImage("TileIcons/Locked").apply { color = Color.WHITE.darken(0.5f) }
+            tileView.isWorked() && tileView.providesYield() -> ImageGetter.getImage("TileIcons/Worked").apply { color = Color.WHITE.darken(0.5f) }
             else -> null
         }
 
@@ -43,6 +43,4 @@ class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
             layerMisc.addWorkedIcon(icon)
         }
     }
-
-    override fun clone(): WorldTileGroup = WorldTileGroup(tile , tileSetStrings)
 }

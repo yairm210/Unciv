@@ -88,7 +88,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
+    /** Get total number of techs researched, including repeated future tech */
+    @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size + repeatingTechsResearched
 
     @Readonly fun getOverflowScience(): Int = overflowScience
 

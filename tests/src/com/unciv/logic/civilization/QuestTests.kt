@@ -1,11 +1,12 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.json.json
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.managers.quests.QuestManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.QuestName
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -13,8 +14,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.random.Random
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class QuestTests {
     private lateinit var testGame: TestGame
     private lateinit var civ: Civilization
@@ -147,5 +149,35 @@ class QuestTests {
         assertFalse("Expansion should have cleared the ClearBarbarianCamp quest", manager.haveQuestsFor(civ))
         val questMentionedInNotifications = civ.notifications.any { QuestName.ClearBarbarianCamp.value in it.text }
         assertTrue("The player should have been notified ClearBarbarianCamp got obsolete", questMentionedInNotifications)
+    }
+
+    @Test
+    fun testAlternativeBarbarianCampsAreUsed() {
+        // Arrange
+        testGame.makeHexagonalMap(9) // enough for 6 or 7 camps
+        repeat(3) {
+            testGame.createTileImprovement("Marks a barbarian camp")
+        }
+        testGame.addCiv(testGame.ruleset.nations[Constants.barbarians]!!)
+        val (campTile, _) = setupBarbarianCamp()
+        val barbs = testGame.gameInfo.barbarians
+        // Act
+        repeat(9) {
+            barbs.placeBarbarianEncampment(forTesting = true)
+        }
+        // Assert the placement pipeline itself produces valid results
+        val improvementNames = barbs.encampments.map { testGame.tileMap[it.position].improvement }.toSet()
+        assertFalse("After placing several encampments, none should have no tile improvements", improvementNames.isEmpty() || null in improvementNames)
+
+        // The map above only fits 6-7 camps due to the spacing rule between them - too small a sample to
+        // reliably assert variety without an occasional flake, so sample the improvement choice directly instead
+        val sampledImprovements = (0 until 30).map { seed ->
+            barbs.createNewCamp(campTile, Random(seed))
+            campTile.improvement
+        }.toSet()
+        assertTrue(
+            "After creating several camps, there should be more than one improvement used, but we see only $sampledImprovements",
+            sampledImprovements.size > 1
+        )
     }
 }

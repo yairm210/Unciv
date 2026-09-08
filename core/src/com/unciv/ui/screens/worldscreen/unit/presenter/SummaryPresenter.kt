@@ -18,8 +18,8 @@ class SummaryPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
          
             unitNameLabel.setText("Units".tr())
 
-            val idleCount = worldScreen.viewingCiv.units.getIdleUnits().count { it.due }
-            val waitingCount = worldScreen.viewingCiv.units.getIdleUnits().count { !it.due }
+            val idleCount = worldScreen.selectedGameView.civView.idleUnitsCount(due = true)
+            val waitingCount = worldScreen.selectedGameView.civView.idleUnitsCount(due = false)
             
             val subText = mutableListOf<String>().apply {
                 if (idleCount > 0) add("[$idleCount] idle".tr())

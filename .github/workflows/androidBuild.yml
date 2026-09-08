@@ -1,0 +1,58 @@
+# Verifies the Android module actually builds (debug variant, no signing needed).
+# Separate from buildAndTest.yml (which only compiles+checks) and buildAndDeploy.yml
+# (which does the full signed release build, only on tag push).
+
+name: Android build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'build.gradle.kts'
+      - 'gradle-wrapper.properties'
+      - 'android/build.gradle.kts'
+      - '.github/workflows/androidBuild.yml'
+  pull_request_target:
+    paths:
+      - 'build.gradle.kts'
+      - 'gradle-wrapper.properties'
+      - '.github/workflows/androidBuild.yml'
+      - 'android/build.gradle.kts'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  android-build:
+    name: Build Android debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: 'gradle'
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build Android debug APK
+        run: ./gradlew :android:assembleDebug
+
+      - name: Verify AndroidLauncher class is present in APK
+        # Catches regressions where the :android module's Kotlin sources silently
+        # stop being compiled (e.g. kotlin-android plugin missing), which produces
+        # a working build but a ClassNotFoundException for AndroidLauncher at runtime.
+        run: |
+          APK=$(find android/build/outputs/apk/debug -name "*.apk" | head -1)
+          mkdir -p /tmp/apk-check
+          unzip -o "$APK" 'classes*.dex' -d /tmp/apk-check
+          if ! grep -al "AndroidLauncher" /tmp/apk-check/classes*.dex > /dev/null; then
+            echo "::error::AndroidLauncher class missing from APK dex - Kotlin sources in :android module were not compiled!"
+            exit 1
+          fi

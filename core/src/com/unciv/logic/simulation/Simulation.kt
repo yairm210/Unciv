@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.automation.Timers
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.utils.DebugUtils
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
@@ -23,7 +24,8 @@ class Simulation(
     val simulationsPerThread: Int = 1,
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 500,
-    private val statTurns: List<Int> = listOf()
+    private val statTurns: List<Int> = listOf(),
+    private val civIdsInExperimentGroup: Set<String> = emptySet()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv() }.map { it.civID }
@@ -53,6 +55,7 @@ class Simulation(
     private val printAvgCityPop = false
 
     init{
+        DebugUtils.CIV_IDS_IN_EXPERIMENT_GROUP = civIdsInExperimentGroup
         for (civ in majorCivs) {
             this.numWins[civ] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
@@ -224,8 +227,35 @@ class Simulation(
         return "@$turnStr: $statStr avg=${summaryStats[Stat.SUM]!!.value.toFloat() / summaryStats[Stat.NUM]!!.value.toFloat()} cnt=${summaryStats[Stat.NUM]!!.value}\n"
     }
 
+    /** Win rate and p-value for the group as a whole */
+    private fun groupText(groupName: String, groupCivs: List<String>): String {
+        if (groupCivs.isEmpty()) return ""
+        val numSteps = max(steps.size, 1)
+        val groupWins = groupCivs.sumOf { numWins[it]!!.value }
+        val expWinRate = groupCivs.size.toFloat() / numMajorCivs
+        val winRate = String.format("%.1f", groupWins * 100f / numSteps)
+        val expected = String.format("%.1f", expWinRate * 100f)
+
+        var outString = "\n$groupName (${groupCivs.joinToString()}):\n"
+        outString += "$winRate% total win rate (expected $expected% if no effect)\n"
+        if (numSteps * expWinRate >= 10 && numSteps * (1 - expWinRate) >= 10) {
+            val pval = binomialTest(groupWins.toDouble(), numSteps.toDouble(), expWinRate.toDouble(), "greater")
+            outString += "one-tail binomial pval = $pval\n"
+        }
+        for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
+            val winsVictory = groupCivs.sumOf { winRateByVictory[it]!![victory]!!.value } * 100 / max(groupWins, 1)
+            outString += "$victory: $winsVictory%    "
+        }
+        outString += "\n"
+        return outString
+    }
+
     fun text(): String {
         var outString = ""
+        if (civIdsInExperimentGroup.isNotEmpty()) {
+            outString += groupText("Experiment group", majorCivs.filter { it in civIdsInExperimentGroup })
+            outString += groupText("Control group", majorCivs.filter { it !in civIdsInExperimentGroup })
+        }
         for (civ in majorCivs) {
 
             val numSteps = max(steps.size, 1)

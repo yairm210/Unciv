@@ -47,6 +47,7 @@ class MapParametersTable(
     private var hexagonalSizeTable = Table()
     private var rectangularSizeTable = Table()
     lateinit var resourceSelectBox: TranslatedSelectBox
+    lateinit var mirrorSelectBox: TranslatedSelectBox
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
@@ -106,6 +107,7 @@ class MapParametersTable(
         addWorldSizeTable()
         addResourceSelectBox()
         addWrappedCheckBoxes()
+        addMirrorSelectBox()
         addAdvancedSettings()
         generateExampleMap()
     }
@@ -147,7 +149,12 @@ class MapParametersTable(
         cancelBackgroundJobs()
         val generation = ++exampleMapGeneration
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset.clone() else RulesetCache.getVanillaRuleset()
-        val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+        val mapParametersForExample =
+            if (forMapEditor) mapParameters
+            else mapParameters.clone().apply {
+                seed = 0
+                mirroring = MirroringType.none
+            }
         exampleMapJob = Concurrency.run("Generate example map") {
             val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
             if (!isActive) return@run
@@ -342,6 +349,26 @@ class MapParametersTable(
             add("{Resource Setting}:".toLabel()).left()
             add(resourceSelectBox).fillX().row()
         }
+    }
+
+    private fun addMirrorSelectBox() {
+        if (! forMapEditor)
+            return
+        
+        // only support these, as the rest seem buggy
+        val options = listOf(
+            MirroringType.none,
+            MirroringType.leftright
+        )
+        
+        mirrorSelectBox = TranslatedSelectBox(options, mapParameters.mirroring)
+
+        mirrorSelectBox.onChange {
+            mapParameters.mirroring = mirrorSelectBox.selected.value
+        }
+
+        add("{Mirroring Type}:".toLabel()).left()
+        add(mirrorSelectBox).fillX().row()
     }
 
     private fun Table.addNoRuinsCheckbox() {

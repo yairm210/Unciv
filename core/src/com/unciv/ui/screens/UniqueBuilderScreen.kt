@@ -19,7 +19,6 @@ import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LanguageTable
-import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
@@ -198,8 +197,8 @@ class UniqueTable(
         uniqueErrorTable.clear()
         uniqueErrorTable.add("Errors:".toLabel()).row()
 
-        val uniqueErrors = UniqueValidator(ruleset)
-            .checkUnique(Unique(uniqueTextField.text), true, null)
+        val uniqueErrors = UniqueValidator(ruleset, tryFixUnknownUniques = true)
+            .checkUnique(Unique(uniqueTextField.text), null)
         for (error in uniqueErrors)
             uniqueErrorTable.add(error.text.toLabel().apply { wrap = true }).width(stage.width/2).row()
         if (uniqueErrors.isEmpty())

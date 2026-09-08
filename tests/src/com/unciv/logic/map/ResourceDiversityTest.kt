@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -35,7 +35,7 @@ import kotlin.math.ln
  * All thresholds are set at 90% of the minimum observed value for that case.
  * Entropy of 1.0 = perfectly uniform spread; 0.0 = all tiles have the same resource.
  */
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class ResourceDiversityTest {
 
     // Raw observed minimums (Pangaea, hexagonal, seeds 1–3):

@@ -121,8 +121,9 @@ open class UniqueMap() {
     fun forEachMatchingUnique(list: List<Unique>, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
         for (i in 0..<list.size) {
             val unique = list[i]
-            if (unique.isTimedTriggerable || !filter(unique) || !unique.conditionalsApply(gameContext))
-                continue
+            if (unique.isTimedTriggerable) continue
+            if (!filter(unique)) continue
+            if (!unique.conditionalsApply(gameContext)) continue
             unique.forEachMultiplied(gameContext, op)
         }
     }
@@ -132,9 +133,14 @@ open class UniqueMap() {
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
     @Readonly
-    fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        getTagUniques(uniqueTag)
-            .any { it.conditionalsApply(state) }
+    fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState): Boolean {
+        val tagUniques = tagUniqueMap[uniqueTag] ?: return false
+        for (i in 0..< tagUniques.size) {
+            val tagUnique = tagUniques[i]
+            if (tagUnique.conditionalsApply(state)) return true
+        }
+        return false
+    }
 
     @Readonly
     fun getAllUniques() = tagUniqueMap.values.asSequence().flatten()

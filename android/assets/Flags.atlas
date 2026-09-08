@@ -1,327 +1,341 @@
 
 Flags.png
-size: 2048, 512
+size: 1024, 1024
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 FlagIcons/Afrikaans
   rotate: false
-  xy: 4, 276
+  xy: 4, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Bangla
   rotate: false
-  xy: 4, 140
+  xy: 4, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Belarusian
   rotate: false
-  xy: 140, 276
+  xy: 140, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Bosnian
   rotate: false
-  xy: 4, 4
+  xy: 4, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Brazilian_Portuguese
   rotate: false
-  xy: 140, 140
+  xy: 140, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Bulgarian
   rotate: false
-  xy: 276, 276
+  xy: 276, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Catalan
   rotate: false
-  xy: 140, 4
+  xy: 4, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Croatian
   rotate: false
-  xy: 276, 140
+  xy: 140, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Czech
   rotate: false
-  xy: 412, 276
+  xy: 276, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Dutch
   rotate: false
-  xy: 276, 4
+  xy: 412, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/English
   rotate: false
-  xy: 412, 140
+  xy: 4, 276
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Esperanto
+  rotate: false
+  xy: 140, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Filipino
   rotate: false
-  xy: 548, 276
+  xy: 276, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Finnish
   rotate: false
-  xy: 412, 4
+  xy: 412, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/French
   rotate: false
-  xy: 548, 140
+  xy: 548, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Galician
   rotate: false
-  xy: 684, 276
+  xy: 4, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/German
   rotate: false
-  xy: 548, 4
+  xy: 140, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Greek
   rotate: false
-  xy: 684, 140
+  xy: 276, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Hindi
   rotate: false
-  xy: 820, 276
+  xy: 412, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Hungarian
   rotate: false
-  xy: 684, 4
+  xy: 548, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Indonesian
   rotate: false
-  xy: 820, 140
+  xy: 684, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Italian
   rotate: false
-  xy: 956, 276
+  xy: 4, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Japanese
   rotate: false
-  xy: 820, 4
+  xy: 140, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Kazakh
   rotate: false
-  xy: 956, 140
+  xy: 276, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Korean
   rotate: false
-  xy: 1092, 276
+  xy: 412, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Latin
   rotate: false
-  xy: 956, 4
+  xy: 548, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Lithuanian
   rotate: false
-  xy: 1092, 140
+  xy: 684, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Macedonian
   rotate: false
-  xy: 1228, 276
+  xy: 820, 820
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Malay
   rotate: false
-  xy: 1092, 4
+  xy: 140, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Maltese
   rotate: false
-  xy: 1228, 140
+  xy: 276, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Norwegian
   rotate: false
-  xy: 1364, 276
+  xy: 412, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Persian_(Pinglish-DIN)
   rotate: false
-  xy: 1228, 4
+  xy: 548, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Persian_(Pinglish-UN)
   rotate: false
-  xy: 1228, 4
+  xy: 548, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Polish
   rotate: false
-  xy: 1364, 140
+  xy: 684, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Portuguese
   rotate: false
-  xy: 1500, 276
+  xy: 820, 684
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Romanian
   rotate: false
-  xy: 1364, 4
+  xy: 276, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Russian
   rotate: false
-  xy: 1500, 140
+  xy: 412, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Rusyn
   rotate: false
-  xy: 1636, 276
+  xy: 548, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Simplified_Chinese
   rotate: false
-  xy: 1500, 4
+  xy: 684, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Spanish
   rotate: false
-  xy: 1636, 140
+  xy: 820, 548
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Swedish
   rotate: false
-  xy: 1772, 276
+  xy: 412, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Thai
   rotate: false
-  xy: 1636, 4
+  xy: 548, 140
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Toki_Pona
+  rotate: false
+  xy: 684, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Traditional_Chinese
   rotate: false
-  xy: 1772, 140
+  xy: 820, 412
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Turkish
   rotate: false
-  xy: 1908, 276
+  xy: 548, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Ukrainian
   rotate: false
-  xy: 1772, 4
+  xy: 684, 140
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Vietnamese
   rotate: false
-  xy: 1908, 140
+  xy: 820, 276
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 FlagIcons/Zulu
   rotate: false
-  xy: 1908, 4
+  xy: 684, 4
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

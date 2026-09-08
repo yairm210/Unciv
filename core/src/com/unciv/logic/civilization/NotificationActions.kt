@@ -62,7 +62,7 @@ class LocationAction(private val location: HexCoord = HexCoord.Zero) : Notificat
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.selectedCiv, tech))
+        worldScreen.game.pushScreen{ TechPickerScreen(worldScreen.selectedCiv, tech) }
     }
 }
 
@@ -71,8 +71,9 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
-        if (cityObject.civ == worldScreen.viewingCiv)
-            worldScreen.game.pushScreen(CityScreen(cityObject))
+        val cityView = worldScreen.selectedGameView.getCityView(cityObject)
+        if (worldScreen.selectedGameView.civView.isOwnerOf(cityView))
+            worldScreen.game.pushScreen{ CityScreen(cityView) }
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
@@ -116,7 +117,12 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen(DiplomacyScreen(currentCiv, otherCiv, showTrade = showTrade))
+        worldScreen.game.pushScreen{ 
+            DiplomacyScreen(
+            worldScreen.selectedGameView.civView,
+            worldScreen.selectedGameView.getForeignCivView(otherCiv),
+            showTrade = showTrade)
+        }
     }
 }
 
@@ -141,17 +147,15 @@ class MapUnitAction(
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position.toHexCoord(), unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        val selectUnit = id != Constants.NO_ID // This is the unspecific "select any unit on that tile", specific works without this being on
-        val unit = if (selectUnit) 
-            worldScreen.selectedCiv.units.getUnitById(id) 
-        else
-            worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
+        val unit = if (id != Constants.NO_ID)
+            worldScreen.selectedCiv.units.getUnitById(id)
+        else null
         if (unit != null) {
             val unitLocation = unit.currentTile.position.toHexCoord()
-            worldScreen.mapHolder.setCenterPosition(unitLocation, selectUnit = selectUnit, forceSelectUnit = unit)
+            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = unit)
         }
         else {
-            worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
+            worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = id == Constants.NO_ID)
         }
     }
     companion object {
@@ -187,7 +191,7 @@ class PromoteUnitAction(
             val tile = worldScreen.gameInfo.tileMap[location]
             tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
         } ?: return
-        worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+        worldScreen.game.pushScreen { PromotionPickerScreen(unit) }
     }
 }
 
@@ -206,14 +210,14 @@ class PolicyAction(
     private val select: String? = null
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select))
+        worldScreen.game.pushScreen { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select) }
     }
 }
 
 /** Open [EspionageOverviewScreen] */
 class EspionageAction : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+        worldScreen.game.pushScreen { EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
     }
     companion object {
         fun withLocation(location: HexCoord?): Sequence<NotificationAction> =

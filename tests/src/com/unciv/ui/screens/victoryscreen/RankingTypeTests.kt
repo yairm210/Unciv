@@ -1,11 +1,11 @@
 package com.unciv.ui.screens.victoryscreen
 
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class RankingTypeTests {
 
     @Test

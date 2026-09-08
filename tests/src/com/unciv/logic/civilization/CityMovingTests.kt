@@ -3,14 +3,14 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class CityMovingTests {
 
     private lateinit var civInfo: Civilization

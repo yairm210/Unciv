@@ -88,8 +88,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return get(text, language, activeMods)?.get(language) ?: default
     }
 
-    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
-    fun getLanguages() = linkedSetOf<String>().apply {
+    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests`
+     *  * Note: No deterministic order. If a client needs that, remap to LanguageCode order or something.
+     */
+    fun getLanguages(): Set<String> = hashSetOf<String>().apply {
             for (entry in values)
                 for (languageName in entry.keys)
                     add(languageName)
@@ -116,17 +118,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         // try to load the translations from the mods
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val modTranslationFile = modFolder.child(translationFileName)
-            if (modTranslationFile.exists()) {
-                var translationsForMod = modsWithTranslations[modFolder.name()]
-                if (translationsForMod == null) {
-                    translationsForMod = Translations()
-                    modsWithTranslations[modFolder.name()] = translationsForMod
-                }
-                try {
-                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
-                } catch (ex: Exception) {
-                    Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
-                }
+            if (!modTranslationFile.exists()) continue
+            var translationsForMod = modsWithTranslations[modFolder.name()]
+            if (translationsForMod == null) {
+                translationsForMod = Translations()
+                modsWithTranslations[modFolder.name()] = translationsForMod
+            }
+            try {
+                translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
+            } catch (ex: Exception) {
+                Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
             }
         }
 
@@ -252,9 +253,9 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
-// Used to match continous digits 0, 12, 1232 etc
+// Used to match continuous digits 0, 12, 1232 etc
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val digitsRegex = Regex("""\d""")
+val digitsRegex = Regex("""\d+""")
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -304,8 +305,8 @@ object TranslationActiveModsCache {
  *                  sentences - contains at least one '{'
  *                  - phrases between curly braces are translated individually
  *                  Additionally, they may contain conditionals between '<' and '>'
- *  @param      hideIcons disables auto-inserting icons for ruleset objects (but not Stats)
- *  @param      hideStats disables auto-inserting icons for Stats (but not rulset objects)
+ *  @param      hideIcons disables auto-inserting icons for ruleset objects and serialized [Stats]
+ *  @param      hideStats disables auto-inserting icons for individual [Stat] names
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
@@ -442,7 +443,10 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 /** No brackets of any kind, just a single word */
 @Readonly
 private fun String.translateIndividualWord(language: String, hideIcons: Boolean, hideStats: Boolean): String {
-    if (Stats.isStats(this)) return Stats.parse(this).toString()
+    if (Stats.isStats(this)) {
+        val stats = Stats.parse(this)
+        return if (hideIcons) stats.toStringWithoutIcons() else stats.toString()
+    }
 
     val translation = UncivGame.Current.translations.getText(
         this, language, TranslationActiveModsCache.activeMods
@@ -475,11 +479,12 @@ fun String.getPlaceholderParameters(): List<String> {
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
     stringToParse.indices.forEach { i ->
-        if (stringToParse[i] == '[') {
+        val currentChar = stringToParse[i]
+        if (currentChar == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
         }
-        if (stringToParse[i] == ']' && depthOfBraces > 0) {
+        if (currentChar == ']' && depthOfBraces > 0) {
             depthOfBraces--
             if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }

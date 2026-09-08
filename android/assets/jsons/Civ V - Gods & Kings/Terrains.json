@@ -17,7 +17,8 @@
 		"RGB": [70, 138, 216],
 		"uniques": ["[+2] to Fertility for Map Generation",
             "Considered [Desirable] when determining start locations <on water maps>",
-            "Every [60] tiles with this terrain will receive a major deposit of a strategic resource."]
+            "Every [60] tiles with this terrain will receive a major deposit of a strategic resource.",
+            "Coastal Water"]
 	},
 	{
 		"name": "Grassland",

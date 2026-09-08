@@ -17,8 +17,8 @@ object GUI {
         UncivGame.Current.worldScreen?.shouldUpdate = true
     }
 
-    fun pushScreen(screen: BaseScreen) {
-        UncivGame.Current.pushScreen(screen)
+    fun pushScreen(getScreen: () -> BaseScreen) {
+        UncivGame.Current.pushScreen(getScreen)
     }
 
     fun resetToWorldScreen() {
@@ -44,8 +44,6 @@ object GUI {
     @Readonly fun getMap(): WorldMapHolder = UncivGame.Current.worldScreen!!.mapHolder
 
     @Readonly fun getUnitTable(): UnitTable = UncivGame.Current.worldScreen!!.bottomUnitTable
-
-    @Readonly fun getViewingPlayer(): Civilization = UncivGame.Current.worldScreen!!.viewingCiv
 
     @Readonly fun getSelectedPlayer(): Civilization = UncivGame.Current.worldScreen!!.selectedCiv
 

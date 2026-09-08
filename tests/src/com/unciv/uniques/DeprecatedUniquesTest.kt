@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueAutoUpdater
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith
  *    the final replacement (tests the "fully deprecated → fully deprecated → current" path).
  * 7. [UniqueAutoUpdater] handles a ruleset containing both half-deprecated and fully deprecated uniques.
  */
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class DeprecatedUniquesTest {
 
     // -------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A unique matching DeprecatedUniqueType should produce at least one ErrorOptionsOnly error, got: ${errors.map { it.errorSeverityToReport }}",
@@ -129,7 +129,7 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A half-deprecated unique (DeprecationLevel.WARNING) should produce a WarningOptionsOnly warning, got: ${errors.map { it.errorSeverityToReport }}",

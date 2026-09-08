@@ -22,6 +22,13 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
     val uniqueObject: Unique by lazy { Unique(unique, sourceObjectType, sourceObjectName) }
 
     var turnsLeft: Int = 0
+
+    fun clone() = TemporaryUnique().also {
+        it.unique = unique
+        it.sourceObjectType = sourceObjectType
+        it.sourceObjectName = sourceObjectName
+        it.turnsLeft = turnsLeft
+    }
 }
 
 

@@ -6,16 +6,15 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.roundToInt
 
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class ResourceTests {
     private val game = TestGame().apply { makeHexagonalMap(2) }
     private val civInfo = game.addCiv()

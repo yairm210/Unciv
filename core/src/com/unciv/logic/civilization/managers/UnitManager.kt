@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
@@ -174,12 +173,13 @@ class UnitManager(val civInfo: Civilization) {
         }
     }
 
-    fun removeUnit(mapUnit: MapUnit) {
+    fun removeUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
         // See comment in addUnit().
         val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         unitList = newList
         nextPotentiallyDueAt = 0
+        if (!updateCivInfo) return
 
         civInfo.updateStatsForNextTurn() // unit upkeep
         if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())
@@ -193,8 +193,6 @@ class UnitManager(val civInfo: Civilization) {
     @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
     @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
-
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
     @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 

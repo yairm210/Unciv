@@ -2,7 +2,7 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.WorldTileGroup
@@ -37,20 +37,20 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         cityButtonWrapper?.setScale(scale)
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         if (tileGroup !is WorldTileGroup) return
 
-        val city = tile.getCity()
+        val cityView = tileGroup.tileView.owningCity()
 
         // There used to be a city here but it was razed
-        if (city == null && cityButtonWrapper != null) {
+        if (cityView == null && cityButtonWrapper != null) {
             removeOwnedActor(cityButtonWrapper!!)
             cityButtonWrapper = null
             cityButton = null
         }
 
         if (viewingCiv == null) return
-        if (city == null || !tileGroup.tile.isCityCenter()) return
+        if (cityView == null || !tileGroup.tileView.isCityCenter()) return
 
         // Create wrapper + city button if not yet present
         if (cityButton == null) {
@@ -60,7 +60,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
                 setPosition(tileX, tileY)
                 setOrigin(size / 2f, size / 2f)
             }
-            cityButton = CityButton(city, tileGroup)
+            cityButton = CityButton(cityView, tileGroup)
             cityButtonWrapper!!.addActor(cityButton!!)
             addOwnedActor(cityButtonWrapper!!)
         }

@@ -7,6 +7,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 
 class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? = null)
     : Popup(stage) {
@@ -20,13 +21,19 @@ class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? =
 
     init {
         button.onClick {
-            try {
-                UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
-                authSuccessful?.invoke(true)
-                close()
-            } catch (_: Exception) {
-                clear()
-                addComponents("Authentication failed")
+            Concurrency.run {
+                try {
+                    UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
+                    Concurrency.runOnGLThread {
+                        authSuccessful?.invoke(true)
+                        close()
+                    }
+                } catch (_: Exception) {
+                    Concurrency.runOnGLThread {
+                        clear()
+                        addComponents("Authentication failed")
+                    }
+                }
             }
         }
         addComponents("Please enter your server password")

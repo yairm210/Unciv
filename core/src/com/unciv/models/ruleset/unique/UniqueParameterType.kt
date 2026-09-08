@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderParameters
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -111,7 +111,7 @@ enum class UniqueParameterType(
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         override val staticKnownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
-            "City-State", Constants.embarked, "Non-City")
+            "City-State", Constants.embarked, "Non-City", "other")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -319,8 +319,8 @@ enum class UniqueParameterType(
             "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
             "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your", "Unowned",
-            "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
-            "Impassable", "Land", "Water"
+            "Terrain Feature", "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
+            Constants.impassable, "Land", "Water"
         ) + ResourceType.entries.map { it.name + " resource" } + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
@@ -346,7 +346,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
-        override val staticKnownValues = setOf("unimproved", "improved", "worked", "pillaged", "All Road", "Great Improvement")
+        override val staticKnownValues = setOf("unimproved", "improved", "worked", "pillaged", Constants.allRoad, "Great Improvement")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -447,8 +447,8 @@ enum class UniqueParameterType(
     },
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
-    ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        override val staticKnownValues = setOf("Improvement", "All Road", "Great Improvement", "Great") + Constants.all
+    ImprovementFilter("improvementFilter", Constants.allRoad, null, "Improvement Filters") {
+        override val staticKnownValues = setOf("Improvement", Constants.allRoad, "Great Improvement", "Great") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -507,6 +507,13 @@ enum class UniqueParameterType(
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
     ) {
         override val staticKnownValues = BeliefType.entries.map { it.name }.toSet()
+    },
+
+    /** Used by [UniqueType.CounterIntelligenceSpyRankBonus], matches [com.unciv.models.SpyAction.displayString] */
+    SpyAction("spyAction", "Counter-intelligence", "A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override val staticKnownValues = com.unciv.models.SpyAction.entries.map { it.displayString }.toSet()
     },
 
     /** unused at the moment with vanilla rulesets */
@@ -667,9 +674,10 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
-    /** Used in [GetLeaderTitle], and validates a [leaderName] is provided. */
+    /** Used in [UniqueType.GetLeaderTitle], and validates exactly one placeholder named "leaderName" is provided. */
     LeaderTitle("leaderTitle", "Sovereign [leaderName] the Great", "Provides a leader title that includes the leader's name in parameters.", "Leader Title") {
-        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.hasPlaceholderParameters()
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            parameterText.getPlaceholderParameters() == listOf("leaderName")
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
@@ -734,8 +742,9 @@ enum class UniqueParameterType(
     open fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset): Boolean =
         getErrorSeverity(parameterText, ruleset) == null
 
-    /** Get a list of possible values [TranslationFileWriter] should include as translatable string
-     *  that are not recognized from other json sources */
+    /** Get a list of possible values [TranslationFileWriter] should include as translatable string that are not recognized from other json sources.
+     *  * Meant for base rulesets and called by TFW _only_ for base ruleset translation generation.
+     */
     @Readonly 
     open fun getTranslationWriterStringsForOutput(): Set<String> = staticKnownValues
 

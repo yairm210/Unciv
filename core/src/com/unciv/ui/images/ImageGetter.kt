@@ -26,8 +26,11 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontRulesetIcons
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
+import kotlinx.coroutines.runBlocking
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -65,6 +68,16 @@ object ImageGetter {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
 
+        val setFontFamilyJob = Concurrency.run {
+            // Loading available fonts can take a long time
+            // Specifically the "set font family" part can take 700ms on my computer (!)
+            // But running it a second time is fast
+            // SO since it's not GL stuff, we can run it parallel to the mod atlas init which has to be on the GL thread,
+            // And by the time we reach BaseScreen.setSkin() -> Fonts.resetFont() it's super fast, saving us ~400-500ms on the GL thread!
+            val settings = UncivGame.Current.settings
+            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        }
+
         // Load base
         loadModAtlases("", Gdx.files.internal(""))
 
@@ -77,6 +90,8 @@ object ImageGetter {
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
+        // Just in case, don't want to get into any "parallel font update" problems
+        runBlocking { setFontFamilyJob.join() }
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
     }

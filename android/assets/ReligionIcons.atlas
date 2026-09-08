@@ -60,72 +60,79 @@ ReligionIcons/Hinduism
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Islam
+ReligionIcons/Holy
   rotate: false
   xy: 868, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Judaism
+ReligionIcons/Islam
   rotate: false
   xy: 976, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Pantheon
+ReligionIcons/Judaism
   rotate: false
   xy: 1084, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+ReligionIcons/Pantheon
+  rotate: false
+  xy: 1192, 4
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ReligionIcons/Religion
-  rotate: false
-  xy: 1192, 4
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ReligionIcons/Religions
-  rotate: false
-  xy: 1192, 4
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ReligionIcons/Shinto
   rotate: false
   xy: 1300, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Sikhism
+ReligionIcons/Religions
+  rotate: false
+  xy: 1300, 4
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ReligionIcons/Shinto
   rotate: false
   xy: 1408, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Taoism
+ReligionIcons/Sikhism
   rotate: false
   xy: 1516, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Tengriism
+ReligionIcons/Taoism
   rotate: false
   xy: 1624, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-ReligionIcons/Zoroastrianism
+ReligionIcons/Tengriism
   rotate: false
   xy: 1732, 4
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ReligionIcons/Zoroastrianism
+  rotate: false
+  xy: 1840, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

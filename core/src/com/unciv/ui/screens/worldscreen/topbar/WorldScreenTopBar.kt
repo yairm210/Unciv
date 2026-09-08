@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.topbar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
@@ -220,7 +221,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             selectedCivLabel.onClick(onNationClick)
             selectedCivIcon.onClick(onNationClick)
 
-            menuButtonWrapper.size(Constants.headingFontSize * 1.5f);
+            menuButtonWrapper.size(Constants.headingFontSize * 1.5f)
             menuButtonWrapper.center()
             add(menuButtonWrapper)
 
@@ -242,4 +243,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             pack()
         }
     }
+
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }

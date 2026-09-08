@@ -147,7 +147,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     newProtectors.add(protector.civName.tr())
             }
             val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
-            diplomacyTable.add(protectorString.toLabel()).row()
+            diplomacyTable.add(protectorString.toLabel().apply {
+                wrap = true
+                setAlignment(Align.center)
+            }).width(diplomacyScreen.rightSideLabelWidth()).row()
         }
 
         val atWar = otherCiv.isAtWarWith(viewingCiv)

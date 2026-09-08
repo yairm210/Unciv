@@ -74,7 +74,7 @@ class AlertPopup(
     //region convenience getters
     private val music get() = UncivGame.Current.musicController
     private val gameInfo get() = worldScreen.gameInfo
-    private val viewingCiv get() = worldScreen.viewingCiv
+    private val viewingCiv get() = worldScreen.selectedGameView.civView.getCiv()
     private val stageWidth get() = worldScreen.stage.width
     private val stageHeight get() = worldScreen.stage.height
     @Readonly private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
@@ -404,7 +404,7 @@ class AlertPopup(
     private fun addGameHasBeenWon() {
         val victoryData = gameInfo.victoryData!!
         addGoodSizedLabel("[${victoryData.winningCivObject.civName}] has won a [${victoryData.victoryType}] Victory!").row()
-        addButton("Victory status") { close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
+        addButton("Victory status") { close(); worldScreen.game.pushScreen{ VictoryScreen(worldScreen) } }.row()
         addCloseButton()
     }
 

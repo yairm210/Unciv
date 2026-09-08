@@ -4,12 +4,12 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Tutorial
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class TutorialTranslationTests {
     private var tutorials: LinkedHashMap<String, Tutorial>? = null
     private var exception: Throwable? = null

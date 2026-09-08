@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
 import com.unciv.app.desktop.ImagePacker.packImages
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import kotlinx.coroutines.Job
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
@@ -75,29 +77,37 @@ internal object ImagePacker {
         val startTime = System.currentTimeMillis()
 
         val defaultSettings = getDefaultSettings()
+        val packingJobs = ArrayList<()->Unit>()
 
         // Scan for Image folders and build one atlas each
         if (!isRunFromJAR)
-            packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, defaultSettings)
+            packingJobs.add {
+                packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, defaultSettings)
+            }
+            
 
         // pack for mods
         val modDirectory = File(dataDirectory, modsBasePath)
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
-                if (!mod.isHidden) {
+                if (mod.isHidden) continue
+                val job = {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
                         var innerException = ex
-                        while (innerException.cause != null && innerException.cause !== innerException) innerException = innerException.cause!!
+                        while (innerException.cause != null && innerException.cause !== innerException) innerException =
+                            innerException.cause!!
                         if (innerException === ex)
                             Log.error("Exception in ImagePacker for mod ${mod.name}: ${ex.message}")
                         else
                             Log.error("Exception in ImagePacker for mod ${mod.name}: ${ex.message} (${innerException.message})")
                     }
                 }
+                packingJobs.add(job)
             }
         }
+        Concurrency.parallelize(packingJobs, true)
 
         val texturePackingTime = System.currentTimeMillis() - startTime
         debug("Packing textures - %sms", texturePackingTime)

@@ -51,9 +51,9 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     fun clone(): CivConstructions {
         val toReturn = CivConstructions()
         toReturn.civInfo = civInfo
-        toReturn.freeBuildings.putAll(freeBuildings)
-        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
-        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
+        toReturn.freeBuildings.putAll(freeBuildings.mapValues { it.value.toHashSet() })
+        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided.mapValues { it.value.toHashSet() })
+        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided.mapValues { it.value.toHashSet() })
         toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice)  // add copies
         toReturn.builtItemsWithIncreasingCost.add(builtItemsWithIncreasingCost)
         return toReturn

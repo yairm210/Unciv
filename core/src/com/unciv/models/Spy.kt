@@ -415,8 +415,29 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         rank += ranksToLevelUp
     }
 
+    /**
+     * Rank used for skill checks, including temporary bonuses from buildings for the current spy action.
+     * Never exceeds [com.unciv.models.ModConstants.maxSpyRank]. Does not change the persisted [rank].
+     */
+    @Readonly
+    fun getEffectiveRank(): Int {
+        val maxRank = civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank
+        var effective = rank
+        val city = getCityOrNull() ?: return effective.coerceIn(1, maxRank)
+        effective += city.getMatchingUniques(
+            UniqueType.CounterIntelligenceSpyRankBonus,
+            city.state,
+            includeCivUniques = true
+        ).filter {
+            city.matchesFilter(it.params[0], viewingCiv = civInfo) &&
+                it.params[2].equals(action.displayString, ignoreCase = true)
+        }.sumOf { it.params[1].toInt() }
+        return effective.coerceIn(1, maxRank)
+    }
+
     /** Modifier of the skill bonus of the spy by percent */
-    @Readonly fun getSkillModifierPercent() = rank * civInfo.gameInfo.ruleset.modOptions.constants.spyRankSkillPercentBonus
+    @Readonly fun getSkillModifierPercent() =
+        getEffectiveRank() * civInfo.gameInfo.ruleset.modOptions.constants.spyRankSkillPercentBonus
 
     /**
      * Gets a friendly and enemy efficiency uniques for the spy at the location
@@ -445,8 +466,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
         }
         var totalEfficiency = 1.0
-        totalEfficiency *= (100.0 + friendlyUniques.sumOf { it.params[0].toInt() }) / 100
-        totalEfficiency *= (100.0 + enemyUniques.sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + friendlyUniques
+            .filter { city == null || city.matchesFilter(it.params[1], civInfo) }
+            .sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + enemyUniques
+            .filter { city != null && city.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }) / 100
         return totalEfficiency.coerceAtLeast(0.0)
     }
 

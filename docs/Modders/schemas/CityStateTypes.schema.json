@@ -29,6 +29,11 @@
         "title": "Ally Bonus Uniques",
         "description": "List of unique abilities granted to major civilizations when allied to city state"
       },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "title": "Uniques",
+        "description": "Type-wide uniques applied to every city-state of this type (e.g. Start bias [Coast]). Merged with Nation startBias and Nation Start bias uniques."
+      },
       "color": {
         "$ref": "refs/Color.schema.json",
         "description": "RGB color of text in civilopedia",
