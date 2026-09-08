@@ -21,6 +21,8 @@ class MapUnitView internal constructor(
 ) : ForeignMapUnitView(unit, viewer, spectatorMode, gameView) {
     val due: Boolean get() = unit.due
 
+    @Readonly override fun civ(): CivView = gameView.getCivView(unit.civ)
+
     @Readonly fun getOtherEscortUnit(): MapUnitView? = unit.getOtherEscortUnit()?.let { gameView.getMapUnitView(it) }
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()
@@ -65,7 +67,6 @@ class MapUnitView internal constructor(
             .map { gameView.tileMapView.getTile(it) }
     @Readonly fun getTilesInAttackRange(): List<TileView> =
         unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange())).map { gameView.tileMapView.getTile(it) }.toList()
-    @Readonly fun isExplored(tileView: TileView): Boolean = unit.civ.hasExplored(tileView.unwrap())
     @Readonly fun getAttackableEnemies(
         unitDistanceToTiles: PathsToTilesWithinTurn,
         tilesToCheck: List<TileView>? = null,

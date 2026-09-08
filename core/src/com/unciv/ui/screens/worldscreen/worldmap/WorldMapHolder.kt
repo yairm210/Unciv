@@ -501,7 +501,7 @@ class WorldMapHolder(
         Concurrency.run("ConnectRoad") {
            val validTile = tileView.isLand &&
                !tileView.isImpassible() &&
-                selectedUnitView.isExplored(tileView)
+                selectedUnitView.civ().hasExplored(tileView)
 
             if (validTile) {
                 val roadPath: List<Tile>? = selectedUnit.movement.getRoadPath(tile)

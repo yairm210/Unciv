@@ -129,7 +129,7 @@ object WorldMapTileUpdater {
                 } else if (tileView.aerialDistanceTo(unitView.getTile()) <= unitView.getRange()) {
                     // The tile is within attack range
                     group.layerMisc.overlayTerrain(Color.RED)
-                } else if (unitView.isExplored(tileView) && tileView.aerialDistanceTo(unitView.getTile()) <= unitView.getRange()*2) {
+                } else if (unitView.civ().hasExplored(tileView) && tileView.aerialDistanceTo(unitView.getTile()) <= unitView.getRange()*2) {
                     // The tile is within move range
                     group.layerMisc.overlayTerrain(if (unitView.canMoveTo(tileView)) Color.WHITE else Color.BLUE)
                 }
