@@ -97,6 +97,12 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
+    // Maybe we can move this to hexmath, will require extra input of map width/radius
+    @Readonly fun getNeighborClockPosition(neighbor: TileView): Int = tile.tileMap.getNeighborTileClockPosition(tile, neighbor.unwrap())
+    // This is an odd one - ideally the API should expose terrains, not...this, this is a specific performance boost 
+    //. that's not really relevant for the API
+    // We should see if we can avoid this entirely
+    @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
     @Readonly fun getVisibleTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }

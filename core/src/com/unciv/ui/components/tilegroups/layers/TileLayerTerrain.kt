@@ -6,7 +6,6 @@ import com.unciv.UncivGame
 import com.unciv.view.CivView
 import com.unciv.view.TileView
 import com.unciv.logic.map.NeighborDirection
-import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -114,27 +113,32 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
      * This caches the filenames of edges to be rendered, given that we have ourTerrains and the neighbor has neighborTerrains
      * Since terrains can change over time, if one of these assumptions is false we recalculate the edge tiles
      * */
-    private class NeighborEdgeData(val neighbor: Tile, val direction: NeighborDirection?) {
+    private class NeighborEdgeData(val neighbor: TileView, val direction: NeighborDirection?) {
         var ourTerrains: Set<String> = emptySet()
         var neighborTerrains: Set<String> = emptySet()
         var edgeFileNames: List<String> = emptyList()
     }
 
-    private val neighborEdgeDataList: Sequence<NeighborEdgeData> = tile.neighbors.map {
-            val clockPosition = tile.tileMap.getNeighborTileClockPosition(tile, it)
-            val direction = NeighborDirection.byClockPosition[clockPosition]
-            NeighborEdgeData(it, direction)
-        }.toList().asSequence()
-
+    // Only explored neighbors can have edge images computed - unexplored neighbors' terrain is unknown.
+    // As more neighbors become explored, entries are added here rather than fixed once at construction.
+    private val neighborEdgeDataByNeighbor = HashMap<TileView, NeighborEdgeData>()
 
     private fun getEdgeTileLocations(): Sequence<String> =
-        neighborEdgeDataList.flatMap { getMatchingEdges(it) }
+        tileGroup.tileView.getVisibleNeighbors().flatMap { neighbor ->
+            val neighborEdgeData = neighborEdgeDataByNeighbor.getOrPut(neighbor) {
+                val clockPosition = tileGroup.tileView.getNeighborClockPosition(neighbor)
+                val direction = NeighborDirection.byClockPosition[clockPosition]
+                NeighborEdgeData(neighbor, direction)
+            }
+            getMatchingEdges(neighborEdgeData)
+        }
 
     /** See https://yairm210.github.io/Unciv/Modders/Creating-a-custom-tileset/#edge-images */
     private fun getMatchingEdges(neighborEdgeData: NeighborEdgeData): List<String>{
+        val tileView = tileGroup.tileView
         // If the terrain data is still up to date, used the cached filenames
-        if (neighborEdgeData.ourTerrains == tile.cachedTerrainData.terrainNameSet
-            && neighborEdgeData.neighborTerrains == neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet)
+        if (neighborEdgeData.ourTerrains == tileView.getCachedTerrainNameSet()
+            && neighborEdgeData.neighborTerrains == neighborEdgeData.neighbor.getCachedTerrainNameSet())
                 return neighborEdgeData.edgeFileNames
 
         if (neighborEdgeData.direction == null) return emptyList()
@@ -142,22 +146,22 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         // Required for performance - full matchesFilter is too expensive for something that needs to run every update()
         @Readonly
-        fun matchesFilterMinimal(originTile: Tile, filter: String): Boolean {
-            if (originTile.cachedTerrainData.terrainNameSet.contains(filter)) return true
-            if (originTile.getBaseTerrain().type.name == filter) return true
+        fun matchesFilterMinimal(originTileView: TileView, filter: String): Boolean {
+            if (originTileView.getCachedTerrainNameSet().contains(filter)) return true
+            if (originTileView.getBaseTerrain().type.name == filter) return true
             return false
         }
 
         // Chain the filter{} and map{} with sequences to avoid creating intermediate list,
         //  but then resolve it to a proper list.
         val cachedSequence = possibleEdgeImages.asSequence().filter {
-            if (!matchesFilterMinimal(tile, it.originTileFilter)) return@filter false
+            if (!matchesFilterMinimal(tileView, it.originTileFilter)) return@filter false
             if (!matchesFilterMinimal(neighborEdgeData.neighbor, it.destinationTileFilter)) return@filter false
             return@filter true
         }.map { it.fileName }.toList()
 
-        neighborEdgeData.ourTerrains = tile.cachedTerrainData.terrainNameSet
-        neighborEdgeData.neighborTerrains = neighborEdgeData.neighbor.cachedTerrainData.terrainNameSet
+        neighborEdgeData.ourTerrains = tileView.getCachedTerrainNameSet()
+        neighborEdgeData.neighborTerrains = neighborEdgeData.neighbor.getCachedTerrainNameSet()
         neighborEdgeData.edgeFileNames = cachedSequence
 
         return cachedSequence
