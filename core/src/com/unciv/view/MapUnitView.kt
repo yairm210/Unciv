@@ -21,9 +21,6 @@ class MapUnitView internal constructor(
 ) : ForeignMapUnitView(unit, viewer, spectatorMode, gameView) {
     val due: Boolean get() = unit.due
 
-    /** Wraps this unit as a [MapUnitCombatantView] for battle purposes. */
-    @Readonly override fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(this, viewer, spectatorMode, gameView)
-
     @Readonly fun getOtherEscortUnit(): MapUnitView? = unit.getOtherEscortUnit()?.let { gameView.getMapUnitView(it) }
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()

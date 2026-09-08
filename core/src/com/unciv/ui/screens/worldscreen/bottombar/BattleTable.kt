@@ -65,34 +65,30 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         val attackerCityView = if (attackerUnitView == null) worldScreen.bottomUnitTable.selectedCity else null
         if (attackerUnitView == null && attackerCityView == null) return hide()
 
-        val attacker: CombatantView = attackerUnitView?.asCombatant() ?: attackerCityView!!.asCombatant()
-
-        when (attacker) {
-            is MapUnitCombatantView -> {
-                val unitView = attacker.getUnitView()
-                if (unitView.isNuclearWeapon()) {
-                    val selectedTileView = worldScreen.mapHolder.selectedTile
-                        ?: return hide() // no selected tile
-                    if (selectedTileView == unitView.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
-                    simulateNuke(attacker, selectedTileView)
-                } else if (unitView.isPreparingAirSweep()) {
-                    val selectedTileView = worldScreen.mapHolder.selectedTile
-                        ?: return hide() // no selected tile
-                    simulateAirsweep(attacker, selectedTileView)
-                } else {
-                    val defender = tryGetDefender() ?: return hide()
-                    // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-                    val tileToAttackFromView = unitView.getAttackableEnemies(unitView.getUnit().movement.getDistanceToTiles())
-                        .firstOrNull { it.getTileToAttack() == defender.getTile() }?.getTileToAttackFrom()
-                        ?: unitView.getTile()
-                    simulateBattle(attacker, defender, tileToAttackFromView)
-                }
-            }
-            is CityCombatantView -> {
+        if (attackerUnitView != null) {
+            val attacker = attackerUnitView.asCombatant()
+            if (attackerUnitView.isNuclearWeapon()) {
+                val selectedTileView = worldScreen.mapHolder.selectedTile
+                    ?: return hide() // no selected tile
+                if (selectedTileView == attackerUnitView.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
+                simulateNuke(attacker, selectedTileView)
+            } else if (attackerUnitView.isPreparingAirSweep()) {
+                val selectedTileView = worldScreen.mapHolder.selectedTile
+                    ?: return hide() // no selected tile
+                simulateAirsweep(attacker, selectedTileView)
+            } else {
                 val defender = tryGetDefender() ?: return hide()
-                if (defender.isCity()) return hide()
-                simulateBattle(attacker, defender, attacker.getTile())
+                // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
+                val tileToAttackFromView = attackerUnitView.getAttackableEnemies(attackerUnitView.getUnit().movement.getDistanceToTiles())
+                    .firstOrNull { it.getTileToAttack() == defender.getTile() }?.getTileToAttackFrom()
+                    ?: attackerUnitView.getTile()
+                simulateBattle(attacker, defender, tileToAttackFromView)
             }
+        } else {
+            val attacker = attackerCityView!!.asCombatant()
+            val defender = tryGetDefender() ?: return hide()
+            if (defender.isCity()) return hide()
+            simulateBattle(attacker, defender, attacker.getTile())
         }
 
         isVisible = true
@@ -220,7 +216,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val attackerStrength = attacker.getFinalAttackingStrength(defender, tileToAttackFromView).roundToInt()
             val defenderStrength = defender.getFinalDefendingStrength(attacker, tileToAttackFromView).roundToInt()
             add(attackerStrength.tr() + attackIcon)
-            add(defenderStrength.tr() + attackIcon).row()
+            add(defenderStrength.tr() + defenceIcon).row()
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
@@ -293,7 +289,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             if (attacker.canAttack()) {
                 when (attacker) {
                     is MapUnitCombatantView -> {
-                        val unitView = attacker.getUnitView()
+                        val unitView = attacker.getUnitView().tryGetMapUnitView()!!
                         attackableTileView = unitView
                             .getAttackableEnemies(unitView.getUnit().movement.getDistanceToTiles())
                             .firstOrNull { it.getTileToAttack() == defender.getTile() }
@@ -330,7 +326,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         defender: CombatantView,
         attackableTileView: AttackableTileView
     ) {
-        val canStillAttack = if (attacker is MapUnitCombatantView) attacker.getUnitView().tryMovePreparingAttack(attackableTileView) else true
+        val canStillAttack = if (attacker is MapUnitCombatantView) attacker.getUnitView().tryGetMapUnitView()!!.tryMovePreparingAttack(attackableTileView) else true
         worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
@@ -344,7 +340,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             SoundPlayer.play(attacker.getAttackSound())
 
         val (damageToDefender, damageToAttacker) = when (attacker) {
-            is MapUnitCombatantView -> attacker.getUnitView().attackOrNuke(attackableTileView)
+            is MapUnitCombatantView -> attacker.getUnitView().tryGetMapUnitView()!!.attackOrNuke(attackableTileView)
             is CityCombatantView -> attacker.getCityView().tryBombard(attackableTileView)
         }
 
@@ -354,7 +350,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
 
     private fun simulateNuke(attacker: MapUnitCombatantView, targetTileView: TileView) {
-        val attackerView = attacker.getUnitView()
+        val attackerView = attacker.getUnitView().tryGetMapUnitView()!!
         clear()
 
         val attackerNameWrapper = Table()
@@ -417,7 +413,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun simulateAirsweep(attacker: MapUnitCombatantView, targetTileView: TileView) {
-        val attackerView = attacker.getUnitView()
+        val attackerView = attacker.getUnitView().tryGetMapUnitView()!!
         clear()
 
         val attackerNameWrapper = Table()

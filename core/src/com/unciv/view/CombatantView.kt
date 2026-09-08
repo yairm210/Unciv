@@ -17,7 +17,7 @@ import yairm210.purity.annotations.Readonly
  * [MapUnitCombatantView]/[CityCombatantView] subclasses when the underlying view carries enough
  * information to also dispatch battle actions (movement, nuke, air sweep, bombard).
  */
-sealed class CombatantView protected constructor(private val combatant: ICombatant, viewer: Civilization, spectatorMode: Boolean = false,
+sealed class CombatantView constructor(private val combatant: ICombatant, viewer: Civilization, spectatorMode: Boolean = false,
                     gameView: GameView) : GameBasedView<ICombatant>(combatant, viewer, spectatorMode, gameView) {
 
     @Readonly fun getCivInfo(): ForeignCivView = gameView.getForeignCivView(combatant.getCivInfo())
@@ -36,7 +36,6 @@ sealed class CombatantView protected constructor(private val combatant: ICombata
 
     @Readonly fun isRanged(): Boolean = combatant.isRanged()
     @Readonly fun isCity(): Boolean = combatant.isCity()
-    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = combatant is MapUnitCombatant && combatant.hasUnique(uniqueType)
 
     // Battle math - identical for unit and city combatants
     @Readonly fun getAttackModifiers(defender: CombatantView, tileToAttackFrom: TileView): Map<String, Int> =
@@ -49,17 +48,21 @@ sealed class CombatantView protected constructor(private val combatant: ICombata
     /** Defending strength including modifiers - as opposed to [getDefendingStrength], which is the base strength. */
     @Readonly fun getFinalDefendingStrength(attacker: CombatantView, tileToAttackFrom: TileView): Float =
         BattleDamage.getDefendingStrength(attacker.unwrap(), combatant, tileToAttackFrom.getTile())
+    /** @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
     @Readonly fun calculateDamageToDefender(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
         BattleDamage.calculateDamageToDefender(combatant, defender.unwrap(), tileToAttackFrom.getTile(), randomnessFactor)
+    /** @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
     @Readonly fun calculateDamageToAttacker(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
         BattleDamage.calculateDamageToAttacker(combatant, defender.unwrap(), tileToAttackFrom.getTile(), randomnessFactor)
 }
 
-/** A [CombatantView] of a unit - carries the full [MapUnitView], so battle actions (movement, attack, nuke, air sweep) can be dispatched directly. */
+/** A [CombatantView] of a unit - carries the [ForeignMapUnitView] it was built from. Use [ForeignMapUnitView.tryGetMapUnitView]
+ *  on [getUnitView] to dispatch battle actions (movement, attack, nuke, air sweep) - only possible for our own units. */
 class MapUnitCombatantView internal constructor(
-    private val unitView: MapUnitView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
+    private val unitView: ForeignMapUnitView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
 ) : CombatantView(MapUnitCombatant(unitView.getUnit()), viewer, spectatorMode, gameView) {
-    @Readonly fun getUnitView(): MapUnitView = unitView
+    @Readonly fun getUnitView(): ForeignMapUnitView = unitView
+    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unitView.hasUnique(uniqueType)
 
     /** (max, min) bonus damage dealt to [defender] from an additional [UniqueType.ExtraRangedAttack] - `(0, 0)` if not applicable. */
     @Readonly fun getExtraRangedAttackBonusDamage(defender: CombatantView, tileToAttackFrom: TileView): Pair<Int, Int> =
