@@ -302,6 +302,22 @@ enum class Countables(
                 .map { text.fillPlaceholders(it) }.toSet()
     },
 
+    KnownCivs("Known [civFilter] Civilizations", shortDocumentation = "The number of other civilizations the relevant Civilization has met") {
+        override val documentationStrings = listOf("Counts only civilizations that are still alive, and never the civilization itself")
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val civInfo = gameContext.civInfo ?: return null
+            return civInfo.gameInfo.civilizations.count {
+                it != civInfo && it.isAlive() && civInfo.knows(it) && it.matchesFilter(filter, gameContext)
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
+    },
+
     RemainingCivs("Remaining [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
