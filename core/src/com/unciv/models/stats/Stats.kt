@@ -192,7 +192,7 @@ open class Stats(
 
     /** Same as [toString], but without the leading [Stat] icon character and without the sign. */
     @Readonly
-    fun toStringWithoutIcons() = stringify(showSign = false, showIcon = false)
+    fun toStringWithoutIcons() = stringify(showIcon = false)
 
     /** Return a string of just +/- value and Stat symbol*/
     @Readonly

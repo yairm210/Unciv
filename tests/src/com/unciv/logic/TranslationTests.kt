@@ -393,8 +393,8 @@ class TranslationTests {
             "+1 ${Stat.Production.character}Production, -2 ${Stat.Food.character}Food",
             serializedStats.tr()
         )
-        Assert.assertEquals("1 Production", serializedStat.tr(hideIcons = true))
-        Assert.assertEquals("1 Production, -2 Food", serializedStats.tr(hideIcons = true))
+        Assert.assertEquals("+1 Production", serializedStat.tr(hideStats = true))
+        Assert.assertEquals("+1 Production, -2 Food", serializedStats.tr(hideStats = true))
 
         UncivGame.Current.translations["Production"] = TranslationEntry("Production").apply {
             this[LocaleCode.Bangla.name] = "উৎপাদন"
@@ -408,8 +408,8 @@ class TranslationTests {
             "+১ ${Stat.Production.character}উৎপাদন, -২ ${Stat.Food.character}খাদ্য",
             serializedStats.tr()
         )
-        Assert.assertEquals("১ উৎপাদন", serializedStat.tr(hideIcons = true))
-        Assert.assertEquals("১ উৎপাদন, -২ খাদ্য", serializedStats.tr(hideIcons = true))
+        Assert.assertEquals("+১ উৎপাদন", serializedStat.tr(hideStats = true))
+        Assert.assertEquals("+১ উৎপাদন, -২ খাদ্য", serializedStats.tr(hideStats = true))
     }
 
     @Test
