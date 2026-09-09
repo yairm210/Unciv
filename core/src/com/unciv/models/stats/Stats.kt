@@ -164,38 +164,39 @@ open class Stats(
         faith *= 7
     }
 
+    /** Common stringification logic shared by [toString], [toStringForNotifications],
+     * [toStringWithoutIcons] and [toStringOnlyIcons] - see those for semantics of the parameters. */
+    @Readonly
+    private fun stringify(showSign: Boolean = true, showName: Boolean = true, showIcon: Boolean = true, translate: Boolean = true): String {
+        return this.joinToString {
+            val sign = if (showSign && it.value > 0) "+" else ""
+            val amount = if (translate) it.value.toInt().tr() else it.value.toInt().toString()
+            val label = when {
+                !showName -> it.key.character.toString()
+                translate -> it.key.name.tr(hideStats = !showIcon)
+                else -> (if (showIcon) it.key.character.toString() else "") + it.key.name
+            }
+            "$sign$amount $label"
+        }
+    }
+
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
      *
      * Example output: `+1 Production, -1 Food`.
      */
     @Readonly
-    override fun toString(): String {
-        return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toInt().tr() + " " + it.key.toString().tr()
-        }
-    }
+    override fun toString() = stringify()
 
     /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
-    fun toStringForNotifications() = this.joinToString {
-        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
-    }
+    fun toStringForNotifications() = stringify(showIcon = false, translate = false)
 
-    // function that removes the icon from the Stats object since the circular icons all appear the same
-    // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
+    /** Same as [toString], but without the leading [Stat] icon character and without the sign. */
     @Readonly
-    fun toStringWithoutIcons(): String {
-        return this.joinToString {
-            it.value.toInt().tr() + " " + it.key.name.tr(hideStats = true)
-        }
-    }
+    fun toStringWithoutIcons() = stringify(showSign = false, showIcon = false)
 
     /** Return a string of just +/- value and Stat symbol*/
     @Readonly
-    fun toStringOnlyIcons(addPlusSign: Boolean = true): String {
-        return this.joinToString {
-            (if (addPlusSign && it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.character
-        }
-    }
+    fun toStringOnlyIcons(addPlusSign: Boolean = true) = stringify(showSign = addPlusSign, showName = false, translate = false)
 
     /** Represents one [key][Stat]/[value][Float] pair returned by the [iterator] */
     data class StatValuePair (val key: Stat, val value: Float)
