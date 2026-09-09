@@ -119,11 +119,15 @@ class AndroidFont : FontImplementation {
         canvas.drawText(symbolString, 0f, metric.leading + metric.ascent + 1f, renderPaint)
 
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
+        // Preserve white RGB in transparent pixels so filtering does not darken text
+        // edges. Keep the colours of visible pixels, including Android's colour emoji.
+        pixmap.blending = Pixmap.Blending.None
         val data = IntArray(width * height)
         bitmap.getPixels(data, 0, width, 0, 0, width, height) // faster than bitmap[x, y]
         for (x in 0 until width) {
             for (y in 0 until height) {
-                pixmap.drawPixel(x, y, Integer.rotateLeft(data[x + (y * width)], 8))
+                val rgba = Integer.rotateLeft(data[x + (y * width)], 8)
+                pixmap.drawPixel(x, y, if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba)
             }
         }
         bitmap.recycle()

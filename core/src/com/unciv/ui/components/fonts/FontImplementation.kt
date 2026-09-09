@@ -1,9 +1,13 @@
 package com.unciv.ui.components.fonts
 
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 
 interface FontImplementation {
+    /** Apply platform-specific sampling settings when a font atlas page is created. */
+    fun configureFontTexture(texture: Texture) {}
+
     fun setFontFamily(fontFamilyData: FontFamilyData, size: Int)
     fun getFontSize(): Int
 
