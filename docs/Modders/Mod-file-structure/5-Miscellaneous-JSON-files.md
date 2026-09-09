@@ -364,6 +364,7 @@ Each victory have the following structure:
 | victoryString          | String          | none     | Shown in the footer of the victory screen when you won the game with this victory          |
 | defeatString           | String          | none     | Shown in the footer of the victory screen when someone else won the game with this victory |
 | hiddenInVictoryScreen  | Boolean         | false    | Whether progress of this victory is hidden in the victory screen                           |
+| humanOnly              | Boolean         | false    | Only a human player can achieve this victory, and it is not offered as a new game option   |
 | requiredSpaceshipParts | List of Strings | empty    | What spaceship parts must be added to the capital for the corresponding milestone          |
 | Milestones             | List of Strings | Required | List of milestones that must be accomplished to win, [see below](#milestones)              |
 | civilopediaText        | List            | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)              |

@@ -119,6 +119,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         val victory = civInfo.gameInfo.ruleset.victories
                 .filter { it.key != Constants.neutralVictoryType && it.key in enabledVictories }
                 .map { it.value }
+                .filter { !it.humanOnly || civInfo.isHuman() }
                 .firstOrNull { getNextMilestone(it) == null }
         if (victory != null) return victory.name
         if (civInfo.hasUnique(UniqueType.TriggersVictory))

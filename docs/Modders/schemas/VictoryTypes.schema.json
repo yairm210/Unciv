@@ -34,6 +34,12 @@
         "description": "Whether progress of this victory is hidden in the victory screen",
         "default": false
       },
+      "humanOnly": {
+        "title": "Human Only",
+        "type": "boolean",
+        "description": "Only a human player can achieve this victory, and it is not offered as a new game option",
+        "default": false
+      },
       "requiredSpaceshipParts": {
         "title": "Requires Spaceship Parts",
         "type": "array",

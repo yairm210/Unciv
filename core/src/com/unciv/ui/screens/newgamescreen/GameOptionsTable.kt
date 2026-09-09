@@ -527,7 +527,7 @@ class GameOptionsTable(
 
         // Create a checkbox for each VictoryType existing
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
-        for ((i, victoryType) in ruleset.victories.values.withIndex()) {
+        for ((i, victoryType) in ruleset.selectableVictories().withIndex()) {
             val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType.name)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
                 if (it) {
@@ -569,7 +569,7 @@ class GameOptionsTable(
         // Remove victory types which are not in the new ruleset, then default to all if none remain
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
-            gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         // Mod choices will change the number of available civs
         val maxMajorCivs = numberOfMajorCivs()

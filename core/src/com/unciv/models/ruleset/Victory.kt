@@ -55,6 +55,9 @@ class Victory : INamed, ICivilopediaText {
     override var name = ""
     val victoryScreenHeader = "Do things to win!"
     val hiddenInVictoryScreen = false
+    /** Only a human player can achieve this victory, and it is not offered in the new game options -
+     *  for a ruleset that defines a goal for the player to reach, which an AI reaching it first would spoil. */
+    val humanOnly = false
     // Things to do to win
     // Needs to be ordered, as the milestones are supposed to be obtained in a specific order
     val milestones = ArrayList<String>()
