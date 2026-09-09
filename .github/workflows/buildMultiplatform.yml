@@ -27,7 +27,6 @@ jobs:
 
       - uses: actions/setup-java@v5
         with:
-          cache: 'gradle'
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
 
@@ -79,7 +78,6 @@ jobs:
 
       - uses: actions/setup-java@v5
         with:
-          cache: 'gradle'
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
 
