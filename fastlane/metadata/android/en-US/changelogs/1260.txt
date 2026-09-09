@@ -1,0 +1,49 @@
+
+
+When changing rulesets, clamp the number of city states available to match the new ruleset
+
+Fix stat translation tests
+
+Resolved  - Show stat icons in civilopedia when displaying stats
+
+ci: Remove docker build caches "to" from PRs, so only master branch creates the docker caches, but all other branches can use them
+
+ci: Remove double caches (setup java + setup gradle) to minimize cache storage
+
+Fix packed images mixing filtermag settings since settings were shared between different threads
+
+Resolved  - Hide unit table "summary" for civs with no units (e.g. Spectator)
+
+View implementation - Converted TileLayerMisc - see 
+
+View implementation - Converted TileLayerTerrain - see 
+
+View implementation - Converted UnitOverviewTab - see 
+
+View implementation - Removed MapUnitView.isExplored - see 
+
+View implementation - UnitIconGroup actions only visible for our own units - see 
+
+View implementation - UnitIconGroup - see 
+
+Don't gain XP from extra attacks
+
+Don't gain XP from extra attacks
+
+Simplify BattleTable update
+
+Unify "extra ranged attack" logic - extra attacks no longer trigger regular attack effects (XP, on-kill uniques, on-damage uniques) separately from existing triggers
+
+View implementation - CombatantView minimize API - see 
+
+View implementation - CombatantView has subclasses for easy specific access - see 
+
+View implementation - CombatantView, take 2 - see 
+
+View implementation - BattleTable, ICombatantView - see 
+
+Resolved  - Solved crash when city screen update happens parallel to screen change
+
+Prevent mod archives from overwriting saves and settings - By Angais
+
+Improve desktop font rendering with mipmaps and preserve glyph contrast - By finalpatch
