@@ -164,9 +164,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     fun update() {
         closeButton.isVisible = true
-        
+
         if (!presenter.shouldBeShown()) presenter = summaryPresenter
         presenter.update()
+
+        // With no units of our own (e.g. spectators, or a civ that lost all units), the summary
+        // (idle/skipping units) is meaningless - hide the whole table instead of showing an empty round artifact.
+        isVisible = presenter != summaryPresenter || worldScreen.selectedGameView.civView.getUnits().isNotEmpty()
 
         // more efficient to do this check once for both
         if (worldScreen.selectedGameView.civView.hasIdleUnits()) {
