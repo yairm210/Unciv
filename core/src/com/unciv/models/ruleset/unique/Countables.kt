@@ -307,9 +307,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val civInfo = gameContext.civInfo ?: return null
-            return civInfo.gameInfo.civilizations.count {
-                it != civInfo && it.isAlive() && civInfo.knows(it) && it.matchesFilter(filter, gameContext)
-            }
+            return civInfo.getKnownCivs().count { it.matchesFilter(filter, gameContext) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.CivFilter.getTranslatedErrorSeverity(parameterText, ruleset)
