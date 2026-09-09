@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -544,6 +545,12 @@ internal class BaseRulesetValidator(
                     && milestone.params[0] !in ruleset.buildings)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that references an unknown building ${milestone.params[0]}!",
+                        RulesetErrorSeverity.Error,
+                    )
+                if (milestone.type == MilestoneType.HaveCountable
+                    && (milestone.params[0].toIntOrNull() == null || Countables.getMatching(milestone.params[1], ruleset) == null))
+                    lines.add(
+                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" with an invalid amount or an unknown countable!",
                         RulesetErrorSeverity.Error,
                     )
             }
