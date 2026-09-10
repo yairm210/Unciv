@@ -121,6 +121,7 @@ class GameOptionsTable(
 
         val expander = ExpanderTab(
             "Advanced Settings",
+            icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
             startsOutOpened = gameParameters.enableRandomNationsPool,
             persistenceID = "GameOptionsTable.Advanced"
         ) {

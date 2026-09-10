@@ -16,6 +16,7 @@ import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.*
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
@@ -60,7 +61,8 @@ class MapParametersTable(
     private lateinit var mapSizesOptionsValues: HashSet<String>
     private lateinit var mapResourcesOptionsValues: HashSet<String>
 
-    private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
+    // Preview is shrunk to 65% of column width so Width/Height fields and warnings below stay visible without scrolling
+    private val maxMapSize = (((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f) * 0.65f
     private val mapTypeExample = Table()
     private var exampleMapJob: Job? = null
     @Volatile
@@ -409,7 +411,9 @@ class MapParametersTable(
     private fun addWrappedCheckBoxes() {
         val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
+            add(ExpanderTab("{Other Settings}",
+                icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
+                persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 it.addStrategicBalanceCheckbox()
                 it.addLegendaryStartCheckbox()
@@ -432,7 +436,9 @@ class MapParametersTable(
     }
 
     private fun addAdvancedSettings() {
-        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false, defaultPad = 0f) {
+        val expander = ExpanderTab("Advanced Settings",
+            icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
+            startsOutOpened = false, defaultPad = 0f) {
             addAdvancedControls(it)
         }
         add(expander).padTop(10f).colspan(2).growX().row()
