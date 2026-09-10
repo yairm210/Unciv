@@ -530,13 +530,12 @@ internal class BaseRulesetValidator(
     override fun addVictoryTypeErrors(lines: RulesetErrorList) {
         super.addVictoryTypeErrors(lines)
 
-        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!ruleset.units.contains(requiredUnit))
                     lines.add(
                         "Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
+                        RulesetErrorSeverity.Warning, sourceObject = victoryType
                     )
 
             for (milestone in victoryType.milestoneObjects) {
@@ -544,7 +543,7 @@ internal class BaseRulesetValidator(
                     && milestone.params[0] !in ruleset.buildings)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that references an unknown building ${milestone.params[0]}!",
-                        RulesetErrorSeverity.Error,
+                        RulesetErrorSeverity.Error, sourceObject = victoryType
                     )
             }
         }

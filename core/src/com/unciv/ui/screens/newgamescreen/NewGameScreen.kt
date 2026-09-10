@@ -70,7 +70,7 @@ class NewGameScreen(
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
-            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(

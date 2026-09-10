@@ -22,12 +22,13 @@ class VictoryScreenOurVictory(
         align(Align.top)
 
         val gameInfo = worldScreen.gameInfo
-        val victoriesToShow = gameInfo.getEnabledVictories()
+        val playerCiv = worldScreen.selectedGameView.civView.getCiv()
+        val victoriesToShow = gameInfo.getEnabledVictories(playerCiv)
 
         defaults().pad(10f)
         for ((victoryName, victory) in victoriesToShow) {
             header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(victory, worldScreen.selectedGameView.civView.getCiv())).top()
+            add(getColumn(victory, playerCiv)).top()
         }
 
         row()

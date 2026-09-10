@@ -25,12 +25,8 @@ class Event : RulesetObject() {
     fun getMatchingChoices(gameContext: GameContext): Collection<EventChoice>? {
         if (!isAvailable(gameContext)) return null
         if (choices.isEmpty()) return emptyList()
-        return choices.filter { it.matchesConditions(gameContext) }.ifEmpty { null }
+        return choices.filter { it.isAvailable(gameContext) }.ifEmpty { null }
     }
-
-    fun isAvailable(gameContext: GameContext) =
-        getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).none { !it.conditionalsApply(gameContext) } &&
-        getMatchingUniques(UniqueType.Unavailable, gameContext).none()
 }
 
 class EventChoice : ICivilopediaText, RulesetObject() {
@@ -41,14 +37,6 @@ class EventChoice : ICivilopediaText, RulesetObject() {
     /** Keyboard support - not user-rebindable, mod control only. Will be [parsed][KeyCharAndCode.parse], so Gdx key names will work. */
     val keyShortcut = ""
     
-
-    fun matchesConditions(gameContext: GameContext): Boolean {
-        if (hasUnique(UniqueType.Unavailable, gameContext)) return false
-        if (getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                .any { !it.conditionalsApply(gameContext) })
-            return false
-        return true
-    }
 
     fun triggerChoice(civ: Civilization, unit: MapUnit? = null): Boolean {
         var success = false

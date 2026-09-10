@@ -22,12 +22,13 @@ class VictoryScreenGlobalVictory(
 
         val gameInfo = worldScreen.gameInfo
         val majorCivs = gameInfo.civilizations.asSequence().filter { it.isMajorCiv() }
-        val victoriesToShow = gameInfo.getEnabledVictories()
+        val playerCiv = worldScreen.selectedGameView.civView.getCiv()
+        val victoriesToShow = gameInfo.getEnabledVictories(playerCiv)
 
         defaults().pad(10f)
         for ((victoryName, victory) in victoriesToShow) {
             header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(majorCivs, victory, worldScreen.selectedGameView.civView.getCiv()))
+            add(getColumn(majorCivs, victory, playerCiv))
         }
         header.addSeparator(Color.GRAY)
     }
@@ -38,7 +39,7 @@ class VictoryScreenGlobalVictory(
         playerCiv: Civilization
     ) = Table().apply {
         defaults().pad(10f)
-        val sortedCivs = majorCivs.sortedWith(
+        val sortedCivs = majorCivs.filter { victory.isAvailable(it.state) }.sortedWith(
             compareBy<Civilization> { it.isDefeated() }
             .thenBy { it.victoryManager.amountMilestonesCompleted(victory) }
         )

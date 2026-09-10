@@ -8,13 +8,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
@@ -33,7 +33,7 @@ enum class MilestoneType(val text: String) {
     MoreCountableThanEachPlayer("Have more [countable] than each player's [countable]"),
 }
 
-class Victory : INamed, ICivilopediaText {
+class Victory : RulesetObject() {
 
     enum class CompletionStatus {
         Completed,
@@ -52,7 +52,6 @@ class Victory : INamed, ICivilopediaText {
         Score,
     }
 
-    override var name = ""
     val victoryScreenHeader = "Do things to win!"
     val hiddenInVictoryScreen = false
     // Things to do to win
@@ -73,15 +72,19 @@ class Victory : INamed, ICivilopediaText {
 
     @Readonly fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
 
-    override var civilopediaText = listOf<FormattedLine>()
+    override fun getUniqueTarget() = UniqueTarget.Victory
+    override fun makeLink() = "Victory/$name"
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        return listOf(
+        @LocalState val lines = arrayListOf(
             FormattedLine(victoryScreenHeader),
             FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
             FormattedLine(),
-        ) + milestoneObjects.map { it.getFormattedLine() }
+        )
+        milestoneObjects.mapTo(lines) { it.getFormattedLine() }
+        uniquesToCivilopediaTextLines(lines)
+        return lines
     }
-    override fun makeLink() = "Victory/$name"
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {

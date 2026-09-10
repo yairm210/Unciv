@@ -455,11 +455,13 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getPreferredVictoryTypes(): List<String> {
+        // A victory this civilization may not achieve is not worth working towards
         val victoryTypes = gameInfo.gameParameters.victoryTypes
+            .filter { gameInfo.ruleset.victories[it]?.isAvailable(state) != false }
         if (victoryTypes.size == 1)
             return listOf(victoryTypes.first()) // That is the most relevant one
         val victoryType: List<String> = listOf(nation.preferredVictoryType, getPersonality().preferredVictoryType)
-            .filter { it in gameInfo.gameParameters.victoryTypes && it in gameInfo.ruleset.victories }
+            .filter { it in victoryTypes && it in gameInfo.ruleset.victories }
         return victoryType.ifEmpty { listOf(Constants.neutralVictoryType) }
 
     }
