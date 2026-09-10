@@ -17,6 +17,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val attacksThisTurn: Int get() = unit.attacksThisTurn
 
     // Navigation
+    @Deprecated("Scheduled for removal - views should unwrap() instead")
     @Readonly fun getUnit(): MapUnit = unit
     @Readonly open fun civ(): ForeignCivView = gameView.getForeignCivView(unit.civ)
     /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */

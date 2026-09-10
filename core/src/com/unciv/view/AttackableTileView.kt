@@ -19,7 +19,4 @@ class AttackableTileView(private val attackableTile: AttackableTile, viewer: Civ
         is CityCombatant -> gameView.getForeignCityView(combatant.city).asCombatant()
         else -> null
     }
-
-    // TEMP - should be removed once migration ends
-    @Readonly fun getAttackableTile(): AttackableTile = attackableTile
 }

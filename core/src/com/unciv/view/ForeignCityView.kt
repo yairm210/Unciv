@@ -83,5 +83,5 @@ open class ForeignCityView(internal open val city: City,
 
     /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
     fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
-        Battle.attackOrNuke(CityCombatant(city), attackableTileView.getAttackableTile())
+        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 }
