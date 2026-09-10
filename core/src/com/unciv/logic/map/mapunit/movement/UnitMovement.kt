@@ -810,7 +810,8 @@ class UnitMovement(val unit: MapUnit) {
         // displays any other detected-but-invisible unit. This is what makes the discovery
         // actually show up on the map, not just in the notification text below.
         unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles + tile
-
+        clearPathfindingCache()
+        unit.getOtherEscortUnit()?.movement?.clearPathfindingCache()
         unit.civ.addNotification(
             "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}]!",
             tile.position,
