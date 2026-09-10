@@ -64,6 +64,11 @@ class NewGameScreen(
     init {
         val isPortrait = isNarrowerThan4to3()
 
+        // The mods loaded here may come from the last-started game (see GameSetupInfo.fromSettings) -
+        // if that combination is now broken (e.g. a mod was updated/removed), silently fall back to
+        // defaults instead of opening straight into an unusable, error-flagged mod selection.
+        if (defaultGameSetupInfo == null) resetIfInitialModsAreBroken()
+
         tryUpdateRuleset(updateUI = false)  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
@@ -398,6 +403,18 @@ class NewGameScreen(
                     ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
             }
         }
+    }
+
+    /** If the mod/baseRuleset combination inherited from [gameSetupInfo] is broken (Error severity),
+     *  reset it to the default base ruleset with no mods, so we never build the UI around an
+     *  unusable selection. */
+    private fun resetIfInitialModsAreBroken() {
+        val gameParameters = gameSetupInfo.gameParameters
+        if (gameParameters.mods.isEmpty()) return
+        val (_, errors) = RulesetCache.checkCombinedModLinks(gameParameters.mods, gameParameters.baseRuleset)
+        if (!errors.isError()) return
+        gameParameters.mods.clear()
+        gameParameters.baseRuleset = BaseRuleset.Civ_V_GnK.fullName
     }
 
     /** Updates our local [ruleset] from [gameSetupInfo], guarding against exceptions.
