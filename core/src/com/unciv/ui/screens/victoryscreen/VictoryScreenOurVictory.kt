@@ -21,18 +21,17 @@ class VictoryScreenOurVictory(
     init {
         align(Align.top)
 
-        val gameInfo = worldScreen.gameInfo
-        val playerCiv = worldScreen.selectedGameView.civView.getCiv()
-        val victoriesToShow = gameInfo.getEnabledVictories(playerCiv)
+        val civView = worldScreen.selectedGameView.civView
+        val victoriesToShow = civView.getVictoriesShownInVictoryScreen()
 
         defaults().pad(10f)
-        for ((victoryName, victory) in victoriesToShow) {
-            header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(victory, playerCiv)).top()
+        for (victory in victoriesToShow) {
+            header.add("[${victory.name}] Victory".toLabel()).pad(10f)
+            add(getColumn(victory, civView.getCiv())).top()
         }
 
         row()
-        for (victory in victoriesToShow.values) {
+        for (victory in victoriesToShow) {
             val victoryScreenHeaderLabel = victory.victoryScreenHeader.toLabel()
             victoryScreenHeaderLabel.wrap = true
             add(victoryScreenHeaderLabel).width(stageWidth / 5)

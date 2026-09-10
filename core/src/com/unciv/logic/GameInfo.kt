@@ -537,12 +537,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         )
     }
 
-    /** @param civ if given, victories this civilization may not achieve are left out - see [IHasUniques.isAvailable] */
-    @Readonly fun getEnabledVictories(civ: Civilization? = null) = ruleset.victories.filter {
-        !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key)
-            && (civ == null || it.value.isAvailable(civ.state))
-    }
-
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
         for (civInfo in civilizations) {

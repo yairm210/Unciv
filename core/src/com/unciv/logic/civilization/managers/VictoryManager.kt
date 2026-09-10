@@ -112,15 +112,29 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return DiplomaticVictoryVoteBreakdown(results, lines.joinToString("\n") { "{$it}" })
     }
 
+    /** The victories [civInfo] can achieve in this game: enabled in the game parameters, and open to
+     *  this civilization according to the victory's own uniques - see [Victory.isAvailable].
+     *
+     *  This is the single source that filters the game's victories for a civilization. Nothing else
+     *  should iterate the ruleset's victories or the game parameters on a civilization's behalf.
+     */
+    @Readonly
+    fun getAvailableVictories(): List<Victory> = civInfo.gameInfo.ruleset.victories.values.filter {
+        it.name != Constants.neutralVictoryType
+            && it.name in civInfo.gameInfo.gameParameters.victoryTypes
+            && it.isAvailable(civInfo.state)
+    }
+
+    /** [getAvailableVictories] without the ones the ruleset keeps out of the victory screen.
+     *  A [Victory.hiddenInVictoryScreen] victory can still be achieved - it is only not displayed. */
+    @Readonly
+    fun getVictoriesShownInVictoryScreen(): List<Victory> =
+        getAvailableVictories().filter { !it.hiddenInVictoryScreen }
+
     @Readonly
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        val enabledVictories = civInfo.gameInfo.gameParameters.victoryTypes
-        val victory = civInfo.gameInfo.ruleset.victories
-                .filter { it.key != Constants.neutralVictoryType && it.key in enabledVictories }
-                .map { it.value }
-                .filter { it.isAvailable(civInfo.state) }
-                .firstOrNull { getNextMilestone(it) == null }
+        val victory = getAvailableVictories().firstOrNull { getNextMilestone(it) == null }
         if (victory != null) return victory.name
         if (civInfo.hasUnique(UniqueType.TriggersVictory))
             return Constants.neutralVictoryType
