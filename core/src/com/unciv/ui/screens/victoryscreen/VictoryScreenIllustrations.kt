@@ -261,6 +261,10 @@ class VictoryScreenIllustrations(
                     total += game.gameParameters.maxTurns
                     game.turns.coerceAtMost(game.gameParameters.maxTurns)
                 }
+                MilestoneType.HaveCountable -> {
+                    total += milestone.getCountableToDo()
+                    milestone.getCountableDone(civ).coerceAtMost(milestone.getCountableToDo())
+                }
                 else -> {
                     total += 2
                     if (completed) 2 else 0
