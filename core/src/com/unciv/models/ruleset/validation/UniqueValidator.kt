@@ -128,7 +128,20 @@ class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Bo
             rulesetErrors += getExpressionParseErrors(complianceError, uniqueContainer, unique)
         }
 
-        for (modifier in unique.modifiers) {
+        if (unique.type == UniqueType.Comment) {
+            // A Comment is display-only text, so a `<...>` inside it is not a modifier at all.
+            // getModifiers() parses it as one anyway, and removeConditionals() then strips it
+            // from the text the user actually sees. Report that once, with both likely causes,
+            // instead of emitting a "not an acceptable modifier" line per parsed pseudo-modifier.
+            if (unique.modifiers.isNotEmpty())
+                rulesetErrors.add(
+                    "$prefix is a Comment containing \"<\", which is parsed as a modifier and" +
+                        " removed from the displayed text." +
+                        " This may be a conditional that was accidentally moved into the comment;" +
+                        " to reuse a translation inside a comment, use nested [] instead.",
+                    RulesetErrorSeverity.Warning, uniqueContainer, unique
+                )
+        } else for (modifier in unique.modifiers) {
             rulesetErrors += getModifierErrors(modifier, prefix, unique, uniqueContainer, severityToReport)
         }
 
@@ -272,7 +285,7 @@ class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Bo
         if (modifier.type.targetTypes.none { it.isAcceptableModifierFor(unique) }) { // No target is a modifier for whatever
             rulesetErrors.add(
                 "$prefix contains the modifier \"${modifier.text}\"," +
-                        " which is not an acceptable modifier for this unique.",
+                    " which is not an acceptable modifier for this unique.",
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
         }
