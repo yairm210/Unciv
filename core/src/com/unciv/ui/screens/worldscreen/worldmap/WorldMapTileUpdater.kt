@@ -131,12 +131,12 @@ object WorldMapTileUpdater {
                     group.layerMisc.overlayTerrain(Color.RED)
                 } else if (unitView.civ().hasExplored(tileView) && tileView.aerialDistanceTo(unitView.getTile()) <= unitView.getRange()*2) {
                     // The tile is within move range
-                    group.layerMisc.overlayTerrain(if (unitView.canMoveTo(tileView)) Color.WHITE else Color.BLUE)
+                    group.layerMisc.overlayTerrain(if (unitView.thinksItCanMoveTo(tileView)) Color.WHITE else Color.BLUE)
                 }
             }
 
             // Highlight tile unit can move to
-            if (unitView.canMoveTo(tileView) ||
+            if (unitView.thinksItCanMoveTo(tileView) ||
                 unitView.isUnknownTileWeShouldAssumeToBePassable(tileView) && !isAirUnit
             ) {
                 if (UncivGame.Current.settings.useCirclesToIndicateMovableTiles) {

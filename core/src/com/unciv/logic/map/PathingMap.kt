@@ -426,7 +426,12 @@ class PathingMap(
                 unit,
                 name,
                 getCurrentCacheKey,
-                { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
+                // canPassThrough (not a strict null check on cannotPassThroughReason): a tile
+                // whose only problem is an undetected unit of another civ must stay passable here
+                // too, or multi-turn routes would silently detour around such tiles instead of
+                // letting the player order a move onto/through them - the same permissiveness
+                // getMovementToTilesAtPosition's BFS already gives via canPassThrough.
+                { unit.movement.canPassThrough(it, includeEscortUnit) },
                 { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
                 { from, to -> fpmFromMovement(MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, from, to, considerZoneOfControl, includeEscortUnit)) },

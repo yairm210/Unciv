@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -25,6 +26,8 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
+
+    private val discoveredInvisibleUnitTiles = HashMap<MapUnit, Tile>()
 
     @Transient
     var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
@@ -166,7 +169,15 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
+        discoveredInvisibleUnitTiles.entries.removeAll { (unit, lastKnownTile) ->
+            unit.isDestroyed || unit.currentTile != lastKnownTile || unit !in lastKnownTile.getUnits()
+        }
+        newViewableInvisibleTiles.addAll(discoveredInvisibleUnitTiles.values)
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
+    }
+
+    fun addDiscoveredInvisibleUnitTile(unit: MapUnit, tile: Tile) {
+        discoveredInvisibleUnitTiles[unit] = tile
     }
 
     var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()

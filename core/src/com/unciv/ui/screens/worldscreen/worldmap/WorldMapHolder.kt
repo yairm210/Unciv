@@ -186,7 +186,7 @@ class WorldMapHolder(
                 true
             } else {
                 previousSelectedUnitViews.any {
-                    it.canMoveTo(tileView) ||
+                    it.thinksItCanMoveTo(tileView) ||
                         (it.isUnknownTileWeShouldAssumeToBePassable(tileView) && !it.isAirUnit())
                 }
             }
