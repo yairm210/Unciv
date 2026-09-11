@@ -345,7 +345,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 val gameInfo = GameSetupInfo.fromSettings("Chieftain")
                 if (gameInfo.gameParameters.victoryTypes.isEmpty()) {
                     val ruleSet = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
-                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.selectableVictories().map { it.name })
                 }
                 newGame = GameStarter.startNewGame(gameInfo)
 

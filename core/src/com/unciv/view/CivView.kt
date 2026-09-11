@@ -4,10 +4,12 @@ import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -87,7 +89,11 @@ class CivView(civ: Civilization,
     @Readonly fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtEnhancing()
     @Readonly fun freeBeliefsAsEnums(): Counter<BeliefType> = civ.religionManager.freeBeliefsAsEnums()
 
-    // Diplomatic victory
+    // Victory
+    /** The victories this civilization can achieve - see [VictoryManager.getAvailableVictories] */
+    @Readonly fun getAvailableVictories(): List<Victory> = civ.victoryManager.getAvailableVictories()
+    /** [getAvailableVictories] minus the ones the ruleset hides from the victory screen */
+    @Readonly fun getVictoriesShownInVictoryScreen(): List<Victory> = civ.victoryManager.getVictoriesShownInVictoryScreen()
     @Readonly fun mayVoteForDiplomaticVictory(): Boolean = civ.mayVoteForDiplomaticVictory()
 
     // Units

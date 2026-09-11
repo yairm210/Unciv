@@ -72,6 +72,10 @@
         },
         "description": "List of milestones that must be accomplished to win. See https://yairm210.github.io/Unciv/Modders/Mod-file-structure/5-Miscellaneous-JSON-files/#milestones"
       },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "description": "Unique effects of this victory - notably \"Only available <...>\" / \"Unavailable <...>\" to restrict who can achieve it, and \"Will not be chosen for new games\" to keep it out of the new game options."
+      },
       "civilopediaText": {
         "$ref": "refs/CivilopediaText.schema.json"
       }

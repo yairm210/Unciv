@@ -137,6 +137,12 @@ interface IHasUniques : INamed {
         return weight
     }
 
+    /** Do this object's [UniqueType.OnlyAvailable] and [UniqueType.Unavailable] uniques all pass for [gameContext]? */
+    @Readonly
+    fun isAvailable(gameContext: GameContext) =
+        getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).none { !it.conditionalsApply(gameContext) } &&
+        getMatchingUniques(UniqueType.Unavailable, gameContext).none()
+
     /**
      *  Is this ruleset object unavailable as determined by settings chosen at game start?
      *

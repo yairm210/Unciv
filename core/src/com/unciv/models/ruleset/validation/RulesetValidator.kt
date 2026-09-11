@@ -521,13 +521,14 @@ open class RulesetValidator protected constructor(
     }
 
     protected open fun addVictoryTypeErrors(lines: RulesetErrorList) {
-        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
+            uniqueValidator.checkUniques(victoryType, lines, reportRulesetSpecificErrors)
+
             for (milestone in victoryType.milestoneObjects) {
                 if (milestone.type == null)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
-                        RulesetErrorSeverity.Error, sourceObject = null
+                        RulesetErrorSeverity.Error, sourceObject = victoryType
                     )
             }
 
@@ -535,7 +536,7 @@ open class RulesetValidator protected constructor(
                 if (otherVictory.name > victoryType.name && otherVictory.milestones == victoryType.milestones)
                     lines.add(
                         "Victory types ${victoryType.name} and ${otherVictory.name} have the same requirements!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
+                        RulesetErrorSeverity.Warning, sourceObject = victoryType
                     )
         }
     }

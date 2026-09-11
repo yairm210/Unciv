@@ -364,7 +364,8 @@ object NextTurnAutomation {
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
         // No need to build spaceship parts just yet
-        if (civInfo.gameInfo.ruleset.victories.none { civInfo.victoryManager.getNextMilestone(it.value)?.type == MilestoneType.AddedSSPartsInCapital } )
+        if (civInfo.victoryManager.getAvailableVictories()
+                .none { civInfo.victoryManager.getNextMilestone(it)?.type == MilestoneType.AddedSSPartsInCapital })
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {

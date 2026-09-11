@@ -537,8 +537,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         )
     }
 
-    @Readonly fun getEnabledVictories() = ruleset.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
-
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
         for (civInfo in civilizations) {
