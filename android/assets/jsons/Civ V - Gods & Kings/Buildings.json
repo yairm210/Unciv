@@ -49,7 +49,10 @@
 		"cost": 40,
 		"maintenance": 1,
 		"requiredTech": "Pottery",
-		"uniques": ["Only available <when religion is enabled>"]
+		"uniques": ["Only available <when religion is enabled>",
+            "[+100]% weight to this choice for AI decisions <for [Byzantium] Civilizations>",
+            "[+100]% weight to this choice for AI decisions <for [Egypt] Civilizations>",
+            "[+100]% weight to this choice for AI decisions <for [Songhai] Civilizations>"]
 	},
 	{
 		"name": "Pyramid",
