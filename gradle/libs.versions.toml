@@ -26,6 +26,8 @@ ktxCore = "1.16.0"
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
 
+androidxCollection = "1.4.5"
+
 
 [libraries]
 #note - thanks to the subproject problem Studio won't properly recognize what is used or not:
@@ -69,6 +71,8 @@ clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt
 
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 jna-platform = { group = "net.java.dev.jna", name = "jna-platform", version.ref = "jna" }
+
+androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "androidxCollection" }
 
 android-ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "ktxCore" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
