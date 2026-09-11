@@ -20,7 +20,8 @@ open class TileGroup(
     var tileView: TileView = tileView
         private set
 
-    val tile: Tile get() = tileView.getTile()
+    @Deprecated("Use tileView instead")
+    private val tile: Tile get() = tileView.getTile()
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
