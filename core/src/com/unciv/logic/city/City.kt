@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -107,7 +108,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     /** Tiles that the population in them won't be reassigned */
     var lockedTiles = HashSet<HexCoord>()
+
     var manualSpecialists = false
+    fun resetSpecialistsControl() {
+        // if we skip a player's turn in multiplayer, let's not apply our settings
+        val isOfflineOrOurTurn = !civ.gameInfo.gameParameters.isOnlineMultiplayer
+            || civ.playerId == UncivGame.Current.settings.multiplayer.getUserId()
+        manualSpecialists =
+            if (civ.isHuman() && isOfflineOrOurTurn) !UncivGame.Current.settings.autoAssignSpecialistsInNewCities
+            else false // default
+    }
+    
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
