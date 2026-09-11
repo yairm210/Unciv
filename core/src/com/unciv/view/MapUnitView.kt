@@ -107,10 +107,10 @@ class MapUnitView internal constructor(
     }
     /** Moves [unit] to [attackableTileView], handles siege setup, and returns `true` if an attack is still possible. */
     fun tryMovePreparingAttack(attackableTileView: AttackableTileView, tryHealPillage: Boolean = false): Boolean =
-        Battle.movePreparingAttack(MapUnitCombatant(unit), attackableTileView.getAttackableTile(), tryHealPillage)
+        Battle.movePreparingAttack(MapUnitCombatant(unit), attackableTileView.unwrap(), tryHealPillage)
     /** Meant to be called only after all prerequisite checks (e.g. [tryMovePreparingAttack]) have been done. */
     fun attackOrNuke(attackableTileView: AttackableTileView): Battle.DamageDealt =
-        Battle.attackOrNuke(MapUnitCombatant(unit), attackableTileView.getAttackableTile())
+        Battle.attackOrNuke(MapUnitCombatant(unit), attackableTileView.unwrap())
     @Readonly fun mayUseNuke(targetTileView: TileView): Boolean = Nuke.mayUseNuke(MapUnitCombatant(unit), targetTileView.unwrap())
     fun tryNuke(targetTileView: TileView): Boolean {
         Nuke.NUKE(MapUnitCombatant(unit), targetTileView.unwrap())
