@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueTriggerActivationLimiter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import kotlin.math.roundToInt
@@ -21,8 +22,9 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn():Unit = timeThis("CityTurnManager.startTurn") {
+        UniqueTriggerActivationLimiter.clear() // Because we're manually adding to the log, as the free building loop doesn't happen inside trigger execution
         city.clearCaches()
-        
+
         for (resource in city.getResourcesGeneratedByCity()) {
             if (resource.resource.isStockpiled && resource.resource.isCityWide)
                 city.gainStockpiledResource(resource.resource, resource.amount)
@@ -58,8 +60,9 @@ class CityTurnManager(val city: City) {
         if (city.demandedResource == "" && !city.hasFlag(CityFlags.ResourceDemand)) {
             setWltkResourceDemandCooldown(true)
         }
+        UniqueTriggerActivationLimiter.clear()
     }
-    
+
     private fun chooseCityFocus(): CityFocus {
         // Small cities focus on growing, following Vox Populi.
         if (city.population.population <= 3) return CityFocus.NoFocus
