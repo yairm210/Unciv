@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.Positive
 import com.unciv.logic.map.mapgenerator.resourceplacement.LuxuryResourcePlacementLogic
 import com.unciv.logic.map.mapgenerator.resourceplacement.StrategicBonusResourcePlacementLogic
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -434,12 +435,81 @@ class MapRegions (val ruleset: Ruleset) {
     private fun assignCivToRegion(civ: Civilization, region: Region) {
         val tile = region.tileMap[region.startPosition!!]
         region.tileMap.addStartingLocation(civ.civID, tile)
+        patchRegionForStartBias(civ, region, tile)
 
         // Place impacts to keep city states etc at appropriate distance
         tileData.placeImpact(ImpactType.MinorCiv,tile, 6)
         tileData.placeImpact(ImpactType.Luxury,  tile, 3)
         tileData.placeImpact(ImpactType.Strategic,tile, 0)
         tileData.placeImpact(ImpactType.Bonus,   tile, 3)
+    }
+
+    /**
+     * Guarantees [civ]'s start bias is actually satisfiable by force-converting tiles across its
+     * whole assigned [region] - not just the start tile's immediate neighborhood - up to the same
+     * percentage the ruleset itself uses to classify a region as that terrain's type (falling back
+     * to 30% if the terrain doesn't define one). Accepts a locally mismatched region in exchange for
+     * the bias actually being followed. Tiles closest to the start position are converted first, so
+     * the immediate-adjacency bias check (see GameStarter.isStartBiasSatisfiedBy) still passes.
+     */
+    private fun patchRegionForStartBias(civ: Civilization, region: Region, startTile: Tile) {
+        val startBiases = ruleset.nations[civ.civName]!!.getStartBias(ruleset, civ.getGameContextForStartBias())
+        for (bias in startBiases) {
+            if (bias in region.tileMap.naturalWonders) continue // can't force a specific natural wonder into existence here
+            if (bias.equalsPlaceholderText("Avoid []")) {
+                patchRegionToAvoid(region, bias.getPlaceholderParameters()[0])
+                continue
+            }
+            patchRegionForPositiveBias(region, startTile, bias)
+        }
+    }
+
+    private fun patchRegionForPositiveBias(region: Region, startTile: Tile, bias: String) {
+        val targetTerrain = ruleset.terrains[bias] ?: return
+        if (targetTerrain.isCoast || targetTerrain.type == TerrainType.Water) return // don't carve water into a landmass region
+
+        val requiredPercent = targetTerrain.getMatchingUniques(UniqueType.RegionRequirePercentSingleType)
+            .firstOrNull()?.params?.get(0)?.toIntOrNull() ?: 30
+        val target = (requiredPercent * region.tiles.size) / 100
+        val alreadyMatching = region.getTerrainAmount(bias)
+        if (alreadyMatching >= target) return
+        val toConvert = target - alreadyMatching
+
+        val candidates = region.tiles
+            .filter { it != startTile && it.isLand && !it.isImpassible() && !it.matchesTerrainFilter(bias, null) }
+            .sortedWith(compareBy({ startTile.aerialDistanceTo(it) }, { it.position.x }, { it.position.y }))
+
+        for (candidate in candidates.take(toConvert)) {
+            val oldBaseTerrain = candidate.baseTerrain
+            if (targetTerrain.type == TerrainType.TerrainFeature) {
+                val compatibleBaseTerrainName = targetTerrain.occursOn.firstOrNull { ruleset.terrains.containsKey(it) } ?: continue
+                candidate.setBaseTerrain(ruleset.terrains[compatibleBaseTerrainName]!!)
+                candidate.addTerrainFeature(bias)
+                region.terrainCounts[compatibleBaseTerrainName] = (region.terrainCounts[compatibleBaseTerrainName] ?: 0) + 1
+            } else {
+                candidate.setBaseTerrain(targetTerrain)
+            }
+            TileNormalizer.normalizeToRuleset(candidate, ruleset)
+            region.terrainCounts[oldBaseTerrain] = ((region.terrainCounts[oldBaseTerrain] ?: 1) - 1).coerceAtLeast(0)
+            region.terrainCounts[bias] = (region.terrainCounts[bias] ?: 0) + 1
+        }
+    }
+
+    private fun patchRegionToAvoid(region: Region, terrainToAvoid: String) {
+        val avoidedTerrain = ruleset.terrains[terrainToAvoid] ?: return
+        val offenders = region.tiles.filter { it.matchesTerrainFilter(terrainToAvoid, null) }
+        for (offender in offenders) {
+            if (avoidedTerrain.type == TerrainType.TerrainFeature) {
+                offender.removeTerrainFeature(terrainToAvoid)
+            } else {
+                val replacement = ruleset.terrains.values.firstOrNull {
+                    it.type == TerrainType.Land && !it.impassable && it.name != terrainToAvoid
+                } ?: continue
+                offender.setBaseTerrain(replacement)
+            }
+            TileNormalizer.normalizeToRuleset(offender, ruleset)
+        }
+        region.terrainCounts[terrainToAvoid] = 0
     }
 
 
