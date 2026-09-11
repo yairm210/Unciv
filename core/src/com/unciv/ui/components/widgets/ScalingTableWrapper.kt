@@ -1,6 +1,7 @@
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
@@ -18,6 +19,8 @@ open class ScalingTableWrapper(
 
     init {
         isTransform = false
+        innerTable.isTransform = false
+        innerTable.touchable = Touchable.childrenOnly
         super.addActor(innerTable)
     }
 
@@ -58,10 +61,22 @@ open class ScalingTableWrapper(
         innerTable.isTransform = false
     }
 
-    fun scaleTo(maxWidth: Float) {
-        innerTable.pack()
+    /** Scale to fit width in [maxWidth], but bounded between [minScale] and 1:1 (no enlarging) */
+    fun scaleToWidth(maxWidth: Float) {
         val scale = (maxWidth / innerTable.prefWidth).coerceIn(minScale, 1f)
         if (scale >= 1f) return
+        setScale(scale)
+    }
+
+    /** Scale to fit height in [maxHeight], but bounded between [minScale] and 1:1 (no enlarging) */
+    fun scaleToHeight(maxHeight: Float) {
+        val scale = (maxHeight / innerTable.prefHeight).coerceIn(minScale, 1f)
+        if (scale >= 1f) return
+        setScale(scale)
+    }
+
+    override fun setScale(scale: Float) {
+        innerTable.pack()
         innerTable.isTransform = true
         innerTable.setScale(scale)
         if (!innerTable.needsLayout()) {
