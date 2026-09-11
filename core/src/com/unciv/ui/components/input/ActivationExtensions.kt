@@ -112,6 +112,9 @@ fun Actor.clearActivationActions(type: ActivationTypes, noEquivalence: Boolean =
     ActorAttachments.get(this).clearActivationActions(type, noEquivalence)
 }
 
+fun Actor.hasActivationHandler(type: ActivationTypes, noEquivalence: Boolean = true) =
+    ActorAttachments.get(this).hasActivationAction(type, noEquivalence)
+
 /**
  * Install shortcut dispatcher for this stage. It activates all actions associated with the
  * pressed key in [additionalShortcuts] (if specified) and **all** actors in the stage - recursively.
