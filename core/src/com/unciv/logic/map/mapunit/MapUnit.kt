@@ -1084,7 +1084,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             goldGained += unique.params[0].toInt()
             val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
                 ?: continue
-            recruitedUnit.health = 50
+            recruitedUnit.health = 100
             recruitedUnit.currentMovement = 0f
             civ.addNotification(
                 "An enemy [${recruitedUnit.name}] has joined us!",
