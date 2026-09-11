@@ -4,6 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapgenerator.RiverGenerator
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -43,6 +44,7 @@ internal enum class ConsoleParameterType(
     diplomacyFlag( { DiplomacyFlags.entries.map { it.name } }),
     diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
     newCivName({ ruleset.nations.keys.filterNot { civilizations.any { civ -> civ.nation.name == it } } }),
+    unitAction({ UnitActionType.entries.filter { it != UnitActionType.TriggerUnique }.map { it.name } }),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()
