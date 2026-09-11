@@ -88,6 +88,7 @@ enum class UniqueType(
 
     CityStateMilitaryUnits("Provides military units every ≈[positiveAmount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
+    CityStateReligiousMeetingGift("Provides an additional religious gift of [stats] to major civilizations that meet them", UniqueTarget.CityState),
 
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [positiveAmount] XP", UniqueTarget.Global),
