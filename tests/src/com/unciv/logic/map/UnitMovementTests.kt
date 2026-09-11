@@ -143,6 +143,23 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun germanEncampmentRecruitmentUsesFullHealth() {
+        val germany = testGame.addCiv(
+            "When conquering an encampment, earn [25] Gold and recruit a Barbarian unit <with [100]% chance>"
+        )
+        testGame.addBarbarianCiv()
+        testGame.gameInfo.barbarians.setTransients(testGame.gameInfo)
+        val campTile = testGame.getTile(0, 0)
+        testGame.gameInfo.barbarians.createNewCamp(campTile)
+        val unit = testGame.addUnit("Warrior", germany, campTile.neighbors.first())
+
+        unit.movement.moveToTile(campTile)
+
+        val recruitedUnit = germany.units.getCivUnits().single { it != unit }
+        assertEquals(100, recruitedUnit.health)
+    }
+
+    @Test
     fun canNOTEnterCoastUntilProperTechIsResearched() {
         civInfo.tech.unitsCanEmbark = false
         tile.baseTerrain = Constants.coast
