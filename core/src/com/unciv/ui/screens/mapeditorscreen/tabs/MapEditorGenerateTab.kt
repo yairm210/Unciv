@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.JsonReader
 import com.unciv.Constants
+import com.unciv.json.json
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
@@ -160,6 +162,8 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
+        private val copyParametersButton = "Copy to clipboard".toTextButton()
+        private val pasteParametersButton = "Paste from clipboard".toTextButton()
         val mapParametersTable = MapParametersTable(null, parent.editorScreen.newMapParameters, MapGeneratedMainType.generated, forMapEditor = true) {
             parent.replacePage(0, this)  // A kludge to get the ScrollPanes to recognize changes in vertical layout??
         }
@@ -168,9 +172,29 @@ class MapEditorGenerateTab(
             top()
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
+            add(Table().apply {
+                add(copyParametersButton).padRight(15f)
+                add(pasteParametersButton)
+            }).row()
             add(mapParametersTable).row()
             add(generateButton).padTop(15f).row()
             generateButton.onClick { parent.generate(MapGeneratorSteps.All) }
+            copyParametersButton.onClick {
+                Gdx.app.clipboard.contents = json().toJson(parent.editorScreen.newMapParameters)
+            }
+            pasteParametersButton.onClick {
+                try {
+                    val clipboardContents = Gdx.app.clipboard.contents.trim()
+                    json().readFields(
+                        parent.editorScreen.newMapParameters,
+                        JsonReader().parse(clipboardContents)
+                    )
+                    mapParametersTable.update()
+                } catch (exception: Exception) {
+                    Log.error("Could not load map generation settings", exception)
+                    ToastPopup("Could not load map!", parent.editorScreen)
+                }
+            }
             mapParametersTable.resourceSelectBox.onChange {
                 parent.editorScreen.run {
                     // normally the 'new map' parameters are independent, this needs to be an exception so strategic resource painting will use it
