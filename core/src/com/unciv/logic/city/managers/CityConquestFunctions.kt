@@ -369,6 +369,7 @@ class CityConquestFunctions(val city: City) {
         }
 
         city.resetDisabledConstructions()
+        city.resetSpecialistsControl()
 
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()
