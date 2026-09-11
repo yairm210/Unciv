@@ -10,9 +10,6 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
 import com.unciv.UncivGame
-import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
@@ -20,7 +17,6 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
-import com.unciv.view.CivView
 import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
@@ -45,7 +41,6 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnima
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
-import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
 
 
@@ -191,7 +186,7 @@ class WorldMapHolder(
                 true
             } else {
                 previousSelectedUnitViews.any {
-                    it.canMoveTo(tileView) ||
+                    it.thinksItCanMoveTo(tileView) ||
                         (it.isUnknownTileWeShouldAssumeToBePassable(tileView) && !it.isAirUnit())
                 }
             }
@@ -218,7 +213,7 @@ class WorldMapHolder(
                     && unitsInTile.any()
                     && unitsInTile.first().civ().isAtWarWith(worldScreen.selectedGameView.civView)) {
                 // try to select the closest city to bombard this guy
-                unitTable.citySelected(previousSelectedCity.getCity())
+                unitTable.citySelected(previousSelectedCity)
             }
         }
         worldScreen.shouldUpdate = true
@@ -226,7 +221,6 @@ class WorldMapHolder(
 
     private fun onTileRightClicked(unitView: MapUnitView, tileView: TileView) {
         val unit = unitView.getUnit()
-        val tile = tileView.getTile()
         if (unitView.getTile() == tileView) return
         removeUnitActionOverlay()
         selectedTile = tileView
@@ -253,18 +247,19 @@ class WorldMapHolder(
             /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-            val attackableTile = TargetHelper
-                    .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .firstOrNull { it.tileToAttack == tile }
+            val attackableTile = unitView
+                    .getAttackableEnemies(unit.movement.getDistanceToTiles())
+                    .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
-                val attacker = MapUnitCombatant(unit)
-                if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-                if (!SoundPlayer.play(UncivSound(attacker.getName())))
-                    SoundPlayer.play(attacker.getAttackSound())
-                val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
-                if (attackableTile.combatant != null)
-                    worldScreen.battleAnimationDeferred(attacker, damageToAttacker, attackableTile.combatant, damageToDefender)
+                val attackerCombatant = unitView.asCombatant()
+                if (!unitView.tryMovePreparingAttack(attackableTile)) return
+                if (!SoundPlayer.play(UncivSound(attackerCombatant.getCombatantName())))
+                    SoundPlayer.play(attackerCombatant.getAttackSound())
+                val (damageToDefender, damageToAttacker) = unitView.attackOrNuke(attackableTile)
+                val defenderCombatant = attackableTile.getCombatant()
+                if (defenderCombatant != null)
+                    worldScreen.battleAnimationDeferred(attackerCombatant, damageToAttacker, defenderCombatant, damageToDefender)
                 localShouldUpdate = true
             } else if (unitView.canReach(tileView)) {
                 /** ****** Right-click Move ****** */
@@ -506,7 +501,7 @@ class WorldMapHolder(
         Concurrency.run("ConnectRoad") {
            val validTile = tileView.isLand &&
                !tileView.isImpassible() &&
-                selectedUnitView.isExplored(tileView)
+                selectedUnitView.civ().hasExplored(tileView)
 
             if (validTile) {
                 val roadPath: List<Tile>? = selectedUnit.movement.getRoadPath(tile)
@@ -546,7 +541,7 @@ class WorldMapHolder(
         }
 
         for (unitView in unitList) {
-            val unitIconGroup = UnitIconGroup(unitView.getUnit(), 48f).surroundWithCircle(68f, resizeActor = false)
+            val unitIconGroup = UnitIconGroup(unitView, 48f).surroundWithCircle(68f, resizeActor = false)
             unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (!unitView.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
@@ -585,15 +580,6 @@ class WorldMapHolder(
         unitActionOverlays.add(actor)
     }
 
-    /** Returns true when the civ is a human player defeated in singleplayer game */
-    @Readonly
-    fun isMapRevealEnabled(civView: CivView): Boolean {
-        val viewingCiv = civView.getCiv()
-        return !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
-            && viewingCiv.isCurrentPlayer()
-            && viewingCiv.isDefeated()
-    }
-
     /** Clear all arrows to be drawn on the next update. */
     fun resetArrows() {
         for (tile in tileGroups.asSequence())
@@ -602,7 +588,7 @@ class WorldMapHolder(
 
     /** Add an arrow to draw on the next update. */
     fun addArrow(fromTileView: TileView, toTileView: TileView, arrowType: MapArrowType) {
-        tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView.getTile(), arrowType)
+        tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView, arrowType)
     }
 
     /**
