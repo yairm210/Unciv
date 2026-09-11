@@ -202,6 +202,16 @@ class TileImprovementConstructionTests {
     }
 
     @Test
+    fun buildingImprovementWithCivAppliesTerrainChange() {
+        val tile = tileMap[1,1]
+        val improvement = testGame.createTileImprovement("Turn this tile into a [Coast] tile")
+
+        tile.setImprovement(improvement, civInfo)
+
+        Assert.assertEquals("Coast", tile.baseTerrain)
+    }
+
+    @Test
     fun citadelTakesOverAdjacentTiles() {
         val tile = tileMap[1,1]
         Assert.assertFalse(tile.neighbors.all { it.owningCity == city })
