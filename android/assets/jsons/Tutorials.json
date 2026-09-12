@@ -765,5 +765,18 @@
             {},
             {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."}
         ]
+    },
+    {
+        "name": "Default Promotions",
+        "category": "Units",
+        "civilopediaText": [
+            {"text":  "Default promotions allows the player to select a set of default promotions that will be apply to the same unit when built in the city, where the promotions were selected."},
+            {},
+            {"text": "After selecting the promotions you want to be default click 'Default promotions for [Warrior]' then click 'Pick promotions'."},
+            {},
+            {"text":  "To disable default promotions for a unit you must uncheck 'Use default promotions'."},
+            {},
+            {"text":  "You will not be able to use default promotions in puppet cities or city that you don't own. And if the city doesn't have enough XP it will not be able to apply all the default promotions. Also default promotions doesn't affect the civ AI in anyway."},
+        ]
     }
 ]
