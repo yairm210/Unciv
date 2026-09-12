@@ -182,24 +182,46 @@ class MapEditorGenerateTab(
             copyParametersButton.onClick {
                 Gdx.app.clipboard.contents = json().toJson(parent.editorScreen.newMapParameters)
             }
-            pasteParametersButton.onClick {
-                try {
-                    val clipboardContents = Gdx.app.clipboard.contents.trim()
-                    json().readFields(
-                        parent.editorScreen.newMapParameters,
-                        JsonReader().parse(clipboardContents)
-                    )
-                    mapParametersTable.update()
-                } catch (exception: Exception) {
-                    Log.error("Could not load map generation settings", exception)
-                    ToastPopup("Could not load map!", parent.editorScreen)
-                }
-            }
+            pasteParametersButton.onClick { pasteParameters() }
+            attachResourceSettingSync()
+        }
+
+        /** Attaches the resource painting sync to the current resource select box -
+         *  [MapParametersTable.update] replaces it, so this needs repeating after each rebuild */
+        private fun attachResourceSettingSync() {
             mapParametersTable.resourceSelectBox.onChange {
                 parent.editorScreen.run {
                     // normally the 'new map' parameters are independent, this needs to be an exception so strategic resource painting will use it
                     tileMap.mapParameters.mapResources = newMapParameters.mapResources
                 }
+            }
+        }
+
+        /** Rebuilds all controls bound to [MapEditorScreen.newMapParameters] after its contents were replaced */
+        private fun updateParameterControls() {
+            mapParametersTable.update()
+            attachResourceSettingSync()
+            // readFields also replaced the mod set instance the Mods tab is bound to
+            parent.editorScreen.tabs.mods.updateControls()
+        }
+
+        private fun pasteParameters() {
+            val editorScreen = parent.editorScreen
+            // Back up the settings so a malformed payload can't leave partially applied values behind
+            val previousParameters = json().toJson(editorScreen.newMapParameters)
+            try {
+                json().readFields(
+                    editorScreen.newMapParameters,
+                    JsonReader().parse(Gdx.app.clipboard.contents.trim())
+                )
+                updateParameterControls()
+                // Resource painting reads this setting from the active map's parameters
+                editorScreen.tileMap.mapParameters.mapResources = editorScreen.newMapParameters.mapResources
+            } catch (exception: Exception) {
+                json().readFields(editorScreen.newMapParameters, JsonReader().parse(previousParameters))
+                updateParameterControls()
+                Log.error("Could not load map generation settings", exception)
+                ToastPopup("Could not load map!", editorScreen)
             }
         }
     }
