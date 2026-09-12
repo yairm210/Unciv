@@ -483,7 +483,7 @@ class MapParametersTable(
             table.add(checkbox).colspan(2).row()
         }
         if (forMapEditor) {
-            addCheckBox("Randomize seed", true) {
+            addCheckBox("Randomize seed", randomizeSeed) {
                 randomizeSeed = it
             }
         }
