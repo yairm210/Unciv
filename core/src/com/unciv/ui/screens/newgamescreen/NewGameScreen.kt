@@ -446,6 +446,8 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
+        // Activate restored mod translations before constructing or updating the options tables.
+        game.translations.translationActiveMods = gameSetupInfo.gameParameters.getModsAndBaseRuleset()
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 
