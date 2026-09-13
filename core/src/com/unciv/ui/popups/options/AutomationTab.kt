@@ -22,6 +22,7 @@ internal class AutomationTab(
             allCitiesChooseNextConstruction(it)
         }
         addCheckbox("Auto-build roads", settings::autoBuildingRoads)
+        addCheckbox("Prioritize connecting cities with roads", settings::prioritizeRoadConnections)
         addCheckbox("Automated workers replace improvements", settings::automatedWorkersReplaceImprovements)
         addCheckbox("Stop automated workers from removing vegetation terrain", settings::stopAutomatedWorkersRemoveVegetation)
         addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)

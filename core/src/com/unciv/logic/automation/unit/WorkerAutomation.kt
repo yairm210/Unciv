@@ -80,6 +80,17 @@ class WorkerAutomation(
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
+
+        // Optionally prioritize finishing city connections over general tile improvement (see #15417).
+        // Skipped while the unit is mid-improvement on its current tile, so we don't abandon work in progress.
+        // This is a player-local GameSettings preference, so only apply it for human-controlled civs -
+        // otherwise it would also alter AI and city-state worker behavior (including in multiplayer).
+        if (civInfo.isHuman()
+            && UncivGame.Current.settings.prioritizeRoadConnections
+            && currentTile !in dangerousTiles
+            && !(currentTile.improvementInProgress != null && !currentTileIsCreatesOneImprovementMarker)
+            && roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect, dangerousTiles)) return
+
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
         if (!currentTileIsCreatesOneImprovementMarker
             && currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
@@ -104,7 +115,7 @@ class WorkerAutomation(
         if (tryHeadTowardsUndevelopedCity(unit, currentTile)) return
 
         // Nothing to do, try again to connect cities
-        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
+        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect, dangerousTiles)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())

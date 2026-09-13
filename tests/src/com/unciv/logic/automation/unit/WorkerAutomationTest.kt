@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -332,6 +333,33 @@ internal class WorkerAutomationTest {
             finishedCount >= minShouldHaveFinished)
         civInfo.cache.updateCitiesConnectedToCapital()
         assertTrue("Worker should have built roads to connect the two cities", city2.isConnectedToCapital())
+    }
+
+    @Test
+    fun `prioritized roads should avoid dangerous tiles`() {
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[RoadStatus.Road.name]!!.techRequired!!)
+        civInfo.playerType = PlayerType.Human
+
+        testGame.addCity(civInfo, testGame.tileMap[-2,0])
+        testGame.addCity(civInfo, testGame.tileMap[2,0])
+        val dangerousRoadTile = testGame.tileMap[0,0]
+        val worker = testGame.addUnit("Worker", civInfo, testGame.tileMap[-1,1])
+        val automation = WorkerAutomation(civInfo, 3)
+
+        for (x in -2..2)
+            if (x != -1 && x != 0)
+                testGame.tileMap[x,0].setRoadStatus(RoadStatus.Road, civInfo)
+
+        val previousPrioritizeRoadConnections = UncivGame.Current.settings.prioritizeRoadConnections
+        try {
+            UncivGame.Current.settings.prioritizeRoadConnections = true
+            automation.automateWorkerAction(worker, hashSetOf(dangerousRoadTile))
+        } finally {
+            UncivGame.Current.settings.prioritizeRoadConnections = previousPrioritizeRoadConnections
+        }
+
+        assertNotEquals("Worker should not enter a dangerous planned-road tile", dangerousRoadTile, worker.getTile())
+        assertEquals("Worker should not begin road work on a dangerous tile", null, dangerousRoadTile.improvementInProgress)
     }
 
     @Test
