@@ -1,6 +1,5 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.view.CivView
@@ -28,7 +27,8 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             image.color.set(1f, 1f, 1f, 1f)
             return
         }
-        val highlightColor = if (roadStatus == RoadStatus.Railroad) RAILROAD_HIGHLIGHT_COLOR else ROAD_HIGHLIGHT_COLOR
+        val highlightColor = if (roadStatus == RoadStatus.Railroad)
+            strings.tileSetConfig.railroadHighlightColor else strings.tileSetConfig.roadHighlightColor
         image.color.set(highlightColor)
     }
 
@@ -99,13 +99,6 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     fun dim() {
         forEachOwnedActor { it.color.a = 0.5f }
-    }
-
-    companion object {
-        /** Vivid colour used to tint roads when [com.unciv.models.metadata.GameSettings.showRoadHighlight] is on. */
-        val ROAD_HIGHLIGHT_COLOR: Color = Color(0.05f, 0.85f, 0.75f, 1f) // teal
-        /** Vivid colour used to tint railroads when [com.unciv.models.metadata.GameSettings.showRoadHighlight] is on. */
-        val RAILROAD_HIGHLIGHT_COLOR: Color = Color(0.95f, 0.55f, 0.05f, 1f) // orange
     }
 
 }

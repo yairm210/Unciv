@@ -44,6 +44,64 @@
       "required": ["r", "g", "b", "a"],
       "additionalProperties": false
     },
+    "roadHighlightColor": {
+      "type": "object",
+      "title": "Road Highlight Color",
+      "description": "The color used to tint roads when the road/railroad highlight map overlay is toggled on. Defaults to teal; override this to keep the highlight visible against this tileset's palette.",
+      "properties": {
+        "r": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "g": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "b": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "a": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["r", "g", "b", "a"],
+      "additionalProperties": false
+    },
+    "railroadHighlightColor": {
+      "type": "object",
+      "title": "Railroad Highlight Color",
+      "description": "The color used to tint railroads when the road/railroad highlight map overlay is toggled on. Defaults to orange; override this to keep the highlight visible against this tileset's palette.",
+      "properties": {
+        "r": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "g": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "b": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "a": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["r", "g", "b", "a"],
+      "additionalProperties": false
+    },
     "fogOfWarColor": {
       "type": "object",
       "title": "Fog Of War Color",
