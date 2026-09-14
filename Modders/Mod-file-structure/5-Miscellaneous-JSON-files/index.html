@@ -942,6 +942,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#victory-uniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Victory uniques
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#milestones" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2057,6 +2068,17 @@
   
     <nav class="md-nav" aria-label="VictoryTypes.json">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#victory-uniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Victory uniques
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#milestones" class="md-nav__link">
@@ -3301,6 +3323,12 @@ Most of the file contains of strings that are shown to the user in the victory s
 <td>List of milestones that must be accomplished to win, <a href="#milestones">see below</a></td>
 </tr>
 <tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>List of <a href="../../uniques/">unique abilities</a> this victory has, <a href="#victory-uniques">see below</a></td>
+</tr>
+<tr>
 <td>civilopediaText</td>
 <td>List</td>
 <td>Optional</td>
@@ -3308,6 +3336,28 @@ Most of the file contains of strings that are shown to the user in the victory s
 </tr>
 </tbody>
 </table>
+<h3 id="victory-uniques">Victory uniques</h3>
+<p>A victory can carry uniques, like any other ruleset object.</p>
+<p><code>Only available &lt;...&gt;</code> and <code>Unavailable &lt;...&gt;</code> decide <strong>who</strong> may achieve it. They are evaluated against a
+civilization, so any <a href="../../Unique-parameters/#civfilter">civFilter</a> or condition on the game works.
+A civilization that does not pass them never wins the victory, is not offered it in the victory screen
+as one of its own goals, is not listed among the contenders for it, and does not work towards it.
+Its milestones themselves are untouched.</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Reach the goal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"uniques"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Only available &lt;for [Human player] Civilizations&gt;"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"milestones"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Build [Monument]"</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><code>Will not be chosen for new games</code> decides whether the victory is <strong>offered</strong> in the new game options,
+exactly as it does for a nation. Such a victory gets no checkbox, and the "all victories" default never
+enables it - a base ruleset that ships a game or a <a href="../../Scenarios/">scenario</a> enables it there itself.</p>
+<p>This is a separate unique on purpose: while a game is being set up there is no civilization to evaluate
+<code>Only available</code> / <code>Unavailable</code> against, so a victory restricted to a nation, a player type or a game
+speed stays selectable unless the mod says otherwise. Conditionals on <code>Will not be chosen for new games</code>
+are never fulfilled for the same reason - use it plain.</p>
 <h3 id="milestones">Milestones</h3>
 <p>Currently the following milestones are supported:</p>
 <table>
@@ -3353,6 +3403,10 @@ Most of the file contains of strings that are shown to the user in the victory s
 <tr>
 <td>Have highest score after max turns</td>
 <td>Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached</td>
+</tr>
+<tr>
+<td>Have at least [amount] [countable]</td>
+<td>Have at least [amount] of the given <code>countable</code>. Unlike the milestone below, this does not depend on the other players, so a ruleset can require several concrete things - a building, a policy, worked tiles - to be achieved in any order.</td>
 </tr>
 <tr>
 <td>Have more [countable] than each player's [countable]</td>
