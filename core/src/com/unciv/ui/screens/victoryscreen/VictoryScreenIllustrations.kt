@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
-import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
@@ -41,7 +40,7 @@ class VictoryScreenIllustrations(
         private val enablingImages = listOf("Won", "Lost", "Background")
 
         /** Check whether the entire "Illustrations" tab in VictoryScreen should display */
-        internal fun enablePage(game: GameInfo) = game.getEnabledVictories().values
+        internal fun enablePage(civ: Civilization) = civ.victoryManager.getVictoriesShownInVictoryScreen()
             .any { it.hasIllustrations() }
 
         /** Check whether a Victory has enough images to display that Victory's sub-tab */
@@ -72,10 +71,10 @@ class VictoryScreenIllustrations(
     }
 
     private val game = worldScreen.gameInfo
-    private val victories = game.getEnabledVictories().values
+    private val selectedCiv = worldScreen.selectedCiv
+    private val victories = worldScreen.selectedGameView.civView.getVictoriesShownInVictoryScreen()
         .filter { it.hasIllustrations() }
         .sortedBy { it.name.tr(hideIcons = true) }
-    private val selectedCiv = worldScreen.selectedCiv
     private val completionPercentages = game.civilizations
         .filter { it.isMajorCiv() && it.isAlive() || it == selectedCiv }
         .associateWith { civ ->

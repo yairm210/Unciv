@@ -366,7 +366,37 @@ Each victory have the following structure:
 | hiddenInVictoryScreen  | Boolean         | false    | Whether progress of this victory is hidden in the victory screen                           |
 | requiredSpaceshipParts | List of Strings | empty    | What spaceship parts must be added to the capital for the corresponding milestone          |
 | Milestones             | List of Strings | Required | List of milestones that must be accomplished to win, [see below](#milestones)              |
+| uniques                | List of Strings | empty    | List of [unique abilities](../uniques.md) this victory has, [see below](#victory-uniques)  |
 | civilopediaText        | List            | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)              |
+
+### Victory uniques
+
+A victory can carry uniques, like any other ruleset object.
+
+`Only available <...>` and `Unavailable <...>` decide **who** may achieve it. They are evaluated against a
+civilization, so any [civFilter](../Unique-parameters.md#civfilter) or condition on the game works.
+A civilization that does not pass them never wins the victory, is not offered it in the victory screen
+as one of its own goals, is not listed among the contenders for it, and does not work towards it.
+Its milestones themselves are untouched.
+
+```json
+[
+    {
+        "name": "Reach the goal",
+        "uniques": ["Only available <for [Human player] Civilizations>"],
+        "milestones": ["Build [Monument]"]
+    }
+]
+```
+
+`Will not be chosen for new games` decides whether the victory is **offered** in the new game options,
+exactly as it does for a nation. Such a victory gets no checkbox, and the "all victories" default never
+enables it - a base ruleset that ships a game or a [scenario](../Scenarios.md) enables it there itself.
+
+This is a separate unique on purpose: while a game is being set up there is no civilization to evaluate
+`Only available` / `Unavailable` against, so a victory restricted to a nation, a player type or a game
+speed stays selectable unless the mod says otherwise. Conditionals on `Will not be chosen for new games`
+are never fulfilled for the same reason - use it plain.
 
 ### Milestones
 
