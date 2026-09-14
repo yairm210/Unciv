@@ -1,20 +1,10 @@
-## 4.21.20
+## 4.22.0
 
-View implementation - more worldmapholder to tileview - see 
+Invisible units no longer invisible to their own civ
 
-Fixed tests
-
-Resolved  - Invisibility cleanup - Single source of "is invisible", invisible units no longer invisible to their own civ
-
-View implementation - removed tilegroup.tile usages  - see 
-
-chore: Add deprecation signs for direct access functions
-
-Resolved  - Remember last civilopedia position
+Remember last civilopedia position
 
 New game screen: Start fresh if the latest game start is erroring
-
-UI: Tweaks to new game screen (margins icons etc)
 
 When selecting custom maps, don't overwrite the ruleset if the current mods are a superset of the map's required mods
 
@@ -27,8 +17,6 @@ By JN0V:
 - Victories can carry uniques, and decide who may achieve them 
 - Add victory milestone "Have at least [amount] [countable]" 
 - Fix possible crash when scrolling to the selected construction queue entry 
-
-chore: Change PlatformSaverLoader architecture to allow SAF-saving/loading any file type - By SomeTroglodyte
 
 By LouisDeconinck:
 - Fix terrain changes from gifted improvements 
