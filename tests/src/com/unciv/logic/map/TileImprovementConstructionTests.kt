@@ -2,18 +2,23 @@
 package com.unciv.logic.map
 
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
 import com.unciv.logic.city.City.Companion.NO_ID
 import com.unciv.logic.city.City.Companion.pseudoRandomId
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestCase
 import com.unciv.testing.TestGame
@@ -314,5 +319,204 @@ class TileImprovementConstructionTests {
 
         // We'll be reverting back to grassland stats - 2f only
         assert(statsDiff.equals(Stats(food = +1f, production = -3f)))
+    }
+
+    @Test
+    fun cityFoundingDoesNotRegisterCenterAsNeutralRoad() {
+        val (_, civ, city) = roadMaintenanceGame()
+        val center = city.getCenterTile()
+
+        Assert.assertEquals(RoadStatus.Road, center.roadStatus)
+        Assert.assertFalse(civ.neutralRoads.contains(center.position))
+        assertTransportationUpkeep(civ, 0f)
+
+        center.setRoadStatus(RoadStatus.Road, civ)
+        Assert.assertFalse(civ.neutralRoads.contains(center.position))
+        assertTransportationUpkeep(civ, 0f)
+
+        civ.tech.addTechnology("Railroads", false)
+        center.setRoadStatus(RoadStatus.Railroad, civ)
+        Assert.assertEquals(RoadStatus.Railroad, center.roadStatus)
+        Assert.assertFalse(civ.neutralRoads.contains(center.position))
+        assertTransportationUpkeep(civ, 0f)
+    }
+
+    @Test
+    fun ownedRoadIsChargedOnceNotAsNeutral() {
+        val (_, civ, city) = roadMaintenanceGame(
+            roadUnique = UniqueType.ImprovementAllMaintenance.text.fillPlaceholders("100", "Gold")
+        )
+        val ownedTile = ownedNonCenterTile(city)
+        Assert.assertEquals(civ, ownedTile.getOwner())
+        Assert.assertEquals(civ, ownedTile.getRoadOwner())
+
+        ownedTile.setImprovement("Road", civ)
+        Assert.assertEquals(RoadStatus.Road, ownedTile.roadStatus)
+        Assert.assertFalse(civ.neutralRoads.contains(ownedTile.position))
+        assertTransportationUpkeep(civ, -100f)
+
+        ownedTile.setImprovement("Road", civ)
+        Assert.assertFalse(civ.neutralRoads.contains(ownedTile.position))
+        assertTransportationUpkeep(civ, -100f)
+
+        ownedTile.setImprovement("Remove Road", civ)
+        Assert.assertEquals(RoadStatus.None, ownedTile.roadStatus)
+        Assert.assertFalse(civ.neutralRoads.contains(ownedTile.position))
+        assertTransportationUpkeep(civ, 0f)
+    }
+
+    @Test
+    fun unownedRoadIsNeutralAndClaimingTransfersToTerritory() {
+        val (_, civ, city) = roadMaintenanceGame(
+            roadUnique = UniqueType.ImprovementAllMaintenance.text.fillPlaceholders("100", "Gold")
+        )
+        val tiles = unownedTiles(city).iterator()
+        val removable = tiles.next()
+        val pillaged = tiles.next()
+        val claimed = tiles.next()
+
+        removable.setImprovement("Road", civ)
+        Assert.assertTrue(civ.neutralRoads.contains(removable.position))
+        assertTransportationUpkeep(civ, -100f)
+
+        removable.setImprovement("Remove Road", civ)
+        Assert.assertFalse(civ.neutralRoads.contains(removable.position))
+        assertTransportationUpkeep(civ, 0f)
+
+        pillaged.setImprovement("Road", civ)
+        Assert.assertTrue(civ.neutralRoads.contains(pillaged.position))
+        assertTransportationUpkeep(civ, -100f)
+        pillaged.setPillaged()
+        Assert.assertTrue(pillaged.roadIsPillaged)
+        assertTransportationUpkeep(civ, 0f)
+
+        claimed.setImprovement("Road", civ)
+        Assert.assertTrue(civ.neutralRoads.contains(claimed.position))
+        assertTransportationUpkeep(civ, -100f)
+        city.expansion.takeOwnership(claimed)
+        Assert.assertFalse(civ.neutralRoads.contains(claimed.position))
+        Assert.assertEquals(civ, claimed.getOwner())
+        assertTransportationUpkeep(civ, -100f)
+    }
+
+    @Test
+    fun territorialMaintenanceIsFreeOnNeutralAndChargedOnceWhenOwned() {
+        val territorial = UniqueType.ImprovementMaintenance.text.fillPlaceholders("100", "Gold")
+        val (_, civ, city) = roadMaintenanceGame(roadUnique = territorial)
+        val ownedTile = ownedNonCenterTile(city)
+        val unownedTile = unownedTiles(city).first()
+
+        unownedTile.setImprovement("Road", civ)
+        Assert.assertTrue(civ.neutralRoads.contains(unownedTile.position))
+        assertTransportationUpkeep(civ, 0f)
+
+        ownedTile.setImprovement("Road", civ)
+        Assert.assertFalse(civ.neutralRoads.contains(ownedTile.position))
+        assertTransportationUpkeep(civ, -100f)
+    }
+
+    @Test
+    fun defaultRulesetRoadAndRailroadMaintenance() {
+        val (_, civ, city) = roadMaintenanceGame()
+        val ownedRoad = ownedNonCenterTile(city)
+        val ownedRailroad = city.getCenterTile().neighbors.first { it != ownedRoad }
+        val unownedRoad = unownedTiles(city).first()
+
+        assertTransportationUpkeep(civ, 0f)
+
+        ownedRoad.setImprovement("Road", civ)
+        assertTransportationUpkeep(civ, -1f)
+
+        ownedRailroad.setImprovement("Railroad", civ)
+        assertTransportationUpkeep(civ, -3f)
+
+        unownedRoad.setImprovement("Road", civ)
+        Assert.assertTrue(civ.neutralRoads.contains(unownedRoad.position))
+        assertTransportationUpkeep(civ, -4f)
+        Assert.assertFalse(civ.neutralRoads.contains(ownedRoad.position))
+        Assert.assertFalse(civ.neutralRoads.contains(ownedRailroad.position))
+        Assert.assertFalse(civ.neutralRoads.contains(city.getCenterTile().position))
+    }
+
+    @Test
+    fun transportationUpkeepMatchesStatsTransientsAndTreasury() {
+        val (game, civ, city) = roadMaintenanceGame(
+            roadUnique = UniqueType.ImprovementAllMaintenance.text.fillPlaceholders("100", "Gold"),
+            isPlayer = true
+        )
+        ownedNonCenterTile(city).setImprovement("Road", civ)
+        unownedTiles(city).first().setImprovement("Road", civ)
+
+        val breakdown = civ.stats.getStatMapForNextTurn()
+        Assert.assertEquals(-200f, breakdown["Transportation upkeep"]!!.gold, 0f)
+
+        civ.updateStatsForNextTurn()
+        val summed = Stats()
+        for (stats in breakdown.values) summed.add(stats)
+        Assert.assertTrue(summed.equals(civ.stats.statsForNextTurn))
+
+        val upkeepBeforeTransients = transportationUpkeepGold(civ)
+        rebuildNeutralRoadTransients(game.gameInfo)
+        Assert.assertEquals(upkeepBeforeTransients, transportationUpkeepGold(civ), 0f)
+        Assert.assertFalse(civ.neutralRoads.contains(city.getCenterTile().position))
+        Assert.assertFalse(civ.neutralRoads.contains(ownedNonCenterTile(city).position))
+        Assert.assertTrue(civ.neutralRoads.contains(unownedTiles(city).first().position))
+
+        civ.addGold(10_000)
+        civ.updateStatsForNextTurn()
+        val goldBeforeTurn = civ.gold
+        val predictedGoldDelta = civ.stats.statsForNextTurn.gold.toInt()
+        TurnManager(civ).endTurn()
+        Assert.assertEquals(goldBeforeTurn + predictedGoldDelta, civ.gold)
+    }
+
+    private data class RoadMaintenanceSetup(val game: TestGame, val civ: Civilization, val city: City)
+
+    private fun roadMaintenanceGame(
+        roadUnique: String? = null,
+        railroadUnique: String? = null,
+        isPlayer: Boolean = false
+    ): RoadMaintenanceSetup {
+        val game = TestGame()
+        if (roadUnique != null) replaceImprovementMaintenance(game.ruleset, RoadStatus.Road.name, roadUnique)
+        if (railroadUnique != null) replaceImprovementMaintenance(game.ruleset, RoadStatus.Railroad.name, railroadUnique)
+        game.makeHexagonalMap(3)
+        val civ = game.addCiv(isPlayer = isPlayer)
+        civ.tech.addTechnology("The Wheel", false)
+        val city = game.addCity(civ, game.getTile(HexCoord.Zero))
+        return RoadMaintenanceSetup(game, civ, city)
+    }
+
+    private fun replaceImprovementMaintenance(ruleset: Ruleset, improvementName: String, unique: String) {
+        val original = ruleset.tileImprovements[improvementName]!!
+        val replacement = TileImprovement()
+        replacement.name = original.name
+        replacement.terrainsCanBeBuiltOn = original.terrainsCanBeBuiltOn
+        replacement.turnsToBuild = original.turnsToBuild
+        replacement.techRequired = original.techRequired
+        replacement.uniques.addAll(original.uniques.filterNot { it.startsWith("Costs [") })
+        replacement.uniques.add(unique)
+        ruleset.tileImprovements[improvementName] = replacement
+    }
+
+    private fun ownedNonCenterTile(city: City) = city.getCenterTile().neighbors.first()
+
+    private fun unownedTiles(city: City): List<Tile> {
+        val tiles = ArrayList<Tile>()
+        city.getCenterTile().forEachTileAtDistance(2) { tiles.add(it) }
+        return tiles
+    }
+
+    private fun transportationUpkeepGold(civ: Civilization) =
+        civ.stats.getStatMapForNextTurn()["Transportation upkeep"]!!.gold
+
+    private fun assertTransportationUpkeep(civ: Civilization, expectedGold: Float) {
+        Assert.assertEquals(expectedGold, transportationUpkeepGold(civ), 0f)
+    }
+
+    private fun rebuildNeutralRoadTransients(gameInfo: GameInfo) {
+        for (civ in gameInfo.civilizations)
+            civ.neutralRoads.clear()
+        gameInfo.tileMap.setNeutralTransients()
     }
 }
