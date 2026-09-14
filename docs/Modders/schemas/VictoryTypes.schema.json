@@ -67,6 +67,7 @@
             "Win diplomatic vote",
             "Become the world religion",
             "Have highest score after max turns",
+            "Have at least [amount] [countable]",
             "Have more [countable] than each player's [countable]"
           ]
         },
