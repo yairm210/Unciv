@@ -245,16 +245,15 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv() }
         val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
-        // This is mostly just vibes, tries to make the average minimum distance between major civs equal to 13
-        val majorCivContribution = 7.6 * numberOfMajorCivs.toFloat().pow(2) + 
-            522 * numberOfMajorCivs - 360 + 120 * sin( 2.48 * numberOfMajorCivs.toFloat())
+        // This is mostly just vibes, tries to make the average minimum distance between a civ and it's closest neighbor as close to 13 tiles as possible
+        val majorCivContribution = 384 * numberOfMajorCivs - 134
         val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
 
         // Calculates mapsize from tile number, simple algebra reversing area formulas
         val aspectRatio = 1.55 // This is around the default aspect ratios
-        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) - 1.0/2).toInt()
-        mapParameters.mapSize.height = sqrt(2.0/3 * targetNumberOfTiles).toInt()
-        mapParameters.mapSize.width = (sqrt(2.0/3 * targetNumberOfTiles) * aspectRatio).toInt()
+        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) + 1.0/2).roundToInt()
+        mapParameters.mapSize.height = sqrt(targetNumberOfTiles/aspectRatio).roundToInt()
+        mapParameters.mapSize.width = (sqrt(targetNumberOfTiles/aspectRatio) * aspectRatio).roundToInt()
 
         return mapParameters.mapSize
     }
