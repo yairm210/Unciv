@@ -152,17 +152,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     private fun updateViewableInvisibleTiles() {
-        val newViewableInvisibleTiles = HashSet<Tile>()
+        val newViewableInvisibleTiles = HashMap<Tile, MutableSet<String>>()
         for (unit in civInfo.units.getCivUnits()) {
             val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
             if (invisibleUnitUniques.none()) continue
-            val visibleUnitTypes = invisibleUnitUniques.map { it.params[0] }
+            val visibleUnitFilters = invisibleUnitUniques.map { it.params[0] }
                 .toList() // save this, it'll be seeing a lot of use
             for (tile in unit.viewableTiles) {
-                if (tile.militaryUnit == null) continue
-                if (tile in newViewableInvisibleTiles) continue
-                if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
-                    newViewableInvisibleTiles.add(tile)
+                newViewableInvisibleTiles.getOrPut(tile) { HashSet() }.addAll(visibleUnitFilters)
             }
         }
 
@@ -189,9 +186,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     private fun setNewViewableTiles() {
         // while spectating (or defeated in singleplayer, which grants the same rights) all map is visible
         if (civInfo.hasSpectatorVision() || DebugUtils.VISIBLE_MAP) {
-            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
-            civInfo.viewableTiles = allTiles
-            civInfo.viewableInvisibleUnitsTiles = allTiles
+            civInfo.viewableTiles = civInfo.gameInfo.tileMap.values.toSet()
             return
         }
 

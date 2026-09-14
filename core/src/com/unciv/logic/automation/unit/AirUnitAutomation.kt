@@ -179,7 +179,7 @@ object AirUnitAutomation {
             // We can only account for visible units
             if (targetTile.isVisible(civ)) {
                 for (targetUnit in targetTile.getUnits()) {
-                    if (targetUnit.isInvisible(civ)) continue
+                    if (!targetUnit.isVisibleTo(civ)) continue
                     // If we are nuking a unit at ground zero, it is more likely to be destroyed
                     val tileExplosionValue = if (targetTile == tile) 80 else 50
 

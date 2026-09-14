@@ -754,17 +754,6 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
-        if (getFirstUnit() == null) return false // common case
-        val unitsInTile = getUnits()
-        return when {
-            unitsInTile.first().civ == viewingCiv -> false
-            unitsInTile.none { it.isInvisible(viewingCiv) } -> false
-            else -> true
-        }
-    }
-
-    @Readonly
     fun hasConnection(civInfo: Civilization) =
         getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 

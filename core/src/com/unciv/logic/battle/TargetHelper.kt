@@ -144,10 +144,9 @@ object TargetHelper {
 
         // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
         // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
-        if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
-            return combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
-        }
-        
+        if (!tile.isCityCenter())
+            return tileCombatant.isVisibleTo(combatant.getCivInfo())
+
         return true
     }
 

@@ -506,13 +506,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
-        val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
             .filter {
                 it.militaryUnit != null && it.militaryUnit!!.civ != thisPlayer
                         && thisPlayer.isAtWarWith(it.militaryUnit!!.civ)
                         && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
-                        && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
+                        && it.militaryUnit!!.isVisibleTo(thisPlayer))
             }
 
         // enemy units IN our territory

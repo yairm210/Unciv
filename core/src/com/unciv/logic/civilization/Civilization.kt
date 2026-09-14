@@ -100,8 +100,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var viewableTiles = setOf<Tile>()
 
+    /** For each tile some detector unit of ours can see, the unit filters ([UniqueType.CanSeeInvisibleUnits])
+     *  it could detect there - independent of what (if anything) currently occupies the tile. */
     @Transient
-    var viewableInvisibleUnitsTiles = setOf<Tile>()
+    var viewableInvisibleUnitsTiles = mapOf<Tile, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient

@@ -168,7 +168,7 @@ class ThreatManager(val civInfo: Civilization) {
         if (!tile.isVisible(civInfo)) return false
         if (tile.getUnits().any { it.isMilitary()
             && it.civ.isAtWarWith(civInfo)
-            && !it.isInvisible(civInfo) })
+            && it.isVisibleTo(civInfo) })
             return true
         return false
     }

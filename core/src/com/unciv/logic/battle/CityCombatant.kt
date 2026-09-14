@@ -24,7 +24,7 @@ class CityCombatant(val city: City) : ICombatant {
     override fun getTile(): Tile = city.getCenterTile()
     override fun getName(): String = city.name
     @Readonly override fun isDefeated(): Boolean = city.health == 1
-    override fun isInvisible(to: Civilization): Boolean = false
+    override fun isVisibleTo(to: Civilization): Boolean = true
     override fun canAttack(): Boolean = city.canBombard()
     override fun matchesFilter(filter: String, multiFilter: Boolean) = 
         if (multiFilter) MultiFilter.multiFilter(filter, { it == "City" || it in Constants.all || city.matchesFilter(it, multiFilter = false) })

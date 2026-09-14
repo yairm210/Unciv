@@ -190,7 +190,7 @@ object WorldMapTileUpdater {
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTile().getTilesInDistance(nukeBlastRadius)
                         // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { it.isVisibleTo(unit.civ) })
                                 || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()

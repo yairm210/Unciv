@@ -21,7 +21,7 @@ interface ICombatant {
     @Readonly fun isDefeated(): Boolean
     @Readonly fun getCivInfo(): Civilization
     @Readonly fun getTile(): Tile
-    @Readonly fun isInvisible(to: Civilization): Boolean
+    @Readonly fun isVisibleTo(to: Civilization): Boolean
     @Readonly fun canAttack(): Boolean
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
     @Readonly fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean

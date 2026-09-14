@@ -466,8 +466,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return currentTile.isWater
     }
 
+    /** Whether this unit currently has an invisibility unique that hides it from [to] (ignores fog of war,
+     * own-civ exemption, and detection). Callers checking whether a unit can actually be seen should use [isVisibleTo] instead. */
     @Readonly
-    fun isInvisible(to: Civilization): Boolean {
+    fun hasActiveInvisibilityUnique(to: Civilization): Boolean {
         if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
@@ -480,8 +482,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** @return Whether [civ] can currently see this unit on the map, accounting for fog of war and invisibility. */
     @Readonly
     fun isVisibleTo(civ: Civilization): Boolean {
+        if (civ == this.civ) return true
         if (!getTile().isVisible(civ)) return false
-        return !isInvisible(civ) || getTile() in civ.viewableInvisibleUnitsTiles
+        if (!hasActiveInvisibilityUnique(civ)) return true
+        // viewableInvisibleUnitsTiles records which unit filters *could* be detected on each tile,
+        // independent of what's actually there - so it never goes stale when units move.
+        return civ.viewableInvisibleUnitsTiles[getTile()]?.any { matchesFilter(it) } == true
     }
 
     @Readonly
