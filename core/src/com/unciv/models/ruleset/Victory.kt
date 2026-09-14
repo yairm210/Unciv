@@ -8,13 +8,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
@@ -31,9 +31,11 @@ enum class MilestoneType(val text: String) {
     WinDiplomaticVote("Win diplomatic vote"),
     ScoreAfterTimeOut("Have highest score after max turns"),
     MoreCountableThanEachPlayer("Have more [countable] than each player's [countable]"),
+    /** Reach an absolute amount of a countable - unlike [MoreCountableThanEachPlayer] this does not depend on the other players */
+    HaveCountable("Have at least [amount] [countable]"),
 }
 
-class Victory : INamed, ICivilopediaText {
+class Victory : RulesetObject() {
 
     enum class CompletionStatus {
         Completed,
@@ -52,7 +54,6 @@ class Victory : INamed, ICivilopediaText {
         Score,
     }
 
-    override var name = ""
     val victoryScreenHeader = "Do things to win!"
     val hiddenInVictoryScreen = false
     // Things to do to win
@@ -73,15 +74,19 @@ class Victory : INamed, ICivilopediaText {
 
     @Readonly fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
 
-    override var civilopediaText = listOf<FormattedLine>()
+    override fun getUniqueTarget() = UniqueTarget.Victory
+    override fun makeLink() = "Victory/$name"
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        return listOf(
+        @LocalState val lines = arrayListOf(
             FormattedLine(victoryScreenHeader),
             FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
             FormattedLine(),
-        ) + milestoneObjects.map { it.getFormattedLine() }
+        )
+        milestoneObjects.mapTo(lines) { it.getFormattedLine() }
+        uniquesToCivilopediaTextLines(lines)
+        return lines
     }
-    override fun makeLink() = "Victory/$name"
 }
 
 class Milestone(val uniqueDescription: String, private val parentVictory: Victory) {
@@ -137,6 +142,15 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     fun getMoreCountableThanOtherCivRelevant(civ: Civilization, otherCiv: Civilization): Boolean =
         civ != otherCiv && otherCiv.isMajorCiv() && otherCiv.isAlive()
 
+    /** [MilestoneType.HaveCountable]: the amount the countable must reach */
+    @Readonly
+    fun getCountableToDo(): Int = params[0].toIntOrNull() ?: 0
+
+    /** [MilestoneType.HaveCountable]: the amount the civilization has right now */
+    @Readonly
+    fun getCountableDone(civInfo: Civilization): Int =
+        Countables.getCountableAmount(params[1], GameContext(civInfo)) ?: 0
+
     @Readonly
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
         return when (type!!) {
@@ -151,6 +165,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 originalMajorCapitalsOwned(civInfo) == civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
+            MilestoneType.HaveCountable -> getCountableDone(civInfo) >= getCountableToDo()
             MilestoneType.MoreCountableThanEachPlayer -> {
                 val relevantCivs = civInfo.gameInfo.civilizations.filter { getMoreCountableThanOtherCivRelevant(civInfo, it) }
                 relevantCivs.isNotEmpty() && relevantCivs.all { getMoreCountableThanOtherCivPercent(civInfo, it) > 100f }
@@ -195,6 +210,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     if (completed) amountToDo
                     else civInfo.getCompletedPolicyBranchesCount().tr()
                 "{$uniqueDescription} (${amountDone}/${amountToDo})"
+            }
+            MilestoneType.HaveCountable -> {
+                val amountToDo = getCountableToDo()
+                val amountDone =
+                    if (completed) amountToDo
+                    else getCountableDone(civInfo).coerceAtMost(amountToDo)
+                "{$uniqueDescription} (${amountDone.tr()}/${amountToDo.tr()})"
             }
             MilestoneType.CaptureAllCapitals -> {
                 val amountToDo = civsWithPotentialCapitalsToOwn(civInfo.gameInfo).size
@@ -267,7 +289,8 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             // No extra buttons necessary
             null,
             MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally,
-            MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {}
+            MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote,
+            MilestoneType.HaveCountable -> {}
 
             MilestoneType.AddedSSPartsInCapital -> {
                 val completedSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
@@ -364,6 +387,26 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         return buttons
     }
 
+    /** Attempt to interpret the focus a countable-based milestone suggests, from the Countable type */
+    private fun getFocusFromCountable(countableText: String, ruleset: Ruleset): Victory.Focus =
+        when (Countables.getMatching(countableText, ruleset)) {
+            Countables.Stats -> when (Stat.safeValueOf(countableText)) {
+                Stat.Production -> Victory.Focus.Production
+                Stat.Food -> Victory.Focus.Production
+                Stat.Gold -> Victory.Focus.Gold
+                Stat.Science -> Victory.Focus.Science
+                Stat.Culture -> Victory.Focus.Culture
+                Stat.Happiness -> Victory.Focus.Gold
+                Stat.Faith -> Victory.Focus.Faith
+                else -> Victory.Focus.Production
+            }
+            Countables.Cities, Countables.FilteredCities, Countables.FilteredBuildings, Countables.OwnedTiles -> Victory.Focus.Production
+            Countables.Units, Countables.FilteredUnits -> Victory.Focus.Military
+            Countables.PolicyBranches, Countables.FilteredPolicies -> Victory.Focus.Culture
+            Countables.TileResources, Countables.TileFilterTiles -> Victory.Focus.Production
+            else -> Victory.Focus.Score
+        }
+
     fun getFocus(civInfo: Civilization): Victory.Focus {
         val ruleset = civInfo.gameInfo.ruleset
         return when (type!!) {
@@ -392,26 +435,8 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
             MilestoneType.DestroyAllPlayers, MilestoneType.CaptureAllCapitals -> Victory.Focus.Military
             MilestoneType.CompletePolicyBranches -> Victory.Focus.Culture
-            MilestoneType.MoreCountableThanEachPlayer -> {
-                // Attempt to interpret the focus from the Countable type
-                when (Countables.getMatching(params[0], ruleset)) {
-                    Countables.Stats -> when (Stat.safeValueOf(params[0])) {
-                        Stat.Production -> Victory.Focus.Production
-                        Stat.Food -> Victory.Focus.Production
-                        Stat.Gold -> Victory.Focus.Gold
-                        Stat.Science -> Victory.Focus.Science
-                        Stat.Culture -> Victory.Focus.Culture
-                        Stat.Happiness -> Victory.Focus.Gold
-                        Stat.Faith -> Victory.Focus.Faith
-                        else -> Victory.Focus.Production
-                    }
-                    Countables.Cities, Countables.FilteredCities, Countables.FilteredBuildings, Countables.OwnedTiles -> Victory.Focus.Production
-                    Countables.Units, Countables.FilteredUnits -> Victory.Focus.Military
-                    Countables.PolicyBranches, Countables.FilteredPolicies -> Victory.Focus.Culture
-                    Countables.TileResources, Countables.TileFilterTiles -> Victory.Focus.Production
-                    else -> Victory.Focus.Score
-                }
-            }
+            MilestoneType.MoreCountableThanEachPlayer -> getFocusFromCountable(params[0], ruleset)
+            MilestoneType.HaveCountable -> getFocusFromCountable(params[1], ruleset)
             MilestoneType.WinDiplomaticVote -> Victory.Focus.CityStates
             MilestoneType.ScoreAfterTimeOut -> Victory.Focus.Score
             MilestoneType.WorldReligion -> Victory.Focus.Faith
