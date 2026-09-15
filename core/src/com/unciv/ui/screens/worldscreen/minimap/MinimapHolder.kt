@@ -61,12 +61,22 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         getter = { UncivGame.Current.settings.showPixelImprovements },
         setter = { UncivGame.Current.settings.showPixelImprovements = it }
     )
+    /** Button, next to the minimap, to toggle the road/railroad highlight map overlay.
+     *  Uses its own "MapOverlayToggleRoadHighlight" icon (a copy of the "CityConnection" stat icon's
+     *  pixels, same as the other MapOverlayToggle* buttons here) so mods can restyle this toggle
+     *  independently of the CityConnection stat icon used elsewhere (e.g. in StatusTable). */
+    val roadHighlightImageButton = MapOverlayToggleButton(
+        "TileIcons/MapOverlayToggleRoadHighlight",
+        getter = { UncivGame.Current.settings.showRoadHighlight },
+        setter = { UncivGame.Current.settings.showRoadHighlight = it }
+    )
     val buttons = listOf(
         movementsImageButton,
         yieldImageButton,
         populationImageButton,
         resourceImageButton,
-        improvementsImageButton
+        improvementsImageButton,
+        roadHighlightImageButton
     )
 
     private fun rebuildIfSizeChanged(civInfo: Civilization) {

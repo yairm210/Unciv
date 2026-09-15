@@ -29,6 +29,17 @@ internal class StatusTable(
                 val connectionImage = ImageGetter.getStatIcon("CityConnection")
                 add(connectionImage).size(iconSize)
             }
+        } else if (city.civ.isCityState) {
+            if (city.isBlockaded()) {
+                val blockadeImage = ImageGetter.getImage("OtherIcons/Blockade")
+                add(blockadeImage).size(iconSize)
+            } else if (selectedCiv.isCapitalConnectedToCity(city)) {
+                // Feature request #15417: show at a glance whether a city-state is connected by
+                // road/railroad to our own capital - relevant for the "Route" city-state quest,
+                // and previously only visible by opening the city-state's full quest screen.
+                val connectionImage = ImageGetter.getStatIcon("CityConnection")
+                add(connectionImage).size(iconSize)
+            }
         }
 
         if (city.isInResistance()) {

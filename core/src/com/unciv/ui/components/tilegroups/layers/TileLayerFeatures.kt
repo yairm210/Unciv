@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.unciv.UncivGame
 import com.unciv.view.CivView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.RoadStatus
@@ -17,6 +18,19 @@ private class RoadImage {
 class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     private val roadImages = HashMap<TileView, RoadImage>()
+
+    private fun applyRoadHighlightColor(image: Image, roadStatus: RoadStatus) {
+        // Mutate the actor's own Color object in place (via .set) rather than assigning a shared
+        // Color instance like Color.WHITE by reference - other code (e.g. dim()) mutates
+        // image.color's fields directly, which would otherwise corrupt a shared static Color.
+        if (!UncivGame.Current.settings.showRoadHighlight) {
+            image.color.set(1f, 1f, 1f, 1f)
+            return
+        }
+        val highlightColor = if (roadStatus == RoadStatus.Railroad)
+            strings.tileSetConfig.railroadHighlightColor else strings.tileSetConfig.roadHighlightColor
+        image.color.set(highlightColor)
+    }
 
     private fun updateRoadImages(viewingCiv: CivView?) {
 
@@ -37,7 +51,11 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
                 tileView.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
             }
-            if (currentStatus == roadStatus) continue // the image is correct
+            if (currentStatus == roadStatus) {
+                // Geometry is already correct, but the highlight toggle may have changed since the last update.
+                roadImage?.image?.let { applyRoadHighlightColor(it, roadStatus) }
+                continue
+            }
 
             if (roadImage == null) { // create when missing
                 roadImage = RoadImage().also { roadImages[neighbor] = it }
@@ -54,6 +72,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
             val image = ImageGetter.getImage(strings.orFallback { roadsMap[roadStatus]!! })
             roadImage.image = image
+            applyRoadHighlightColor(image, roadStatus)
 
             val relativeWorldPosition = tileMapView.getNeighborTilePositionAsWorldCoords(tileView, neighbor)
 

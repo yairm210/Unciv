@@ -80,6 +80,8 @@ class GameSettings {
     var showWorkedTiles = false
     var showResourcesAndImprovements = true
     var showPixelImprovements = true
+    /** Highlights roads/railroads in a vivid colour and dims everything else, to make trade routes easier to trace. */
+    var showRoadHighlight = false
     var unitIconOpacity = 1f // default corresponds to fully opaque
 
     //// Performance
@@ -110,6 +112,10 @@ class GameSettings {
     //// Automation
     var autoAssignCityProduction = false
     var autoBuildingRoads = true
+    /** When on, automated ("Automate") workers try to finish connecting all cities (and city-states)
+     *  to the capital before doing other improvement work, instead of only doing so as a last resort.
+     *  Addresses the "workers don't prioritize roads enough" part of GitHub issue #15417. */
+    var prioritizeRoadConnections = false
     var automatedWorkersReplaceImprovements = true
     var stopAutomatedWorkersRemoveVegetation = false
     var automatedUnitsMoveOnTurnStart = false
