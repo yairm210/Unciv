@@ -49,7 +49,7 @@ class MapGenerationTests {
             civ.gameInfo = gameInfo
             gameInfo.civilizations.add(civ)
         }
-        
+
         mapParameters.mapSize = MapSize(MapSize.auto)
         //mapParameters.mapSize = MapSize(MapSize.custom)
         //mapParameters.mapSize.radius = 52

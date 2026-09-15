@@ -245,7 +245,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv() }
         val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
-        // This is mostly just vibes, tries to make the average distance between a civ and it's closest neighbor as close to 13 tiles as possible
+        // This is mostly just vibes, tries to make the average distance between a civ and its closest neighbor as close to 13 tiles as possible
         val majorCivContribution = 384 * numberOfMajorCivs - 134
         val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
 
