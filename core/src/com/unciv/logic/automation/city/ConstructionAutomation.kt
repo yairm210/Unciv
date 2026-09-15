@@ -270,12 +270,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += applyBuildingStats(building, cityBaseline)
         value += getMilitaryBuildingValue(building)
         value += getVictoryBuildingValue(building)
-        value += getOnetimeUniqueBonuses(building)
+        value += getUniqueBonuses(building)
         return value
     }
 
     @Readonly
-    private fun getOnetimeUniqueBonuses(building: Building): Float {
+    private fun getUniqueBonuses(building: Building): Float {
         var value = 0f
         if (building.isWonder) {
             // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
@@ -291,6 +291,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 building.hasUnique(UniqueType.OneTimeGainPopulation) || building.hasUnique(UniqueType.OneTimeGainPopulationRandomCity) -> civInfo.getPersonality().food
                 building.hasUnique(UniqueType.StatPercentFromTradeRoutes) -> civInfo.getPersonality().gold
                 building.hasUnique(UniqueType.Strength) -> civInfo.getPersonality().military
+                building.hasUnique(UniqueType.UnhappinessFromPopulationTypePercentageChange) -> civInfo.getPersonality().happiness
+                building.hasUnique(UniqueType.StatsFromObject) || building.hasUnique(UniqueType.StatsFromSpecialist) -> 10 - civInfo.getPersonality().declareWar // Statue of Liberty
                 building.hasUnique(UniqueType.StatPercentBonusCities) -> civInfo.getPersonality().culture // Sistine Chapel in base game, but players seem to "expect" culture civs to build more wonders in general
                 else -> 0f
             }
