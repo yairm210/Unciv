@@ -5,6 +5,8 @@ package com.unciv.logic.map.mapunit.movement
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
@@ -294,7 +296,10 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         // we should be able to get there this turn
-        if (canMoveTo(finalDestination))
+        // Uses thinksItCanMoveTo, not canMoveTo: this only decides the *target* tile passed to
+        // moveToTile, which does its own tile-by-tile hidden-unit handling. Being permissive here
+        // preserves the existing "head towards it, revealing what's hiding there" behavior.
+        if (thinksItCanMoveTo(finalDestination))
             return finalDestination
 
         // Someone is blocking to the path to the final tile...
@@ -302,7 +307,7 @@ class UnitMovement(val unit: MapUnit) {
         return when (currentTile) {
             in destinationNeighbors -> currentTile // We're right nearby anyway, no need to move
             else -> destinationNeighbors
-                .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
+                .filter { distanceToTiles.containsKey(it) && thinksItCanMoveTo(it) }
                 .minByOrNull { distanceToTiles.getValue(it).totalMovement } // we can get a little closer
                 ?: currentTile // We can't get closer...
         }
@@ -441,6 +446,10 @@ class UnitMovement(val unit: MapUnit) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
                 // can the unit be placed safely there? Is tile either unowned or friendly?
+                // NOTE: deliberately canMoveTo, not thinksItCanMoveTo - we are about to putInTile()
+                // this unit directly with no per-tile hidden-unit safety net, so we need the strict
+                // guarantee that the tile is actually empty, not just "looks empty because the
+                // occupant is invisible to us". See canMoveTo's kdoc.
                 .filter { canMoveTo(it) && it.getOwner()?.isAtWarWith(unit.civ) != true }
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
@@ -527,7 +536,11 @@ class UnitMovement(val unit: MapUnit) {
         val distanceToTiles = getDistanceToTiles(considerZoneOfControl)
         val pathToDestination = distanceToTiles.getPathToTile(destination)
         val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
-        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
+        // thinksItCanMoveTo, not canMoveTo: a tile with an undetected enemy on it must still count
+        // as "reachable" here, or it gets truncated out of pathToLastReachableTile below and the
+        // per-tile getHiddenBlockingUnit() check in the loop never gets a chance to run - silently
+        // dropping the reveal-on-approach behavior.
+        val lastReachableTile = movableTiles.lastOrNull { thinksItCanMoveTo(it) }
             ?: return  // no tiles can pass though/can move to
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
@@ -554,6 +567,22 @@ class UnitMovement(val unit: MapUnit) {
                 // we try again.
                 needToFindNewRoute = true
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
+            }
+
+            // We were allowed to *attempt* moving into this tile even though it secretly contains
+            // a unit of another civ we couldn't see (friendly/allied or enemy, e.g. an undetected
+            // submarine) - moving into it is what reveals that unit, so we stop here instead of
+            // actually entering the tile and overwriting/stacking onto it.
+            // This check happens BEFORE the movement-cost calculation below: the unit never
+            // actually enters this tile, so it must never pay for it. Only the cost of tiles it
+            // genuinely passed through/entered before this one (already accumulated in
+            // passingMovementSpent) gets deducted.
+            val hiddenBlocker = getHiddenBlockingUnit(tile)
+            if (hiddenBlocker != null) {
+                unit.useMovementPoints(passingMovementSpent)
+                notifyHiddenBlockingUnitDiscovered(hiddenBlocker, tile)
+                previousTile = tile
+                break
             }
 
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
@@ -585,6 +614,7 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         val finalTileReached = lastReachedEnterableTile
+        val pathToFinalTileReached = distanceToTiles.getPathToTile(finalTileReached)
 
         // Silly floats which are almost zero
         if (unit.currentMovement < Constants.minimumMovementEpsilon)
@@ -597,7 +627,7 @@ class UnitMovement(val unit: MapUnit) {
         // bring along the payloads
         for (payload in payloadUnits) {
             payload.removeFromTile()
-            for (tile in pathToLastReachableTile) {
+            for (tile in pathToFinalTileReached) {
                 payload.moveThroughTile(tile)
                 if (tile == finalTileReached) break // this is the final tile the transport reached
             }
@@ -698,14 +728,117 @@ class UnitMovement(val unit: MapUnit) {
         && !tile.getCity()!!.hasJustBeenConquered
 
     /**
-     * Designates whether we can enter the tile - without attacking
-     * DOES NOT designate whether we can reach that tile in the current turn
-     * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
+     * Designates whether we can enter the tile - without attacking - GUARANTEED, i.e. the tile
+     * genuinely is (or will be) empty as far as we can tell with full certainty.
+     * DOES NOT designate whether we can reach that tile in the current turn.
+     *
+     * This is the strict twin of [thinksItCanMoveTo]. Use this (not [thinksItCanMoveTo]) for
+     * anything that places a unit onto a tile directly, without going through [moveToTile]'s
+     * per-tile hidden-unit handling - e.g. teleporting or swapping. A unit of another civ - be it
+     * friendly/allied or an enemy - that's invisible to us (e.g. an undetected submarine) is
+     * treated as still occupying the tile: [getCannotMoveToReason] returning
+     * [CannotMoveToReason.TileIsNotEmptyHiddenUnit] still counts as "cannot move to" here, so this
+     * correctly returns false for it instead of pretending the tile is free. true is a guarantee:
+     * if canMoveTo returns true, the move is certain to succeed against a genuinely empty tile.
+     *
+     * @param includeOtherEscortUnit determines whether or not this method will also check its the other escort unit [canMoveTo] if it has one.
      * Leave it as default unless you know what [canMoveTo] does.
      */
     @Readonly
     fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true) =
         getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
+
+    /**
+     * Like [canMoveTo], but permissive towards tiles we only *think* are empty because they
+     * contain a unit of another civ - friendly/allied or enemy - that's invisible to us (e.g. an
+     * undetected submarine). We don't yet know it's there, so for the purposes of an ordinary
+     * movement attempt it's treated as unknown/passable rather than a guaranteed block: concretely,
+     * this returns true whenever [getCannotMoveToReason] returns either no reason at all, or
+     * specifically [CannotMoveToReason.TileIsNotEmptyHiddenUnit] - every other reason still means
+     * false, exactly as for [canMoveTo].
+     *
+     * Attempting to enter such a tile is intentional - as in the base game, ordering the move is
+     * what reveals the hidden unit (see [getHiddenBlockingUnit] and the per-tile check in
+     * [moveToTile]). Multi-turn pathing and "head towards" logic should keep treating these tiles
+     * as reachable/enterable so that behavior isn't lost.
+     *
+     * Never use this result to justify placing a unit outside of the normal [moveToTile] flow -
+     * the tile might genuinely not be empty. Use [canMoveTo] for anything that places a unit
+     * directly (teleporting, swapping, etc). [moveToTile] itself re-checks the actual occupant of
+     * every tile it steps onto via [getHiddenBlockingUnit] before calling putInTile, precisely so
+     * that this permissiveness can never result in overwriting or illegally stacking onto a unit.
+     */
+    @Readonly
+    fun thinksItCanMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
+        val reason = getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit)
+        return reason == null || reason == CannotMoveToReason.TileIsNotEmptyHiddenUnit
+    }
+
+    /**
+     * If [cannotPassThroughReason] identifies [tile] as
+     * [CannotMoveToReason.TileIsNotEmptyHiddenUnit], returns the unseen unit blocking it (e.g. an
+     * undetected submarine). Returns null for tiles that can be passed through, including
+     * capturable unguarded at-war civilians, and for visible blockers handled by normal movement
+     * checks.
+     *
+     * We deliberately let [thinksItCanMoveTo] and [canPassThrough] treat such a tile as passable,
+     * so the player can still order the move - exactly as in the base game, attempting to move
+     * onto a hidden unit's tile is how that unit gets revealed. This function is what stops us
+     * from actually completing that move and silently overwriting/illegally stacking onto the
+     * hidden unit's tile: [moveToTile] calls this for every tile it's about to enter, before ever
+     * calling putInTile, so [thinksItCanMoveTo]'s permissiveness can never reach an actual overwrite.
+     */
+    @Readonly
+    private fun getHiddenBlockingUnit(tile: Tile): MapUnit? {
+        // Do not use cannotPassThroughReason() here: it checks only getFirstUnit(), so an
+        // occupant in the military slot can mask an invisible foreign civilian in the other slot.
+        // Check each slot for both units that are moving together instead.
+        val movingUnits = if (unit.isEscorting())
+            sequenceOf(unit, unit.getOtherEscortUnit()!!)
+        else
+            sequenceOf(unit)
+
+        fun MapUnit.isHiddenBlockerFor(movingUnit: MapUnit): Boolean {
+            if (civ == movingUnit.civ || isVisibleTo(movingUnit.civ)) return false
+
+            // Preserve cannotPassThroughReason()'s exception for an unguarded civilian that can
+            // be captured while moving through the tile.
+            if (isCivilian() && movingUnit.civ.isAtWarWith(civ)
+                && !(movingUnit.baseUnit.isLandUnit && tile.isWater && !movingUnit.cache.canMoveOnWater))
+                return false
+
+            return true
+        }
+
+        return sequenceOf(tile.militaryUnit, tile.civilianUnit)
+            .filterNotNull()
+            .firstOrNull { occupant -> movingUnits.any { occupant.isHiddenBlockerFor(it) } }
+    }
+
+    /**
+     * Notifies the player that a hidden unit was discovered, and - using Unciv's existing
+     * invisible-unit visibility mechanism (the civ's `viewableInvisibleUnitsTiles`, the same set
+     * [MapUnit.isVisibleTo] and the map renderer already consult for units like undetected
+     * submarines) - actually reveals it, instead of only sending a notification while the unit
+     * remains hidden on the map.
+     */
+    private fun notifyHiddenBlockingUnitDiscovered(hiddenUnit: MapUnit, tile: Tile) {
+        // Reveal this tile's normally-invisible unit(s) to us, the same way the game already
+        // displays any other detected-but-invisible unit. This is what makes the discovery
+        // actually show up on the map, not just in the notification text below.
+        unit.civ.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, tile)
+        unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles + tile
+        for (civUnit in unit.civ.units.getCivUnits())
+            civUnit.movement.clearPathfindingCache()
+        unit.civ.addNotification(
+            "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}]!",
+            tile.position,
+            NotificationCategory.War,
+            unit.name,
+            NotificationIcon.War,
+            hiddenUnit.name
+        )
+    }
 
     enum class CannotMoveToReason{
         TerrainImpassable,
@@ -716,36 +849,84 @@ class UnitMovement(val unit: MapUnit) {
         CannotEnterCityCenter,
         EscortCannotMove,
         TileIsNotEmpty,
+        /**
+         * The *only* problem with the tile is a unit of another civ - friendly/allied or an enemy
+         * we're at war with - that we can't currently see (e.g. an undetected submarine). Every
+         * other blocking reason (terrain, foreign land, city center, escort, or occupancy by a
+         * *visible* unit) takes priority over this one: [getCannotMoveToReason] and
+         * [cannotPassThroughReason] only ever return this once every other reason has been ruled
+         * out. Our own civ's units are always visible to us, so they never produce this reason.
+         *
+         * [cannotPassThroughReason] never hides this behind a `null` - it always reports what's
+         * really there, leaving it up to each caller to decide what to do with it: [canMoveTo]
+         * still blocks on it (a hidden unit is not a guarantee of empty space), while
+         * [canPassThrough] and [thinksItCanMoveTo] both treat it as passable, since attempting the
+         * move is what reveals the unit - exactly as in the base game.
+         */
+        TileIsNotEmptyHiddenUnit,
         NoAirUnitTransport,
     }
 
+    /**
+     * Standard movement-blocking reasons - terrain, foreign land, city center, escort, or
+     * occupancy by a *visible* unit - always take priority here. If none of those apply, and the
+     * only remaining problem is occupancy by a unit of another civ (friendly/allied or an enemy)
+     * that's invisible to us (e.g. an undetected submarine), this returns
+     * [CannotMoveToReason.TileIsNotEmptyHiddenUnit] instead of `null`. Our own civ's units are
+     * always visible to us, so they always keep blocking regardless. See the kdoc on
+     * [CannotMoveToReason.TileIsNotEmptyHiddenUnit] for how callers use this distinction.
+     */
     @Readonly
     fun getCannotMoveToReason(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
         if (unit.baseUnit.isAirUnit())
             return getAirUnitCannotMoveToReason(tile, unit)
 
         val canPassThroughReason = if (assumeCanPassThrough) null else cannotPassThroughReason(tile)
-        if (canPassThroughReason != null) return canPassThroughReason
+        // A hidden-unit block is deferred to the very end - every other reason
+        // cannotPassThroughReason can return takes priority over it.
+        var hiddenUnitBlocks = canPassThroughReason == CannotMoveToReason.TileIsNotEmptyHiddenUnit
+        if (canPassThroughReason != null && !hiddenUnitBlocks) return canPassThroughReason
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
             return CannotMoveToReason.CannotEnterCityCenter
 
-        if (includeOtherEscortUnit && unit.isEscorting()
-            && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
-            return CannotMoveToReason.EscortCannotMove
+        if (includeOtherEscortUnit && unit.isEscorting()) {
+            val escortReason = unit.getOtherEscortUnit()!!.movement.getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false)
+            if (escortReason == CannotMoveToReason.TileIsNotEmptyHiddenUnit) hiddenUnitBlocks = true
+            else if (escortReason != null) return CannotMoveToReason.EscortCannotMove
+        }
 
-        val tileIsEmpty = if (unit.isCivilian())
-            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
-                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
-        else
-        // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
-                && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
+        // Check civilian/military occupancy of the tile. A *visible* occupant of the "wrong" slot
+        // is always a hard TileIsNotEmpty. An occupant of another civ (friendly/allied or enemy)
+        // that's invisible to us only sets the deferred hiddenUnitBlocks flag instead - our own
+        // civ's units are always visible to us, so they never take this branch.
+        fun MapUnit.isHiddenToUs() = civ != unit.civ && !isVisibleTo(unit.civ)
 
-        if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
+        val civilianOccupant = tile.civilianUnit
+        val militaryOccupant = tile.militaryUnit
+        if (unit.isCivilian()) {
+            if (civilianOccupant != null && !(allowSwap && civilianOccupant.owner == unit.owner)) {
+                if (!civilianOccupant.isHiddenToUs()) return CannotMoveToReason.TileIsNotEmpty
+                hiddenUnitBlocks = true
+            }
+            if (militaryOccupant != null && militaryOccupant.owner != unit.owner) {
+                if (!militaryOccupant.isHiddenToUs()) return CannotMoveToReason.TileIsNotEmpty
+                hiddenUnitBlocks = true
+            }
+        } else {
+            // can skip checking for airUnit since not a city
+            if (militaryOccupant != null && !(allowSwap && militaryOccupant.owner == unit.owner)) {
+                if (!militaryOccupant.isHiddenToUs()) return CannotMoveToReason.TileIsNotEmpty
+                hiddenUnitBlocks = true
+            }
+            if (civilianOccupant != null && civilianOccupant.owner != unit.owner && !unit.civ.isAtWarWith(civilianOccupant.civ)) {
+                if (!civilianOccupant.isHiddenToUs()) return CannotMoveToReason.TileIsNotEmpty
+                hiddenUnitBlocks = true
+            }
+        }
 
-        return null
+        return if (hiddenUnitBlocks) CannotMoveToReason.TileIsNotEmptyHiddenUnit else null
     }
 
     @Readonly
@@ -788,13 +969,29 @@ class UnitMovement(val unit: MapUnit) {
      * This is the most called function in the entire game,
      * so multiple callees of this function have been optimized,
      * because optimization on this function results in massive benefits!
+     * A tile whose only problem is occupancy by a hidden unit (see
+     * [CannotMoveToReason.TileIsNotEmptyHiddenUnit]) still counts as passable here - attempting to
+     * move through/into it is what reveals the unit, exactly as in the base game. [canMoveTo] is
+     * the strict version that blocks on it instead.
+     *
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canPassThrough] if it has one.
      * Leave it as default unless you know what [canPassThrough] does.
      */
     @Readonly
-    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean
-        = cannotPassThroughReason(tile, includeOtherEscortUnit) == null
+    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
+        val reason = cannotPassThroughReason(tile, includeOtherEscortUnit)
+        return reason == null || reason == CannotMoveToReason.TileIsNotEmptyHiddenUnit
+    }
 
+    /**
+     * Reports the real reason [tile] can't be passed through, if any - including occupancy by a
+     * unit of another civ (friendly/allied or an enemy we're at war with) that's invisible to us
+     * (e.g. an undetected submarine), reported as [CannotMoveToReason.TileIsNotEmptyHiddenUnit]
+     * rather than hidden behind a `null`. It's up to each caller to decide what to do with that
+     * reason - see [canPassThrough], which treats it as passable, and [getCannotMoveToReason],
+     * which defers it behind every other reason. Our own civ's units are always visible to us, so
+     * they're never reported as hidden.
+     */
     @Readonly
     fun cannotPassThroughReason(tile: Tile, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
         if (tile.isImpassible()) {
@@ -841,9 +1038,14 @@ class UnitMovement(val unit: MapUnit) {
             if (!(unit.baseUnit.isLandUnit && tile.isWater && !unit.cache.canMoveOnWater)
                 && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
                 return null
-            // Cannot enter hostile tile with any unit in there
-            if (unit.civ.isAtWarWith(firstUnit.civ))
+            // Cannot enter hostile tile with any unit in there - unless that unit is invisible to
+            // us (e.g. an undetected submarine), in which case we report the distinct
+            // TileIsNotEmptyHiddenUnit reason rather than hiding it as null: attempting to enter
+            // is still what reveals it, but callers need to be able to tell the two situations apart.
+            if (unit.civ.isAtWarWith(firstUnit.civ)) {
+                if (!firstUnit.isVisibleTo(unit.civ)) return CannotMoveToReason.TileIsNotEmptyHiddenUnit
                 return CannotMoveToReason.TileIsNotEmpty
+            }
         }
         if (includeOtherEscortUnit && unit.isEscorting()) {
             val escortReason = unit.getOtherEscortUnit()!!.movement.cannotPassThroughReason(tile,false)

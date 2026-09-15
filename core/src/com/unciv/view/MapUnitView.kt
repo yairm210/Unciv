@@ -50,6 +50,10 @@ class MapUnitView internal constructor(
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
+    /** Permissive twin of [canMoveTo] for the player deciding whether a move may be *attempted* -
+     *  treats a tile whose only problem is an undetected unit of another civ as movable, since
+     *  ordering the move is how such a unit gets revealed. See [UnitMovement.thinksItCanMoveTo]. */
+    @Readonly fun thinksItCanMoveTo(tileView: TileView): Boolean = unit.movement.thinksItCanMoveTo(tileView.unwrap())
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
