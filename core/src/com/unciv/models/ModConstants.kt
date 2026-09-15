@@ -92,7 +92,7 @@ class ModConstants {
     // RiverGenerator: river frequency and length bounds
     var riverCountMultiplier = 0.01f
     var minRiverLength = 5
-    var maxRiverLength = 666  // Do not set to less than the maximal map radius
+    var maxRiverLength = 666  // Do not set to less than the maximal map radius. Set to 0 to disable river generation.
 
     // Factors in formula for Maximum Number of foundable Religions
     var religionLimitBase = 1
