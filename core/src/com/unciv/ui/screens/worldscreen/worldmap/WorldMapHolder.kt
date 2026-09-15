@@ -424,7 +424,6 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnitView>, tileView: TileView) {
-        val tile = tileView.getTile()
         Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -469,7 +468,7 @@ class WorldMapHolder(
                     worldScreen.bottomUnitTable.selectUnit(selectedUnitView) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
-                    val moveHereButtonDto = MoveHereOverlayButtonData(unitsWhoCanMoveThere, tile)
+                    val moveHereButtonDto = MoveHereOverlayButtonData(unitsWhoCanMoveThere, tileView)
                     addTileOverlays(tileView, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
@@ -488,7 +487,7 @@ class WorldMapHolder(
         }
         else {
             // Add "swap with" button
-            val swapWithButtonDto = SwapWithOverlayButtonData(selectedUnitView, tileView.getTile())
+            val swapWithButtonDto = SwapWithOverlayButtonData(selectedUnitView, tileView)
             addTileOverlays(tileView, swapWithButtonDto)
         }
         worldScreen.shouldUpdate = true
@@ -512,7 +511,7 @@ class WorldMapHolder(
                         return@launchOnGLThread
                     }
                     unitConnectRoadPaths[selectedUnitView] = roadPath.map { tileMapView.getTile(it) }
-                    val connectRoadButtonDto = ConnectRoadOverlayButtonData(selectedUnitView, tile)
+                    val connectRoadButtonDto = ConnectRoadOverlayButtonData(selectedUnitView, tileView)
                     addTileOverlays(tileView, connectRoadButtonDto)
                     worldScreen.shouldUpdate = true
                 }
