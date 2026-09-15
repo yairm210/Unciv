@@ -87,14 +87,14 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         return airUnitTable
     }
 
-    fun selectFlag(unit: MapUnit) {
-        getIcon(unit)?.selectUnit()
+    fun selectFlag(unitView: ForeignMapUnitView) {
+        getIcon(unitView)?.selectUnit()
     }
 
-    fun getIcon(unit: MapUnit) : UnitIconGroup? {
-        if (civilianUnitIcon?.unitView?.getUnit() == unit)
+    fun getIcon(unitView: ForeignMapUnitView) : UnitIconGroup? {
+        if (civilianUnitIcon?.unitView == unitView)
             return civilianUnitIcon
-        else if (militaryUnitIcon?.unitView?.getUnit() == unit)
+        else if (militaryUnitIcon?.unitView == unitView)
             return militaryUnitIcon
         return null
     }

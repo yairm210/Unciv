@@ -56,7 +56,7 @@ object WorldMapTileUpdater {
 
         // Update flags for units which have them
         if (!unitView.isAirUnit()) {
-            tileGroup.layerUnitFlag.selectFlag(unitView.getUnit())
+            tileGroup.layerUnitFlag.selectFlag(unitView)
         }
 
         // Fade out less relevant images if a military unit is selected
