@@ -3,7 +3,6 @@ package com.unciv.ui.components.tilegroups.layers
 import com.unciv.UncivGame
 import com.unciv.view.CivView
 import com.unciv.view.ForeignMapUnitView
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
@@ -20,7 +19,7 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     private var militarySlot: UnitSpriteSlot? = null
 
 
-    fun getSpriteSlot(unit: MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
+    fun getSpriteSlot(unitView: ForeignMapUnitView) = if (unitView.isCivilian()) civilianSlot else militarySlot
 
     private fun updateSlot(currentSlot: UnitSpriteSlot?, unitView: ForeignMapUnitView?, isShown: Boolean): UnitSpriteSlot? {
 

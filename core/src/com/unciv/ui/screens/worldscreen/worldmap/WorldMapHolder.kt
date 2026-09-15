@@ -219,7 +219,6 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unitView: MapUnitView, tileView: TileView) {
-        val unit = unitView.getUnit()
         if (unitView.getTile() == tileView) return
         removeUnitActionOverlay()
         selectedTile = tileView
@@ -247,7 +246,7 @@ class WorldMapHolder(
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
             val attackableTile = unitView
-                    .getAttackableEnemies(unit.movement.getDistanceToTiles())
+                    .getAttackableEnemies(unitView.getDistanceToTiles())
                     .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
@@ -367,7 +366,7 @@ class WorldMapHolder(
 
         // Steal the current sprites to our new group
         val unitSpriteAndIcon = Group().apply { setPosition(tileGroup.x, tileGroup.y) }
-        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit.getUnit()) ?: return
+        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit) ?: return
 
         for (spriteImage in unitSpriteSlot.spriteGroup.children.toList()) // toList because actors added remove themselves from previous parent
             unitSpriteAndIcon.addActor(spriteImage)
@@ -380,7 +379,7 @@ class WorldMapHolder(
                 Actions.run {
                     // Disable the final tile, so we won't have one image "merging into" the other
                     // Can only be done after the new group has been updated, to get the spriteGroup
-                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit.getUnit())
+                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit)
                     targetTileSpriteSlot?.spriteGroup?.isVisible = false
                 },
                 *pathToTile.map { tileView ->
@@ -392,7 +391,7 @@ class WorldMapHolder(
                 }.toTypedArray(),
                 Actions.run {
                     // Re-enable the final tile
-                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit.getUnit())
+                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit)
                     targetTileSpriteSlot?.spriteGroup?.isVisible = true
                     worldScreen.shouldUpdate = true
                 },
