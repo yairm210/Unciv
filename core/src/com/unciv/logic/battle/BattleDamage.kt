@@ -51,9 +51,11 @@ object BattleDamage {
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian)
                     modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
 
-            val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
-            if (greatGeneralBonus != 0)
-                modifiers[greatGeneralName] = greatGeneralBonus
+            val greatGenerals = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
+            for (greatGeneral in greatGenerals) {
+                modifiers[greatGeneral.key] = greatGeneral.value
+            }
+            
 
         } else if (combatant is CityCombatant) {
             for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
