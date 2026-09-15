@@ -26,6 +26,7 @@ import kotlinx.coroutines.isActive
 import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.exp
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -173,12 +174,14 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             return map
         }
 
+        val startBiasBoosts = getStartBiasGenerationBoosts(gameParameters, gameInfo)
+
         if (consoleTimings) debug("\nMapGenerator run with parameters %s", mapParameters)
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(map, ruleset, randomness).generateLand()
         }
         runAndMeasure("applyHumidityAndTemperature") {
-            applyHumidityAndTemperature(map)
+            applyHumidityAndTemperature(map, startBiasBoosts)
         }
         runAndMeasure("raiseMountainsAndHills") {
             MapElevationGenerator(map, ruleset, terrainConditions, randomness).raiseMountainsAndHills()
@@ -187,7 +190,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             spawnLakesAndCoasts(map)
         }
         runAndMeasure("spawnVegetation") {
-            spawnVegetation(map)
+            spawnVegetation(map, startBiasBoosts)
         }
         runAndMeasure("spawnRareFeatures") {
             spawnRareFeatures(map)
@@ -524,18 +527,72 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
 
     /**
+     * Whether generation should be nudged so enough terrain exists on the map to satisfy the
+     * game's civs' start biases - otherwise start bias placement and [MapRegions] region-matching
+     * have nothing to work with regardless of priority order, no matter how rare that terrain is.
+     *
+     * Determined from each biased terrain's own [UniqueType.TileGenerationConditions] data rather
+     * than hardcoded terrain names, so this also works for mods that rename or rebalance terrains.
+     */
+    private class StartBiasGenerationBoosts(
+        /** How cold the coldest biased terrain's warmest possible occurrence still is, 0..1 -
+         *  e.g. Tundra (never occurs above -0.4 temperature) yields 0.4. 0 means nothing biased needs cold. */
+        val coldRequired: Float,
+        /** How hot the hottest biased terrain's coolest possible occurrence still is, 0..1 - symmetric to [coldRequired]. */
+        val heatRequired: Float,
+        val needsVegetation: Boolean
+    ) {
+        // Scale the push proportionally to how extreme the requirement actually is, instead of a
+        // flat bump - a terrain that's only mildly cold-locked shouldn't distort the map as much
+        // as one that (in some mod) is locked to near-arctic temperatures only.
+        val temperatureIntensityBoost = (max(coldRequired, heatRequired) * 0.4f).coerceIn(0f, 1f)
+        val vegetationRichnessBoost = if (needsVegetation) 0.15f else 0f
+
+        companion object {
+            val none = StartBiasGenerationBoosts(0f, 0f, false)
+        }
+    }
+
+    private fun getStartBiasGenerationBoosts(gameParameters: GameParameters, gameInfo: GameInfo?): StartBiasGenerationBoosts {
+        if (gameParameters.noStartBias || gameInfo == null)
+            return StartBiasGenerationBoosts.none
+        val majorCivNations = gameInfo.civilizations
+            .filter { ruleset.nations[it.civName]?.isMajorCiv == true }
+            .mapNotNull { ruleset.nations[it.civName] }
+        if (majorCivNations.isEmpty()) // map editor or menu background
+            return StartBiasGenerationBoosts.none
+
+        val requiredBiases = majorCivNations.flatMapTo(mutableSetOf()) {
+            it.getStartBias(ruleset, GameContext(gameInfo = gameInfo))
+        }
+        val biasedTerrainRows = requiredBiases.associateWith { bias -> terrainConditions.filter { it.name == bias && it.isConstrained } }
+            .filterValues { it.isNotEmpty() }
+
+        // A terrain like Desert can occur across almost the entire temperature range as long as
+        // humidity is low, so it contributes ~0 to either requirement here - low humidity isn't
+        // handled by a global skew, since that helps one biased terrain at the direct expense of
+        // every other terrain sharing the same map (see GameStarter's per-civ terraform patch for
+        // how low-humidity biases get guaranteed instead).
+        val coldRequired = biasedTerrainRows.values.maxOfOrNull { rows -> (-rows.maxOf { it.tempTo }).coerceIn(0f, 1f) } ?: 0f
+        val heatRequired = biasedTerrainRows.values.maxOfOrNull { rows -> rows.minOf { it.tempFrom }.coerceIn(0f, 1f) } ?: 0f
+        val needsVegetation = requiredBiases.any { bias -> terrainConditions.any { it.name == bias && it.hasVegitation } }
+
+        return StartBiasGenerationBoosts(coldRequired, heatRequired, needsVegetation)
+    }
+
+    /**
      * [MapParameters.tilesPerBiomeArea] to set biomes size
      * [MapParameters.temperatureintensity] to favor very high and very low temperatures
      * [MapParameters.temperatureShift] to shift temperature towards cold (negative) or hot (positive)
      */
-    private fun applyHumidityAndTemperature(tileMap: TileMap) {
+    private fun applyHumidityAndTemperature(tileMap: TileMap, startBiasBoosts: StartBiasGenerationBoosts = StartBiasGenerationBoosts.none) {
         val humiditySeed = randomness.RNG.nextInt().toDouble()
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
 
         tileMap.setTransients(ruleset)
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
-        val temperatureintensity = tileMap.mapParameters.temperatureintensity
+        val temperatureintensity = (tileMap.mapParameters.temperatureintensity + startBiasBoosts.temperatureIntensityBoost).coerceAtMost(1f)
         val temperatureShift = tileMap.mapParameters.temperatureShift
         val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
@@ -624,13 +681,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     /**
      * [MapParameters.vegetationRichness] is the threshold for vegetation spawn
      */
-    private fun spawnVegetation(tileMap: TileMap) {
+    private fun spawnVegetation(tileMap: TileMap, startBiasBoosts: StartBiasGenerationBoosts = StartBiasGenerationBoosts.none) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
         val vegetationTerrains = terrainFeaturePicker.filter { it.hasVegitation && !it.rareFeature }
             .ifEmpty {terrainFeaturePicker.filter { Constants.vegetation.contains(it.name)}}
         val candidateTerrains = vegetationTerrains.flatMap{ it.terrain.occursOn }
         // some map types are more forested than others
-        val vegetationRichness = tileMap.mapParameters.vegetationRichness + when (tileMap.mapParameters.type) {
+        val vegetationRichness = tileMap.mapParameters.vegetationRichness + startBiasBoosts.vegetationRichnessBoost + when (tileMap.mapParameters.type) {
             MapType.boreal -> +0.10
             else -> 0.0
         }
