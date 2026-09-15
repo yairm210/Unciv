@@ -1004,7 +1004,7 @@ class PathfindingCache(private val unit: MapUnit) {
 
 /** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
-    fun getPathToTile(tile: Tile): List<Tile> {
+    @Readonly fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {
             Log.debug("PathsToTilesWithinTurn#getPathToTile does not contain $tile: $this")
             throw Exception("Can't reach $tile")

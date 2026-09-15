@@ -14,7 +14,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.view.GameView
@@ -276,7 +275,6 @@ class WorldMapHolder(
     }
 
     internal fun moveUnitToTargetTile(selectedUnits: List<MapUnitView>, targetTileView: TileView) {
-        val targetTile = targetTileView.getTile()
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
         // So lets say you have 2 units you want to move in the same direction, right
@@ -286,19 +284,18 @@ class WorldMapHolder(
         // and then calling the function again but without the unit that moved.
 
         val selectedUnitView = selectedUnits.first()
-        val selectedUnit = selectedUnitView.getUnit()
         markUnitMoveTutorialComplete(selectedUnitView) // not too expensive to have it repeat too often
 
         Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
-            val tileToMoveTo: Tile
-            var pathToTile: List<Tile>? = null
+            val tileToMoveToView: TileView
+            var pathToTileViews: List<TileView>? = null
             try {
-                tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+                tileToMoveToView = selectedUnitView.getTileToMoveToThisTurn(targetTileView)
                 if (!selectedUnitView.isAirUnit() && !selectedUnitView.isPreparingParadrop())
-                    pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
+                    pathToTileViews = selectedUnitView.getPathToTile(tileToMoveToView)
             } catch (ex: Exception) {
                 when (ex) {
                     is UnitMovement.UnreachableDestinationException -> {
@@ -321,9 +318,8 @@ class WorldMapHolder(
                     // but until it reaches the headTowards the board has changed and so the headTowards fails.
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                    val tileMapView = worldScreen.selectedGameView.tileMapView
                     val previousTileView = selectedUnitView.getTile()
-                    selectedUnit.movement.moveToTile(tileToMoveTo)
+                    selectedUnitView.tryMoveToTile(tileToMoveToView)
 
                     // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
                     if (previousTileView == selectedUnitView.getTile()){
@@ -340,9 +336,7 @@ class WorldMapHolder(
 
                     worldScreen.shouldUpdate = true
 
-                    if (pathToTile != null) {
-                        val tileToMoveToView = tileMapView.getTile(tileToMoveTo)
-                        val pathToTileViews = pathToTile.map { tileMapView.getTile(it) }
+                    if (pathToTileViews != null) {
                         animateMovement(previousTileView, selectedUnitView, tileToMoveToView, pathToTileViews)
                         if (selectedUnitView.isEscorting()) {
                             animateMovement(previousTileView, selectedUnitView.getOtherEscortUnit()!!, tileToMoveToView, pathToTileViews)
@@ -494,23 +488,20 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitRoadConnecting(selectedUnitView: MapUnitView, tileView: TileView){
-        val selectedUnit = selectedUnitView.getUnit()
-        val tile = tileView.getTile()
-        val tileMapView = worldScreen.selectedGameView.tileMapView
         Concurrency.run("ConnectRoad") {
            val validTile = tileView.isLand &&
                !tileView.isImpassible() &&
                 selectedUnitView.civ().hasExplored(tileView)
 
             if (validTile) {
-                val roadPath: List<Tile>? = selectedUnit.movement.getRoadPath(tile)
+                val roadPath: List<TileView>? = selectedUnitView.getRoadPath(tileView)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tileView)
                         worldScreen.shouldUpdate = true
                         return@launchOnGLThread
                     }
-                    unitConnectRoadPaths[selectedUnitView] = roadPath.map { tileMapView.getTile(it) }
+                    unitConnectRoadPaths[selectedUnitView] = roadPath
                     val connectRoadButtonDto = ConnectRoadOverlayButtonData(selectedUnitView, tileView)
                     addTileOverlays(tileView, connectRoadButtonDto)
                     worldScreen.shouldUpdate = true
