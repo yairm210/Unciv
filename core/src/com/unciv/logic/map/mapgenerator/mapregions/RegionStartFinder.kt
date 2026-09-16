@@ -170,7 +170,7 @@ object RegionStartFinder {
         // Go through all rings
         for (ring in 1..3) {
             // Sum up the values for this ring
-            for (outerTile in tile.getTilesAtDistance(ring)) {
+            tile.forEachTileAtDistance(ring) { outerTile ->
                 val outerTileData = tileData[outerTile]!!
                 if (outerTileData.isJunk)
                     totalJunk++
@@ -226,8 +226,9 @@ object RegionStartFinder {
         region.startPosition = position
 
         for ((ring, penalty) in closeStartPenaltyForRing) {
-            for (outerTile in region.tileMap[position].getTilesAtDistance(ring))
+            region.tileMap[position].forEachTileAtDistance(ring) { outerTile ->
                 tileData[outerTile]!!.addCloseStartPenalty(penalty)
+            }
         }
     }
 }

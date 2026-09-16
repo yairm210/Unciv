@@ -476,13 +476,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     internal fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
-        for (unique in otherCiv.getMatchingUniques(UniqueType.CityStateRestingPoint))
+        otherCiv.forEachMatchingUnique(UniqueType.CityStateRestingPoint) { unique ->
             restingPoint += unique.params[0].toInt()
+        }
 
         if (civInfo.cities.any() && civInfo.getCapital() != null)
-            for (unique in otherCiv.getMatchingUniques(UniqueType.RestingPointOfCityStatesFollowingReligionChange))
+            otherCiv.forEachMatchingUnique(UniqueType.RestingPointOfCityStatesFollowingReligionChange) { unique ->
                 if (otherCiv.religionManager.religion?.name == civInfo.getCapital()!!.religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
+            }
 
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
 
@@ -503,8 +505,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         var modifierPercent = 0f
-        for (unique in otherCiv.getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
+        otherCiv.forEachMatchingUnique(UniqueType.CityStateInfluenceDegradation) { unique ->
             modifierPercent += unique.params[0].toFloat()
+        }
 
         val religion = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
             else civInfo.getCapital()!!.religion.getMajorityReligionName()
@@ -512,7 +515,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv}) {
-            for (unique in civ.getMatchingUniques(UniqueType.OtherCivsCityStateRelationsDegradeFaster)) {
+            civ.forEachMatchingUnique(UniqueType.OtherCivsCityStateRelationsDegradeFaster) { unique ->
                 modifierPercent += unique.params[0].toFloat()
             }
         }
@@ -636,13 +639,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             )
         }
         
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponSigningPeace, ignoreCities = false) { unique ->
             if (otherCiv.matchesFilter(unique.params[0])) {
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
             }
         }
 
-        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+        otherCiv.forEachTriggeredUnique(UniqueType.TriggerUponSigningPeace, ignoreCities = false) { unique ->
             if (civInfo.matchesFilter(unique.params[0])) {
                 UniqueTriggerActivation.triggerUnique(unique, otherCiv)
             }
@@ -711,10 +714,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals, ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals))
+        }
+        otherCiv.forEachTriggeredUnique(UniqueType.TriggerUponDeclaringFriendship, GameContext.IgnoreConditionals, ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+        }
     }
 
     internal fun setFriendshipBasedModifier() {
@@ -761,10 +766,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         // Ignore contitionals as triggerUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals, ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
-        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals))
+        }
+        otherCiv.forEachTriggeredUnique(UniqueType.TriggerUponSigningDefensivePact, GameContext.IgnoreConditionals, ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+        }
     }
 
     internal fun setDefensivePactBasedModifier() {

@@ -49,8 +49,10 @@ class CityCombatant(val city: City) : ICombatant {
         var strength = modConstants.cityStrengthBase
         strength += (city.population.population * modConstants.cityStrengthPerPop) // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
-        for (unique in cityTile.allTerrains.flatMap { it.getMatchingUniques(UniqueType.GrantsCityStrength) })
-            strength += unique.params[0].toInt()
+        for (terrain in cityTile.allTerrains)
+            terrain.forEachMatchingUnique(UniqueType.GrantsCityStrength, GameContext.EmptyState) { unique ->
+                strength += unique.params[0].toInt()
+            }
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleset.technologies.size
         val techsPercentKnown: Float = if (techCount > 0) city.civ.tech.techsResearched.size.toFloat() / techCount else 0.5f // for mods with no tech
@@ -67,11 +69,13 @@ class CityCombatant(val city: City) : ICombatant {
         var buildingsStrength = city.getStrength()
         val gameContext = GameContext(getCivInfo(), city, ourCombatant = this, theirCombatant = theirCombatant, combatAction = combatAction)
 
-        for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, gameContext))
+        getCivInfo().forEachMatchingUnique(UniqueType.BetterDefensiveBuildings, gameContext) { unique ->
             buildingsStrength *= unique.params[0].toPercent()
+        }
         strength += buildingsStrength
 
-        val extraStrength = city.getMatchingUniques(UniqueType.StrengthAmount, gameContext).sumOf { it.params[0].toInt() }
+        var extraStrength = 0
+        city.forEachMatchingUnique(UniqueType.StrengthAmount, gameContext) { extraStrength += it.params[0].toInt() }
         strength += extraStrength
 
         return strength.roundToInt()

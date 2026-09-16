@@ -114,8 +114,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         val mapSizePredef = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller()
         techCost *= mapSizePredef.techCostMultiplier
         var cityModifier = (civInfo.cities.count { !it.isPuppet } - 1) * mapSizePredef.techCostPerCityModifier
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCost)) techCost *= unique.params[0].toPercent()
+        civInfo.forEachMatchingUnique(UniqueType.LessTechCostFromCities) { unique -> cityModifier *= 1 - unique.params[0].toFloat() / 100 }
+        civInfo.forEachMatchingUnique(UniqueType.LessTechCost) { unique -> techCost *= unique.params[0].toPercent() }
         techCost *= 1 + cityModifier
         return techCost.toInt()
     }
@@ -234,7 +234,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for (unique in civInfo.getMatchingUniques(UniqueType.ScienceFromResearchAgreements)) {
+        civInfo.forEachMatchingUnique(UniqueType.ScienceFromResearchAgreements) { unique ->
             researchAgreementModifier += unique.params[0].toFloat() / 200f
         }
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
@@ -325,8 +325,9 @@ class TechManager : IsPartOfGameInfoSerialization {
             }
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch) { newTech.matchesFilter(it.params[0], civInfo.state) })
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponResearch, triggerFilter = { newTech.matchesFilter(it.params[0], civInfo.state) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        }
 
 
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
@@ -349,10 +350,10 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         obsoleteOldUnits(techName)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
-            if (unique.params[1] != techName) continue
-            civInfo.addNotification("You have unlocked [The Long Count]!",
-                MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
+        civInfo.forEachMatchingUnique(UniqueType.MayanGainGreatPerson) { unique ->
+            if (unique.params[1] == techName)
+                civInfo.addNotification("You have unlocked [The Long Count]!",
+                    MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
         }
 
         updateResearchProgress()
@@ -465,17 +466,18 @@ class TechManager : IsPartOfGameInfoSerialization {
                 }
             }
             
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra) { it.params[0] == era.name }) {
+            civInfo.forEachTriggeredUnique(UniqueType.TriggerUponEnteringEra, triggerFilter = { it.params[0] == era.name }) { unique ->
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = "due to entering the [${era.name}]")
             }
         }
 
         // The unfiltered version
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEraUnfiltered))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponEnteringEraUnfiltered, ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(
                 unique,
                 civInfo,
                 triggerNotificationText = "due to entering the [${currentEra.name}]")
+        }
     }
 
     private fun updateEra() {

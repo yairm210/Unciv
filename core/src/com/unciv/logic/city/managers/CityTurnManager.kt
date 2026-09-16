@@ -166,9 +166,10 @@ class CityTurnManager(val city: City) {
         city.cityConstructions.endTurn(stats)
         city.expansion.nextTurn(stats.culture)
         if (city.isBeingRazed) {
-            val removedPopulation =
-                    1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
-                        .sumOf { it.params[0].toInt() - 1 }
+            var removedPopulation = 1
+            city.civ.forEachMatchingUnique(UniqueType.CitiesAreRazedXTimesFaster) {
+                removedPopulation += it.params[0].toInt() - 1
+            }
 
             if (city.population.population <= removedPopulation) {
                 city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
