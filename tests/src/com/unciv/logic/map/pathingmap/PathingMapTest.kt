@@ -1,23 +1,17 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.pathingmap
 
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.PathingMap.Companion.NEVER_LOG
-import com.unciv.logic.map.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromFixedPointBits
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(BaseTestRunner::class)
 class PathingMapTest {
@@ -37,64 +31,9 @@ class PathingMapTest {
     
     @Test // This only exists to reduce how often we accidentally push with verbose logging enabled
     fun verbose_pathing_logs_disabled() {
-        assertEquals(VERBOSE_PATHFINDING_LOGS, NEVER_LOG)
+        Assert.assertEquals(PathingMap.VERBOSE_PATHFINDING_LOGS, PathingMap.NEVER_LOG)
     }
     
-    @Test
-    fun bitsInRouteNodeRoundTrip() {
-        testGame.makeHexagonalMap(209) //209 is smallest radius that uses all bits in tile index
-        val zeroBasedIndex = (1 shl 17) or 1 // 18 bits. value is 131073
-        val tile = testGame.tileMap.tileList[zeroBasedIndex]
-        val relationship = RelationshipLevel.Unforgivable // 3 bits, value is 8
-        val pbmMoveThisTurn = fpmFromFixedPointBits((1 shl 8) or 1) //9 bits. value is 257 aka 13.00
-        val moveThisTurn = fpmFromFixedPointBits((1 shl 8) or 1) //9 bits. value is 257 aka 13.00
-        val turns = (1 shl 5) or 1 // 6 bits. value is 33
-        val parentTile = testGame.tileMap.getClockPositionNeighborTile(tile, 12)!!
-        val attackRange = (1 shl 4) or 1 // 5 bits. value is 17
-        val damagingTiles = 3
-        val underestimatedTotal = fpmFromFixedPointBits((1 shl 13) or 1) //15 bits. value is 8193 aka 409.65move
-
-        val node = RouteNode(
-            tile,
-            relationship,
-            pbmMoveThisTurn,
-            moveThisTurn,
-            turns,
-            parentTile,
-            damagingTiles,
-            true
-        )
-
-        assertEquals(tile.zeroBasedIndex, node.tileIdx)
-        assertEquals(tile, node.tile(testGame.tileMap))
-        assertEquals(12, node.parentClockDir)
-        assertEquals(parentTile, node.parentTile(testGame.tileMap))
-        assertEquals(false, node.canStopOn)
-        assertEquals(moveThisTurn, node.moveUsedThisTurn)
-        assertEquals(pbmMoveThisTurn, node.moveSinceStoppable)
-        assertEquals(turns, node.turns)
-        assertEquals(damagingTiles, node.damagingTiles)
-        assertEquals(false, node.endTurnWithoutMoreDamage)
-        assertEquals(relationship, node.relationshipLevel)
-        assertEquals(true, node.initialized)
-
-        val prioritized = PrioritizedNode(node, underestimatedTotal)
-        assertEquals(tile.zeroBasedIndex, prioritized.tileIdx)
-        assertEquals(underestimatedTotal, prioritized.underestimatedTotal)
-        
-        val reRouteNode = RouteNode(prioritized.bits)
-        assertEquals(tile.zeroBasedIndex, reRouteNode.tileIdx)
-        assertEquals(tile, reRouteNode.tile(testGame.tileMap))
-        // PrioritizedNode drops parentTile
-        assertEquals(moveThisTurn, reRouteNode.moveUsedThisTurn)
-        assertEquals(pbmMoveThisTurn, reRouteNode.moveSinceStoppable)
-        assertEquals(turns, reRouteNode.turns)
-        assertEquals(damagingTiles, reRouteNode.damagingTiles)
-        assertEquals(relationship, reRouteNode.relationshipLevel)
-        assertEquals(true, reRouteNode.initialized)
-    }
-
-
     @Test
     fun shortestPathEvenWhenItsWayMoreTiles() {
         // A straight road from 0,0 up the x axis
@@ -126,16 +65,20 @@ class PathingMapTest {
         val path = pathing.getShortestPath(target)!!
 
         // expect movement along the railroad, even though it's 13 tiles
-        assertEquals(
+        Assert.assertEquals(
             listOf(
                 HexCoord(3, 4),
                 HexCoord(0, 4)
             ),
             path.map { it.position },
         )
-        assertEquals(1, pathing.getCachedNode(target).turns)
-        assertEquals(fpmFromMovement(0.3f), pathing.getCachedNode(target).moveUsedThisTurn)
-        assertEquals("""
+        Assert.assertEquals(1, pathing.getCachedNode(target).turns)
+        Assert.assertEquals(
+            FixedPointMovement.fpmFromMovement(0.3f),
+            pathing.getCachedNode(target).moveUsedThisTurn
+        )
+        Assert.assertEquals(
+            """
         -1     +0     +1     +2     +3     +4     +5     +6    
   +5     /      /     1/1.0  1/1.0  1/1.0  0/1.0  0/1.0  0/1.0 
   +4     /     1/0.3D 1/0.2  1/0.1  0/1.0  0/0.9  0/0.8  0/1.0 
@@ -144,9 +87,10 @@ class PathingMapTest {
   +1     /     0/1.0  0/1.0  0/1.0  0/1.0  0/1.0  0/0.5  0/1.0 
   +0    0/1.0  0/0.0S 0/0.1  0/0.2  0/0.3  0/0.4  0/0.5   /    
   -1    0/1.0  0/1.0  0/1.0  0/1.0  0/1.0  0/1.0   /      /    
-""", pathing.toDebugString(target))
+""", pathing.toDebugString(target)
+        )
         // And affirm cache
-        assertEquals(path, pathing.getShortestPath(target)!!)
+        Assert.assertEquals(path, pathing.getShortestPath(target)!!)
     }
 
     @Test
@@ -175,13 +119,15 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(
-            HexCoord(0, 1),
-            HexCoord(0, 4),
-            HexCoord(0, 5),
-            HexCoord(0, 8),
-        ), path?.map { it.position })
-        assertEquals("""
+        Assert.assertEquals(
+            listOf(
+                HexCoord(0, 1),
+                HexCoord(0, 4),
+                HexCoord(0, 5),
+                HexCoord(0, 8),
+            ), path?.map { it.position })
+        Assert.assertEquals(
+            """
         -3     -2     -1     +0     +1     +2     +3    
   +8                         3/3.0D 4/1.0   /      /    
   +7                  4/1.0  3/2.0  3/2.0  3/2.0  3/1.0 
@@ -195,9 +141,10 @@ class PathingMapTest {
   -1    1/1.0  0/2.0  0/1.0  0/1.0  0/2.0  1/1.0   /    
   -2    1/1.0  0/2.0  0/2.0  0/2.0  1/1.0   /      /    
   -3    1/1.0  1/1.0  1/1.0  1/1.0   /      /      /    
-""", pathing.toDebugString(target))
+""", pathing.toDebugString(target)
+        )
         // And affirm cache
-        assertEquals(path, pathing.getShortestPath(target)!!)
+        Assert.assertEquals(path, pathing.getShortestPath(target)!!)
     }
     
     @Test
@@ -211,18 +158,20 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getMovementToTilesAtPosition()
 
-        assertEquals(path.toString(), 18, path.size)
+        Assert.assertEquals(path.toString(), 18, path.size)
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
-        assertEquals("""
+        Assert.assertEquals(
+            """
         -2     -1     +0     +1     +2    
   +2     /      /      /     0/2.0  0/2.0 
   +1     /     0/2.0  0/2.0  0/1.0  0/2.0 
   +0    0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0 
   -1    0/2.0  0/1.0  0/1.0  0/2.0   /    
   -2    0/2.0  0/2.0  0/2.0   /      /    
-""", pathing.toDebugString())
+""", pathing.toDebugString()
+        )
         // And affirm cache
-        assertEquals(path, pathing.getMovementToTilesAtPosition())
+        Assert.assertEquals(path, pathing.getMovementToTilesAtPosition())
     }
 
     @Test
@@ -237,9 +186,9 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(targetTile, 5)
 
-        assertNull(path)
+        Assert.assertNull(path)
         // And affirm cache
-        assertEquals(path, pathing.getShortestPath(targetTile, 5))
+        Assert.assertEquals(path, pathing.getShortestPath(targetTile, 5))
     }
 
     @Test
@@ -255,9 +204,9 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(targetTile)
 
-        assertNull(path)
+        Assert.assertNull(path)
         // And affirm cache
-        assertEquals(path, pathing.getShortestPath(targetTile))
+        Assert.assertEquals(path, pathing.getShortestPath(targetTile))
     }
 
     @Test
@@ -274,10 +223,10 @@ class PathingMapTest {
             val path = pathing.getShortestPath(targetTile)
             
             if (aerialDistance <= 4) {
-                assertEquals(listOf(targetTile), path)
+                Assert.assertEquals(listOf(targetTile), path)
             } else {
-                assertEquals(2, path!!.size)
-                assertEquals(targetTile, path[1])                
+                Assert.assertEquals(2, path!!.size)
+                Assert.assertEquals(targetTile, path[1])                
             }
         }
     }
@@ -302,16 +251,17 @@ class PathingMapTest {
         
         // cant hit enemy at -4,2 or 3,2 because unit would have no movement left.
         val expected = listOf(
-            HexCoord(-3,2),
-            HexCoord(-2,2),
-            HexCoord(-1,2),
-            HexCoord(0,2),
-            HexCoord(1,2),
-            HexCoord(2,2),
+            HexCoord(-3, 2),
+            HexCoord(-2, 2),
+            HexCoord(-1, 2),
+            HexCoord(0, 2),
+            HexCoord(1, 2),
+            HexCoord(2, 2),
         )
         val actual = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
-        assertEquals(expected, actual)
-        assertEquals("""
+        Assert.assertEquals(expected, actual)
+        Assert.assertEquals(
+            """
         -5     -4     -3     -2     -1     +0     +1     +2    
   +2     /      /     0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0*
   +1     /     0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/2.0  0/3.0 
@@ -321,10 +271,11 @@ class PathingMapTest {
   -3    0/3.0  0/2.5  0/2.0  0/2.0  0/2.0  0/3.0   /      /    
   -4    0/3.0  0/2.5  0/2.5  0/2.5  0/2.5  0/3.0   /      /    
   -5    0/3.0  0/3.0  0/3.0  0/3.0  0/3.0   /      /      /    
-""", pathing.toDebugString())
+""", pathing.toDebugString()
+        )
         // And affirm full recalculation using cached tiles has same result.
         val actual2 = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
-        assertEquals(expected, actual2)
+        Assert.assertEquals(expected, actual2)
     }
 
     @Test
@@ -337,10 +288,13 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val attackableTiles = pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}
 
-        val expected = listOf(HexCoord(0,0))
-        assertEquals(expected, attackableTiles.map {it.position})
+        val expected = listOf(HexCoord(0, 0))
+        Assert.assertEquals(expected, attackableTiles.map { it.position })
         // And affirm full recalculation using cached tiles has same result.
-        assertEquals(expected, pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}.map {it.position})
+        Assert.assertEquals(
+            expected,
+            pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo }
+                .map { it.position })
     }
 
     @Test
@@ -359,9 +313,9 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(target), path)
+        Assert.assertEquals(listOf(target), path)
         val node = pathing.getCachedNode(target)
-        assertEquals(0, node.damagingTiles)
+        Assert.assertEquals(0, node.damagingTiles)
     }
 
     @Test
@@ -385,9 +339,9 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(testGame.getTile(HexCoord(1,0)), target), path)
+        Assert.assertEquals(listOf(testGame.getTile(HexCoord(1, 0)), target), path)
         val node = pathing.getCachedNode(target)
-        assertEquals(1, node.damagingTiles)
+        Assert.assertEquals(1, node.damagingTiles)
     }
 
     @Test
@@ -411,15 +365,17 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(
-            testGame.getTile(HexCoord(1, 0)),
-            testGame.getTile(HexCoord(2, 0)),
-            testGame.getTile(HexCoord(3, 0)),
-            target,
-        ), path)
+        Assert.assertEquals(
+            listOf(
+                testGame.getTile(HexCoord(1, 0)),
+                testGame.getTile(HexCoord(2, 0)),
+                testGame.getTile(HexCoord(3, 0)),
+                target,
+            ), path
+        )
         val node = pathing.getCachedNode(target)
         // Ending our turn there is the only option, crossing all 3 damaging tiles along the way.
-        assertEquals(3, node.damagingTiles)
+        Assert.assertEquals(3, node.damagingTiles)
     }
 
     @Test
@@ -444,7 +400,7 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(target), path)
+        Assert.assertEquals(listOf(target), path)
     }
 
     @Test
@@ -466,8 +422,8 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val path = pathing.getShortestPath(target)
 
-        assertEquals(listOf(testGame.getTile(HexCoord(0, 1)), target), path)
-        assertEquals(1, pathing.getCachedNode(target).damagingTiles)
+        Assert.assertEquals(listOf(testGame.getTile(HexCoord(0, 1)), target), path)
+        Assert.assertEquals(1, pathing.getCachedNode(target).damagingTiles)
     }
 
     @Test
@@ -482,7 +438,7 @@ class PathingMapTest {
             if (tile.position.x < -6 && tile.position.y<1)
                 warriors.add(testGame.addUnit("Warrior", civInfo, tile))
         }
-        assertEquals(18, warriors.size)
+        Assert.assertEquals(18, warriors.size)
         // tell all 19 warriors to move 15 tiles to the right, and 8 up.
         val targets = warriors.map {
             val x = it.getTile().position.x+15
@@ -499,7 +455,7 @@ class PathingMapTest {
         // Ensure all warriors moved more than halfway, and didn't end up single-file
         for (warrior in warriors) {
             val position = warrior.getTile().position
-            assertTrue("$warrior at $position should have moved to x>0", position.x > 0)
+            Assert.assertTrue("$warrior at $position should have moved to x>0", position.x > 0)
         }
     }
 }

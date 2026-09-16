@@ -1,24 +1,17 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.pathingmap
 
 import com.badlogic.gdx.utils.IntIntMap
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ZERO
-import com.unciv.logic.map.PathingMap.Companion.ALWAYS_LOG
-import com.unciv.logic.map.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
-import com.unciv.logic.map.PathingMap.Companion.EndTurnDamageLookup
-import com.unciv.logic.map.PathingMap.Companion.EndSearchPredicate
-import com.unciv.logic.map.PathingMap.Companion.TilePredicate
-import com.unciv.logic.map.PathingMap.Companion.TileMovementCost
-import com.unciv.logic.map.PathingMap.Companion.TileRoadCost
-import com.unciv.logic.map.RouteNode.Companion.MAX_DAMAGING_TILES
-import com.unciv.logic.map.RouteNode.Companion.MAX_TURNS
-import com.unciv.logic.map.RouteNode.Companion.MAX_UNDERESTIMATED_TOTAL
-import com.unciv.logic.map.RouteNode.Companion.TILE_IDX_LO_MASK
-import com.unciv.logic.map.RouteNode.Companion.TILE_IDX_OFFSET
-import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_HI_MASK
-import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_LO_MASK
-import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_OFFSET
+import com.unciv.logic.map.pathingmap.FixedPointMovement.Companion.FPM_ZERO
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.ALWAYS_LOG
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.EndTurnDamageLookup
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.EndSearchPredicate
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.TilePredicate
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.TileMovementCost
+import com.unciv.logic.map.pathingmap.PathingMap.Companion.TileRoadCost
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
@@ -27,40 +20,7 @@ import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-
-// This crams all the information we need about prioritizing a node into a single Long, avoiding allocations
-@JvmInline
-@VisibleForTesting
-value class PrioritizedNode(val bits: Long) {
-    constructor(node: RouteNode, underestimatedTotal: FixedPointMovement)
-        : this(
-        (node.bits and UNDERESTIMATED_TOTAL_HI_MASK.inv()) or
-            toUnderestimatedTotalbits(underestimatedTotal)
-    ) {
-        require(underestimatedTotal > 0) { "underestimatedTotal $underestimatedTotal must be positive" }
-        require(underestimatedTotal <= MAX_UNDERESTIMATED_TOTAL) { "underestimatedTotal $underestimatedTotal exceeds max $MAX_UNDERESTIMATED_TOTAL" }
-    }
-
-    val tileIdx: Int get() { require(initialized); return ((bits shr TILE_IDX_OFFSET) and TILE_IDX_LO_MASK).toInt() }
-
-    val underestimatedTotal: FixedPointMovement get() {
-        val b = ((bits shr UNDERESTIMATED_TOTAL_OFFSET) and UNDERESTIMATED_TOTAL_LO_MASK)
-        return FixedPointMovement.fpmFromFixedPointBits(b.toInt())
-    }
-
-    val initialized: Boolean get() = bits > 0 
-    
-    @Readonly
-    override fun toString(): String = "PrioritizedNode[underestimatedTotal=$underestimatedTotal ${RouteNode(bits)}]"
-
-    companion object {
-        @Pure
-        private fun toUnderestimatedTotalbits(priority: FixedPointMovement): Long
-            = priority.bits.toLong() shl UNDERESTIMATED_TOTAL_OFFSET
-    }
-}
 
 @InternalState
 internal class AStarPathfinder(
@@ -95,7 +55,7 @@ internal class AStarPathfinder(
      */
     init {
         require(timeLimitTurns > 0)
-        require(timeLimitTurns < MAX_TURNS)
+        require(timeLimitTurns < RouteNode.MAX_TURNS)
         // Add all the initial tiles to check to the priority queue
         cache.nodesNeedingNeighbors.forEachSetBit {
             val node = RouteNode(routeNodes[it])
@@ -241,7 +201,9 @@ internal class AStarPathfinder(
             // (usually allied units), pretend we paused before entering the mountains.
             // TODO: Eliminate endTurnDamage call.
             val retreatDamagingTiles = if (currentNode.canStopOn)
-                    (damagingTiles + endTurnDamage(currentTile).coerceAtMost(1)).coerceAtMost(MAX_DAMAGING_TILES)
+                    (damagingTiles + endTurnDamage(currentTile).coerceAtMost(1)).coerceAtMost(
+                        RouteNode.MAX_DAMAGING_TILES
+                    )
                 else damagingTiles
             val turnsDelta = if (currentNode.canStopOn) 1 else 0
             log("queing", "with retroactive pause")
@@ -260,7 +222,8 @@ internal class AStarPathfinder(
         if (damageFreeAnchor.initialized) {
             log("queing", "with retroactive pause before mountains")
             return RouteNode(
-                neighborTile, relationship, FPM_ZERO, damageFreeAnchorCost,
+                neighborTile, relationship,
+                FPM_ZERO, damageFreeAnchorCost,
                 damageFreeAnchor.turns + 1, currentTile, damageFreeAnchor.damagingTiles, neighborDamaging,
             )
         } else {
@@ -268,7 +231,7 @@ internal class AStarPathfinder(
             // means its neighbors will be calculated at a super low priority. In the meantime, another
             // tile might find a route here that doesn't require taking damage, which is the ONLY
             // scenario where a tile can get recalculated.
-            val newDamageTiles = (damagingTiles + endTurnThereDamage).coerceAtMost(MAX_DAMAGING_TILES)
+            val newDamageTiles = (damagingTiles + endTurnThereDamage).coerceAtMost(RouteNode.MAX_DAMAGING_TILES)
             log("queing", "with taking damage")
             return newNode(FPM_ZERO, cost, 1, newDamageTiles)
         }
