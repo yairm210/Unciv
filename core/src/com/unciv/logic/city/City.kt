@@ -789,8 +789,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
             = unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
         fun buildingFilter(unique: Unique): Boolean
             = unique.isLocalEffect && uniqueFilter(unique)
-        cityConstructions.builtBuildingUniqueMap.forEachUnique(::buildingFilter, op)
-        religion.forEachUnique(::uniqueFilter, op)
+        fun multipliedOp(unique: Unique) = unique.forEachMultiplied(gameContext, op)
+        cityConstructions.builtBuildingUniqueMap.forEachUnique(::buildingFilter, ::multipliedOp)
+        religion.forEachUnique(::uniqueFilter, ::multipliedOp)
     }
 
     //endregion
