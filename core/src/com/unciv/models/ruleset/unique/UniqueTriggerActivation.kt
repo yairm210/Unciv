@@ -1015,9 +1015,9 @@ object UniqueTriggerActivation {
                     ?: return null
 
                 return {
-                    revealCenter.getTilesInDistance(radius)
-                        .filter { tileBasedRandom.nextFloat() < chance }
-                        .forEach { it.setExplored(civInfo, true) }
+                    revealCenter.forEachTileInDistance(radius, { tileBasedRandom.nextFloat() < chance }) {
+                        it.setExplored(civInfo, true)
+                    }
                     civInfo.cache.updateViewableTiles()
                     if (notification != null)
                         civInfo.addNotification(
