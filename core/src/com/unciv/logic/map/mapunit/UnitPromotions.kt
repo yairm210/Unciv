@@ -70,7 +70,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     @Readonly
     private fun promotionCostModifier(): Float {
         var totalPromotionCostModifier = 1f
-        for (unique in unit.civ.getMatchingUniques(UniqueType.XPForPromotionModifier)) {
+        unit.civ.forEachMatchingUnique(UniqueType.XPForPromotionModifier) { unique ->
             totalPromotionCostModifier *= unique.params[0].toPercent()
         }
         // base case if you don't have any the unique that reduce or higher the promotion cost

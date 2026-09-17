@@ -121,12 +121,13 @@ class GreatPersonPointsBreakdown private constructor(private val ruleset: Rulese
 
         // And last, the GPP-type-specific GreatPersonEarnedFaster Unique
         val stateForConditionals = city.state
-        for (unique in city.civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
+        city.civ.forEachMatchingUnique(UniqueType.GreatPersonEarnedFaster, stateForConditionals) { unique ->
             val gppName = unique.params[0]
-            if (gppName !in allNames) continue // No sense applying a percentage without base points
-            val bonusEntry = Entry(getUniqueSourceName(unique), guessPediaLink(unique))
-            bonusEntry.counter.add(gppName, unique.params[1].toInt())
-            percentBonuses.add(bonusEntry)
+            if (gppName in allNames) { // No sense applying a percentage without base points
+                val bonusEntry = Entry(getUniqueSourceName(unique), guessPediaLink(unique))
+                bonusEntry.counter.add(gppName, unique.params[1].toInt())
+                percentBonuses.add(bonusEntry)
+            }
         }
     }
 
