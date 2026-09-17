@@ -65,7 +65,7 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement) { // only Improvements heal HP
                     var healAmount = 25f
-                    for (unique in unit.getMatchingUniques(UniqueType.PercentHealthFromPillaging, checkCivInfoUniques = true)) {
+                    unit.forEachMatchingUnique(UniqueType.PercentHealthFromPillaging, checkCivInfoUniques = true) { unique ->
                         healAmount *= unique.params[0].toPercent()
                     }
                     unit.healBy(healAmount.toInt())
@@ -87,7 +87,7 @@ object UnitActionsPillage {
         var pillageYield = Stats()
         val stateForConditionals = unit.cache.state
         val random = Random(unit.civ.gameInfo.turns * unit.getTile().position.hashCode().toLong())
-        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom, stateForConditionals)) {
+        improvement.forEachMatchingUnique(UniqueType.PillageYieldRandom, stateForConditionals) { unique ->
             for ((stat, value) in unique.stats) {
                 var yieldsToAdd = Stats()
                 // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12
@@ -99,7 +99,7 @@ object UnitActionsPillage {
                 pillageYield.add(yieldsToAdd)
             }
         }
-        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed, stateForConditionals)) {
+        improvement.forEachMatchingUnique(UniqueType.PillageYieldFixed, stateForConditionals) { unique ->
             var yieldsToAdd = unique.stats
             if (unique.isModifiedByGameSpeed())
                 yieldsToAdd *= unit.civ.gameInfo.speed.modifier
@@ -109,7 +109,7 @@ object UnitActionsPillage {
         }
 
         //Multiply according to uniques
-        for (unique in unit.getMatchingUniques(UniqueType.PercentYieldFromPillaging, checkCivInfoUniques = true)) {
+        unit.forEachMatchingUnique(UniqueType.PercentYieldFromPillaging, checkCivInfoUniques = true) { unique ->
             pillageYield *= unique.params[0].toPercent()
         }
 

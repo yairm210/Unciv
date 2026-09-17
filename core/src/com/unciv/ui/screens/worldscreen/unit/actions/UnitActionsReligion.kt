@@ -79,8 +79,9 @@ object UnitActionsReligion {
     private fun getPressureAddedFromSpread(unit: MapUnit): Int {
         var pressureAdded = unit.baseUnit.religiousStrength.toFloat()
 
-        for (unique in unit.getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
+        unit.forEachMatchingUnique(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true) { unique ->
             pressureAdded *= unique.params[0].toPercent()
+        }
 
         return pressureAdded.toInt()
     }
@@ -101,7 +102,7 @@ object UnitActionsReligion {
             title = title,
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
-                for (unique in unit.getMatchingUniques(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true)) {
+                unit.forEachMatchingUnique(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true) { unique ->
                     unit.civ.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 val previousReligion = city.religion.getMajorityReligion()
