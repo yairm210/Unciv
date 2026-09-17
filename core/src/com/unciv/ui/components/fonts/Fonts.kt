@@ -10,6 +10,7 @@ import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.fonts.Fonts.extractPixmapFromTextureRegion
 import com.unciv.ui.components.fonts.Fonts.font
 import com.unciv.ui.components.fonts.Fonts.fontImplementation
+import java.nio.ByteOrder
 import kotlin.math.ceil
 
 /**
@@ -51,6 +52,24 @@ object Fonts {
         fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
         font = fontImplementation.getBitmapFont()
         font.data.markupEnabled = true
+    }
+
+    /** Creates an RGBA font pixmap from row-major ARGB pixels, converting [argb] in place.
+     * Transparent pixels keep white RGB so mipmap filtering does not darken glyph edges.
+     */
+    fun pixmapFromArgb(width: Int, height: Int, argb: IntArray): Pixmap {
+        require(argb.size == width * height)
+        for (i in argb.indices) {
+            val rgba = Integer.rotateLeft(argb[i], 8)
+            argb[i] = if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba
+        }
+        return Pixmap(width, height, Pixmap.Format.RGBA8888).apply {
+            blending = Pixmap.Blending.None
+            // RGBA integers must be stored as R, G, B, A bytes on either endianness.
+            // The view's bulk put avoids a JNI drawPixel call for every pixel and
+            // leaves the original buffer's position, limit and byte order untouched.
+            pixels.duplicate().order(ByteOrder.BIG_ENDIAN).asIntBuffer().put(argb)
+        }
     }
 
     /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
