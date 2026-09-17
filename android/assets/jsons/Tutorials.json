@@ -770,6 +770,8 @@
         "name": "Default Promotions",
         "category": "Units",
         "civilopediaText": [
+//            {"text": "After selecting a sets of default promotions, the same promotion will be apply  "},
+            {},
             {"text":  "Default promotions allows the player to select a set of default promotions that will be apply to the same unit when built in the city where the promotions were selected."},
             {},
             {"text": "After selecting some promotions you want to be a default promotions, click on 'Default promotions for [Warrior]' then click 'Pick promotions'."},
