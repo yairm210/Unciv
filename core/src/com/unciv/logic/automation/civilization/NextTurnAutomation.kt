@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.MilestoneType
@@ -562,27 +563,35 @@ object NextTurnAutomation {
             && civInfo.getHappiness() >= 5 // live happiness - statsForNextTurn is stale mid-turn, so a multi-city conquest wave would otherwise annex several puppets against a pre-conquest reading
             && civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8 // don't go below -10 happiness due to annexing
 
-    fun automateCities(civInfo: Civilization) {
+    private fun civHasSignificantlyWeakerMilitaryThanEnemies(civInfo: Civilization): Boolean {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
-                civInfo.gameInfo.civilizations
-                    .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
-                    .sumOf { it.getStatForRanking(RankingType.Force) }
-        val civHasSignificantlyWeakerMilitaryThanEnemies =
-                ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
-        for (city in civInfo.cities) {
-            if (shouldAnnexCity(civInfo, city)) city.annexCity()
+            civInfo.gameInfo.civilizations
+                .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
+                .sumOf { it.getStatForRanking(RankingType.Force) }
+        return ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
+    }
+    
+    fun automateCities(civInfo: Civilization) {
+        val civHasSignificantlyWeakerMilitaryThanEnemies = civHasSignificantlyWeakerMilitaryThanEnemies(civInfo)
+        for (city in civInfo.cities) 
+            automateCity(city, civHasSignificantlyWeakerMilitaryThanEnemies)
+    }
+    
+    fun automateCity(city: City, civHasSignificantlyWeakerMilitaryThanEnemies: Boolean?=null) {
+        val civInfo = city.civ
+        if (shouldAnnexCity(civInfo, city)) city.annexCity()
+        val strongMilitary = civHasSignificantlyWeakerMilitaryThanEnemies ?: civHasSignificantlyWeakerMilitaryThanEnemies(civInfo)
 
-            // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
-            val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
-            if (city.health < city.getMaxHealth() || (civHasSignificantlyWeakerMilitaryThanEnemies && !onSpaceshipPart)) {
-                Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
-                if (city.cityConstructions.constructionQueue.isNotEmpty())
-                    continue // found a unit to build so move on
-            }
-
-            city.cityConstructions.chooseNextConstruction()
+        // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
+        val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
+        if (city.health < city.getMaxHealth() || (strongMilitary && !onSpaceshipPart)) {
+            Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
+            if (city.cityConstructions.constructionQueue.isNotEmpty())
+                return // found a unit to build so move on
         }
+
+        city.cityConstructions.chooseNextConstruction()
     }
 
     private fun trainSettler(civInfo: Civilization) {
@@ -724,5 +733,53 @@ object NextTurnAutomation {
                 minDistance = CityDistance(foreignCity, currentDistance)
         }
         return minDistance
+    }
+}
+
+/** Automates a single city's production or a single unit's turn at a time, for debugging/profiling
+ *  the UI update triggered by each such step, rather than a whole civ's turn at once.
+ *  Falls back to automating the rest of the civ's turn once no city or unit is left to automate.
+ *
+ *  Each call either selects a new automatable [City]/[MapUnit] and returns it *without* automating
+ *  it yet (so the UI can select/scroll to it first), or, if [currentlySelectedThing] is already
+ *  that automatable thing, automates it and returns it again (so the UI can scroll to its new
+ *  position/state). This lets the caller always scroll to whatever it's about to see change. */
+class SingleStepAutomator(
+    private val civInfo: Civilization,
+    private val currentlySelectedThing: () -> ICombatant?
+) {
+    private fun findNextAutomatable(): ICombatant? {
+        val city = civInfo.cities.firstOrNull { !it.isPuppet && it.cityConstructions.currentConstructionName().isEmpty() }
+        if (city != null) return CityCombatant(city)
+        val unit = civInfo.units.getDueUnits().firstOrNull()
+        if (unit != null) return MapUnitCombatant(unit)
+        return null
+    }
+
+    private fun isAutomatable(combatant: ICombatant): Boolean = when (combatant) {
+        is CityCombatant -> combatant.city.civ == civInfo && !combatant.city.isPuppet
+            && combatant.city.cityConstructions.currentConstructionName().isEmpty()
+        is MapUnitCombatant -> combatant.unit.civ == civInfo && civInfo.units.getDueUnits().contains(combatant.unit)
+        else -> false
+    }
+
+    /** Returns the [City]/[MapUnit] (wrapped as an [ICombatant]) that either was just automated, or
+     *  should be selected next before being automated on a later call; or null once the rest of the
+     *  civ's turn was automated because nothing was left to single-step. */
+    fun automateSingleStep(): ICombatant? {
+        val selected = currentlySelectedThing()
+        if (selected != null && isAutomatable(selected)) {
+            when (selected) {
+                is CityCombatant -> NextTurnAutomation.automateCity(selected.city)
+                is MapUnitCombatant -> UnitAutomation.automateUnitMoves(selected.unit)
+            }
+            return selected
+        }
+
+        val next = findNextAutomatable()
+        if (next != null) return next
+
+        TurnManager(civInfo).automateTurn()
+        return null
     }
 }
