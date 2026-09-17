@@ -709,25 +709,27 @@ class Civilization : IsPartOfGameInfoSerialization {
         ignoreCities: Boolean,
         op: (Unique)->Unit,
     ) {
-        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // Gathering all uniques into a list first since triggers can add e.g. buildings
         // which contain triggers, causing concurrent modification errors.
-        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
-        val uniqueFilter = { unique: Unique -> unique.getModifiers(trigger).any(triggerFilter) }
+        // Trigger conditions like [trigger] are modifiers on other uniques, not uniques of
+        // their own type, so we must scan all uniques (as getTriggeredUniques does) rather
+        // than look [trigger] up as if it were a unique's own type.
+        val uniqueFilter = { unique: Unique -> unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext) }
         val uniqueList = ArrayList<Unique>(100)
         val listOp: (Unique)->Unit = { unique: Unique -> uniqueList.add(unique) }
-        nation.uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+        nation.uniqueMap.forEachUnique(uniqueFilter, listOp)
         if (!ignoreCities) {
             cities.forEach {city ->
-                city.cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+                city.cityConstructions.builtBuildingUniqueMap.forEachUnique(uniqueFilter, listOp)
             }
         }
-        religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        policies.policyUniques.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        tech.techUniques.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        getEra().uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        gameInfo.getGlobalUniques().uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+        religionManager.religion?.founderBeliefUniqueMap?.forEachUnique(uniqueFilter, listOp)
+        policies.policyUniques.forEachUnique(uniqueFilter, listOp)
+        tech.techUniques.forEachUnique(uniqueFilter, listOp)
+        getEra().uniqueMap.forEachUnique(uniqueFilter, listOp)
+        gameInfo.getGlobalUniques().uniqueMap.forEachUnique(uniqueFilter, listOp)
         // now its safe to do the op, which might mutate the lists
-        uniqueList.forEach(op)
+        uniqueList.forEach { it.forEachMultiplied(gameContext, op) }
     }
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
