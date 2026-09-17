@@ -270,6 +270,33 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
 
+    /**
+     * Records a normally-invisible enemy/other unit that one of our units has detected, so that it
+     * keeps showing up on the map (see [MapUnit.isVisibleTo] and [viewableInvisibleUnitsTiles])
+     * even after the detecting unit's own visibility of that tile lapses.
+     *
+     * This needs to persist across save/load, so - unlike [viewableInvisibleUnitsTiles] and the rest
+     * of [CivInfoTransientCache][com.unciv.logic.civilization.transients.CivInfoTransientCache],
+     * which are rebuilt from scratch every time - it stores plain serializable data (the discovered
+     * unit's [id][MapUnit.id] and its last-known tile position) rather than direct object references.
+     *
+     * @property unitId [MapUnit.id] of the discovered unit.
+     * @property tilePosition Position of the tile the unit was discovered on.
+     */
+    class DiscoveredInvisibleUnitMemory() : IsPartOfGameInfoSerialization {
+        constructor(unitId: Int, tilePosition: HexCoord) : this() {
+            this.unitId = unitId
+            this.tilePosition = tilePosition
+        }
+        var unitId: Int = Constants.NO_ID
+        lateinit var tilePosition: HexCoord
+        @Readonly fun clone() = DiscoveredInvisibleUnitMemory(unitId, tilePosition)
+    }
+    /** Deep clone an ArrayList of [DiscoveredInvisibleUnitMemory]s. */
+    @Readonly private fun ArrayList<DiscoveredInvisibleUnitMemory>.copy() = ArrayList(this.map { it.clone() })
+    /** @see DiscoveredInvisibleUnitMemory */
+    var discoveredInvisibleUnitTiles = ArrayList<DiscoveredInvisibleUnitMemory>()
+
     var hasMovedAutomatedUnits = false
 
     @Transient
@@ -350,6 +377,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
+        toReturn.discoveredInvisibleUnitTiles = discoveredInvisibleUnitTiles.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
