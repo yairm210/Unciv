@@ -38,6 +38,7 @@ internal class DebugTab(
         if (curGameInfo != null) {
             addCheckbox("God mode (current game)", curGameInfo.gameParameters::godMode)
         }
+        addCheckbox("Autoplay one unit at a time", settings.autoPlay::autoPlayOneUnit)
 
         addCheckbox("Save games compressed", UncivFiles::saveZipped)
         addCheckbox("Save maps compressed", MapSaver::saveZipped)
