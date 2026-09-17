@@ -27,8 +27,6 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
 
-    private val discoveredInvisibleUnitTiles = HashMap<MapUnit, Tile>()
-
     @Transient
     var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
 
@@ -169,15 +167,22 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
-        discoveredInvisibleUnitTiles.entries.removeAll { (unit, lastKnownTile) ->
-            unit.isDestroyed || unit.currentTile != lastKnownTile || unit !in lastKnownTile.getUnits()
+        civInfo.discoveredInvisibleUnitTiles.removeAll { memory ->
+            // The unit isn't stored directly (it needs to persist through save/load), so re-resolve
+            // it from its last-known tile by id each time, and drop the memory once it no longer holds.
+            val lastKnownTile = civInfo.gameInfo.tileMap[memory.tilePosition]
+            lastKnownTile.getUnits().none { it.id == memory.unitId && !it.isDestroyed }
         }
-        newViewableInvisibleTiles.addAll(discoveredInvisibleUnitTiles.values)
+        newViewableInvisibleTiles.addAll(
+            civInfo.discoveredInvisibleUnitTiles.map { civInfo.gameInfo.tileMap[it.tilePosition] }
+        )
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
     fun addDiscoveredInvisibleUnitTile(unit: MapUnit, tile: Tile) {
-        discoveredInvisibleUnitTiles[unit] = tile
+        // Replace any existing memory of this unit (it may have moved) rather than accumulating duplicates
+        civInfo.discoveredInvisibleUnitTiles.removeAll { it.unitId == unit.id }
+        civInfo.discoveredInvisibleUnitTiles.add(Civilization.DiscoveredInvisibleUnitMemory(unit.id, tile.position))
     }
 
     var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()
