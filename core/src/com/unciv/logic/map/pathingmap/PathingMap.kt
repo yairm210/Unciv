@@ -1,5 +1,6 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.pathingmap
 
+import androidx.collection.MutableIntList
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation
 import com.unciv.logic.automation.civilization.UseGoldAutomation
@@ -7,12 +8,13 @@ import com.unciv.logic.automation.unit.RoadBetweenCitiesAutomation
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ONE
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_POINT_FIVE
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ZERO
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.pathingmap.FixedPointMovement.Companion.FPM_POINT_FIVE
+import com.unciv.logic.map.pathingmap.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.MapPathing.roadPreferredMovementCost
-import com.unciv.logic.map.RouteNode.Companion.MAX_MOVE_THIS_TURN
+import com.unciv.logic.map.pathingmap.RouteNode.Companion.MAX_MOVE_THIS_TURN
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -26,6 +28,7 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.get
 
 /**
  * `PathingMap` is a class that coordinates the pathing caches and calculations.
@@ -43,8 +46,8 @@ import java.util.concurrent.atomic.AtomicReference
  * only among routes of otherwise equal priority.
  *
  * This completely replaces [UnitMovement.getMovementToTilesAtPosition], [UnitMovement.getShortestPath],
- * [UnitMovement.getDistanceToTiles], [AStar], [MapPathing.getPath], [MapPathing.getConnection], and
- * [MapPathing.getRoadPath].
+ * [UnitMovement.getDistanceToTiles], [com.unciv.logic.map.AStar], [com.unciv.logic.map.MapPathing.getPath], [com.unciv.logic.map.MapPathing.getConnection], and
+ * [com.unciv.logic.map.MapPathing.getRoadPath].
  *
  * Debugging help:
  * - Set [VERBOSE_PATHFINDING_LOGS] to [ALWAYS_LOG] or to a specific starting coordinate.
@@ -109,7 +112,10 @@ class PathingMap(
             cacheRef.set(null) // if the cache is invalid, dump it
         }
         val newCache = PathingMapCache(latestKey, tileMap) // otherwise, make a new cache
-        val movementUsedThisTurn = (latestKey.fullMove - latestKey.moveRemaining).coerceIn(FPM_ZERO, MAX_MOVE_THIS_TURN)
+        val movementUsedThisTurn = (latestKey.fullMove - latestKey.moveRemaining).coerceIn(
+            FixedPointMovement.FPM_ZERO,
+            MAX_MOVE_THIS_TURN
+        )
         val tile = tileMap[latestKey.startingPoint]
         val root = RouteNode.rootNode(tile, movementUsedThisTurn)
         newCache.routeNodes[tile.zeroBasedIndex] = root.bits
@@ -166,13 +172,14 @@ class PathingMap(
                 Log.debug("#getShortestPath returning no path to $destination for $debugMapType $debugId")
             return null
         }
-        val result = pathAsList(bestTarget, cache)
+        val result = if (bestTarget.damagingTiles == 0) pathAsListNoDamage(bestTarget, cache)
+            else pathAsListWithDamage(destination, cache)
         if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
             Log.debug("#getShortestPath returning ${result.map{it.position}} to $destination for $debugMapType $debugId")
         return result
     }
 
-    private fun pathAsList(targetNode: RouteNode, cache: PathingMapCache): MutableList<Tile> {
+    private fun pathAsListNoDamage(targetNode: RouteNode, cache: PathingMapCache): MutableList<Tile> {
         // Now routeNodes has the shortest route, so we extract it into a list and return
         var currentNode = targetNode
         val result = mutableListOf(currentNode.tile(tileMap))
@@ -181,13 +188,96 @@ class PathingMap(
             val parentTile = currentNode.parentTile(tileMap)
             val parentNode = RouteNode(cache.routeNodes[parentTile.zeroBasedIndex])
             if (parentTile.position == cache.key.startingPoint) break
-            if (parentNode.turns < turns && parentNode.endTurnWithoutMoreDamage && parentNode.canMoveTo) {
+            if (parentNode.turns < turns && parentNode.endTurnWithoutMoreDamage) {
                 result.add(parentTile)
                 turns = parentNode.turns
             }
             currentNode = parentNode
         }
         return result.asReversed()
+    }
+
+    /**
+     * Reconstructs the turn-by-turn waypoint list for the already-found route ending at
+     * [targetTile], for the case where the route DOES take damage somewhere.
+     *
+     * The cached RouteNode chain's own turns/moveUsedThisTurn bookkeeping can be slightly ahead of
+     * its own physical parentTile chain -- e.g. a damage-free retroactive pause anchors moveUsedThisTurn
+     * and turns to an *earlier* tile than the immediate physical predecessor, so comparing those
+     * fields between physically-adjacent nodes doesn't reliably reproduce per-hop cost or turn
+     * boundaries. So instead we rewalk the (already known, physically correct) tile chain from
+     * scratch, recomputing per-hop cost/damage directly -- cheap, since it's only O(path length),
+     * not O(search).
+     * */
+    private fun pathAsListWithDamage(targetTile: Tile, cache: PathingMapCache): MutableList<Tile> {
+        // get the whole list of tiles in the selected path, and reverse it
+        val pathTileIndecies = MutableIntList(16)
+        var walkTile = targetTile
+        while (walkTile.position != cache.key.startingPoint) {
+            pathTileIndecies.add(walkTile.zeroBasedIndex)
+            val node = RouteNode(cache.routeNodes[walkTile.zeroBasedIndex])
+            walkTile = node.parentTile(tileMap)
+        }
+        pathTileIndecies.reverse()
+
+        // now recalculate the optimal stop positions
+        val startTile = tileMap[cache.key.startingPoint]
+        val fpmFullMovement = cache.key.fullMove
+        val result = mutableListOf<Tile>()
+        fun addWaypoint(tile: Tile) {
+            if (tile != startTile && (result.isEmpty() || result.last() != tile)) result.add(tile)
+        }
+        var moveThisTurn = FixedPointMovement.FPM_ZERO
+        var previousTile = startTile
+        var previousNode = RouteNode(cache.routeNodes[startTile.zeroBasedIndex])
+        var lastFullSafeTile = startTile
+        var moveSinceFullSafe = FixedPointMovement.FPM_ZERO
+        var lastStoppableTile = startTile
+        var moveSinceStoppable = FixedPointMovement.FPM_ZERO
+        for (i in 0..<pathTileIndecies.size) {
+            val nextTile = tileMap.tileList[pathTileIndecies[i]]
+            val nextNode = RouteNode(cache.routeNodes[nextTile.zeroBasedIndex])
+            val moveCost = if (!nextNode.endTurnWithoutMoreDamage) cost(previousTile, nextTile)
+                else if (nextNode.turns == previousNode.turns) nextNode.moveUsedThisTurn - previousNode.moveUsedThisTurn
+                else nextNode.moveUsedThisTurn
+
+            if (previousNode.endTurnWithoutMoreDamage && !nextNode.endTurnWithoutMoreDamage) {
+                lastFullSafeTile = previousTile
+                moveSinceFullSafe = FixedPointMovement.FPM_ZERO
+            }
+            if (previousNode.canStopOn && !nextNode.canStopOn) {
+                lastStoppableTile = previousTile
+                moveSinceStoppable = FixedPointMovement.FPM_ZERO
+            }
+            moveSinceFullSafe += moveCost
+            moveSinceStoppable += moveCost
+
+            moveThisTurn += moveCost
+            if (moveThisTurn > fpmFullMovement) { // choose best place to end the turn
+                val endTurnTile: Tile
+                if (moveSinceFullSafe < moveThisTurn) { // end turn on last tile that was non-damaging
+                    endTurnTile = lastFullSafeTile
+                    moveThisTurn = moveSinceFullSafe
+                } else if (moveSinceStoppable < moveThisTurn) { // end turn on last stoppable tile
+                    endTurnTile = lastStoppableTile
+                    moveThisTurn = moveSinceStoppable
+                } else { //end turn on previous tile
+                    endTurnTile = previousTile
+                    moveThisTurn = moveCost
+                }
+                addWaypoint(endTurnTile)
+                lastFullSafeTile = endTurnTile
+                lastStoppableTile = endTurnTile
+                moveSinceFullSafe = moveThisTurn
+                moveSinceStoppable = moveThisTurn
+            }
+            previousTile = nextTile
+            previousNode = nextNode
+        }
+        // The destination is always the final waypoint, whether or not it happened to also be a
+        // forced turn-boundary above.
+        addWaypoint(targetTile)
+        return result
     }
 
 
@@ -396,10 +486,10 @@ class PathingMap(
         }
 
         @Suppress("unused")
-        internal val ALWAYS_LOG: HexCoord = HexCoord(0xFFFF,0xFFFE)
+        internal val ALWAYS_LOG: HexCoord = HexCoord(0xFFFF, 0xFFFE)
         @Suppress("unused")
         @VisibleForTesting
-        val NEVER_LOG: HexCoord = HexCoord(0xFFFF,0xFFFF)
+        val NEVER_LOG: HexCoord = HexCoord(0xFFFF, 0xFFFF)
         /** You can temporarily set this to a tile position, e.g. a unit's, or to [ALWAYS_LOG],
          *  to enable verbose logging for that thing's pathfinding or for everything */
         @VisibleForTesting
@@ -429,7 +519,17 @@ class PathingMap(
                 { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
                 { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
-                { from, to -> fpmFromMovement(MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, from, to, considerZoneOfControl, includeEscortUnit)) },
+                { from, to ->
+                    fpmFromMovement(
+                        MovementCost.getMovementCostBetweenAdjacentTilesEscort(
+                            unit,
+                            from,
+                            to,
+                            considerZoneOfControl,
+                            includeEscortUnit
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(unit.civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(unit.civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -445,7 +545,15 @@ class PathingMap(
                 { isLandTileCanAttackThrough(civ, it, targetCiv) },
                 { true },
                 { 0 },
-                { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
+                { from, to ->
+                    fpmFromMovement(
+                        roadPreferredMovementCost(
+                            civ,
+                            from,
+                            to
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -461,7 +569,15 @@ class PathingMap(
                 { isTileCanAttackThrough(civ, it, targetCiv) },
                 { true },
                 { 0 },
-                { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
+                { from, to ->
+                    fpmFromMovement(
+                        roadPreferredMovementCost(
+                            civ,
+                            from,
+                            to
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -477,18 +593,21 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createRoadPathingMap",
-                { PathingMapCacheKey(startingPoint.position,  FPM_POINT_FIVE, FPM_POINT_FIVE) },
-                {MapPathing.isValidRoadPathTile(civ, it) },
+                { PathingMapCacheKey(startingPoint.position, FPM_POINT_FIVE, FPM_POINT_FIVE) },
+                { MapPathing.isValidRoadPathTile(civ, it) },
                 { true },
                 { 0 },
-                { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FPM_ONE },
-                { FPM_ONE },
+                { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FixedPointMovement.FPM_ONE },
+                { FixedPointMovement.FPM_ONE },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
         }
 
         @Readonly
-        private fun civPathExistCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_MOVE_THIS_TURN)
+        private fun civPathExistCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint,
+            MAX_MOVE_THIS_TURN,
+            MAX_MOVE_THIS_TURN
+        )
 
         @Readonly
         private fun isTileCanAttackThrough(civInfo: Civilization, tile: Tile, targetCiv: Civilization): Boolean {
@@ -501,5 +620,13 @@ class PathingMap(
         private fun isLandTileCanAttackThrough(civInfo: Civilization, tile: Tile, targetCiv: Civilization): Boolean {
             return tile.isLand && isTileCanAttackThrough(civInfo, tile, targetCiv)
         }
+    }
+}
+
+private fun MutableIntList.reverse() {
+    for (i in 0..<size / 2) {
+        val temp = get(i)
+        set(i, get(size - 1 - i))
+        set(size - 1 - i,  temp)
     }
 }

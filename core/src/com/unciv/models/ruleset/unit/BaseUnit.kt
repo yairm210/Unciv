@@ -176,6 +176,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else super<RulesetObject>.getMatchingTagUniques(uniqueTag, state)
     }
 
+    /** Allows unique functions (forEachMatchingUnique) to "see" uniques from the UnitType */
+    @Readonly
+    override fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter: (Unique) -> Boolean, op: (Unique) -> Unit) {
+        if (::ruleset.isInitialized) rulesetUniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+        else super<RulesetObject>.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    }
+
+    /** Allows unique functions (forEachMatchingUnique) to "see" uniques from the UnitType */
+    @Readonly
+    override fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (Unique) -> Unit) {
+        if (::ruleset.isInitialized) rulesetUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
+        else super<RulesetObject>.forEachMatchingUnique(uniqueType, gameContext, op)
+    }
+
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
@@ -383,21 +397,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @Suppress("LocalVariableName")
         var XP = 0
 
-        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)) {
+        cityConstructions.city.forEachMatchingUnique(UniqueType.UnitStartingExperience) { unique ->
             if (unit.matchesFilter(unique.params[0]) && cityConstructions.city.matchesFilter(unique.params[2]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
 
-        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingPromotions)
-            .filter { cityConstructions.city.matchesFilter(it.params[1]) }) {
+        cityConstructions.city.forEachMatchingUnique(UniqueType.UnitStartingPromotions) { unique ->
+            if (!cityConstructions.city.matchesFilter(unique.params[1])) return@forEachMatchingUnique
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
             val isRelevantPromotion = filter == "relevant"
                     && civInfo.gameInfo.ruleset.unitPromotions.values
                 .any { it.name == promotion && unit.type.name in it.unitTypes }
-            
+
             if (isRelevantPromotion || unit.matchesFilter(filter)) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }

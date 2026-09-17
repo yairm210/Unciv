@@ -75,7 +75,7 @@ class NewGameScreen(
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
-            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
@@ -446,6 +446,8 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
+        // Activate restored mod translations before constructing or updating the options tables.
+        game.translations.translationActiveMods = gameSetupInfo.gameParameters.getModsAndBaseRuleset()
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 

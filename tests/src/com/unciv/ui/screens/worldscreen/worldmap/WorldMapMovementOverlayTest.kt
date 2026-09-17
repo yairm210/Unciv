@@ -43,7 +43,6 @@ class WorldMapMovementOverlayTest {
         enemy = game.addCiv()
         val spectator = game.addCiv(game.ruleset.nations[Constants.spectator]!!, isPlayer = true)
         spectator.viewableTiles = game.tileMap.values.toSet()
-        spectator.viewableInvisibleUnitsTiles = spectator.viewableTiles
         restrictedView = GameView(game.gameInfo, selectedCiv, spectatorMode = true)
         spectatorView = GameView(game.gameInfo, spectator, spectatorMode = true)
     }

@@ -90,8 +90,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        for (unique in getMatchingUniques(UniqueType.Stats, conditionalState))
+        forEachMatchingUnique(UniqueType.Stats, conditionalState) { unique ->
             stats.add(unique.stats)
+        }
 
         if (!isWonder)
             city.forEachMatchingUnique(UniqueType.StatsFromBuildings, city.state, ) { unique: Unique ->
@@ -127,14 +128,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
         val stateForConditionals = city?.state ?: civInfo.state
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesWhenBuilt, stateForConditionals))
+        forEachMatchingUnique(UniqueType.CostIncreasesWhenBuilt, stateForConditionals) { unique ->
             productionCost += civInfo.civConstructions.builtItemsWithIncreasingCost[name] * unique.params[0].toInt()
+        }
 
-        for (unique in getMatchingUniques(UniqueType.CostIncreasesPerCity, stateForConditionals))
+        forEachMatchingUnique(UniqueType.CostIncreasesPerCity, stateForConditionals) { unique ->
             productionCost += civInfo.cities.size * unique.params[0].toInt()
+        }
 
-        for (unique in getMatchingUniques(UniqueType.CostPercentageChange, stateForConditionals))
+        forEachMatchingUnique(UniqueType.CostPercentageChange, stateForConditionals) { unique ->
             productionCost *= unique.params[0].toPercent()
+        }
 
         if (civInfo.isCityState)
             productionCost *= 1.5f
@@ -236,11 +240,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(city, stat)?.toDouble() ?: return null
         val conditionalState = city.state
 
-        for (unique in city.getMatchingUniques(UniqueType.BuyItemsDiscount))
+        city.forEachMatchingUnique(UniqueType.BuyItemsDiscount) { unique ->
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
+        }
 
-        for (unique in city.getMatchingUniques(UniqueType.BuyBuildingsDiscount)) {
+        city.forEachMatchingUnique(UniqueType.BuyBuildingsDiscount) { unique ->
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1], conditionalState))
                 cost *= unique.params[2].toPercent()
         }

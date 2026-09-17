@@ -424,14 +424,11 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val maxRank = civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank
         var effective = rank
         val city = getCityOrNull() ?: return effective.coerceIn(1, maxRank)
-        effective += city.getMatchingUniques(
-            UniqueType.CounterIntelligenceSpyRankBonus,
-            city.state,
-            includeCivUniques = true
-        ).filter {
-            city.matchesFilter(it.params[0], viewingCiv = civInfo) &&
-                it.params[2].equals(action.displayString, ignoreCase = true)
-        }.sumOf { it.params[1].toInt() }
+        city.forEachMatchingUnique(UniqueType.CounterIntelligenceSpyRankBonus, city.state, includeCivUniques = true) { unique ->
+            if (city.matchesFilter(unique.params[0], viewingCiv = civInfo) &&
+                unique.params[2].equals(action.displayString, ignoreCase = true))
+                effective += unique.params[1].toInt()
+        }
         return effective.coerceIn(1, maxRank)
     }
 

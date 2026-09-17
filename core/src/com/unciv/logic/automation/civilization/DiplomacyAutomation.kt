@@ -503,7 +503,7 @@ object DiplomacyAutomation {
 
         for (tile in nearbyTiles) {
             val unit = tile.militaryUnit ?: continue
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
+            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || !unit.isVisibleTo(civInfo))
                 continue
             nearbyUnitCountByCiv.add(unit.civ, 1)
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())

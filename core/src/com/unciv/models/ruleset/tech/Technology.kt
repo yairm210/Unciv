@@ -45,9 +45,9 @@ class Technology: RulesetObject() {
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter, state) ||
-                state != null && hasTagUnique(filter, state) ||
-                state == null && hasTagUnique(filter)
+            matchesSingleFilter(it, state) ||
+                state != null && hasTagUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
         else matchesSingleFilter(filter, state) ||
             state != null && hasTagUnique(filter, state) ||

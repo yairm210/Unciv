@@ -367,8 +367,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getResourceRequirementsPerTurn(): Counter<String> {
         val resourceRequirements = Counter<String>()
         if (baseUnit.requiredResource != null) resourceRequirements[baseUnit.requiredResource!!] = 1
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources, cache.state))
+        forEachMatchingUnique(UniqueType.ConsumesResources, cache.state) { unique ->
             resourceRequirements.add(unique.params[1], unique.params[0].toInt())
+        }
         return resourceRequirements
     }
 
@@ -466,8 +467,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return currentTile.isWater
     }
 
+    /** Whether this unit currently has an invisibility unique that hides it from [to] (ignores fog of war,
+     * own-civ exemption, and detection). Callers checking whether a unit can actually be seen should use [isVisibleTo] instead. */
     @Readonly
-    fun isInvisible(to: Civilization): Boolean {
+    fun hasActiveInvisibilityUnique(to: Civilization): Boolean {
         if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
@@ -480,8 +483,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** @return Whether [civ] can currently see this unit on the map, accounting for fog of war and invisibility. */
     @Readonly
     fun isVisibleTo(civ: Civilization): Boolean {
+        if (civ == this.civ) return true
         if (!getTile().isVisible(civ)) return false
-        return !isInvisible(civ) || getTile() in civ.viewableInvisibleUnitsTiles
+        if (!hasActiveInvisibilityUnique(civ)) return true
+        // viewableInvisibleUnitsTiles records which unit filters *could* be detected on each tile,
+        // independent of what's actually there - so it never goes stale when units move.
+        return civ.viewableInvisibleUnitsTiles[getTile()]?.any { matchesFilter(it) } == true
     }
 
     @Readonly
@@ -537,9 +544,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
         if (healingCity != null) {
-            for (unique in healingCity.getMatchingUniques(UniqueType.CityHealingUnits)) {
-                if (!matchesFilter(unique.params[0]) || !isAlly(healingCity.civ)) continue // only heal our units or allied units
-                healing += unique.params[1].toInt()
+            healingCity.forEachMatchingUnique(UniqueType.CityHealingUnits) { unique ->
+                if (matchesFilter(unique.params[0]) && isAlly(healingCity.civ)) // only heal our units or allied units
+                    healing += unique.params[1].toInt()
             }
         }
 
@@ -600,8 +607,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
+        forEachMatchingUnique(UniqueType.DamageFromInterceptionReduced) { unique ->
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
+        }
         return damageFactor.coerceAtLeast(0f)
     }
 
@@ -968,9 +976,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponExpendingUnit){ matchesFilter(it.params[0]) })
+        civ.forEachTriggeredUnique(UniqueType.TriggerUponExpendingUnit, triggerFilter = { matchesFilter(it.params[0]) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, this,
                 triggerNotificationText = "due to expending our [${this.name}]")
+        }
         destroy()
     }
 
@@ -1080,11 +1089,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var goldGained = civ.getDifficulty().clearBarbarianCampReward.toFloat()
 
         // German unique
-        for (unique in civ.getMatchingUniques(UniqueType.GainFromEncampment)) {
+        civ.forEachMatchingUnique(UniqueType.GainFromEncampment) { unique ->
             goldGained += unique.params[0].toInt()
             val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
-                ?: continue
-            recruitedUnit.health = 50
+                ?: return@forEachMatchingUnique
+            recruitedUnit.health = 100
             recruitedUnit.currentMovement = 0f
             civ.addNotification(
                 "An enemy [${recruitedUnit.name}] has joined us!",
@@ -1097,8 +1106,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         goldGained *= civ.gameInfo.speed.goldCostModifier
         
         // Songhai unique
-        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state))
+        civ.forEachMatchingUnique(UniqueType.GoldFromEncampmentsAndCities, cache.state) { unique ->
             goldGained *= unique.params[0].toPercent()
+        }
 
         civ.addGold(goldGained.toInt())
         civ.addNotification(

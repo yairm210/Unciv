@@ -90,6 +90,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
      * That means that *in order to allow clicking on an unexplored tile* we currently need to accept tileviews of unexplored tiles
      * */
     @Readonly fun isExplored() = viewer == null || tile.isExplored(viewer)
+    /** Actively observed by [viewer] (no fog of war) */
+    @Readonly fun isVisible(): Boolean = viewer == null || tile.isVisible(viewer)
     /** `true` when this tile should be shown regardless of exploration/tech: there's no real [viewer] (e.g. civilopedia/map editor previews),
      * debug mode has the whole map revealed, or [getCivView] is watching a defeated game play out.
      * TODO: Replace all usages with altering the view function called, to reveal data where relevant */

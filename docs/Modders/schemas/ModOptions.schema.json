@@ -215,12 +215,6 @@
           "default": 0.02,
           "description": "Multiplier for number of ancient ruins spawned."
         },
-        "spawnIceBelowTemperature": {
-          "title": "Spawn Ice Below Temperature",
-          "type": "number",
-          "default": -0.8,
-          "description": "Temperature threshold below which ice spawns."
-        },
         "maxLakeSize": {
           "title": "Max Lake Size",
           "type": "integer",

@@ -43,6 +43,14 @@ class MapUnitView internal constructor(
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 
+    /** @throws com.unciv.logic.map.mapunit.movement.UnitMovement.UnreachableDestinationException if no tile can be reached this turn towards [targetTileView] */
+    @Readonly fun getTileToMoveToThisTurn(targetTileView: TileView): TileView =
+        gameView.tileMapView.getTile(unit.movement.getTileToMoveToThisTurn(targetTileView.unwrap()))
+    @Readonly fun getPathToTile(tileView: TileView): List<TileView> =
+        unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
+    @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
+        unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
+    @Readonly fun getDistanceToTiles(): PathsToTilesWithinTurn = unit.movement.getDistanceToTiles()
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
@@ -114,6 +122,10 @@ class MapUnitView internal constructor(
     }
     fun tryAirSweep(targetTileView: TileView): Boolean {
         AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
+        return true
+    }
+    fun tryMoveToTile(tileView: TileView): Boolean {
+        unit.movement.moveToTile(tileView.unwrap())
         return true
     }
 

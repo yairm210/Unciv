@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.city.City
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
@@ -23,6 +23,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 
 /** Interface for creating floating "action" buttons on tiles */
 interface OverlayButtonData{
@@ -32,7 +33,7 @@ interface OverlayButtonData{
 const val buttonSize = 60f
 const val smallerCircleSizes = 25f
 
-class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitView, Int>, val tile: Tile) :
+class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitView, Int>, val tileView: TileView) :
     OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveHereButton(worldMapHolder)
@@ -68,7 +69,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
+                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, tileView)
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
         }
@@ -77,7 +78,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
 }
 
 // Contains the data required to draw a "swap with" button
-class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : OverlayButtonData {
+class SwapWithOverlayButtonData(val unitView: MapUnitView, val tileView: TileView) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getSwapWithButton(worldMapHolder)
     }
@@ -99,7 +100,7 @@ class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : Ove
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            worldMapHolder.swapMoveUnitToTargetTile(unitView, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
+            worldMapHolder.swapMoveUnitToTargetTile(unitView, tileView)
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
@@ -108,7 +109,7 @@ class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : Ove
 }
 
 // Contains the data required to draw a "connect road" button
-class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : OverlayButtonData {
+class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: TileView) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getConnectRoadButton(worldMapHolder)
     }
@@ -126,15 +127,15 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : 
         connectRoadButton.addActor(unitIcon)
 
         connectRoadButton.onActivation(UncivSound.Silent) {
-            connectRoadToTargetTile(worldMapHolder, unitView.getUnit(), tile)
+            connectRoadToTargetTile(worldMapHolder, unitView.getUnit(), tileView.position())
         }
         connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
 
         return connectRoadButton
     }
 
-    private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTile: Tile) {
-        selectedUnit.automatedRoadConnectionDestination = targetTile.position
+    private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTilePosition: HexCoord) {
+        selectedUnit.automatedRoadConnectionDestination = targetTilePosition
         selectedUnit.automatedRoadConnectionPath = null
         selectedUnit.action = UnitActionType.ConnectRoad.value
         selectedUnit.automated = true

@@ -20,7 +20,6 @@ class GameViewMovementHistoryTest {
     private val enemy = testGame.addCiv(testGame.ruleset.nations["Egypt"]!!)
     private val spectator = testGame.addCiv(testGame.ruleset.nations[Constants.spectator]!!).apply {
         viewableTiles = testGame.tileMap.values.toSet()
-        viewableInvisibleUnitsTiles = viewableTiles
     }
     private val playerView = GameView(testGame.gameInfo, player, spectatorMode = true)
     private val spectatorView = GameView(testGame.gameInfo, spectator, spectatorMode = true)
@@ -65,10 +64,10 @@ class GameViewMovementHistoryTest {
         assertTrue(playerView.getUnitsWithVisibleMovementHistory().none())
         assertSame(unit, spectatorView.getUnitsWithVisibleMovementHistory().single().getUnit())
 
-        player.viewableInvisibleUnitsTiles = setOf(origin)
+        player.viewableInvisibleUnitsTiles = mapOf(origin to setOf(Constants.uppercaseAll))
         assertTrue(playerView.getUnitsWithVisibleMovementHistory().none())
 
-        player.viewableInvisibleUnitsTiles = setOf(current)
+        player.viewableInvisibleUnitsTiles = mapOf(current to setOf(Constants.uppercaseAll))
         assertSame(unit, playerView.getUnitsWithVisibleMovementHistory().single().getUnit())
     }
 

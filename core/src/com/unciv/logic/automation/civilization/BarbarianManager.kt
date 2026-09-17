@@ -192,9 +192,8 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             if (gameInfo.turns < 10)
                 return null
 
-            val nearbyBarbarians = tile.getTilesInDistance(4)
-                .mapNotNull { it.militaryUnit }
-                .count { it.civ.isBarbarian }
+            var nearbyBarbarians = 0
+            tile.forEachTileInDistance(4) { if (it.militaryUnit?.civ?.isBarbarian == true) nearbyBarbarians++ }
             // Too many barbarians around already?
             if (nearbyBarbarians > 2)
                 return null

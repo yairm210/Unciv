@@ -164,7 +164,7 @@ object BattleTableHelpers {
                     val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
                 } else if (combatant is MapUnitCombatantView && !combatant.getUnitView().isAirUnit()) {
-                    val slot = tileGroup.layerUnitArt.getSpriteSlot(combatant.getUnitView().getUnit())
+                    val slot = tileGroup.layerUnitArt.getSpriteSlot(combatant.getUnitView())
                     if (slot != null) yieldAll(slot.spriteGroup.children)
                 }
             }

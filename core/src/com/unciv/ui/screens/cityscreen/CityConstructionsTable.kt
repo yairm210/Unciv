@@ -765,13 +765,23 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
     }
 
+    /** The queue widgets can be out of sync with the construction queue when this is called:
+     *  [selectQueueEntry] triggers the *asynchronous* [CityScreen.updateAsync] and then scrolls to the
+     *  selected entry, so the cells read here are still the ones of the previous layout - and they are
+     *  not even guaranteed to exist, as this table is only populated by [updateConstructionQueue].
+     *  Therefore: check the bounds instead of indexing blindly, a missing button simply means no scrolling. */
     private fun getSelectedQueueButton(): Actor? {
         if (selectedQueueEntry == 0) {
-            return constructionsQueueTable.cells[0].actor
+            val cells = constructionsQueueTable.cells
+            if (cells.size == 0) return null
+            return cells[0].actor
         }
         if (selectedQueueEntry > 0 && selectedQueueEntry < cityView.constructions.constructionQueue.size) {
             // *2 because it's always the entry and a separator
-            return queueExpander.innerTable.cells[selectedQueueEntry * 2 - 2].actor
+            val cells = queueExpander.innerTable.cells
+            val index = selectedQueueEntry * 2 - 2
+            if (index >= cells.size) return null
+            return cells[index].actor
         }
         return null
     }

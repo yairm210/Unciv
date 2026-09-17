@@ -17,32 +17,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
-    override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesFilter(filter: String, multiFilter: Boolean) = unit.matchesFilter(filter, multiFilter)
     override fun getAttackSound() = unit.baseUnit.attackSound.let {
         if (it == null) UncivSound.Click else UncivSound(it)
     }
-
-    /**
-     * Whether this combatant can be identified when an attack is recorded.
-     * The civ's invisible-unit tile cache depends on earlier occupants and may not have been updated
-     * after an enemy moved or a detection condition changed. Check current detectors and this
-     * combatant's filters instead; querying the recorded history must never repeat this check.
-     */
-    @Readonly
-    internal fun isVisibleTo(civ: Civilization): Boolean {
-        if (getCivInfo() == civ) return true
-        val tile = getTile()
-        if (tile !in civ.viewableTiles) return false
-        if (!isInvisible(civ)) return true
-
-        return civ.units.getCivUnits().any { detector ->
-            tile in detector.viewableTiles
-                && detector.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
-                    .any { matchesFilter(it.params[0]) }
-        }
-    }
+    override fun isVisibleTo(to: Civilization): Boolean = unit.isVisibleTo(to)
 
     override fun getNotificationDisplay(leadingText: String): String {
         val isUnitUnnamed = unit.instanceName.isNullOrEmpty()
@@ -57,7 +37,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        var extraStrength = 0
+        unit.forEachMatchingUnique(UniqueType.StrengthAmount, state) { extraStrength += it.params[0].toInt() }
         return if (isRanged()) unit.baseUnit.rangedStrength + extraStrength
         else unit.baseUnit.strength + extraStrength
     }
@@ -65,7 +46,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getDefendingStrength(attacker: ICombatant?): Int {
         val attackedByRanged = attacker?.isRanged() == true
         val state = GameContext(this, attacker, this.getTile(), CombatAction.Defend)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        var extraStrength = 0
+        unit.forEachMatchingUnique(UniqueType.StrengthAmount, state) { extraStrength += it.params[0].toInt() }
         return if (unit.isEmbarked() && !isCivilian())
             unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)

@@ -393,8 +393,8 @@ internal class AdvancedTab(
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
-            val clipboardContents = Gdx.app.clipboard.contents.trim()
-            if (clipboardContents.isUUID()) {
+            val clipboardContents = Gdx.app.clipboard.contents?.trim()
+            if (clipboardContents != null && clipboardContents.isUUID()) {
                 ConfirmPopup(
                     stage,
                     "Doing this will reset your current user ID to the clipboard contents - are you sure?",

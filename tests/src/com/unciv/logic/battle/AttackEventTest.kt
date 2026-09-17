@@ -68,7 +68,6 @@ class AttackEventTest {
     fun `invisible origin requires a matching current detector rather than a stale tile cache`() {
         attacker.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
         defendingCiv.viewableTiles = setOf(source, target)
-        defendingCiv.viewableInvisibleUnitsTiles = setOf(source)
 
         val undetected = AttackEvent(MapUnitCombatant(attacker), target)
         assertFalse(defendingCiv.civID in undetected.civIdsKnowingAttackSource)

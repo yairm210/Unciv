@@ -172,8 +172,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
+        civInfo.forEachMatchingUnique(UniqueType.LessPolicyCostFromCities) { unique -> cityModifier *= 1 - unique.params[0].toFloat() / 100 }
+        civInfo.forEachMatchingUnique(UniqueType.LessPolicyCost) { unique -> policyCultureCost *= unique.params[0].toPercent() }
         if (civInfo.isHuman()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.speed.cultureCostModifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
@@ -272,8 +272,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             }
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) { it.params[0] == policy.name })
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponAdoptingPolicyOrBelief, triggerFilter = { it.params[0] == policy.name }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        }
 
         civInfo.cache.updateCivResources()
 

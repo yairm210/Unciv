@@ -649,13 +649,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
         }
 
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals,
-                { building.matchesFilter(it.params[0], stateForConditionals) }))
+        city.forEachTriggeredUnique(UniqueType.TriggerUponConstructingBuilding, stateForConditionals,
+                { building.matchesFilter(it.params[0], stateForConditionals) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
+        }
 
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals,
-                { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) }))
+        city.forEachTriggeredUnique(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals,
+                { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
+        }
     }
 
     fun removeBuilding(buildingName: String) {
