@@ -1,31 +1,11 @@
-
-
 Fixed crash on "ID from clipboard" when clipboard not set
 
 Scrollable events show scrollbars
 
-chore: Removed deprecated spawnIceBelowTemperature - never used
-
 Allow modders to specify modOptions.constants.maxRiverLength as 0 to avoid river generation entirely
-
-Attempt to fix broken Android CI
-
-View implementation - converted TileLayerUnitFlag - see 
-
-Refactor: TargetHelper.getAttackableEnemies now also supports nukes (previously relied on UI logic to determine nukable tiles)
-
-View implementation - converted WorldMapHolder unitview - see 
-
-View implementation - converted WorldMapHolder last parts - see 
-
-View implementation - converted OverlayButtonData - see 
 
 Tweaked auto map size - By O-spin
 
-By Ambeco:
-- Lowalloc3 - Replace remaining models/ui getX(Uniques|Tiles) calls with forEachX equivalents 
-- LowAlloc2 - Replace remaining com.unciv.logic getX(Uniques|Tiles) calls with forEachX equivalents 
-- Fix forEachTriggeredUnique/forEachLocalTriggeredUnique and add BaseUnit.forEachMatchingUnique override 
-- PathingMap classes split into separate files 
+Performance improvements - By Ambeco
 
 Add map generator settings clipboard actions - By LouisDeconinck
