@@ -2,16 +2,23 @@ package com.unciv.ui.components.fonts
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.unciv.testing.GdxTestRunner
+import com.unciv.ui.screens.basescreen.FontLodBiasBatch
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyFloat
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.mockingDetails
 import org.mockito.Mockito.mock
@@ -33,6 +40,80 @@ class NativeBitmapFontDataTest {
     private fun mipmapsUploaded() = mockingDetails(Gdx.gl).invocations.any {
         it.method.name == "glGenerateMipmap" ||
             (it.method.name == "glTexImage2D" && (it.arguments[1] as Int) > 0)
+    }
+
+    @Test
+    fun bulkFontPixelsMatchPerPixelConversion() {
+        // Non-square image catches row/column mixups; include asymmetric channels,
+        // partial alpha, and non-black RGB hidden under zero alpha.
+        val argb = intArrayOf(0xff123456.toInt(), 0x807fc321.toInt(), 0x00123456,
+            0xffffffff.toInt(), 0x01020304, 0)
+        val reference = Pixmap(3, 2, Pixmap.Format.RGBA8888)
+        reference.blending = Pixmap.Blending.None
+        val actual = Fonts.pixmapFromArgb(3, 2, argb.copyOf())
+        try {
+            for (i in argb.indices) {
+                val rgba = Integer.rotateLeft(argb[i], 8)
+                reference.drawPixel(i % 3, i / 3, if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba)
+            }
+            assertEquals(0, actual.pixels.position())
+            assertEquals(3 * 2 * 4, actual.pixels.remaining())
+            assertEquals(reference.pixels, actual.pixels)
+            assertEquals(0x123456ff, actual.getPixel(0, 0))
+            assertEquals(0x7fc32180, actual.getPixel(1, 0))
+            assertEquals(0xffffff00.toInt(), actual.getPixel(2, 0))
+        } finally {
+            reference.dispose()
+            actual.dispose()
+        }
+    }
+
+    @Test
+    fun fontBiasFollowsDrawnTextureAcrossFlushesAndShaderChanges() {
+        val data = NativeBitmapFontData(TestFont())
+        val image = Texture(4, 4, Pixmap.Format.RGBA8888)
+        val shader = mock(ShaderProgram::class.java)
+        val customShader = mock(ShaderProgram::class.java)
+        `when`(Gdx.gl.glGenBuffer()).thenReturn(1)
+        // One sprite per batch forces the capacity-flush path as well.
+        val batch = FontLodBiasBatch(1, shader)
+        var bias = Float.NaN
+        val drawnBiases = mutableListOf<Float>()
+        doAnswer {
+            bias = it.getArgument(1)
+            null
+        }.`when`(shader).setUniformf(eq("u_lodBias"), anyFloat())
+        doAnswer {
+            drawnBiases.add(if (batch.shader === shader) bias else Float.NaN)
+            null
+        }.`when`(Gdx.gl).glDrawElements(anyInt(), anyInt(), anyInt(), anyInt())
+        try {
+            val fontTexture = data.regions.first().texture
+            batch.begin()
+            batch.draw(fontTexture, 0f, 0f)
+            batch.draw(fontTexture, 0f, 0f) // capacity flush
+            batch.draw(image, 0f, 0f) // flush the font with its old bias
+            batch.draw(fontTexture, 0f, 0f) // flush the image with zero bias
+            batch.shader = customShader
+            batch.draw(fontTexture, 0f, 0f)
+            batch.shader = null
+            batch.draw(fontTexture, 0f, 0f)
+            batch.end()
+            batch.begin()
+            batch.draw(image, 0f, 0f)
+            batch.end()
+            assertEquals(listOf(-0.5f, -0.5f, 0f, -0.5f, Float.NaN, -0.5f, 0f), drawnBiases)
+            assertFalse(mockingDetails(customShader).invocations.any {
+                it.method.name == "setUniformf" && it.arguments[0] == "u_lodBias"
+            })
+        } finally {
+            // Do not leave a draw callback referencing this batch on the shared GL mock.
+            doAnswer { null }.`when`(Gdx.gl).glDrawElements(anyInt(), anyInt(), anyInt(), anyInt())
+            batch.dispose()
+            image.dispose()
+            data.dispose()
+        }
+        verify(shader).dispose()
     }
 
     @Test

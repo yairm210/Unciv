@@ -3,7 +3,6 @@ package com.unciv.ui.components.fonts
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -17,6 +16,7 @@ import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.civilopediascreen.CivilopediaImageGetters
 import kotlin.math.ceil
 
@@ -100,7 +100,7 @@ object FontRulesetIcons {
         // Icons are measured in Gdx world coords, not pixels, but FrameBuffer is dimensioned in pixels.
         FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
     }
-    private val spriteBatch by lazy { SpriteBatch() }
+    private val spriteBatch by lazy { UncivStage.getBatch() }
     private val transform = Matrix4()  // for repeated reuse without reallocation
 
     /** Get a Pixmap for a "show ruleset icons as part of text" actor.

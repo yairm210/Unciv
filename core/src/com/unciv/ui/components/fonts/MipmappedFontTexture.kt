@@ -11,8 +11,7 @@ import com.badlogic.gdx.graphics.glutils.PixmapTextureData
  * update only level zero, so multiple labels can share one mipmap regeneration.
  */
 internal class MipmappedFontTexture(
-    private val pagePixmap: Pixmap,
-    private val fontImplementation: FontImplementation
+    private val pagePixmap: Pixmap
 ) : Texture(PixmapTextureData(pagePixmap, pagePixmap.format, true, false, true)) {
     private var mipmapsDirty = false
     private var disposed = false
@@ -47,11 +46,6 @@ internal class MipmappedFontTexture(
         // page. Do not regenerate the old GPU contents when Texture.load calls bind().
         mipmapsDirty = false
         super.load(data)
-    }
-
-    override fun reload() {
-        super.reload()
-        fontImplementation.configureFontTexture(this)
     }
 
     override fun dispose() {

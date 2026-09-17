@@ -2,7 +2,6 @@ package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -19,7 +18,7 @@ import com.unciv.utils.Log
 class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
-        fun getBatch(size: Int=1000): Batch = SpriteBatch(size)
+        fun getBatch(size: Int=1000): Batch = FontLodBiasBatch(size)
     }
 
     /**
@@ -59,6 +58,8 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     override fun dispose() {
         events.stopReceiving()
         super.dispose()
+        // Stage does not own the batch supplied to its constructor.
+        batch.dispose()
 
         /** [Stage.dispose] is supposed to clear all references it holds. But it forgets the mouse over properties:
          the [Stage.mouseOverActor] and [Stage.pointerOverActors]. [Stage.act] updates those properties,
