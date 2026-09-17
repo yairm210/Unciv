@@ -1,19 +1,11 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.pathingmap
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ZERO
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
-import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
-import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import java.util.BitSet
-import java.util.Formatter
-import java.util.Locale
-
 
 /**
  * All the information we need about a route node, crammed into a single Long
@@ -47,7 +39,7 @@ import java.util.Locale
  *   requires 9 bits. (This actually allows movements up to 17, which is nice for mod support).
  *
  * Fields, in order from least to highest priority:
- * - [tileIdx]: the [zeroBasedIndex][Tile.zeroBasedIndex], which is trivial to convert to/from [Tile] instances.
+ * - [tileIdx]: the [zeroBasedIndex][com.unciv.logic.map.tile.Tile.zeroBasedIndex], which is trivial to convert to/from [com.unciv.logic.map.tile.Tile] instances.
  *   Maximum map size is radius 500, or 748501 tiles, so this takes 20 bits.
  *   Not strictly needed by [RouteNode], but handy.
  * - [relationshipLevel]: Used as a tie-breaker when pathing through tiles owned by different civs.
@@ -177,7 +169,7 @@ value class RouteNode(val bits: Long=0L) {
 
     // See moveSinceStoppable's docs above: it resets to zero exactly when a tile is itself
     // stoppable, so canMoveTo is derived from it rather than stored as its own bit.
-    val canStopOn: Boolean get() = moveSinceStoppable == FPM_ZERO
+    val canStopOn: Boolean get() = moveSinceStoppable == FixedPointMovement.FPM_ZERO
 
     val endTurnWithoutMoreDamage: Boolean get() { require(initialized); return ((bits shr DAMAGING_OFFSET) and 1L) == 0L }
 
@@ -284,7 +276,7 @@ value class RouteNode(val bits: Long=0L) {
         fun rootNode(tile: Tile, moveThisTurn: FixedPointMovement) = RouteNode(
             tile,
             RelationshipLevel.Favorable, // irrelevant since we start here
-            FPM_ZERO,
+            FixedPointMovement.FPM_ZERO,
             moveThisTurn,
             0,
             tile,
@@ -292,221 +284,4 @@ value class RouteNode(val bits: Long=0L) {
             false, // irrelevant: the root is never a candidate parentTile in pathAsListNoDamage
         )
     }
-}
-
-/**
- * ### Fixed-point movement value (base 30) for pathfinding, avoiding heap allocations.
- * 
- * This class represents movement distances using fixed-point arithmetic with a scaling
- * base of 30, meaning 1.0f movement = 30 internal units. This allows integer arithmetic
- * without floating-point overhead during A* pathfinding.
- *
- * #### Constraint:
- * FPM values are constrained to a few bits when packed into routing node structures
- * (see [RouteNode.pbmMoveThisTurn]: 9 bits, [RouteNode.moveUsedThisTurn]: 9 bits, [PrioritizedNode.underestimatedTotal]: 14 bits).
- * The internal `bits` field must fit within [0, 16384) for multi-turn movement costs, or [0, 512) for single-turn costs.
- * Valid multi-turn movement values therefore range from 0.0f to 546.1f, and single-turn ones from 0f to 17.03333f.
- *
- * #### Rounding:
- * Non-integer Float -> FixedPointMovement rounds to nearest 1/30th via HALF_UP.
- * FixedPointMovement -> Float holds the closest value that Float supports, which is *never* exact.
- * Ergo, FPM->Float->FPM round trips losslessly, but Float->FPM->Float will be rounded to a value 
- * extremely close to a multiple of 1/30th.
- *
- * @property bits The internal fixed-point representation (0 to 16384 exclusive).
- */
-@JvmInline
-value class FixedPointMovement private constructor(val bits: Int) {
-    // Not all of these are currently used, but are present to ensure correctnes for future usage.
-    // Operator coverage is complete for "fpm" on the left, but intentionally incomplete for Inf/Float on the left.
-    @Pure operator fun plus(other: FixedPointMovement) = FixedPointMovement(bits + other.bits)
-    @Pure operator fun plus(value: Int) = FixedPointMovement(bits + value * MOVE_SPEED_BASE)
-    @Pure operator fun plus(value: Float) = FixedPointMovement(bits + fpmFromMovement(value).bits)
-    @Pure operator fun minus(other: FixedPointMovement) = FixedPointMovement(bits - other.bits)
-    @Pure operator fun minus(value: Int) = FixedPointMovement(bits - value * MOVE_SPEED_BASE)
-    @Pure operator fun minus(value: Float) = FixedPointMovement(bits - fpmFromMovement(value).bits)
-    @Pure operator fun times(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * other.bits / MOVE_SPEED_BASE).toInt())
-    @Pure operator fun times(multiplier: Int) = FixedPointMovement(bits * multiplier)
-    @Pure operator fun times(multiplier: Float) = fpmFromMovement(bits * multiplier)
-    @Pure operator fun div(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * MOVE_SPEED_BASE / other.bits).toInt())
-    @Pure operator fun div(divisor: Int) = FixedPointMovement(bits / divisor)
-    @Pure operator fun div(divisor: Float) = fpmFromMovement(bits / divisor)
-    @Pure operator fun compareTo(other: FixedPointMovement) = bits.compareTo(other.bits)
-    @Pure operator fun compareTo(other: Int) = bits.compareTo((other * MOVE_SPEED_BASE))
-    @Pure operator fun compareTo(other: Float) = compareTo(fpmFromMovement(other))
-
-    @Pure fun toFloat() = bits / 30f
-    @Pure fun coerceAtMost(max: FixedPointMovement) = FixedPointMovement(bits.coerceAtMost(max.bits))
-    @Pure fun coerceAtLeast(min: FixedPointMovement) = FixedPointMovement(bits.coerceAtLeast(min.bits))
-    @Pure fun coerceIn(min: FixedPointMovement, max: FixedPointMovement) = FixedPointMovement(bits.coerceIn(min.bits, max.bits))
-
-    override fun toString() = "FPM{$bits/30=${toFloat()}}"
-    
-    companion object {
-        private const val MOVE_SPEED_BASE = 30
-        val FPM_ZERO = FixedPointMovement(0)
-        val FPM_POINT_FIVE = FixedPointMovement(MOVE_SPEED_BASE/2)
-        val FPM_ONE = FixedPointMovement(MOVE_SPEED_BASE)
-
-        @Pure fun fpmFromFixedPointBits(bits: Int) = FixedPointMovement(bits)
-        @Pure fun fpmFromMovement(move: Int) = FixedPointMovement((move * MOVE_SPEED_BASE))
-        @Pure fun fpmFromMovement(move: Float): FixedPointMovement { // rounding HALF_UP
-            val plusOneBit = (move * (MOVE_SPEED_BASE * 2)).toInt()
-            return FixedPointMovement((plusOneBit shr 1) + (plusOneBit and 1))
-        }
-    }
-}
-@Pure fun Float.toFixedPointMove() = fpmFromMovement(this)
-@Pure operator fun Int.minus(other: FixedPointMovement) = fpmFromMovement(this) - other
-
-
-data class PathingMapCacheKey(
-    val startingPoint: HexCoord,
-    val moveRemaining: FixedPointMovement,
-    val fullMove: FixedPointMovement,
-) {
-    override fun toString() = "$startingPoint/$moveRemaining/$fullMove"
-}
-
-/**
- *  @property key The key for this cache. If the key no longer matches, then the cache is invalid
- *  @property nodesNeedingNeighbors Frontier list of the tiles to be checked.
- *            In exceptional cases, a node already calculated may be left here, and recalculated again later.
- *            Bitset used to minimize memory allocations
- *  @property addedNeighborNodes A BitSet to track which tiles have already been checked.
- *            This helps avoid redundant calculations and ensures each tile is processed only once.
- *            Bitset used to minimize memory allocations
- *  @property routeNodes A map where each tile reached during the search points to its parent tile.
- *            This map is used to reconstruct the path once the destination is reached.
- *            Theoretically, this can be replaced with three separate arrays for each field, eliminating
- *            the separate allocations per-node, but it's unclear if the performance is worth the complexity.
- */
-@InternalState
-internal class PathingMapCache private constructor(
-    internal val key: PathingMapCacheKey,
-    internal val nodesNeedingNeighbors: BitSet,
-    internal val addedNeighborNodes: BitSet,
-    internal val routeNodes: LongArray,  // Actually Array<RouteNode>
-) {
-    internal val tilesSameTurn: PathsToTilesWithinTurn = PathsToTilesWithinTurn()
-
-    /** Creates an empty [PathingMapCache], using [tileMap] only for allocating the arrays to the proper size */
-    constructor(key: PathingMapCacheKey, tileMap: TileMap) : this(
-        key,
-        BitSet(tileMap.tileList.size),
-        BitSet(tileMap.tileList.size),
-        LongArray(tileMap.tileList.size)
-    )
-
-    @Readonly
-    fun isCacheValid(latestKey: PathingMapCacheKey) = key == latestKey
-
-    /**
-     * Returns a mutable fork for pathfinding
-     *
-     * This uses the same [routeNodes], but copies of the frontier bitsets. It does not set [tilesSameTurn].
-     * @see mergePathfindingFork
-     */
-    @Readonly
-    fun forkForPathfinding(): PathingMapCache {
-        synchronized(addedNeighborNodes) {
-            val codesNeedingNeighborsCopy: BitSet = nodesNeedingNeighbors.clone() as BitSet
-            val addedNeighborNodesCopy: BitSet = addedNeighborNodes.clone() as BitSet
-            return PathingMapCache(key, codesNeedingNeighborsCopy, addedNeighborNodesCopy, routeNodes)
-        }
-    }
-
-    /**
-     * Merges a fork created with [forkForPathfinding], modifying [addedNeighborNodes]
-     * and [nodesNeedingNeighbors]. Also mutates `update.nodesNeedingNeighbors`, meaning the fork
-     * should be discarded.
-     */
-    fun mergePathfindingFork(update: PathingMapCache) {
-        require(key == update.key && routeNodes === update.routeNodes)
-        // now merge the pathfinder's tilesChecked and tilesToCheck back into the shared PathingData
-        // again using a synchronized block not just for thread-safety, but also to ensure atomicity
-        synchronized(addedNeighborNodes) {
-            // For each tile who had its neighbors queued by this thread, move them to the right
-            // data structure. Since these are BitSets, this is rediculously fast.
-            addedNeighborNodes.or(update.addedNeighborNodes)
-            nodesNeedingNeighbors.andNot(update.addedNeighborNodes)
-
-            // For tiles that were queued but not yet calculated, add them to nodesNeedingNeighbors.
-            // When a tile incurs taking damage, a later tile can replace its data with a less
-            // damaging route. In edge cases, this can cause a tile to be queued a second time.
-            // Since tiles can be queued multiple times, they can be both queued (at higher damage)
-            // and already calculated (at lower damage). We have to skip over tiles already calculated
-            update.nodesNeedingNeighbors.andNot(update.addedNeighborNodes)
-            nodesNeedingNeighbors.or(update.nodesNeedingNeighbors)
-        }
-    }
-
-    fun clear() {
-        nodesNeedingNeighbors.clear()
-        addedNeighborNodes.clear()
-        routeNodes.fill(0L)
-        tilesSameTurn.clear()
-    }
-
-    fun toDebugString(tileMap: TileMap, destination: Tile? = null): String {
-        val routeTiles = tileMap.tileList.filterIndexed { idx, _ -> RouteNode(routeNodes[idx]).initialized }
-        if (routeTiles.isEmpty()) return "{}"
-        // first determine which rows and columns need printing
-        val height = -tileMap.bottomY * 2
-        val width = tileMap.tileMatrix.size
-        val xs = BitSet(width)
-        val ys = BitSet(height)
-        routeTiles.forEach {
-            xs.set(it.position.x - tileMap.leftX)
-            ys.set(height -it.position.y + tileMap.bottomY) // invert the ys to easily iterate from positive to negative
-        }
-        val stringBuilder = StringBuilder("\n")
-        Formatter(stringBuilder, Locale.US).use {
-            // format the column headers
-            it.format("       ")
-            xs.forEachSetBit {xIndex: Int ->
-                val x = xIndex + tileMap.leftX
-                it.format(" %+-4d  ", x)
-            }
-            it.format("\n")
-            // for each row
-            ys.forEachSetBit {yIndex: Int ->
-                // print row header
-                val y = -yIndex + height + tileMap.bottomY
-                // display the row header
-                it.format("  %+-4d ", y)
-                // display each cell for the row
-                xs.forEachSetBit {xIndex: Int ->
-                    val x = xIndex + tileMap.leftX
-                    val tile = tileMap.getOrNull(x, y)
-                    it.toDebugStringFormatNode(tile, destination)
-                }
-                it.format("\n")
-            }
-        }
-        return stringBuilder.toString()
-    }
-
-    private fun Formatter.toDebugStringFormatNode(tile: Tile?, destination: Tile?) {
-        if (tile == null) { // out of map bounds
-            format("       ")
-            return
-        }
-        val node = RouteNode(routeNodes[tile.zeroBasedIndex])
-        if (!node.initialized) {// pathing has not explored this tile yet
-            format("  /    ")
-        } else {
-            val tag =
-                if (node.turns == 0 && node.moveUsedThisTurn == FPM_ZERO) 'S'
-                else if (tile == destination) 'D'
-                else if (!node.canStopOn) '*'
-                else ' '
-            if (node.turns == Int.MAX_VALUE) // cannot move to this tile
-                format(" -/---%s", tag)
-            else // we've found a minimum path to this tile
-                format("%2d/%1.1f%s", node.turns, node.moveUsedThisTurn.toFloat(), tag)
-        }
-    }
-
-    override fun toString() = "${javaClass.simpleName}[key=$key nodesNeedingNeighbors=${nodesNeedingNeighbors.cardinality()} addedNeighborNodes=${addedNeighborNodes.cardinality()} routeNodes=${routeNodes.size} tilesSameTurn=${tilesSameTurn.size}]"
 }

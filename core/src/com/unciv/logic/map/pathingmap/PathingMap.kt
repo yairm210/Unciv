@@ -1,4 +1,4 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.pathingmap
 
 import androidx.collection.MutableIntList
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -8,12 +8,13 @@ import com.unciv.logic.automation.unit.RoadBetweenCitiesAutomation
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ONE
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_POINT_FIVE
-import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ZERO
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.pathingmap.FixedPointMovement.Companion.FPM_POINT_FIVE
+import com.unciv.logic.map.pathingmap.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.MapPathing.roadPreferredMovementCost
-import com.unciv.logic.map.RouteNode.Companion.MAX_MOVE_THIS_TURN
+import com.unciv.logic.map.pathingmap.RouteNode.Companion.MAX_MOVE_THIS_TURN
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -27,6 +28,7 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.get
 
 /**
  * `PathingMap` is a class that coordinates the pathing caches and calculations.
@@ -44,8 +46,8 @@ import java.util.concurrent.atomic.AtomicReference
  * only among routes of otherwise equal priority.
  *
  * This completely replaces [UnitMovement.getMovementToTilesAtPosition], [UnitMovement.getShortestPath],
- * [UnitMovement.getDistanceToTiles], [AStar], [MapPathing.getPath], [MapPathing.getConnection], and
- * [MapPathing.getRoadPath].
+ * [UnitMovement.getDistanceToTiles], [com.unciv.logic.map.AStar], [com.unciv.logic.map.MapPathing.getPath], [com.unciv.logic.map.MapPathing.getConnection], and
+ * [com.unciv.logic.map.MapPathing.getRoadPath].
  *
  * Debugging help:
  * - Set [VERBOSE_PATHFINDING_LOGS] to [ALWAYS_LOG] or to a specific starting coordinate.
@@ -110,7 +112,10 @@ class PathingMap(
             cacheRef.set(null) // if the cache is invalid, dump it
         }
         val newCache = PathingMapCache(latestKey, tileMap) // otherwise, make a new cache
-        val movementUsedThisTurn = (latestKey.fullMove - latestKey.moveRemaining).coerceIn(FPM_ZERO, MAX_MOVE_THIS_TURN)
+        val movementUsedThisTurn = (latestKey.fullMove - latestKey.moveRemaining).coerceIn(
+            FixedPointMovement.FPM_ZERO,
+            MAX_MOVE_THIS_TURN
+        )
         val tile = tileMap[latestKey.startingPoint]
         val root = RouteNode.rootNode(tile, movementUsedThisTurn)
         newCache.routeNodes[tile.zeroBasedIndex] = root.bits
@@ -222,13 +227,13 @@ class PathingMap(
         fun addWaypoint(tile: Tile) {
             if (tile != startTile && (result.isEmpty() || result.last() != tile)) result.add(tile)
         }
-        var moveThisTurn = FPM_ZERO
+        var moveThisTurn = FixedPointMovement.FPM_ZERO
         var previousTile = startTile
         var previousNode = RouteNode(cache.routeNodes[startTile.zeroBasedIndex])
         var lastFullSafeTile = startTile
-        var moveSinceFullSafe = FPM_ZERO
+        var moveSinceFullSafe = FixedPointMovement.FPM_ZERO
         var lastStoppableTile = startTile
-        var moveSinceStoppable = FPM_ZERO
+        var moveSinceStoppable = FixedPointMovement.FPM_ZERO
         for (i in 0..<pathTileIndecies.size) {
             val nextTile = tileMap.tileList[pathTileIndecies[i]]
             val nextNode = RouteNode(cache.routeNodes[nextTile.zeroBasedIndex])
@@ -238,11 +243,11 @@ class PathingMap(
 
             if (previousNode.endTurnWithoutMoreDamage && !nextNode.endTurnWithoutMoreDamage) {
                 lastFullSafeTile = previousTile
-                moveSinceFullSafe = FPM_ZERO
+                moveSinceFullSafe = FixedPointMovement.FPM_ZERO
             }
             if (previousNode.canStopOn && !nextNode.canStopOn) {
                 lastStoppableTile = previousTile
-                moveSinceStoppable = FPM_ZERO
+                moveSinceStoppable = FixedPointMovement.FPM_ZERO
             }
             moveSinceFullSafe += moveCost
             moveSinceStoppable += moveCost
@@ -481,10 +486,10 @@ class PathingMap(
         }
 
         @Suppress("unused")
-        internal val ALWAYS_LOG: HexCoord = HexCoord(0xFFFF,0xFFFE)
+        internal val ALWAYS_LOG: HexCoord = HexCoord(0xFFFF, 0xFFFE)
         @Suppress("unused")
         @VisibleForTesting
-        val NEVER_LOG: HexCoord = HexCoord(0xFFFF,0xFFFF)
+        val NEVER_LOG: HexCoord = HexCoord(0xFFFF, 0xFFFF)
         /** You can temporarily set this to a tile position, e.g. a unit's, or to [ALWAYS_LOG],
          *  to enable verbose logging for that thing's pathfinding or for everything */
         @VisibleForTesting
@@ -514,7 +519,17 @@ class PathingMap(
                 { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
                 { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
-                { from, to -> fpmFromMovement(MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, from, to, considerZoneOfControl, includeEscortUnit)) },
+                { from, to ->
+                    fpmFromMovement(
+                        MovementCost.getMovementCostBetweenAdjacentTilesEscort(
+                            unit,
+                            from,
+                            to,
+                            considerZoneOfControl,
+                            includeEscortUnit
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(unit.civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(unit.civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -530,7 +545,15 @@ class PathingMap(
                 { isLandTileCanAttackThrough(civ, it, targetCiv) },
                 { true },
                 { 0 },
-                { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
+                { from, to ->
+                    fpmFromMovement(
+                        roadPreferredMovementCost(
+                            civ,
+                            from,
+                            to
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -546,7 +569,15 @@ class PathingMap(
                 { isTileCanAttackThrough(civ, it, targetCiv) },
                 { true },
                 { 0 },
-                { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
+                { from, to ->
+                    fpmFromMovement(
+                        roadPreferredMovementCost(
+                            civ,
+                            from,
+                            to
+                        )
+                    )
+                },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
@@ -562,18 +593,21 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createRoadPathingMap",
-                { PathingMapCacheKey(startingPoint.position,  FPM_POINT_FIVE, FPM_POINT_FIVE) },
-                {MapPathing.isValidRoadPathTile(civ, it) },
+                { PathingMapCacheKey(startingPoint.position, FPM_POINT_FIVE, FPM_POINT_FIVE) },
+                { MapPathing.isValidRoadPathTile(civ, it) },
                 { true },
                 { 0 },
-                { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FPM_ONE },
-                { FPM_ONE },
+                { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FixedPointMovement.FPM_ONE },
+                { FixedPointMovement.FPM_ONE },
                 { tile -> tile.getOwner()?.getDiplomacyManager(civ)?.relationshipIgnoreAfraid() ?: RelationshipLevel.Favorable }
             )
         }
 
         @Readonly
-        private fun civPathExistCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_MOVE_THIS_TURN)
+        private fun civPathExistCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint,
+            MAX_MOVE_THIS_TURN,
+            MAX_MOVE_THIS_TURN
+        )
 
         @Readonly
         private fun isTileCanAttackThrough(civInfo: Civilization, tile: Tile, targetCiv: Civilization): Boolean {
