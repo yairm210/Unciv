@@ -170,9 +170,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             val lastKnownTile = civInfo.gameInfo.tileMap[memory.tilePosition]
             lastKnownTile.getUnits().none { it.id == memory.unitId && !it.isDestroyed }
         }
-        newViewableInvisibleTiles.addAll(
-            civInfo.discoveredInvisibleUnitTiles.map { civInfo.gameInfo.tileMap[it.tilePosition] }
-        )
+        for (memory in civInfo.discoveredInvisibleUnitTiles) {
+            val tile = civInfo.gameInfo.tileMap[memory.tilePosition]
+            newViewableInvisibleTiles.getOrPut(tile) { HashSet() }.add(Constants.uppercaseAll)
+        }
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
