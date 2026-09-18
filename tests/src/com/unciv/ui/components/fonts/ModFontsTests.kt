@@ -2,17 +2,18 @@ package com.unciv.ui.components.fonts
 
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.files.UncivFiles
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class ModFontsTests {
     private lateinit var dataDir: File
 
@@ -50,7 +51,8 @@ class ModFontsTests {
     @Test
     fun `finds fonts in a local mods folder`() {
         val localMods = Gdx.files.local("mods")
-        Assert.assertFalse("Test would clobber an existing local mods folder", localMods.exists())
+        // Skip instead of fail - a dev running this with mods installed in android/assets shouldn't get a red test
+        Assume.assumeFalse("Test would clobber an existing local mods folder", localMods.exists())
         try {
             File(dataDir, "mods").copyRecursively(localMods.file())
             val files = UncivFiles(Gdx.files)

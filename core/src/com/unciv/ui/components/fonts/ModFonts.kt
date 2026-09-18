@@ -23,6 +23,9 @@ object ModFonts {
     /**
      *  Lists the fonts of all mods in [modsDir] (expected to be [UncivFiles.getModsFolder][com.unciv.logic.files.UncivFiles.getModsFolder]).
      *  Requires Android API 26 (java.nio.file).
+     *
+     *  Cold flow doing blocking file IO - the collector picks the dispatcher.
+     *  [AdvancedTab][com.unciv.ui.popups.options.AdvancedTab] collects it on [kotlinx.coroutines.Dispatchers.IO].
      */
     @Suppress("NewApi")
     fun scan(modsDir: FileHandle): Flow<FontFamilyData> = flow {
