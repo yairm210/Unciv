@@ -265,7 +265,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, source, target)
     }
     /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
-    @Readonly private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
+    @Readonly private fun ArrayList<HistoricalAttackMemory>.copyAttackMemories() = ArrayList(this.map { it.clone() })
     /**
      * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
      * @see [MapUnit.attacksSinceTurnStart]
@@ -295,7 +295,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         @Readonly fun clone() = DiscoveredInvisibleUnitMemory(unitId, tilePosition)
     }
     /** Deep clone an ArrayList of [DiscoveredInvisibleUnitMemory]s. */
-    @Readonly private fun ArrayList<DiscoveredInvisibleUnitMemory>.copy() = ArrayList(this.map { it.clone() })
+    @Readonly private fun ArrayList<DiscoveredInvisibleUnitMemory>.copyDiscoveredInvisibleUnitMemories() = ArrayList(this.map { it.clone() })
     /** @see DiscoveredInvisibleUnitMemory */
     var discoveredInvisibleUnitTiles = ArrayList<DiscoveredInvisibleUnitMemory>()
 
@@ -378,8 +378,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
-        toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
-        toReturn.discoveredInvisibleUnitTiles = discoveredInvisibleUnitTiles.copy()
+        toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copyAttackMemories()
+        toReturn.discoveredInvisibleUnitTiles = discoveredInvisibleUnitTiles.copyDiscoveredInvisibleUnitMemories()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
