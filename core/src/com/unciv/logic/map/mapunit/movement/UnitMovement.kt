@@ -1,5 +1,3 @@
-
-
 package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
@@ -827,7 +825,8 @@ class UnitMovement(val unit: MapUnit) {
         // displays any other detected-but-invisible unit. This is what makes the discovery
         // actually show up on the map, not just in the notification text below.
         unit.civ.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, tile)
-        unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles + tile
+        unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles +
+            (tile to (unit.civ.viewableInvisibleUnitsTiles[tile].orEmpty() + Constants.uppercaseAll))
         for (civUnit in unit.civ.units.getCivUnits())
             civUnit.movement.clearPathfindingCache()
         unit.civ.addNotification(
