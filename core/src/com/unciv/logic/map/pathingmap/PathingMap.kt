@@ -227,7 +227,10 @@ class PathingMap(
         fun addWaypoint(tile: Tile) {
             if (tile != startTile && (result.isEmpty() || result.last() != tile)) result.add(tile)
         }
-        var moveThisTurn = FixedPointMovement.FPM_ZERO
+        var moveThisTurn = (cache.key.fullMove - cache.key.moveRemaining).coerceIn(
+            FixedPointMovement.FPM_ZERO,
+            MAX_MOVE_THIS_TURN
+        )
         var previousTile = startTile
         var previousNode = RouteNode(cache.routeNodes[startTile.zeroBasedIndex])
         var lastFullSafeTile = startTile
