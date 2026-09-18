@@ -253,7 +253,10 @@ class WorldMapHolder(
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
                 val attackerCombatant = unitView.asCombatant()
-                if (!unitView.tryMovePreparingAttack(attackableTile)) return
+                if (!unitView.tryMovePreparingAttack(attackableTile)) {
+                    worldScreen.shouldUpdate = true
+                    return
+                }
                 if (!SoundPlayer.play(UncivSound(attackerCombatant.getCombatantName())))
                     SoundPlayer.play(attackerCombatant.getAttackSound())
                 val (damageToDefender, damageToAttacker) = unitView.attackOrNuke(attackableTile)
@@ -541,7 +544,7 @@ class WorldMapHolder(
         }
 
         for (unitView in unitList) {
-            val unitIconGroup = UnitIconGroup(unitView, 48f).surroundWithCircle(68f, resizeActor = false)
+            val unitIconGroup = UnitIconGroup(unitView.getUnit(), 48f).surroundWithCircle(68f, resizeActor = false)
             unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (!unitView.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
