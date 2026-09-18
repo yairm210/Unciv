@@ -525,7 +525,7 @@ class PathingMap(
                 // letting the player order a move onto/through them - the same permissiveness
                 // getMovementToTilesAtPosition's BFS already gives via canPassThrough.
                 { unit.movement.canPassThrough(it, includeEscortUnit) },
-                { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
+                { unit.movement.thinksItCanMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
                 { from, to ->
                     fpmFromMovement(

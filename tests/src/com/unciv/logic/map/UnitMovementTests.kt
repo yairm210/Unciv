@@ -216,6 +216,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         testGame.gameInfo.civilizations.add(barbCiv)
 
         testGame.addUnit("Warrior", barbCiv, tile)
+        civInfo.viewableTiles = setOf(tile)
 
         for (type in testGame.ruleset.unitTypes.values) {
             val outUnit = addFakeUnit(type)
@@ -410,6 +411,11 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         // ...but the attempt itself must be what reveals it
         assertTrue("Moving towards the tile must be what reveals the hidden unit",
             civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+        civInfo.viewableTiles = emptySet()
+        assertTrue("A remembered invisible unit must remain visible after its tile enters fog",
+            hiddenUnit.isVisibleTo(civInfo))
+        val ordinaryUnit = testGame.addUnit("Worker", otherCiv, hiddenTile)
+        assertFalse("Ordinary units on a fogged tile must remain hidden", ordinaryUnit.isVisibleTo(civInfo))
         civInfo.cache.updateViewableTiles()
         assertTrue("A discovered hidden unit must remain visible after sight recalculation",
             civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
@@ -433,6 +439,68 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
 
         civInfo.cache.updateViewableTiles()
         assertFalse(civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+    }
+
+    @Test
+    fun `replacing remembered invisible unit tiles synchronizes all-unit markers immediately`() {
+        val otherCiv = testGame.addCiv()
+        val oldTile = testGame.tileMap[0, 0].neighbors.first()
+        val newTile = oldTile.neighbors.first { it != testGame.tileMap[0, 0] }
+        val hiddenMilitary = testGame.addDefaultMeleeUnitWithUniques(otherCiv, oldTile, UniqueType.Invisible.text)
+        val hiddenCivilian = testGame.addUnit("Worker", otherCiv, oldTile).also {
+            it.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        }
+        testGame.addDefaultMeleeUnitWithUniques(civInfo, testGame.tileMap[0, 0], "Can see invisible [Water] units")
+
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenMilitary, oldTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenCivilian, oldTile)
+        civInfo.cache.updateViewableTiles()
+        assertEquals(setOf(Constants.uppercaseAll, "Water"), civInfo.viewableInvisibleUnitsTiles[oldTile])
+
+        hiddenMilitary.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenMilitary, newTile)
+        assertEquals(
+            "Another memory on the old tile must retain the all-units marker",
+            setOf(Constants.uppercaseAll, "Water"),
+            civInfo.viewableInvisibleUnitsTiles[oldTile]
+        )
+
+        hiddenCivilian.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenCivilian, newTile)
+        assertEquals(
+            "Replacing the final memory must remove only the all-units marker",
+            setOf("Water"),
+            civInfo.viewableInvisibleUnitsTiles[oldTile]
+        )
+    }
+
+    @Test
+    fun `moving remembered unit preserves active universal detector on old tile`() {
+        val otherCiv = testGame.addCiv()
+        val detectorTile = testGame.tileMap[0, 0]
+        val oldTile = detectorTile.neighbors.first()
+        val newTile = oldTile.neighbors.first { it != detectorTile }
+        val rememberedUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, oldTile, UniqueType.Invisible.text)
+        val otherHiddenUnit = testGame.addUnit("Worker", otherCiv, oldTile).also {
+            it.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        }
+        testGame.addDefaultMeleeUnitWithUniques(civInfo, detectorTile, "Can see invisible [All] units")
+
+        civInfo.cache.addDiscoveredInvisibleUnitTile(rememberedUnit, oldTile)
+        civInfo.cache.updateViewableTiles()
+        assertTrue(otherHiddenUnit.isVisibleTo(civInfo))
+
+        rememberedUnit.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(rememberedUnit, newTile)
+
+        assertTrue(
+            "The live universal detector must retain its All filter on the old tile",
+            Constants.uppercaseAll in civInfo.viewableInvisibleUnitsTiles[oldTile].orEmpty()
+        )
+        assertTrue(
+            "Moving a remembered unit must not temporarily hide another detected unit",
+            otherHiddenUnit.isVisibleTo(civInfo)
+        )
     }
 
     @Test

@@ -194,7 +194,7 @@ class UnitMovement(val unit: MapUnit) {
 
         val passThroughCacheNew = ArrayList<Boolean?>(currentTile.tileMap.tileList.size)
         val movementCostCache = HashMap<Int, Float>()
-        val canMoveToCache = HashMap<Tile, Boolean>()
+        val thinksItCanMoveToCache = HashMap<Tile, Boolean>()
 
         while (true) {
             newTilesToCheck.clear()
@@ -246,7 +246,7 @@ class UnitMovement(val unit: MapUnit) {
 
                     if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                     if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
-                        !canMoveToCache.getOrPut(reachableTile) { canMoveTo(reachableTile) })
+                        !thinksItCanMoveToCache.getOrPut(reachableTile) { thinksItCanMoveTo(reachableTile) })
                     // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         continue
                     movementTreeParents[reachableTile] = tileToCheck

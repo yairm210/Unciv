@@ -245,6 +245,7 @@ class PathingMapTest {
         baseUnit.range = 2
         val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
         unit.currentMovement = 3f
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
 
         val pathing = PathingMap.createUnitPathingMap(unit)
         val attackableTiles = pathing.bfsAllMatchingTiles(1) { tile, _ -> tile.militaryUnit?.civ == evemyCiv}

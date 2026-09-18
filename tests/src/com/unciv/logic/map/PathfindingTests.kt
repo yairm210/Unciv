@@ -337,6 +337,7 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         verticalWall(2, {tile -> testGame.addUnit("Warrior", barbarianCiv, tile)})
         testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
         val unit = testGame.addUnit("Warrior", civInfo, originTile)
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
         val paths = unit.movement.getShortestPath(testGame.tileMap[4,4])
         assertEquals(listOf<Tile>(), paths)
     }
@@ -496,6 +497,7 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         verticalWall(2, {tile -> testGame.addUnit("Warrior", barbarianCiv, tile)})
         testGame.addUnit("Worker", civInfo, testGame.tileMap[1,1])
         val unit = testGame.addUnit("Worker", civInfo, originTile)
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
         val paths = unit.movement.getShortestPath(testGame.tileMap[4,4])
         assertEquals(listOf<Tile>(), paths)
     }
