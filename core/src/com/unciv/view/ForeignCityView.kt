@@ -1,6 +1,8 @@
 package com.unciv.view
 
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -26,7 +28,7 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getCity(): City = city
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
-    @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ) 
+    @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ)
     /** Get from a foreign view to an inner view */
     @Readonly fun tryGetCityView(): CityView? {
         val canSeeCityData = viewer.isSpectator() // not posing, actual spectator
@@ -42,6 +44,8 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getMaxHealth(): Int = city.getMaxHealth()
     @Readonly fun getDefendingStrength(): Int = CityCombatant(city).getDefendingStrength()
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
+    @Readonly fun getBombardableTiles(): List<TileView> =
+        TargetHelper.getBombardableTiles(city).map { gameView.tileMapView.getTile(it) }.toList()
     @Readonly fun getCenterTile(): TileView {
         val tile = city.getCenterTile()
         return gameView.tileMapView.getTile(tile)
@@ -73,4 +77,11 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getReligionThisIsTheHolyCityOf(): String? = city.religion.religionThisIsTheHolyCityOf
     @Readonly fun isBlockedHolyCity(): Boolean = city.religion.isBlockedHolyCity
     @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
+
+    /** Wraps [city] as a [CityCombatantView] for battle purposes. */
+    @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, viewer, spectatorMode, gameView)
+
+    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
+    fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
+        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 }

@@ -88,8 +88,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return get(text, language, activeMods)?.get(language) ?: default
     }
 
-    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
-    fun getLanguages() = linkedSetOf<String>().apply {
+    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests`
+     *  * Note: No deterministic order. If a client needs that, remap to LanguageCode order or something.
+     */
+    fun getLanguages(): Set<String> = hashSetOf<String>().apply {
             for (entry in values)
                 for (languageName in entry.keys)
                     add(languageName)
@@ -440,10 +442,10 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean): 
 
 /** No brackets of any kind, just a single word */
 @Readonly
-private fun String.translateIndividualWord(language: String, hideIcons: Boolean, hideStats: Boolean): String {
+private fun String.translateIndividualWord(language: String, hideIcons: Boolean, hideStatIcons: Boolean): String {
     if (Stats.isStats(this)) {
         val stats = Stats.parse(this)
-        return if (hideIcons) stats.toStringWithoutIcons() else stats.toString()
+        return if (hideStatIcons) stats.toStringWithoutIcons() else stats.toString()
     }
 
     val translation = UncivGame.Current.translations.getText(
@@ -453,7 +455,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
     }
 
     val stat = Stat.safeValueOf(this)
-    if (!hideStats && stat != null) return stat.character + translation
+    if (!hideStatIcons && stat != null) return stat.character + translation
 
     if (!hideIcons && FontRulesetIcons.rulesetObjectNameToChar.containsKey(this))
         return FontRulesetIcons.rulesetObjectNameToChar[this]!! + translation
@@ -477,11 +479,12 @@ fun String.getPlaceholderParameters(): List<String> {
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
     stringToParse.indices.forEach { i ->
-        if (stringToParse[i] == '[') {
+        val currentChar = stringToParse[i]
+        if (currentChar == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
         }
-        if (stringToParse[i] == ']' && depthOfBraces > 0) {
+        if (currentChar == ']' && depthOfBraces > 0) {
             depthOfBraces--
             if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }

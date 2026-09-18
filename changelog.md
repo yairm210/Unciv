@@ -1,3 +1,85 @@
+## 4.22.1
+
+Fixed crash on "ID from clipboard" when clipboard not set
+
+Scrollable events show scrollbars
+
+Allow modders to specify modOptions.constants.maxRiverLength as 0 to avoid river generation entirely
+
+Tweaked auto map size - By O-spin
+
+Performance improvements - By Ambeco
+
+Add map generator settings clipboard actions - By LouisDeconinck
+
+## 4.22.0
+
+Invisible units no longer invisible to their own civ
+
+Remember last civilopedia position
+
+New game screen: Start fresh if the latest game start is erroring
+
+When selecting custom maps, don't overwrite the ruleset if the current mods are a superset of the map's required mods
+
+By unciv-loof:
+- Automation setting for specialist control in new cities 
+- Set default max coast extension to 3 instead of 2 
+
+By JN0V:
+- Add countable "Known [civFilter] Civilizations" 
+- Victories can carry uniques, and decide who may achieve them 
+- Add victory milestone "Have at least [amount] [countable]" 
+- Fix possible crash when scrolling to the selected construction queue entry 
+
+By LouisDeconinck:
+- Fix terrain changes from gifted improvements 
+- Fix health of units recruited from encampments 
+
+fix: prevent owned roads from being charged as neutral roads - By mvanhorn
+
+fix mod translation not enabled in restored new game screen - By finalpatch
+
+AStar correctly paths around allies - By Ambeco
+
+## 4.21.19
+
+Prevent mod archives from overwriting saves and settings - By Angais
+
+Improve desktop font rendering with mipmaps and preserve glyph contrast - By finalpatch (new contributor!)
+
+When changing rulesets, clamp number of city states available to match new ruleset
+
+Show stat icons in civilopedia when displaying stats
+
+Fix altas generation fuzziness errors
+
+Hide unit table "summary" for civs with no units (e.g. Spectator)
+
+Unify "extra ranged attack" logic - extra attacks no longer trigger regular attack effects (XP, on-kill uniques, on-damage uniques) separately from existing triggers
+
+Solved crash when city screen update happens parallel to screen change
+
+## 4.21.18
+
+Avoid ANRs from multiple sources
+
+Avoid game load crashes for unit/tile neighbor adjacency conditionals
+
+Adds auto map size - By O-spin
+
+By Angais: 
+- Apply warmonger penalties to alliance motivation 
+- Apply city filters to spy effectiveness 
+
+By varchasgopalaswamy (new contributor!):
+- Fix bug where unplacable great people will disappear 
+- Fix movement history perspective 
+
+By SomeTroglodyte:
+- Font fallback for missing glyphs 
+- Translation generation preserves existing data for mods, can backup 
+
 ## 4.21.17
 
 Decrease initial startup time

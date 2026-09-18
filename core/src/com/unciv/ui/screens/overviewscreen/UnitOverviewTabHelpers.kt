@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.translations.tr
@@ -18,6 +16,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -27,38 +27,37 @@ import yairm210.purity.annotations.Readonly
  */
 open class UnitOverviewTabHelpers {
 
-    private fun showWorldScreenAt(position: HexCoord, unit: MapUnit?) {
+    private fun showWorldScreenAt(position: HexCoord, unit: MapUnitView?) {
         GUI.resetToWorldScreen()
-        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
+        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit?.getUnit())
     }
 
-    protected fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
-    protected fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
+    protected fun showWorldScreenAt(unit: MapUnitView) = showWorldScreenAt(unit.getTile().position(), unit)
+    protected fun showWorldScreenAt(tile: TileView) = showWorldScreenAt(tile.position(), null)
 
     @Readonly
-    private fun getWorkerActionText(unit: MapUnit): String? = when {
+    private fun getWorkerActionText(unit: MapUnitView): String? = when {
         // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
-        !unit.cache.hasUniqueToBuildImprovements -> null
         !unit.hasMovement() -> null
-        unit.currentTile.improvementInProgress == null -> null
-        !unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) -> null
-        else -> unit.currentTile.improvementInProgress
+        !unit.canBuildCurrentImprovement() -> null
+        else -> unit.getImprovementInProgress()
     }
 
     @Readonly
-    protected fun getActionText(unit: MapUnit): String? {
+    protected fun getActionText(unit: MapUnitView): String? {
         val workerText by lazy { getWorkerActionText(unit) }
         return when {
-            unit.action == null -> workerText
+            unit.getUnit().action == null -> workerText
             unit.isFortified() -> UnitActionType.Fortify.value
             unit.isGuarding() -> UnitActionType.Guard.value
             unit.isMoving() -> "Moving"
             unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
-            else -> unit.action
+            else -> unit.getUnit().action
         }
     }
 
-    protected fun getUpgradeTable(unit: MapUnit, actionContext: UnitOverviewTab): Table? {
+    protected fun getUpgradeTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table? {
+        val unit = unitView.getUnit()
         val table = Table()
         val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
         if (unitActions.none()) return null
@@ -67,7 +66,7 @@ open class UnitOverviewTabHelpers {
         for (unitAction in unitActions) {
             val enable = canEnable && unitAction.action != null
             val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
-            val selectKey = unit.id.toString()
+            val selectKey = unitView.id.toString()
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
@@ -83,25 +82,26 @@ open class UnitOverviewTabHelpers {
     }
 
     @Readonly @Suppress("purity") // Calls action
-    protected fun getUpgradeSortString(unit: MapUnit): String? {
-        val upgrade = UnitActionsUpgrade.getUpgradeActionAnywhere(unit).firstOrNull()
+    protected fun getUpgradeSortString(unitView: MapUnitView): String? {
+        val upgrade = UnitActionsUpgrade.getUpgradeActionAnywhere(unitView.getUnit()).firstOrNull()
             ?: return null
         return (upgrade as UpgradeUnitAction).unitToUpgradeTo.name.tr(hideIcons = true)
     }
 
-    protected fun getPromotionsTable(unit: MapUnit, actionContext: UnitOverviewTab): Table {
+    protected fun getPromotionsTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table {
         // This was once designed to be redrawn in place without rebuilding the grid.
         // That created problems with sorting - and determining when the state would allow minimal updating is complex.
         // But the old way also had the mini-bug that PromotionPicker allows unit rename which wasn't reflected on the grid...
         // Now it always does rebuild all rows (as simple as actionContext.update instead of updatePromotionsTable).
+        val unit = unitView.getUnit()
         val promotionsTable = Table()
         val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
-        updatePromotionsTable(promotionsTable, unit, canEnable)
-        val selectKey = unit.id.toString()
+        updatePromotionsTable(promotionsTable, unitView, canEnable)
+        val selectKey = unitView.id.toString()
 
         fun onPromotionsTableClick() {
-            val canPromote = canEnable && unit.promotions.canBePromoted()
-            if (!canPromote && unit.promotions.promotions.isEmpty()) return
+            val canPromote = canEnable && unitView.getPromotions().canBePromoted()
+            if (!canPromote && unitView.getPromotions().promotions.isEmpty()) return
             // We can either add a promotion or at least view existing ones.
             // PromotionPickerScreen is reponsible for checking viewingPlayer.isCurrentPlayer and isAllowedChangeState **again**.
             actionContext.overviewScreen.game.pushScreen {
@@ -116,13 +116,13 @@ open class UnitOverviewTabHelpers {
         return promotionsTable
     }
 
-    private fun updatePromotionsTable(table: Table, unit: MapUnit, canEnable: Boolean) {
+    private fun updatePromotionsTable(table: Table, unitView: MapUnitView, canEnable: Boolean) {
         table.clearChildren()
 
         // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
         // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
-        val promotions = unit.promotions.getPromotions(true)
-        val showPromoteStar = unit.promotions.canBePromoted()
+        val promotions = unitView.getPromotions().getPromotions(true)
+        val showPromoteStar = unitView.getPromotions().canBePromoted()
         if (promotions.any()) {
             val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)
             val numberOfLines = (iconCount - 1) / 8 + 1  // Int math: -1,/,+1 means divide rounding *up*
@@ -138,7 +138,7 @@ open class UnitOverviewTabHelpers {
         if (!showPromoteStar) return
         table.add(
             ImageGetter.getImage("OtherIcons/Star").apply {
-                color = if (canEnable && unit.hasMovement() && unit.attacksThisTurn == 0)
+                color = if (canEnable && unitView.hasMovement() && unitView.attacksThisTurn == 0)
                     Color.GOLDENROD
                 else Color.GOLDENROD.darken(0.25f)
             }

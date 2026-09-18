@@ -40,9 +40,9 @@ open class Policy : RulesetObject() {
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter) ||
-                state != null && hasTagUnique(filter, state) ||
-                state == null && hasTagUnique(filter)
+            matchesSingleFilter(it) ||
+                state != null && hasTagUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
 
     // Remember policy branches are duplicated in `policies` (as subclass carrying more information),

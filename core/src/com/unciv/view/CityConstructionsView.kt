@@ -14,6 +14,7 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation
+    @Deprecated("Scheduled for removal - views should unwrap() instead")
     @Readonly fun getCityConstructions(): CityConstructions = cityConstructions
 
     // Data retrieval

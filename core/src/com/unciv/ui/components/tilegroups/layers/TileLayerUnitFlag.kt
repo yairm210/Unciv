@@ -36,7 +36,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
         if (unit != null && isViewable) {
             val rawUnit = unit.getUnit()
-            newIcon = UnitIconGroup(rawUnit, 30f)
+            newIcon = UnitIconGroup(unit, 30f)
             setIconPosition(slot, newIcon)
             addOwnedActor(newIcon)
 
@@ -87,14 +87,14 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         return airUnitTable
     }
 
-    fun selectFlag(unit: MapUnit) {
-        getIcon(unit)?.selectUnit()
+    fun selectFlag(unitView: ForeignMapUnitView) {
+        getIcon(unitView)?.selectUnit()
     }
 
-    fun getIcon(unit: MapUnit) : UnitIconGroup? {
-        if (civilianUnitIcon?.unit == unit)
+    fun getIcon(unitView: ForeignMapUnitView) : UnitIconGroup? {
+        if (civilianUnitIcon?.unitView == unitView)
             return civilianUnitIcon
-        else if (militaryUnitIcon?.unit == unit)
+        else if (militaryUnitIcon?.unitView == unitView)
             return militaryUnitIcon
         return null
     }
@@ -105,7 +105,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     private fun fillSlots(viewingCiv: CivView?) {
-        val isViewable = viewingCiv == null || tileGroup.isForceVisible || isViewable(viewingCiv)
+        val isViewable = isViewable(viewingCiv)
 
         val isCivilianShown = isViewable
         val isMilitaryShown = isViewable

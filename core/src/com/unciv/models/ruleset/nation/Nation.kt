@@ -165,7 +165,7 @@ class Nation : RulesetObject() {
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter) ||
+            matchesSingleFilter(it) ||
                 state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })

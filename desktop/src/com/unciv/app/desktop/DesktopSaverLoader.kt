@@ -13,46 +13,27 @@ import javax.swing.JFrame
 
 class DesktopSaverLoader : PlatformSaverLoader {
 
-    override fun saveGame(
-        data: String,
+    override fun requestSaveLocation(
         suggestedLocation: String,
-        onSaved: (location: String) -> Unit,
+        mimeType: String,   // unused: JFileChooser has no MIME-type concept
+        onLocationChosen: (stream: OutputStream, location: String) -> Unit,
         onError: (ex: Exception) -> Unit
     ) {
-        val onFileChosen = { stream: OutputStream, location: String ->
-            try {
-                stream.writer().use { it.write(data) }
-                onSaved(location)
-            } catch (ex: Exception) {
-                onError(ex)
-            }
-        }
-
-        pickFile(onFileChosen, onError, JFileChooser::showSaveDialog, File::outputStream, suggestedLocation)
-
+        pickFile(onLocationChosen, onError, JFileChooser::showSaveDialog, File::outputStream, suggestedLocation)
     }
 
-    override fun loadGame(
-        onLoaded: (data: String, location: String) -> Unit,
+    override fun requestLoadLocation(
+        onLocationChosen: (stream: InputStream, location: String) -> Unit,
         onError: (ex: Exception) -> Unit
     ) {
-        val onFileChosen = { stream: InputStream, location: String ->
-            try {
-                val data = stream.reader().use { it.readText() }
-                onLoaded(data, location)
-            } catch (ex: Exception) {
-                onError(ex)
-            }
-        }
-
-        pickFile(onFileChosen, onError, JFileChooser::showOpenDialog, File::inputStream)
+        pickFile(onLocationChosen, onError, JFileChooser::showOpenDialog, File::inputStream)
     }
 
     private fun <T> pickFile(onSuccess: (T, String) -> Unit,
-                             onError: (Exception) -> Unit,
-                             chooseAction: (JFileChooser, Component) -> Int,
-                             createValue: (File) -> T,
-                             suggestedLocation: String? = null) {
+        onError: (Exception) -> Unit,
+        chooseAction: (JFileChooser, Component) -> Int,
+        createValue: (File) -> T,
+        suggestedLocation: String? = null) {
         EventQueue.invokeLater {
             try {
                 val fileChooser = JFileChooser().apply fileChooser@{

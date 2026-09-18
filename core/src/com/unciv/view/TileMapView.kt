@@ -3,8 +3,10 @@ package com.unciv.view
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
@@ -50,5 +52,22 @@ class TileMapView(private val tileMap: TileMap,
 
     @Readonly fun getNeighborTilePositionAsWorldCoords(tile: TileView, neighbor: TileView): Vector2 =
         tileMap.getNeighborTilePositionAsWorldCoords(tile.unwrap(), neighbor.unwrap())
+
+    /** World-coordinate offset of [to] relative to [from], accounting for map wraparound. */
+    @Readonly fun getRelativeWorldPosition(from: TileView, to: TileView): Vector2 {
+        val fromTile = from.unwrap()
+        var targetPos = Vector2(to.unwrap().position.toVector2())
+        if (tileMap.mapParameters.worldWrap)
+            targetPos = HexMath.getUnwrappedNearestTo(targetPos.toHexCoord(), fromTile.position, tileMap.maxLongitude)
+        val targetWorld = HexMath.hex2WorldCoords(targetPos.toHexCoord())
+        val fromWorld = HexMath.hex2WorldCoords(fromTile.position)
+        return Vector2(targetWorld.x - fromWorld.x, targetWorld.y - fromWorld.y)
+    }
+
+    /** Names of nations with a starting location on [tile] (map editor only). */
+    @Readonly fun getStartingLocationNationNames(tile: TileView): List<String> {
+        val rawTile = tile.unwrap()
+        return tileMap.startingLocationsByNation.filter { rawTile in it.value }.keys.toList()
+    }
 
 }

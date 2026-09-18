@@ -283,6 +283,30 @@ class CountableTests {
     }
 
     @Test
+    fun testKnownCivsCountable() {
+        // A big map with distant cities: civilizations must not meet by seeing each other
+        game = TestGame()
+        game.makeHexagonalMap(12)
+        val ourCiv = game.addCiv()
+        val otherMajorCiv = game.addCiv()
+        val cityState = game.addCiv(cityStateType = game.ruleset.cityStateTypes.keys.first())
+        game.addCity(ourCiv, game.tileMap[0,0])
+        game.addCity(otherMajorCiv, game.tileMap[10,0])
+        game.addCity(cityState, game.tileMap[-10,0])
+        val context = GameContext(ourCiv)
+        fun known(filter: String) = Countables.getCountableAmount("Known [$filter] Civilizations", context)
+
+        assertEquals("Nobody met yet", 0, known("Major"))
+        ourCiv.diplomacyFunctions.makeCivilizationsMeet(cityState)
+        assertEquals("A City-State is not a major civ", 0, known("Major"))
+        assertEquals(1, known("City-State"))
+        ourCiv.diplomacyFunctions.makeCivilizationsMeet(otherMajorCiv)
+        assertEquals(1, known("Major"))
+        // "all" includes neither ourselves nor civilizations we have not met
+        assertEquals(2, known("all"))
+    }
+
+    @Test
     fun testOwnedTilesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])

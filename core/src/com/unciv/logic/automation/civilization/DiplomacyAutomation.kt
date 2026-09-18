@@ -73,7 +73,7 @@ object DiplomacyAutomation {
 
         // Warmongerers don't make good allies
         if (diploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
-            motivation -= diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
+            motivation += diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
         }
 
         // If the other civ is stronger than we are compelled to be nice to them
@@ -333,7 +333,7 @@ object DiplomacyAutomation {
 
         // Warmongerers don't make good allies
         if (ourDiploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
-            motivation -= ourDiploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
+            motivation += ourDiploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
         }
 
         // If they are stronger than us, then we value it a lot more
@@ -503,7 +503,7 @@ object DiplomacyAutomation {
 
         for (tile in nearbyTiles) {
             val unit = tile.militaryUnit ?: continue
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
+            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || !unit.isVisibleTo(civInfo))
                 continue
             nearbyUnitCountByCiv.add(unit.civ, 1)
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())

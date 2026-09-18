@@ -100,7 +100,7 @@ class PlayerPickerTable(
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in gameParameters.players) {
-            playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
+            playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(10f).row()
         }
 
         val isRandomNumberOfPlayers = gameParameters.randomNumberOfPlayers

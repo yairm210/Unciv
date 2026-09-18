@@ -4,10 +4,12 @@ import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -34,6 +36,7 @@ class CivView(civ: Civilization,
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.unwrap().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.unwrap().civ
+    @Readonly fun isOwnerOf(unitView: ForeignMapUnitView): Boolean = civ === unitView.unwrap().civ
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
         tileView.unwrap().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
@@ -51,6 +54,8 @@ class CivView(civ: Civilization,
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
+    /** `true` when this civ is a human player defeated in a singleplayer game - the map is fully revealed for them to watch the game play out. */
+    @Readonly fun isMapRevealed(): Boolean = !civ.gameInfo.gameParameters.isOnlineMultiplayer && civ.isCurrentPlayer() && civ.isDefeated()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
     @Readonly fun isDefeated(): Boolean = civ.isDefeated()
     @Readonly fun isCurrentPlayer(): Boolean = civ.isCurrentPlayer()
@@ -84,7 +89,11 @@ class CivView(civ: Civilization,
     @Readonly fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtEnhancing()
     @Readonly fun freeBeliefsAsEnums(): Counter<BeliefType> = civ.religionManager.freeBeliefsAsEnums()
 
-    // Diplomatic victory
+    // Victory
+    /** The victories this civilization can achieve - see [VictoryManager.getAvailableVictories] */
+    @Readonly fun getAvailableVictories(): List<Victory> = civ.victoryManager.getAvailableVictories()
+    /** [getAvailableVictories] minus the ones the ruleset hides from the victory screen */
+    @Readonly fun getVictoriesShownInVictoryScreen(): List<Victory> = civ.victoryManager.getVictoriesShownInVictoryScreen()
     @Readonly fun mayVoteForDiplomaticVictory(): Boolean = civ.mayVoteForDiplomaticVictory()
 
     // Units

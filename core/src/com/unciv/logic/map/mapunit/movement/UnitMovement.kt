@@ -12,7 +12,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapPathing
-import com.unciv.logic.map.PathingMap
+import com.unciv.logic.map.pathingmap.PathingMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -1108,12 +1108,11 @@ class UnitMovement(val unit: MapUnit) {
         while (tilesToCheck.isNotEmpty()) {
             val newTilesToCheck = ArrayList<Tile>()
             for (currentTileToCheck in tilesToCheck) {
-                val reachableTiles = currentTileToCheck.getTilesInDistance(unit.getRange())
-                    .filter { unit.movement.canMoveTo(it) }
-                for (reachableTile in reachableTiles) {
-                    if (tilesReached.containsKey(reachableTile)) continue
-                    tilesReached[reachableTile] = currentTileToCheck
-                    newTilesToCheck.add(reachableTile)
+                currentTileToCheck.forEachTileInDistance(unit.getRange(), { unit.movement.canMoveTo(it) }) { reachableTile ->
+                    if (!tilesReached.containsKey(reachableTile)) {
+                        tilesReached[reachableTile] = currentTileToCheck
+                        newTilesToCheck.add(reachableTile)
+                    }
                 }
             }
             tilesToCheck = newTilesToCheck
@@ -1206,7 +1205,7 @@ class PathfindingCache(private val unit: MapUnit) {
 
 /** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
-    fun getPathToTile(tile: Tile): List<Tile> {
+    @Readonly fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {
             Log.debug("PathsToTilesWithinTurn#getPathToTile does not contain $tile: $this")
             throw Exception("Can't reach $tile")

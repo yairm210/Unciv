@@ -157,9 +157,13 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
-            fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled(unit.civ) }
+            fun getFrontierScore(city: City): Int {
+                var frontierScore = 0
+                city.getCenterTile().forEachTileAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1) {
+                    if (it.canBeSettled(unit.civ)) frontierScore++
+                }
+                return frontierScore
+            }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))

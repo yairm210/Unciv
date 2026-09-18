@@ -153,7 +153,7 @@ class TileStatFunctions(val tile: Tile) {
         val list = ArrayList<Pair<String,Stats>>()
         list.add(terrain.name to (terrain as Stats))
 
-        for (unique in terrain.getMatchingUniques(UniqueType.Stats, gameContext)) {
+        terrain.forEachMatchingUnique(UniqueType.Stats, gameContext) { unique ->
             list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)
         }
         return list
@@ -238,7 +238,7 @@ class TileStatFunctions(val tile: Tile) {
 
     fun getTileStartScore(cityCenterMinStats: Stats): Float {
         var sum = 0f
-        for (closeTile in tile.getTilesInDistance(2)) {
+        tile.forEachTileInDistance(2) { closeTile ->
             val tileYield = closeTile.stats.getTileStartYield(
                 if (closeTile == tile) cityCenterMinStats else Stats.ZERO
             )

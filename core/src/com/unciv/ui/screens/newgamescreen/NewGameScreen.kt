@@ -64,13 +64,18 @@ class NewGameScreen(
     init {
         val isPortrait = isNarrowerThan4to3()
 
+        // The mods loaded here may come from the last-started game (see GameSetupInfo.fromSettings) -
+        // if that combination is now broken (e.g. a mod was updated/removed), silently fall back to
+        // defaults instead of opening straight into an unusable, error-flagged mod selection.
+        if (defaultGameSetupInfo == null) resetIfInitialModsAreBroken()
+
         tryUpdateRuleset(updateUI = false)  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
-            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
@@ -400,6 +405,18 @@ class NewGameScreen(
         }
     }
 
+    /** If the mod/baseRuleset combination inherited from [gameSetupInfo] is broken (Error severity),
+     *  reset it to the default base ruleset with no mods, so we never build the UI around an
+     *  unusable selection. */
+    private fun resetIfInitialModsAreBroken() {
+        val gameParameters = gameSetupInfo.gameParameters
+        if (gameParameters.mods.isEmpty()) return
+        val (_, errors) = RulesetCache.checkCombinedModLinks(gameParameters.mods, gameParameters.baseRuleset)
+        if (!errors.isError()) return
+        gameParameters.mods.clear()
+        gameParameters.baseRuleset = BaseRuleset.Civ_V_GnK.fullName
+    }
+
     /** Updates our local [ruleset] from [gameSetupInfo], guarding against exceptions.
      *
      *  Note: The options reset on failure is not propagated automatically to the Widgets -
@@ -429,6 +446,8 @@ class NewGameScreen(
 
         ruleset.clear()
         ruleset.add(newRuleset)
+        // Activate restored mod translations before constructing or updating the options tables.
+        game.translations.translationActiveMods = gameSetupInfo.gameParameters.getModsAndBaseRuleset()
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
 

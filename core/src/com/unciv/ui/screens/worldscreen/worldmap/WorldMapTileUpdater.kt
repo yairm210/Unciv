@@ -3,12 +3,12 @@ package com.unciv.ui.screens.worldscreen.worldmap
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
-import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.view.AttackableTileView
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 
@@ -56,7 +56,7 @@ object WorldMapTileUpdater {
 
         // Update flags for units which have them
         if (!unitView.isAirUnit()) {
-            tileGroup.layerUnitFlag.selectFlag(unitView.getUnit())
+            tileGroup.layerUnitFlag.selectFlag(unitView)
         }
 
         // Fade out less relevant images if a military unit is selected
@@ -67,13 +67,13 @@ object WorldMapTileUpdater {
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovementName = group.tile.getShownImprovement(unit.civ)
+                val shownImprovementName = group.tileView.getShownImprovement()
                 val shownImprovement = unit.civ.gameInfo.ruleset.tileImprovements[shownImprovementName]
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null &&
-                    !shownImprovement.isBarbarianCampEquivalent(group.tile.stateThisTile) &&
-                    !shownImprovement.isAncientRuinsEquivalent(unit.cache.state))
+                    !shownImprovement.isBarbarianCampEquivalent() &&
+                    !shownImprovement.isAncientRuinsEquivalent())
                     group.layerImprovement.dimImprovement(true)
             }
         }
@@ -184,31 +184,25 @@ object WorldMapTileUpdater {
         // Z-Layer: 6
         // Highlight attackable tiles
         if (unitView.isMilitary()) {
-            val unit = unitView.getUnit()
-
-            val attackableTiles: List<AttackableTile> =
-                if (nukeBlastRadius >= 0)
-                    selectedTile!!.getTile().getTilesInDistance(nukeBlastRadius)
-                        // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
-                                || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
-                        .map { AttackableTile(unit.getTile(), it, 1f, null) }
-                        .toList()
-                else TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .filter { it.tileToAttack.isVisible(unit.civ) }
-                    .distinctBy { it.tileToAttack }
+            // For nukes, getAttackableEnemies already only returns tiles that are legal to nuke
+            // (per Nuke.mayUseNuke) regardless of visible enemies on them; for everything else we still only
+            // want to show tiles we can currently see.
+            val attackableTiles: List<AttackableTileView> =
+                unitView.getAttackableEnemies(unitView.getDistanceToTiles())
+                    .filter { unitView.isNuclearWeapon() || it.getTileToAttack().isVisible() }
+                    .distinctBy { it.getTileToAttack() }
 
             for (attackableTile in attackableTiles) {
-                val tileGroupToAttack = tileGroups[tileMapView.getTile(attackableTile.tileToAttack)]!!
+                val tileGroupToAttack = tileGroups[attackableTile.getTileToAttack()]!!
                 tileGroupToAttack.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
                 tileGroupToAttack.layerOverlay.showCrosshair(
                     // the targets which cannot be attacked without movements shown as orange-ish
-                    if (attackableTile.tileToAttackFrom != unit.currentTile)
+                    if (attackableTile.getTileToAttackFrom() != unitView.getTile())
                         0.5f
                     else 1f
                 )
-                if (attackableTile.tileToAttack == selectedTile?.getTile())
-                    tileGroups[tileMapView.getTile(attackableTile.tileToAttackFrom)]!!.layerOverlay.showHighlight(Color.SKY, 0.7f)
+                if (attackableTile.getTileToAttack() == selectedTile)
+                    tileGroups[attackableTile.getTileToAttackFrom()]!!.layerOverlay.showHighlight(Color.SKY, 0.7f)
             }
         }
 
@@ -227,7 +221,7 @@ object WorldMapTileUpdater {
     private fun WorldMapHolder.updateTilesForSelectedSpy(spy: Spy) {
         for (group in tileGroups.values) {
             group.layerOverlay.reset()
-            if (!group.tile.isCityCenter())
+            if (!group.tileView.isCityCenter())
                 group.layerImprovement.dimImprovement(true)
             group.layerCityButton.moveDown()
         }

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Array
@@ -20,10 +19,12 @@ class NativeBitmapFontData(
 
     val regions: Array<TextureRegion>
 
-    private var dirty = false
     private val packer: PixmapPacker
 
-    private val filter = Texture.TextureFilter.Linear
+    // Trilinear minification smooths both within and between mip levels. Magnification
+    // must use a non-mipmap filter, since mip levels only help when shrinking text.
+    private val minFilter = Texture.TextureFilter.MipMapLinearLinear
+    private val magFilter = Texture.TextureFilter.Linear
 
     private companion object {
         /** How to get the alpha channel in a Pixmap.getPixel return value (Int) - it's the LSB */
@@ -53,13 +54,18 @@ class NativeBitmapFontData(
         // Create a packer.
         val size = 1024
         val packStrategy = PixmapPacker.GuillotineStrategy()
-        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, 1, false, packStrategy)
+        // Leave room between glyphs for the wider sampling footprint of mipmaps at UI sizes.
+        val padding = 16
+        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, padding, false, packStrategy)
+        // Only use the packer for CPU images and glyph placement. Our textures handle
+        // incremental uploads and defer mipmap regeneration until drawing.
+        packer.packToTexture = false
         packer.transparentColor = Color.WHITE
         packer.transparentColor.a = 0f
 
         // Generate texture regions.
         regions = Array()
-        packer.updateTextureRegions(regions, filter, filter, false)
+        updateTextureRegions()
 
         // Set space glyph.
         val spaceGlyph = getGlyph(' ')
@@ -85,7 +91,6 @@ class NativeBitmapFontData(
         val assumeRoundIcon = isFontRulesetIcon && charPixmap.guessIsRoundSurroundedByTransparency()
 
         val rect = packer.pack(charPixmap)
-        charPixmap.dispose()
         glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
         glyph.srcX = rect.x
         glyph.srcY = rect.y
@@ -95,11 +100,13 @@ class NativeBitmapFontData(
 
         // If a page was added, create a new texture region for the incrementally added glyph.
         if (regions.size <= glyph.page)
-            packer.updateTextureRegions(regions, filter, filter, false)
+            updateTextureRegions()
+        else
+            (regions[glyph.page].texture as MipmappedFontTexture).uploadGlyph(charPixmap, rect.x, rect.y)
+        charPixmap.dispose()
 
         setGlyphRegion(glyph, regions.get(glyph.page))
         setGlyph(ch.code, glyph)
-        dirty = true
 
         return glyph
     }
@@ -154,17 +161,20 @@ class NativeBitmapFontData(
         return fontImplementation.getCharPixmap(DiacriticSupport.getStringFor(ch))
     }
 
-    override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: BitmapFont.Glyph?) {
-        packer.packToTexture = true // All glyphs added after this are packed directly to the texture.
-        super.getGlyphs(run, str, start, end, lastGlyph)
-        if (dirty) {
-            dirty = false
-            packer.updateTextureRegions(regions, filter, filter, false)
+    private fun updateTextureRegions() {
+        while (regions.size < packer.pages.size) {
+            val texture = MipmappedFontTexture(packer.pages[regions.size].pixmap, fontImplementation)
+            texture.setFilter(minFilter, magFilter)
+            regions.add(TextureRegion(texture))
+            fontImplementation.configureFontTexture(texture)
         }
     }
 
     override fun dispose() {
-        packer.dispose()
+        // Mipmapped textures own their CPU pages, just like PixmapPacker's textures.
+        // Calling packer.dispose() for those pages would dispose their pixmaps twice,
+        // since the packer itself has no reference to our custom textures.
+        regions.forEach { it.texture.dispose() }
     }
 
 }

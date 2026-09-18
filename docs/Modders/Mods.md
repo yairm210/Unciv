@@ -14,7 +14,7 @@ There are three main kinds of mods:
 
 -   **Extension mods** - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started - for example, [creating a new Civilization](Making-a-new-Civilization.md)
 -   **Base Ruleset mods** - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular. [A minimal example can be found here](https://github.com/yairm210/Unciv-minimal-base-ruleset) as a template to build off of ("Use this template" green button in top right, "Create a new repository"). For requirements, see [Requirements](Mod-file-structure/1-Overview.md#requirements-for-base-rulesets)
--   **Ruleset-agnostic mods** - these do not contain any ruleset-related jsons, but instead contain other affects. Audiovisual mods (including tilesets, unitsets, and UI skins) and map mods are in this category.
+-   **Ruleset-agnostic mods** - these do not contain any ruleset-related jsons, but instead contain other assets. [Audiovisual](#audiovisual-components) mods (including tilesets, unitsets, and UI skins), [font](#fonts) mods and map mods are in this category.
 
 Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
 
@@ -49,6 +49,15 @@ Custom tilesets and unitsets are a subgroup of these - see [Creating a custom ti
 Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen, see [Permanent audiovisual mods](Images-and-Audio.md#permanent-audiovisual-mods).
 
 Images need to be 'packed' before the game can use them, which the desktop version can do for you. Please make sure to read the [Texture atlas](Images-and-Audio.md#images-and-the-texture-atlas) chapter!
+
+## Fonts
+
+Mods can supply fonts as TTF or OTF files in a "fonts" folder (but the actual file name must use lowercase extensions).
+
+These are available unter Options-Advanced-Font once the mod is installed (the "Permanent audiovisual mod" switch has no effect).
+A mod containing font(s) can be standalone, or it can carry the font to support text contained in its json, when that text uses unusual characters not typically present in system fonts (e.g. Klingon or Phoenician script do have Unicode codepoints but most system fonts don't have glyphs for either).
+If the font is required to render the mod's text, then the Modder is responsible for informing users to manually select that font - there's no automatic use.
+Also, at this time there's no automatic fallback to use system default fonts for missing glyphs, so the font should be complete enough to cover all Unciv text.
 
 ## Adding maps to mods
 

@@ -256,8 +256,9 @@ class ImprovementPickerScreen(
             maintenance.add(statName, -amount)
         }
 
-        for (unique in currentPlayerCiv.getMatchingUniques(UniqueType.RoadMaintenance))
+        currentPlayerCiv.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
             maintenance.timesInPlace(unique.params[0].toPercent())
+        }
         return maintenance
     }
 

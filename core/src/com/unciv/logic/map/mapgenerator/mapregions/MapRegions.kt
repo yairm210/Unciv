@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
@@ -40,7 +41,7 @@ class TileDataMap(size: Int) {
 
         for (ring in 1..radius) {
             val ringValue = radius - ring + 1
-            for (outerTile in tile.getTilesAtDistance(ring)) {
+            tile.forEachTileAtDistance(ring) { outerTile ->
                 val data = this[outerTile]!!
                 if (data.impacts.containsKey(type))
                     data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
@@ -487,8 +488,9 @@ fun Tile.getTileFertility(checkCoasts: Boolean): Int {
         if (terrain.hasUnique(UniqueType.OverrideFertility))
             return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
         else
-            fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                .sumOf { it.params[0].toInt() }
+            terrain.forEachMatchingUnique(UniqueType.AddFertility, GameContext.EmptyState) {
+                fertility += it.params[0].toInt()
+            }
     }
     if (isAdjacentToRiver()) fertility += 1
     if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river

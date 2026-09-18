@@ -234,7 +234,7 @@ class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Bo
         severityToReport: Set<UniqueType.UniqueParameterErrorSeverity>
     ): RulesetErrorList {
         val rulesetErrors = RulesetErrorList()
-        if (unique.hasFlag(UniqueFlag.NoConditionals)) {
+        if (unique.hasFlag(UniqueFlag.NoConditionals) && modifier.type?.canAcceptUniqueTarget(UniqueTarget.MetaModifier) != true) {
             rulesetErrors.add(
                 "$prefix contains the conditional \"${modifier.text}\"," +
                     " but the unique does not accept conditionals!",

@@ -76,15 +76,14 @@ internal object ImagePacker {
     fun packImages(isRunFromJAR: Boolean, dataDirectory: String) {
         val startTime = System.currentTimeMillis()
 
-        val defaultSettings = getDefaultSettings()
         val packingJobs = ArrayList<()->Unit>()
 
         // Scan for Image folders and build one atlas each
         if (!isRunFromJAR)
             packingJobs.add {
-                packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, defaultSettings)
+                packImagesPerMod(builtinImageSourcePath, builtinAtlasDestinationPath, getDefaultSettings())
             }
-            
+
 
         // pack for mods
         val modDirectory = File(dataDirectory, modsBasePath)
@@ -93,7 +92,7 @@ internal object ImagePacker {
                 if (mod.isHidden) continue
                 val job = {
                     try {
-                        packImagesPerMod(mod.path, mod.path, defaultSettings)
+                        packImagesPerMod(mod.path, mod.path, getDefaultSettings())
                     } catch (ex: Throwable) {
                         var innerException = ex
                         while (innerException.cause != null && innerException.cause !== innerException) innerException =
