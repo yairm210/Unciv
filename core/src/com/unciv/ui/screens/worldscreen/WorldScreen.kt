@@ -3,8 +3,6 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -22,17 +20,11 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -79,8 +71,6 @@ import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
 import java.util.Timer
 import kotlin.concurrent.timer
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -93,7 +83,7 @@ import kotlin.math.min
 class WorldScreen(
     val gameInfo: GameInfo,
     val autoPlay: AutoPlay,
-    private val viewingCiv: Civilization,
+    internal val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
     /** When set, causes the screen to update in the next [render][render] event */
@@ -142,21 +132,18 @@ class WorldScreen(
     internal val topBar = WorldScreenTopBar(this)
     internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     internal val chatButton = ChatButton(this)
-    private val unitActionsTable = UnitActionsTable(this)
+    internal val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     internal val bottomUnitTable = UnitTable(this)
-    private val battleTable = BattleTable(this)
+    internal val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
-    private val bottomTileInfoTable = TileInfoTable(this)
+    internal val bottomTileInfoTable = TileInfoTable(this)
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
-    private val statusButtons = StatusButtons(nextTurnButton)
+    internal val statusButtons = StatusButtons(nextTurnButton)
     internal val smallUnitButton = SmallUnitButton(this, statusButtons)
-    private val tutorialTaskTable = Table().apply {
-        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
-    }
-    private var tutorialTaskTableHash = 0
+    private val tutorialTaskTable = TutorialTaskTable(this)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -467,8 +454,8 @@ class WorldScreen(
 
         updateGameplayButtons()
 
-        // Late: the task card is fitted into the room left by the buttons flanking it, so they must have their final size
-        if (uiEnabled) displayTutorialTaskOnUpdate()
+        // Late: the task card is fitted into the room left by the widgets around it, so they must have their final size
+        if (uiEnabled) tutorialTaskTable.update()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
         val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
@@ -486,18 +473,6 @@ class WorldScreen(
     internal fun openGreatPersonPicker() {
         deferFreeGreatPersonPicker = false
         game.pushScreen { GreatPersonPickerScreen(this, viewingCiv) }
-    }
-
-    private fun getCurrentTutorialTask(): Event? {
-        if (!game.settings.tutorialTasksCompleted.contains("Create a trade route")) {
-            if (viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
-                game.settings.addCompletedTutorialTask("Create a trade route")
-        }
-        val stateForConditionals = viewingCiv.state
-        return gameInfo.ruleset.events.values.firstOrNull {
-            it.presentation == Event.Presentation.Floating &&
-                it.isAvailable(stateForConditionals)
-        }
     }
 
     private fun displayTutorialsOnUpdate() {
@@ -525,92 +500,6 @@ class WorldScreen(
                 it.cache.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
-    }
-
-    /** Width the task card's texts wrap to, so the card does not slide under the button groups
-     *  flanking it. Since the card is centered on the stage, the wider of the two groups decides.
-     *  On a stage narrow enough that they meet in the middle no width avoids them, and a card
-     *  narrowed to a column of single words would be just as covered, only taller - so below half
-     *  of the width the card always had we keep that full width and let them cover a corner,
-     *  exactly as they did before. */
-    private fun getTutorialTaskWidth(): Float {
-        val fullWidth = stage.width * 0.5f  // what the card always was, and RenderEvent's own default
-        val blockedPerSide = max(
-            if (techPolicyAndDiplomacy.isVisible) techPolicyAndDiplomacy.x + techPolicyAndDiplomacy.width else 0f,
-            if (statusButtons.isVisible) stage.width - statusButtons.x else 0f
-        )
-        // Content width, so minus the paddings around it
-        val freeWidth = stage.width - 2 * blockedPerSide - tutorialTaskPad * 4
-        return if (freeWidth < fullWidth / 2) fullWidth else min(fullWidth, freeWidth)
-    }
-
-    /** Height the centered task card may use without covering the widgets sitting at the bottom of
-     *  the screen. Only those actually overlapping the card's own horizontal span count - the unit
-     *  table can be wide enough to reach under a centered card, or narrow enough to stay clear of it.
-     *  All of them are packed and positioned earlier in [update], so their geometry is final here. */
-    private fun getTutorialTaskHeight(taskWidth: Float): Float {
-        val cardLeft = (stage.width - taskWidth) / 2 - tutorialTaskPad
-        val cardRight = stage.width - cardLeft
-        // battleTable is always centered on the stage, so it always overlaps the card's span
-        val bottomWidgets = sequenceOf(bottomUnitTable, unitActionsTable, bottomTileInfoTable, minimapWrapper, battleTable)
-        val blockedFromBottom = bottomWidgets
-            .filter { it.isVisible && it.x < cardRight && it.x + it.width > cardLeft }
-            .maxOfOrNull { it.y + it.height } ?: 0f
-        // Content height, so minus the paddings around it, and keep a gap to whatever is below.
-        // No floor: those widgets are drawn over the card, so any height beyond this is invisible
-        return (topBar.getYForTutorialTask() - blockedFromBottom - tutorialTaskPad * 3).coerceAtLeast(0f)
-    }
-
-    private fun displayTutorialTaskOnUpdate() {
-        fun setInvisible() {
-            tutorialTaskTable.isVisible = false
-            tutorialTaskTable.clear()
-            tutorialTaskTableHash = 0
-        }
-        if (!game.settings.showTutorials || viewingCiv.isDefeated()) return setInvisible()
-        val tutorialTask = getCurrentTutorialTask() ?: return setInvisible()
-
-        if (!UncivGame.Current.isTutorialTaskCollapsed) {
-            val taskWidth = getTutorialTaskWidth()
-            // Default implementation is OK - we see the same instance or not. Width included: the content wraps to it
-            val hash = tutorialTask.hashCode() * 31 + taskWidth.toInt()
-            if (hash != tutorialTaskTableHash) {
-                val renderEvent = RenderEvent(tutorialTask, this, labelWidth = taskWidth) {
-                    shouldUpdate = true
-                }
-                if (!renderEvent.isValid) return setInvisible()
-                tutorialTaskTable.clear()
-                // A mod can give a task several paragraphs: scroll instead of running off the screen
-                val scrollPane = AutoScrollPane(renderEvent, skin).apply {
-                    // Same reasoning as AlertPopup for the same RenderEvent, and as BattleTable:
-                    // the card floats over the map, so a clipped line is the only other hint there is more
-                    fadeScrollBars = false
-                    setScrollbarsVisible(true)
-                    setOverscroll(false, false)
-                }
-                tutorialTaskTable.add(scrollPane).pad(tutorialTaskPad).fill()
-                tutorialTaskTableHash = hash
-            }
-            // Not part of the hash: the room at the bottom changes with the selection, not with the task.
-            // Changing a Cell does not invalidate its Table, so the pack() below would reuse the old size
-            tutorialTaskTable.cells.firstOrNull()?.maxHeight(getTutorialTaskHeight(taskWidth))
-            tutorialTaskTable.invalidate()
-        } else {
-            tutorialTaskTable.clear()
-            tutorialTaskTable.add(ImageGetter.getImage("OtherIcons/HiddenTutorialTask").apply { setSize(30f,30f) }).pad(5f)
-            tutorialTaskTableHash = 0
-        }
-        tutorialTaskTable.pack()
-        // Only claim the mouse wheel when there actually is something to scroll
-        (tutorialTaskTable.children.firstOrNull() as? ScrollPane)
-            ?.apply { setScrollingDisabled(true, prefHeight <= height) }
-        tutorialTaskTable.centerX(stage)
-        tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
-        tutorialTaskTable.onClick {
-            UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
-            displayTutorialTaskOnUpdate()
-        }
-        tutorialTaskTable.isVisible = true
     }
 
     fun setSelectedCiv(civ: Civilization) {
@@ -902,11 +791,6 @@ class WorldScreen(
             waitingForAutosave = false
             shouldUpdate = true
         }
-    }
-
-    private companion object {
-        /** Padding between the tutorial task card's background and its content */
-        const val tutorialTaskPad = 10f
     }
 }
 
