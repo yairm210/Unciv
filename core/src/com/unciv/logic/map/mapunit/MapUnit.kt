@@ -484,14 +484,17 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun isVisibleTo(civ: Civilization): Boolean {
         if (civ == this.civ) return true
-        if (!hasActiveInvisibilityUnique(civ)) return getTile().isVisible(civ)
-        // A live detector unit of [civ] can currently see this tile and has a unique revealing this
-        // unit's type - independent of whether this exact unit was ever individually discovered.
-        if (civ.viewableInvisibleUnitsTiles[getTile()]?.any { matchesFilter(it) } == true) return true
+        val tile = getTile()
+        if (!hasActiveInvisibilityUnique(civ)) return tile.isVisible(civ)
         // A remembered invisible unit remains visible through fog of war, but only the specific unit
         // that was discovered - not any other invisible unit that happens to share its tile. Match
         // directly against the stored memory rather than a tile-wide filter.
-        return civ.discoveredInvisibleUnitTiles.any { it.unitId == id && it.tilePosition == getTile().position }
+        if (civ.discoveredInvisibleUnitTiles.any { it.unitId == id && it.tilePosition == tile.position })
+            return true
+        // Live detectors reveal matching invisible units only while their tile is actively visible.
+        // The tile check also prevents a stale transient detector entry from leaking through fog.
+        if (!tile.isVisible(civ)) return false
+        return civ.viewableInvisibleUnitsTiles[tile]?.any { matchesFilter(it) } == true
     }
 
     @Readonly

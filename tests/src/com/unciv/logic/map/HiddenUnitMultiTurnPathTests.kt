@@ -76,6 +76,8 @@ class HiddenUnitMultiTurnPathTests(private val pathfindingAlgorithm: Pathfinding
 
         assertFalse("The unit must stop before entering the hidden blocker", ourUnit.currentTile == hiddenTile)
         assertTrue("The hidden blocker must be discovered by the movement attempt",
+            hiddenUnit.isVisibleTo(civInfo))
+        assertFalse("Remembering a unit must not add a tile-wide detector filter",
             civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
         assertEquals("The hidden unit must not be overwritten", hiddenUnit, hiddenTile.militaryUnit)
 

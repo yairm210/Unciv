@@ -814,19 +814,11 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /**
-     * Notifies the player that a hidden unit was discovered, and - using Unciv's existing
-     * invisible-unit visibility mechanism (the civ's `viewableInvisibleUnitsTiles`, the same set
-     * [MapUnit.isVisibleTo] and the map renderer already consult for units like undetected
-     * submarines) - actually reveals it, instead of only sending a notification while the unit
-     * remains hidden on the map.
+     * Notifies the player that a hidden unit was discovered and remembers that specific unit and
+     * tile so [MapUnit.isVisibleTo] can keep revealing it without affecting other invisible units.
      */
     private fun notifyHiddenBlockingUnitDiscovered(hiddenUnit: MapUnit, tile: Tile) {
-        // Reveal this tile's normally-invisible unit(s) to us, the same way the game already
-        // displays any other detected-but-invisible unit. This is what makes the discovery
-        // actually show up on the map, not just in the notification text below.
         unit.civ.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, tile)
-        unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles +
-            (tile to (unit.civ.viewableInvisibleUnitsTiles[tile].orEmpty() + Constants.uppercaseAll))
         for (civUnit in unit.civ.units.getCivUnits())
             civUnit.movement.clearPathfindingCache()
         unit.civ.addNotification(

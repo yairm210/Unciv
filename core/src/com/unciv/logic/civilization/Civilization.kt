@@ -274,8 +274,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /**
      * Records a normally-invisible enemy/other unit that one of our units has detected, so that it
-     * keeps showing up on the map (see [MapUnit.isVisibleTo] and [viewableInvisibleUnitsTiles])
-     * even after the detecting unit's own visibility of that tile lapses.
+     * keeps showing up on the map (see [MapUnit.isVisibleTo]) even after the detecting unit's own
+     * visibility of that tile lapses.
      *
      * This needs to persist across save/load, so - unlike [viewableInvisibleUnitsTiles] and the rest
      * of [CivInfoTransientCache][com.unciv.logic.civilization.transients.CivInfoTransientCache],

@@ -170,14 +170,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 newViewableInvisibleTiles.getOrPut(tile) { HashSet() }.addAll(visibleUnitFilters)
             }
         }
-        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
-
         civInfo.discoveredInvisibleUnitTiles.removeAll { memory ->
             // The unit isn't stored directly (it needs to persist through save/load), so re-resolve
             // it from its last-known tile by id each time, and drop the memory once it no longer holds.
             val lastKnownTile = civInfo.gameInfo.tileMap[memory.tilePosition]
             lastKnownTile.getUnits().none { it.id == memory.unitId && !it.isDestroyed }
         }
+        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
     fun addDiscoveredInvisibleUnitTile(unit: MapUnit, tile: Tile) {
