@@ -227,7 +227,10 @@ class PathingMap(
         fun addWaypoint(tile: Tile) {
             if (tile != startTile && (result.isEmpty() || result.last() != tile)) result.add(tile)
         }
-        var moveThisTurn = FixedPointMovement.FPM_ZERO
+        var moveThisTurn = (cache.key.fullMove - cache.key.moveRemaining).coerceIn(
+            FixedPointMovement.FPM_ZERO,
+            MAX_MOVE_THIS_TURN
+        )
         var previousTile = startTile
         var previousNode = RouteNode(cache.routeNodes[startTile.zeroBasedIndex])
         var lastFullSafeTile = startTile
@@ -516,8 +519,13 @@ class PathingMap(
                 unit,
                 name,
                 getCurrentCacheKey,
-                { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
-                { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
+                // canPassThrough (not a strict null check on cannotPassThroughReason): a tile
+                // whose only problem is an undetected unit of another civ must stay passable here
+                // too, or multi-turn routes would silently detour around such tiles instead of
+                // letting the player order a move onto/through them - the same permissiveness
+                // getMovementToTilesAtPosition's BFS already gives via canPassThrough.
+                { unit.movement.canPassThrough(it, includeEscortUnit) },
+                { unit.movement.thinksItCanMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
                 { from, to ->
                     fpmFromMovement(

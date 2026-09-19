@@ -4,6 +4,7 @@ package com.unciv.logic.map
 import com.unciv.Constants
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -218,6 +219,22 @@ class VisibilityTests {
         val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position, 2, true)
 
         assertTrue(attackableTiles.contains(mountain))
+    }
+
+    @Test
+    fun defeatedCurrentPlayerInSingleplayerRevealsTheWholeMap() {
+        val player = testGame.addCiv(isPlayer = true)
+        testGame.gameInfo.currentPlayer = player.civID
+        testGame.gameInfo.currentPlayerCiv = player
+        testGame.gameInfo.turns = 1
+
+        assertTrue(player.isDefeated())
+        assertTrue(player.hasSpectatorVision())
+
+        player.cache.updateViewableTiles()
+
+        assertEquals(testGame.tileMap.values.toSet(), player.viewableTiles)
+        assertTrue(testGame.tileMap.values.all { it.isExplored(player) })
     }
 
 }

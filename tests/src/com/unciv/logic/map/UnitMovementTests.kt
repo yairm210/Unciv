@@ -216,6 +216,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         testGame.gameInfo.civilizations.add(barbCiv)
 
         testGame.addUnit("Warrior", barbCiv, tile)
+        civInfo.viewableTiles = setOf(tile)
 
         for (type in testGame.ruleset.unitTypes.values) {
             val outUnit = addFakeUnit(type)
@@ -377,7 +378,161 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         assertEquals(origin, untransportedAirUnit.currentTile)
         assertFalse(untransportedAirUnit.isTransported)
     }
-    
+
+    @Test
+    fun `hidden enemy unit blocks canMoveTo but not thinksItCanMoveTo, and attempting to move into it reveals without overwriting`() {
+        val otherCiv = testGame.addCiv()
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
+        civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
+
+        val ourTile = testGame.tileMap[0, 0]
+        val hiddenTile = ourTile.neighbors.first()
+        val hiddenUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, hiddenTile, UniqueType.Invisible.text)
+        val ourUnit = testGame.addUnit("Warrior", civInfo, ourTile)
+
+        // Selecting/looking at the tile alone (as opposed to attempting a move onto it) must never reveal the hidden unit
+        assertFalse("Hidden unit must not be visible before any movement attempt",
+            civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+        assertFalse("canMoveTo must stay strict about a tile whose only occupant is hidden from us",
+            ourUnit.movement.canMoveTo(hiddenTile))
+        assertTrue("thinksItCanMoveTo must let the player attempt a move onto a tile hiding an undetected enemy",
+            ourUnit.movement.thinksItCanMoveTo(hiddenTile))
+        assertTrue("A tile whose only problem is a hidden unit must stay passable, so it isn't routed around",
+            ourUnit.movement.canPassThrough(hiddenTile))
+
+        val movementBeforeDiscoveryAttempt = ourUnit.currentMovement
+        ourUnit.movement.moveToTile(hiddenTile)
+
+        // The attempt must stop right before actually entering/overwriting the hidden unit's tile...
+        assertEquals("Unit must not enter or stack onto the hidden unit's tile", ourTile, ourUnit.currentTile)
+        assertEquals("Unit must not spend movement attempting to enter a tile blocked by a hidden enemy",
+            movementBeforeDiscoveryAttempt, ourUnit.currentMovement)
+        assertEquals("The hidden unit must still be exactly where it was, never overwritten", hiddenUnit, hiddenTile.militaryUnit)
+        // ...but the attempt itself must be what reveals it
+        assertTrue("Moving towards the tile must be what reveals the hidden unit",
+            hiddenUnit.isVisibleTo(civInfo))
+        assertFalse("Remembering a unit must not add a tile-wide detector filter",
+            civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+        civInfo.viewableTiles = emptySet()
+        assertTrue("A remembered invisible unit must remain visible after its tile enters fog",
+            hiddenUnit.isVisibleTo(civInfo))
+        val ordinaryUnit = testGame.addUnit("Worker", otherCiv, hiddenTile)
+        assertFalse("Ordinary units on a fogged tile must remain hidden", ordinaryUnit.isVisibleTo(civInfo))
+        civInfo.cache.updateViewableTiles()
+        assertTrue("A discovered hidden unit must remain visible after sight recalculation",
+            hiddenUnit.isVisibleTo(civInfo))
+        assertFalse("Sight recalculation must keep remembered visibility separate from live detectors",
+            civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+        assertFalse("Once revealed, canMoveTo must correctly block on the now-visible enemy",
+            ourUnit.movement.canMoveTo(hiddenTile))
+    }
+
+    @Test
+    fun `discovered invisible unit moving away does not reveal a new occupant of its old tile`() {
+        val otherCiv = testGame.addCiv()
+        val ourTile = testGame.tileMap[0, 0]
+        val hiddenTile = ourTile.neighbors.first()
+        val hiddenUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, hiddenTile, UniqueType.Invisible.text)
+        val ourUnit = testGame.addUnit("Warrior", civInfo, ourTile)
+
+        ourUnit.movement.moveToTile(hiddenTile)
+        assertTrue(hiddenUnit.isVisibleTo(civInfo))
+        assertFalse(civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+
+        hiddenUnit.movement.moveToTile(hiddenTile.neighbors.first { it != ourTile })
+        val replacementUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, hiddenTile, UniqueType.Invisible.text)
+
+        assertFalse(replacementUnit.isVisibleTo(civInfo))
+        civInfo.cache.updateViewableTiles()
+        assertFalse(replacementUnit.isVisibleTo(civInfo))
+        assertFalse(civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+    }
+
+    @Test
+    fun `replacing remembered invisible unit tiles preserves live detector filters`() {
+        val otherCiv = testGame.addCiv()
+        val oldTile = testGame.tileMap[0, 0].neighbors.first()
+        val newTile = oldTile.neighbors.first { it != testGame.tileMap[0, 0] }
+        val hiddenMilitary = testGame.addDefaultMeleeUnitWithUniques(otherCiv, oldTile, UniqueType.Invisible.text)
+        val hiddenCivilian = testGame.addUnit("Worker", otherCiv, oldTile).also {
+            it.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        }
+        testGame.addDefaultMeleeUnitWithUniques(civInfo, testGame.tileMap[0, 0], "Can see invisible [Water] units")
+
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenMilitary, oldTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenCivilian, oldTile)
+        civInfo.cache.updateViewableTiles()
+        assertEquals(setOf("Water"), civInfo.viewableInvisibleUnitsTiles[oldTile])
+        assertTrue(hiddenMilitary.isVisibleTo(civInfo))
+        assertTrue(hiddenCivilian.isVisibleTo(civInfo))
+
+        hiddenMilitary.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenMilitary, newTile)
+        assertEquals(setOf("Water"), civInfo.viewableInvisibleUnitsTiles[oldTile])
+        assertTrue(hiddenMilitary.isVisibleTo(civInfo))
+        assertTrue(hiddenCivilian.isVisibleTo(civInfo))
+
+        hiddenCivilian.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenCivilian, newTile)
+        assertEquals(setOf("Water"), civInfo.viewableInvisibleUnitsTiles[oldTile])
+        assertTrue(hiddenMilitary.isVisibleTo(civInfo))
+        assertTrue(hiddenCivilian.isVisibleTo(civInfo))
+    }
+
+    @Test
+    fun `moving remembered unit preserves active universal detector on old tile`() {
+        val otherCiv = testGame.addCiv()
+        val detectorTile = testGame.tileMap[0, 0]
+        val oldTile = detectorTile.neighbors.first()
+        val newTile = oldTile.neighbors.first { it != detectorTile }
+        val rememberedUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, oldTile, UniqueType.Invisible.text)
+        val otherHiddenUnit = testGame.addUnit("Worker", otherCiv, oldTile).also {
+            it.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        }
+        testGame.addDefaultMeleeUnitWithUniques(civInfo, detectorTile, "Can see invisible [All] units")
+
+        civInfo.cache.addDiscoveredInvisibleUnitTile(rememberedUnit, oldTile)
+        civInfo.cache.updateViewableTiles()
+        assertTrue(otherHiddenUnit.isVisibleTo(civInfo))
+
+        rememberedUnit.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(rememberedUnit, newTile)
+
+        assertTrue("The remembered unit must remain visible at its new tile",
+            rememberedUnit.isVisibleTo(civInfo))
+        assertTrue(
+            "The live universal detector must retain its All filter on the old tile",
+            Constants.uppercaseAll in civInfo.viewableInvisibleUnitsTiles[oldTile].orEmpty()
+        )
+        assertTrue(
+            "Moving a remembered unit must not temporarily hide another detected unit",
+            otherHiddenUnit.isVisibleTo(civInfo)
+        )
+    }
+
+    @Test
+    fun `hidden capturable civilian is captured without being revealed as a blocker`() {
+        val otherCiv = testGame.addCiv()
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
+        civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
+
+        val ourTile = testGame.tileMap[0, 0]
+        val hiddenTile = ourTile.neighbors.first()
+        val hiddenCivilian = testGame.addUnit("Worker", otherCiv, hiddenTile)
+        hiddenCivilian.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        assertFalse(hiddenCivilian.isVisibleTo(civInfo))
+        val ourUnit = testGame.addUnit("Warrior", civInfo, ourTile)
+
+        assertFalse(civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+        assertEquals(null, ourUnit.movement.cannotPassThroughReason(hiddenTile))
+
+        ourUnit.movement.moveToTile(hiddenTile)
+
+        assertEquals(hiddenTile, ourUnit.currentTile)
+        assertEquals(civInfo, hiddenCivilian.civ)
+        assertFalse(civInfo.viewableInvisibleUnitsTiles.contains(hiddenTile))
+    }
+
     @Test
     fun twoEscortsCanSwap() {
         val settler1 = testGame.addUnit("Settler", civInfo, testGame.tileMap[1,1])
