@@ -3,7 +3,7 @@
 #noinspection AndroidGradlePluginVersion
 agp = "9.2.0"
 
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 coroutines = "1.10.2"
 
 gdx = "1.14.2"
@@ -22,7 +22,7 @@ junit = "4.13.2"
 mockito = "5.20.0"
 
 #android
-ktxCore = "1.16.0"
+ktxCore = "1.19.0"
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
 
