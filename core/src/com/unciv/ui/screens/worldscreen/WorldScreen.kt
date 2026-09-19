@@ -3,7 +3,6 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -21,16 +20,11 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -89,7 +83,7 @@ import kotlin.concurrent.timer
 class WorldScreen(
     val gameInfo: GameInfo,
     val autoPlay: AutoPlay,
-    private val viewingCiv: Civilization,
+    internal val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
     /** When set, causes the screen to update in the next [render][render] event */
@@ -138,21 +132,18 @@ class WorldScreen(
     internal val topBar = WorldScreenTopBar(this)
     internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     internal val chatButton = ChatButton(this)
-    private val unitActionsTable = UnitActionsTable(this)
+    internal val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     internal val bottomUnitTable = UnitTable(this)
-    private val battleTable = BattleTable(this)
+    internal val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
-    private val bottomTileInfoTable = TileInfoTable(this)
+    internal val bottomTileInfoTable = TileInfoTable(this)
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
-    private val statusButtons = StatusButtons(nextTurnButton)
+    internal val statusButtons = StatusButtons(nextTurnButton)
     internal val smallUnitButton = SmallUnitButton(this, statusButtons)
-    private val tutorialTaskTable = Table().apply {
-        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
-    }
-    private var tutorialTaskTableHash = 0
+    private val tutorialTaskTable = TutorialTaskTable(this)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -405,8 +396,6 @@ class WorldScreen(
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
             battleTable.update()
-
-            displayTutorialTaskOnUpdate()
         }
 
         mapHolder.resetArrows()
@@ -426,8 +415,6 @@ class WorldScreen(
         mapHolder.updateTiles(getGameViewConsideringForOfWar().civView)
 
         topBar.update(selectedCiv)
-        if (tutorialTaskTable.isVisible)
-            tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
@@ -467,6 +454,9 @@ class WorldScreen(
 
         updateGameplayButtons()
 
+        // Late: the task card is fitted into the room left by the widgets around it, so they must have their final size
+        if (uiEnabled) tutorialTaskTable.update()
+
         val coveredNotificationsTop = stage.height - statusButtons.y
         val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
 //                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
@@ -483,18 +473,6 @@ class WorldScreen(
     internal fun openGreatPersonPicker() {
         deferFreeGreatPersonPicker = false
         game.pushScreen { GreatPersonPickerScreen(this, viewingCiv) }
-    }
-
-    private fun getCurrentTutorialTask(): Event? {
-        if (!game.settings.tutorialTasksCompleted.contains("Create a trade route")) {
-            if (viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
-                game.settings.addCompletedTutorialTask("Create a trade route")
-        }
-        val stateForConditionals = viewingCiv.state
-        return gameInfo.ruleset.events.values.firstOrNull {
-            it.presentation == Event.Presentation.Floating &&
-                it.isAvailable(stateForConditionals)
-        }
     }
 
     private fun displayTutorialsOnUpdate() {
@@ -522,41 +500,6 @@ class WorldScreen(
                 it.cache.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
-    }
-
-    private fun displayTutorialTaskOnUpdate() {
-        fun setInvisible() {
-            tutorialTaskTable.isVisible = false
-            tutorialTaskTable.clear()
-            tutorialTaskTableHash = 0
-        }
-        if (!game.settings.showTutorials || viewingCiv.isDefeated()) return setInvisible()
-        val tutorialTask = getCurrentTutorialTask() ?: return setInvisible()
-
-        if (!UncivGame.Current.isTutorialTaskCollapsed) {
-            val hash = tutorialTask.hashCode()  // Default implementation is OK - we see the same instance or not
-            if (hash != tutorialTaskTableHash) {
-                val renderEvent = RenderEvent(tutorialTask, this) {
-                    shouldUpdate = true
-                }
-                if (!renderEvent.isValid) return setInvisible()
-                tutorialTaskTable.clear()
-                tutorialTaskTable.add(renderEvent).pad(10f)
-                tutorialTaskTableHash = hash
-            }
-        } else {
-            tutorialTaskTable.clear()
-            tutorialTaskTable.add(ImageGetter.getImage("OtherIcons/HiddenTutorialTask").apply { setSize(30f,30f) }).pad(5f)
-            tutorialTaskTableHash = 0
-        }
-        tutorialTaskTable.pack()
-        tutorialTaskTable.centerX(stage)
-        tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
-        tutorialTaskTable.onClick {
-            UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
-            displayTutorialTaskOnUpdate()
-        }
-        tutorialTaskTable.isVisible = true
     }
 
     fun setSelectedCiv(civ: Civilization) {
