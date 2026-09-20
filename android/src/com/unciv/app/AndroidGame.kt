@@ -76,24 +76,23 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
 
     /** This is needed in onCreate _and_ onNewIntent to open links and notifications
      *  correctly even if the app was not running */
-fun setDeepLinkedGame(intent: Intent) {
-    if (intent.action != Intent.ACTION_VIEW) {
-        deepLinkedMultiplayerGame = null
-    }
+    fun setDeepLinkedGame(intent: Intent) {
+        val uri: Uri? = when (intent.action) {
+            Intent.ACTION_VIEW -> intent.data
+            null -> intent.getStringExtra("targetUrl")?.let(Uri::parse)
+            else -> {
+                deepLinkedMultiplayerGame = null
+                return
+            }
+        }
 
-    val uri: Uri? = when (intent.action) {
-        Intent.ACTION_VIEW -> intent.data
-        null -> intent.data ?: intent.getStringExtra("targetUrl")?.let(Uri::parse)
-        else -> intent.data
+        val idParam = uri?.getQueryParameter("id") //legacy game url
+        deepLinkedMultiplayerGame =
+            if (idParam != null && idParam.isUUID()) idParam
+            else if (uri != null && IdChecker.isGameDeepLink(uri.toString()))
+                IdChecker.checkAndReturnUuiId(uri.toString())
+            else null
     }
-
-    val idParam = uri?.getQueryParameter("id") // legacy game URL
-    deepLinkedMultiplayerGame =
-        if (idParam != null && idParam.isUUID()) idParam
-        else if (uri != null && IdChecker.isGameDeepLink(uri.toString()))
-            IdChecker.checkAndReturnUuiId(uri.toString())
-        else null
-}
 
     fun isInitializedProxy() = super.isInitialized
 
