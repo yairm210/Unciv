@@ -17,7 +17,7 @@ jobs:
     name: Check code and run unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-java@v5
         with:
@@ -60,7 +60,7 @@ jobs:
 
       - name: Comment test failures on PR
         if: steps.run_checks.outputs.check_exit_code != '0' && github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |

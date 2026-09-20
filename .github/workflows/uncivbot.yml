@@ -11,7 +11,7 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
@@ -23,7 +23,7 @@ jobs:
           rm package.json
 
       - name: Create new branch with changes
-        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        uses: EndBug/add-and-commit@v11 # You can change this to use a specific version.
         with:
           new_branch: version_rollout
           message: 'Bump version and create initial changelog entry'
@@ -40,7 +40,7 @@ jobs:
     steps:
 
       - name: Merge Pull Request
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
           script: |
@@ -52,7 +52,7 @@ jobs:
               repo: repository.repo,
             })
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
@@ -75,7 +75,7 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
       - name: Add translation PRs to the new branch, and PR the new branch to master
 
