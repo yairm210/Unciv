@@ -9,10 +9,8 @@ coroutines = "1.11.0"
 gdx = "1.14.2"
 discord = "v2.0.1"
 
-jna = "5.17.0"
-ktor = "3.5.2"
 jna = "5.19.1"
-ktor = "3.2.3"
+ktor = "3.5.2"
 logback = "1.5.21"
 clikt = "5.0.3"
 
