@@ -1,4 +1,3 @@
-```kotlin
 package com.unciv.app
 
 import android.app.Activity
@@ -77,24 +76,24 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
 
     /** This is needed in onCreate _and_ onNewIntent to open links and notifications
      *  correctly even if the app was not running */
-    fun setDeepLinkedGame(intent: Intent) {
-        if (intent.action != Intent.ACTION_VIEW) {
-            deepLinkedMultiplayerGame = null
-        }
-
-        val uri: Uri? = if (intent.action == null) {
-            intent.getStringExtra("targetUrl")?.let(Uri::parse)
-        } else {
-            intent.data
-        }
-
-        val idParam = uri?.getQueryParameter("id") // legacy game URL
-        deepLinkedMultiplayerGame =
-            if (idParam != null && idParam.isUUID()) idParam
-            else if (IdChecker.isGameDeepLink(uri.toString()))
-                IdChecker.checkAndReturnUuiId(uri.toString())
-            else null
+fun setDeepLinkedGame(intent: Intent) {
+    if (intent.action != Intent.ACTION_VIEW) {
+        deepLinkedMultiplayerGame = null
     }
+
+    val uri: Uri? = when (intent.action) {
+        Intent.ACTION_VIEW -> intent.data
+        null -> intent.data ?: intent.getStringExtra("targetUrl")?.let(Uri::parse)
+        else -> intent.data
+    }
+
+    val idParam = uri?.getQueryParameter("id") // legacy game URL
+    deepLinkedMultiplayerGame =
+        if (idParam != null && idParam.isUUID()) idParam
+        else if (uri != null && IdChecker.isGameDeepLink(uri.toString()))
+            IdChecker.checkAndReturnUuiId(uri.toString())
+        else null
+}
 
     fun isInitializedProxy() = super.isInitialized
 
