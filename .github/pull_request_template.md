@@ -25,6 +25,6 @@ _Put an `x` in the boxes that apply. You can also fill these out after creating 
 - [ ] I have made corresponding changes to the README/documentation
 - [ ] Any dependent changes have been merged and published in downstream modules
 - [ ] Informed of breaking changes, testing and migrations (if applicable).
-- [ ] Attached screenshots (if applicable).
+- [ ] Attached screenshots if the interface is changed.
 
 By submitting this pull request, I confirm that my contribution is made under the terms of the MPL 2.0 License.
