@@ -1,3 +1,4 @@
+```kotlin
 package com.unciv.app
 
 import android.app.Activity
@@ -51,7 +52,7 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
 
                 val visibleStage = Rectangle(
                     currentFrame.left * horizontalRatio,
-                    (contentView.height - currentFrame.bottom)  * verticalRatio,
+                    (contentView.height - currentFrame.bottom) * verticalRatio,
                     currentFrame.width() * horizontalRatio,
                     currentFrame.height() * verticalRatio
                 )
@@ -80,18 +81,27 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
         if (intent.action != Intent.ACTION_VIEW) {
             deepLinkedMultiplayerGame = null
         }
-        val uri: Uri? = intent.data ?: intent.getStringExtra("targetUrl")?.let(Uri::parse)
-        val idParam = uri?.getQueryParameter("id") //legacy game url
-        deepLinkedMultiplayerGame = 
+
+        val uri: Uri? = if (intent.action == null) {
+            intent.getStringExtra("targetUrl")?.let(Uri::parse)
+        } else {
+            intent.data
+        }
+
+        val idParam = uri?.getQueryParameter("id") // legacy game URL
+        deepLinkedMultiplayerGame =
             if (idParam != null && idParam.isUUID()) idParam
-            else if (IdChecker.isGameDeepLink(uri.toString())) IdChecker.checkAndReturnUuiId(uri.toString())
+            else if (IdChecker.isGameDeepLink(uri.toString()))
+                IdChecker.checkAndReturnUuiId(uri.toString())
             else null
     }
 
     fun isInitializedProxy() = super.isInitialized
 
-    override fun getGcCount(): Int = 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
+    override fun getGcCount(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            Debug.getRuntimeStat("art.gc.gc-count").toInt()
+        else 0
 
     override fun getDefaultLocale(): Locale =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) super.getDefaultLocale()
