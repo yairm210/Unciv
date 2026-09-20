@@ -80,7 +80,7 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
         if (intent.action != Intent.ACTION_VIEW) {
             deepLinkedMultiplayerGame = null
         }
-        val uri: Uri? = intent.data
+        val uri: Uri? = intent.data ?: intent.getStringExtra("targetUrl")?.let(Uri::parse)
         val idParam = uri?.getQueryParameter("id") //legacy game url
         deepLinkedMultiplayerGame = 
             if (idParam != null && idParam.isUUID()) idParam
