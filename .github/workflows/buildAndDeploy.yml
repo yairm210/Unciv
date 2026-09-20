@@ -154,7 +154,7 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        uses: r0adkll/upload-google-play@v1.1.3
+        uses: r0adkll/upload-google-play@v1.1.5
         continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
