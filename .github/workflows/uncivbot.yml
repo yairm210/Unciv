@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
@@ -58,7 +58,7 @@ jobs:
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           ref: master # By default will checkout *the version at time of trigger* which does *not* contain the PR we just merged!
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
 
       - name: Increment version and release
         run: |
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
       - name: Add translation PRs to the new branch, and PR the new branch to master
 
           # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
@@ -87,3 +87,4 @@ jobs:
         run: |
           npm i @octokit/rest
           node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} translations
+ 
