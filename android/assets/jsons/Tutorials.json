@@ -770,15 +770,13 @@
         "name": "Default Promotions",
         "category": "Units",
         "civilopediaText": [
-//            {"text": "After selecting a sets of default promotions, the same promotion will be apply  "},
+            {"text": "Select a set of promotions that will be apply when a unit is built."},
             {},
-            {"text":  "Default promotions allows the player to select a set of default promotions that will be apply to the same unit when built in the city where the promotions were selected."},
-            {},
-            {"text": "After selecting some promotions you want to be a default promotions, click on 'Default promotions for [Warrior]' then click 'Pick promotions'."},
+            {"text": "After selecting some promotions, to make the default promotion check 'Default promotions for [Warrior]', then click 'Pick promotions'."},
             {},
             {"text":  "To disable default promotions for a unit, you must uncheck 'Use default promotions' under the buy unit button in the city."},
             {},
-            {"text":  "You will not be able to use default promotions in a puppet city or cities that you don't own. And if the city doesn't have enough XP it will not be able to apply all the default promotions. Also default promotions doesn't affect the civ AI in anyway."},
+            {"text":  "Default promotion only apply to the same units that you selected.\nDefault promotion only apply per city.\nDefault promotions doesn't work in puppet or cities that you don't own.\nIf the city doesn't have enough XP it will not apply all the default promotions.\nDefault promotions doesn't affect the civ AI in anyway."}
         ]
     }
 ]
