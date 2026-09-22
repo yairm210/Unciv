@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.Log
 import com.unciv.utils.hashOf
+import com.unciv.view.CivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.pow
@@ -360,30 +361,30 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
-    internal fun declareWar(civInfo: Civilization) {
-        if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
-        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return
-        if (civInfo.getHappiness() <= 0) return
+    internal fun declareWar(civInfo: Civilization, civView: CivView) {
+        if (civView.cities().isEmpty() || civView.getKnownCivs().none()) return
+        if (civView.getPersonalityValue(PersonalityValue.DeclareWar) == 0f) return
+        if (civView.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.units.getCivUnits().count { !it.isCivilian() }
-        if (ourMilitaryUnits < civInfo.cities.size) return
+        val ourMilitaryUnits = civView.getUnits().count { !it.isCivilian() }
+        if (ourMilitaryUnits < civView.cities().size) return
         if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
         // For mods we can't check the number of cities, so we will check the population instead.
-        if (civInfo.cities.sumOf { it.population.population } < 12) return // FAR too early for that what are you thinking!
+        if (civView.cities().sumOf { it.getPopulationCount() } < 12) return // FAR too early for that what are you thinking!
 
         //evaluate war
-        val targetCivs = civInfo.getKnownCivs()
+        val targetCivs = civView.getKnownCivs()
             .filterNot {
-                it.isDefeated() || it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it)!!.canDeclareWar()
-                    || it.cities.none { city -> civInfo.hasExplored(city.getCenterTile()) }
+                it.isDefeated() || it == civView || it.cities().isEmpty() || !civView.getDiplomacyManagerWith(it)!!.canDeclareWar()
+                    || it.cities().none { city -> civView.hasExplored(city.getCenterTile()) }
             }
-        // If the AI declares war on a civ without knowing the location of any cities, 
+        // If the AI declares war on a civ without knowing the location of any cities,
         // it'll just keep amassing an army and not sending it anywhere, and end up at a massive disadvantage.
 
         if (targetCivs.none()) return
 
         val targetCivsWithMotivation: List<Pair<Civilization, Float>> = targetCivs
-            .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0f)) }
+            .map { Pair(it.getCiv(), hasAtLeastMotivationToAttack(civInfo, it.getCiv(), 0f)) }
             .filter { it.second > 0 }.toList()
 
         DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)

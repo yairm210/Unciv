@@ -28,7 +28,11 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
     @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
 
     @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
+    @Readonly fun getDiplomacyManagerWith(other: ForeignCivView): DiplomacyManagerView? =
+        civ.getDiplomacyManager(other.civ)?.let { gameView.getDiplomacyManagerView(it) }
     @Readonly fun isBarbarian(): Boolean = civ.isBarbarian
+    @Readonly fun isDefeated(): Boolean = civ.isDefeated()
+    @Readonly open fun cities(): List<ForeignCityView> = civ.cities.map { gameView.getForeignCityView(it) }
     @Readonly fun getNation(): Nation = civ.nation
 
     @Readonly fun getGoldPerTurn(): Int = civ.stats.statsForNextTurn.gold.toInt()
