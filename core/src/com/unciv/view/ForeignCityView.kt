@@ -51,6 +51,13 @@ open class ForeignCityView(internal open val city: City,
         return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
+    @Readonly fun isCapital(): Boolean = city.isCapital()
+    @Readonly fun isPuppet(): Boolean = city.isPuppet
+    @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun isInResistance(): Boolean = city.isInResistance()
+    @Readonly fun isWeLoveTheKingDayActive(): Boolean = city.isWeLoveTheKingDayActive()
+    @Readonly fun isBlockaded(): Boolean = city.isBlockaded()
+    @Readonly fun isConnectedToCapital(): Boolean = city.isConnectedToCapital()
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 
