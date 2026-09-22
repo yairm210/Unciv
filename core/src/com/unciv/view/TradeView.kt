@@ -3,6 +3,7 @@ package com.unciv.view
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeRequest
 import yairm210.purity.annotations.Readonly
@@ -19,6 +20,7 @@ class TradeView(private val civ: Civilization, private val otherCiv: Civilizatio
     @Readonly fun theirStagedOffers(): TradeOffersList = tradeLogic.currentTrade.theirOffers
     @Readonly fun hasPendingOfferFromUs(): Boolean =
         otherCiv.tradeRequests.any { it.requestingCiv == civ.civID }
+    @Readonly fun isDecliningAllEmbassyRequests() = civ.declineAllEmbassyRequests
 
     // Actions - staging
     fun setStagedTrade(trade: Trade) = tradeLogic.currentTrade.set(trade)
@@ -35,6 +37,11 @@ class TradeView(private val civ: Civilization, private val otherCiv: Civilizatio
         if (tradeLogic.currentTrade.ourOffers.isEmpty() && tradeLogic.currentTrade.theirOffers.isEmpty()) return false
         otherCiv.tradeRequests.add(TradeRequest(civ.civID, tradeLogic.currentTrade.reverse()))
         civ.cache.updateCivResources()
+
+        // Offering any Embassy trade resets the "decline all Embassy requests" flag
+        if (tradeLogic.currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy })
+            civ.declineAllEmbassyRequests = false
+
         return true
     }
 

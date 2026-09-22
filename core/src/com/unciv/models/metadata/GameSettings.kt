@@ -52,7 +52,7 @@ class GameSettings {
     var notificationScroll: String = NotificationsScroll.UserSetting.default().name
     var showMinimap = true
     var showTutorials = true
-    // There have no UI other than the "Reset tutorials" button:
+    // These have no UI other than the "Reset tutorials" button:
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 

@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.TradeLogic
@@ -31,23 +32,43 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  *
  * Called in [WorldScreen].update, which checks if there are any in viewingCiv.tradeRequests.
  *
+ * This popup opens itself unless it can be answered automatically (e.g. `declineAllEmbassyRequests` is on).
+ *
  * @param worldScreen The parent screen
  */
-class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
-    val viewingCiv = worldScreen.selectedGameView.civView.getCiv()
-    val tradeRequest = viewingCiv.tradeRequests.first()
+class TradePopup(private val worldScreen: WorldScreen) : Popup(worldScreen) {
+    private val viewingCiv = worldScreen.selectedGameView.civView.getCiv()
+    private val ourResources = viewingCiv.getCivResourcesByName()
+    private val tradeRequest = viewingCiv.tradeRequests.first()
+    private val trade = tradeRequest.trade
+    private val isAskingForEmbassy = trade.ourOffers.any { it.type == TradeOfferType.Embassy }
+    private val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
+    private val leaderIntroTable = LeaderIntroTable(requestingCiv)
+
+    companion object {
+        private const val tutorialTaskDeclineAll = "How to undo 'Decline all embassies' shown"
+    }
 
     init {
-        val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
+        if (isAskingForEmbassy && viewingCiv.declineAllEmbassyRequests) {
+            tradeRequest.decline(viewingCiv)
+            viewingCiv.addNotification(
+                "We have automatically declined an [Embassy] request from [${requestingCiv.civName}].",
+                DiplomacyAction(requestingCiv),
+                NotificationCategory.Trade, requestingCiv.civName, NotificationIcon.Trade
+            )
+            close()
+        } else {
+            update()
+            open()
+        }
+    }
+
+    private fun update() {
         val nation = requestingCiv.nation
-        val trade = tradeRequest.trade
 
-
-        val ourResources = viewingCiv.getCivResourcesByName()
-
-        val leaderIntroTable = LeaderIntroTable(requestingCiv)
-        add(leaderIntroTable)
-        addSeparator()
+        add(leaderIntroTable).colspan(2)
+        addSeparator(colSpan = 2)
 
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
         tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
@@ -55,15 +76,6 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         tradeOffersTable.add().pad(0f, 15f)
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
-
-        
-        @Readonly
-        fun getOfferText(offer:TradeOffer): String {
-            var tradeText = offer.getOfferText()
-            if (offer.type == TradeOfferType.Luxury_Resource || offer.type == TradeOfferType.Strategic_Resource)
-                tradeText += "\n" + "Owned by you: [${ourResources[offer.name]}]".tr()
-            return tradeText
-        }
 
         for (i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)) {
             if (trade.theirOffers.lastIndex < i) tradeOffersTable.add()
@@ -75,42 +87,75 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         }
         tradeOffersTable.pack()
 
-        val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
-        add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
+        val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height / 2)
+        add(ScrollPane(tradeOffersTable)).height(scrollHeight).colspan(2).row()
 
-        addSeparator(Color.DARK_GRAY, height = 1f)
+        addSeparator(Color.DARK_GRAY, colSpan = 2, height = 1f)
 
         // Starting playback here assumes the TradePopup is shown immediately
         UncivGame.Current.musicController.playVoice("${requestingCiv.civName}.tradeRequest")
-        addGoodSizedLabel(nation.tradeRequest).pad(15f).row()
+        addGoodSizedLabel(nation.tradeRequest).pad(15f).colspan(2).row()
 
-        addButton("Sounds good!", 'y') {
-            val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
-            tradeLogic.currentTrade.set(trade)
-            tradeLogic.acceptTrade()
-            close()
-            TradeThanksPopup(leaderIntroTable, worldScreen)
-            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", NotificationCategory.Trade, viewingCiv.civName, NotificationIcon.Trade)
-        }.row()
+        addButton("Sounds good!", 'y', action = ::accept).colspan(2).row()
 
-        addButton("Not this time.", 'n') {
-            tradeRequest.decline(viewingCiv)
-            close()
-            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", NotificationCategory.Trade, viewingCiv.civName, NotificationIcon.Trade)
-            worldScreen.shouldUpdate = true
-        }.row()
+        if (isAskingForEmbassy) {
+            addButton("Not this time.", 'n', action = ::decline)
+            addButton("Decline all [Embassy] requests.", 'n', action = ::declineAll).row()
+        } else {
+            addButton("Not this time.", 'n', action = ::decline).colspan(2).row()
+        }
 
-        addButton("How about something else...", 'e') {
-            close()
-            worldScreen.game.pushScreen {
-                DiplomacyScreen(
-                    worldScreen.selectedGameView.civView,
-                    worldScreen.selectedGameView.getForeignCivView(requestingCiv),
-                    trade
-                )
-            }
-            worldScreen.shouldUpdate = true
-        }.row()
+        addButton("How about something else...", 'e', action = ::counterOffer).colspan(2).row()
+    }
+
+    @Readonly
+    fun getOfferText(offer:TradeOffer): String {
+        var tradeText = offer.getOfferText()
+        if (offer.type == TradeOfferType.Luxury_Resource || offer.type == TradeOfferType.Strategic_Resource)
+            tradeText += "\n" + "Owned by you: [${ourResources[offer.name]}]".tr()
+        return tradeText
+    }
+
+    private fun reply(text: String) {
+        requestingCiv.addNotification(
+            "[${viewingCiv.civName}] has $text your trade request",
+            NotificationCategory.Trade, viewingCiv.civName, NotificationIcon.Trade
+        )
+    }
+
+    private fun accept() {
+        val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
+        tradeLogic.currentTrade.set(trade)
+        tradeLogic.acceptTrade()
+        close()
+        TradeThanksPopup()
+        reply("accepted")
+    }
+
+    private fun decline() {
+        tradeRequest.decline(viewingCiv)
+        close()
+        reply("denied")
+        worldScreen.shouldUpdate = true
+    }
+
+    private fun declineAll() {
+        viewingCiv.declineAllEmbassyRequests = true
+        decline()
+        if (worldScreen.game.settings.tutorialTasksCompleted.add(tutorialTaskDeclineAll))
+            DeclineAllTutorial()
+    }
+
+    private fun counterOffer() {
+        close()
+        worldScreen.game.pushScreen {
+            DiplomacyScreen(
+                worldScreen.selectedGameView.civView,
+                worldScreen.selectedGameView.getForeignCivView(requestingCiv),
+                trade
+            )
+        }
+        worldScreen.shouldUpdate = true
     }
 
     override fun close() {
@@ -118,7 +163,7 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         super.close()
     }
 
-    class TradeThanksPopup(leaderIntroTable: LeaderIntroTable, worldScreen: WorldScreen) : Popup(worldScreen) {
+    private inner class TradeThanksPopup : Popup(worldScreen) {
         init {
             add(leaderIntroTable)
             addSeparator().padBottom(15f)
@@ -128,6 +173,15 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
                 // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
                 // in order for the next trade to appear immediately
             }
+            open()
+        }
+    }
+
+    private inner class DeclineAllTutorial : Popup(worldScreen) {
+        init {
+            addGoodSizedLabel("This is permanent for the rest of this game.").row()
+            addGoodSizedLabel("Offer an Embassy trade yourself to reset this state.").row()
+            addCloseButton()
             open()
         }
     }
