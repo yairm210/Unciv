@@ -78,7 +78,8 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(UnitIconGroup(garrison, 30f)).padLeft(5f)
         }
 
-        val width = if (cityScreen.isCrampedPortrait()) stage.width / 3 else stage.width / 4
+        // Actor.stage is null after this table is removed; the screen stage stays alive across that refresh.
+        val width = cityScreen.stage.width / (if (cityScreen.isCrampedPortrait()) 3 else 4)
         add(cityNameTable).width(width)
 
         if (cityScreen.viewableCities.size > 1) {
