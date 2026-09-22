@@ -57,7 +57,6 @@ class CityView(city: City,
         city.expansion.getGoldCostOfTile(getTile(tileView), extraTiles)
     // Population
     @Readonly fun getFreePopulation(): Int = city.population.getFreePopulation()
-    @Readonly fun getPopulationCount(): Int = city.population.population
     @Readonly fun getFoodStored(): Int = city.population.foodStored
     @Readonly fun getFoodToNextPopulation(): Int = city.population.getFoodToNextPopulation()
     @Readonly fun getMaxSpecialists(): Counter<String> = city.population.getMaxSpecialists()

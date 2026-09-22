@@ -77,7 +77,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         add(DefenceTable(foreignCityView, selectedPlayer)).row()
 
         // Add City main table: pop, name, religion, construction, nation icon
-        cityTable = CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()))
+        cityTable = CityTable(foreignCityView)
         add(cityTable).row()
 
         // If city state - add influence bar
@@ -242,7 +242,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
 
         val popup = Popup(GUI.getWorldScreen()).apply {
             name = "ForeignCityInfoPopup"
-            add(CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()), true)).fillX().padBottom(5f).colspan(3).row()
+            add(CityTable(foreignCityView, true)).fillX().padBottom(5f).colspan(3).row()
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
