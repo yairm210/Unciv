@@ -816,19 +816,36 @@ class UnitMovement(val unit: MapUnit) {
     /**
      * Notifies the player that a hidden unit was discovered and remembers that specific unit and
      * tile so [MapUnit.isVisibleTo] can keep revealing it without affecting other invisible units.
+     *
+     * Discovery itself is not an act of war: a hidden unit belonging to a friendly or allied civ
+     * (or one we're simply not at war with) is still revealed and remembered exactly like an
+     * enemy would be, but it must not be announced as a war/hostile event. Only a hidden unit
+     * belonging to a civ we are actually at war with gets the hostile [NotificationCategory.War]
+     * notification; every other relationship gets a neutral [NotificationCategory.Units] one.
      */
     private fun notifyHiddenBlockingUnitDiscovered(hiddenUnit: MapUnit, tile: Tile) {
         unit.civ.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, tile)
         for (civUnit in unit.civ.units.getCivUnits())
             civUnit.movement.clearPathfindingCache()
-        unit.civ.addNotification(
-            "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}]!",
-            tile.position,
-            NotificationCategory.War,
-            unit.name,
-            NotificationIcon.War,
-            hiddenUnit.name
-        )
+
+        if (unit.civ.isAtWarWith(hiddenUnit.civ)) {
+            unit.civ.addNotification(
+                "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}]!",
+                tile.position,
+                NotificationCategory.War,
+                unit.name,
+                NotificationIcon.War,
+                hiddenUnit.name
+            )
+        } else {
+            unit.civ.addNotification(
+                "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}] belonging to [${hiddenUnit.civ.civName}]",
+                tile.position,
+                NotificationCategory.Units,
+                unit.name,
+                hiddenUnit.name
+            )
+        }
     }
 
     enum class CannotMoveToReason{
