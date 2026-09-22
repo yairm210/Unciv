@@ -25,7 +25,9 @@ open class ForeignCityView(internal open val city: City,
     val owningCivView: CivView get() = gameView.getCivView(city.civ)
 
     // Navigation
+    @Deprecated("Scheduled for removal")
     @Readonly fun getCity(): City = city
+    @Deprecated("Scheduled for removal")
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
     @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ)
@@ -51,6 +53,14 @@ open class ForeignCityView(internal open val city: City,
         return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
+    @Readonly fun getPopulationCount(): Int = city.population.population
+    @Readonly fun isCapital(): Boolean = city.isCapital()
+    @Readonly fun isPuppet(): Boolean = city.isPuppet
+    @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun isInResistance(): Boolean = city.isInResistance()
+    @Readonly fun isWeLoveTheKingDayActive(): Boolean = city.isWeLoveTheKingDayActive()
+    @Readonly fun isBlockaded(): Boolean = city.isBlockaded()
+    @Readonly fun isConnectedToCapital(): Boolean = city.isConnectedToCapital()
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 

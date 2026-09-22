@@ -16,8 +16,8 @@ import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.DebugUtils
 import com.unciv.view.CityView
+import com.unciv.view.ForeignCityView
 
 /**
  *  This is the main "button" inside [CityButton], the one with a rounded edge look,
@@ -37,7 +37,7 @@ import com.unciv.view.CityView
  *  - nation or city-state icon (unless yours)
  */
 internal class CityTable(
-    city: CityView,
+    city: ForeignCityView,
     forPopup: Boolean = false
 ) : BorderedTable(
     path = "WorldScreen/CityButton/IconTable",
@@ -68,25 +68,23 @@ internal class CityTable(
         }
         bgColor = city.getNationOuterColor().cpy().apply { a = 0.9f }
 
-        val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
-                || city.belongsTo(selectedCiv)
-                || viewingCiv.isSpectator()
+        val detailedCityView = city.tryGetCityView()
 
         addCityPopNumber(city)
 
-        if (isShowDetailedInfo)
-            addCityGrowthBar(city)
+        if (detailedCityView != null)
+            addCityGrowthBar(detailedCityView)
 
         addCityText(city, forPopup)
 
-        if (isShowDetailedInfo)
-            addCityConstruction(city)
+        if (detailedCityView != null)
+            addCityConstruction(detailedCityView)
 
         if (!city.belongsTo(viewingCiv))
             addCivIcon(city)
     }
 
-    private fun addCityPopNumber(city: CityView) {
+    private fun addCityPopNumber(city: ForeignCityView) {
         val textColor = city.getCivInnerColor()
         val popLabel = city.getPopulationCount().tr()
             .toLabel(fontColor = textColor, fontSize = 18, alignment = Align.center)
@@ -131,7 +129,7 @@ internal class CityTable(
         add(table).minWidth(6f).padLeft(2f)
     }
 
-    private fun addCityText(city: CityView, forPopup: Boolean) {
+    private fun addCityText(city: ForeignCityView, forPopup: Boolean) {
         val textColor = city.getCivInnerColor()
         val table = Table().apply { isTransform = false }
 
@@ -209,7 +207,7 @@ internal class CityTable(
         add(icon).minWidth(26f)
     }
 
-    private fun addCivIcon(city: CityView) {
+    private fun addCivIcon(city: ForeignCityView) {
         val icon = when {
             city.isMajorCiv() -> ImageGetter.getNationIcon(city.getNationName())
             else -> ImageGetter.getImage("CityStateIcons/" + city.getCityStateTypeName())
