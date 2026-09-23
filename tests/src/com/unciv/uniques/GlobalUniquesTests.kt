@@ -583,7 +583,7 @@ class GlobalUniquesTests {
 
     @Test
     fun foodConsumptionBySpecialistsTest() {
-        val civInfo = game.addCiv("[-50]% Food consumption by specialists [in all cities]")
+        val civInfo = game.addCiv("[-50]% Food consumption by [Specialists] [in all cities]")
         val city = game.addCity(civInfo, game.getTile(HexCoord.Zero), true, initialPopulation = 1)
 
         val building = game.createBuilding()
