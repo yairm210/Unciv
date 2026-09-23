@@ -1,3 +1,33 @@
+## 4.22.2
+
+Resolved  - Update selected civ before unit table, for spectator deselect to be accurate screen-wide
+
+.
+
+View implementation - Initial add of View to AI automation code for ensuring player-equal visibility and actions - see 
+
+View implementation - View-ified citytable - see 
+
+View implementation - View-ified citybutton components - see 
+
+View implementation - tileView.getTile final removal! - see 
+
+View implementation - tileView.getTile removals - see 
+
+Fix defensive pact count motivation clamp - By Angais
+
+By SomeTroglodyte:
+- fixes layout gub mentioned in  
+- chore: fixes  race condition 
+
+fix: discover natural wonders when revealing the entire map - By mvanhorn
+
+Remove deprecated unique recommendations - By unciv-loof
+
+Fix mod fonts missing from Font family selection - By ethanstoner
+
+AStar puts correct movement in PathsToTilesWithinTurn - By Ambeco
+
 ## 4.22.1
 
 Fixed crash on "ID from clipboard" when clipboard not set
