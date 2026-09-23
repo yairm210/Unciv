@@ -4,7 +4,7 @@ _Please include a summary of the change and which issue is fixed. Please also in
 
 _Please remove options that are not relevant_
 Type of change: bug fix, new feature, refactor, or something else?
-
+(note:If there are any interface-related changes, please take a screenshot so the reviewer can evaluate them.)
 ## What
 
 What does the PR do?
