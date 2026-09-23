@@ -393,11 +393,10 @@ class WorldScreen(
         if (uiEnabled) {
             displayTutorialsOnUpdate()
 
-            bottomUnitTable.update()
-
             updateSelectedCiv()
 
-            
+            bottomUnitTable.update()
+
             minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
             bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)

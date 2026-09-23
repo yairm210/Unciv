@@ -366,6 +366,7 @@ class PathingMap(
                     Log.debug("#getMovementToTilesAtPosition returning cached tilesSameTurn[len=${tilesSameTurn.size}] which was calculated by another thread for $debugMapType $debugId")
                 return
             }
+            val initialMovement = cache.key.fullMove - cache.key.moveRemaining
             // otherwise, add the tiles in turn 0, (or would be if unoccupied, and we can swap/attack in)
             cache.addedNeighborNodes.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
@@ -374,7 +375,7 @@ class PathingMap(
                     tilesSameTurn[tile] =
                         ParentTileAndTotalMovement(
                             tile,
-                            node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
+                            node.parentTile(tileMap), (node.moveUsedThisTurn-initialMovement).toFloat())
                 }
             }
             cache.nodesNeedingNeighbors.forEachSetBit {
@@ -382,7 +383,9 @@ class PathingMap(
                 if (node.initialized && node.turns == 0) {
                     val tile = node.tile(tileMap)
                     tilesSameTurn[tile] =
-                        ParentTileAndTotalMovement(tile, node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
+                        ParentTileAndTotalMovement(tile,
+                            node.parentTile(tileMap),
+                            (node.moveUsedThisTurn-initialMovement).toFloat())
                 }
             }
         }

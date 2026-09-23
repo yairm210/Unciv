@@ -241,10 +241,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.setLastSeenImprovement(tile.position, tile.improvement)
     }
 
-    /** Visible for DevConsole use only */
-    fun discoverNaturalWonders() {
+    /** Discovers Natural Wonders in [tiles]. Used by sight updates, "Reveals the entire map", and DevConsole. */
+    fun discoverNaturalWonders(tiles: Iterable<Tile> = civInfo.viewableTiles) {
         val newlyViewedNaturalWonders = HashSet<Tile>()
-        for (tile in civInfo.viewableTiles) {
+        for (tile in tiles) {
             if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
                 newlyViewedNaturalWonders += tile
         }
