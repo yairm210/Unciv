@@ -361,7 +361,7 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
-    internal fun declareWar(civInfo: Civilization, civView: CivView) {
+    internal fun declareWar(civView: CivView) {
         if (civView.cities().isEmpty() || civView.getKnownCivs().none()) return
         if (civView.getPersonalityValue(PersonalityValue.DeclareWar) == 0f) return
         if (civView.getHappiness() <= 0) return
@@ -384,10 +384,10 @@ object DiplomacyAutomation {
         if (targetCivs.none()) return
 
         val targetCivsWithMotivation: List<Pair<Civilization, Float>> = targetCivs
-            .map { Pair(it.getCiv(), hasAtLeastMotivationToAttack(civInfo, it.getCiv(), 0f)) }
+            .map { Pair(it.getCiv(), hasAtLeastMotivationToAttack(civView.getCiv(), it.getCiv(), 0f)) }
             .filter { it.second > 0 }.toList()
 
-        DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)
+        DeclareWarTargetAutomation.chooseDeclareWarTarget(civView, targetCivsWithMotivation)
     }
 
     internal fun offerPeaceTreaty(civInfo: Civilization) {

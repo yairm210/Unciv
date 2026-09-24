@@ -49,7 +49,7 @@ object NextTurnAutomation {
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
-                DiplomacyAutomation.declareWar(civInfo, civView)
+                DiplomacyAutomation.declareWar(civView)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.askForHelp(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
