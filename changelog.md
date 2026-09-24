@@ -1,36 +1,12 @@
 ## 4.22.3
 
-Attempt to solve ANRs on screen push round 2 - Run screen creation via postrunnable, so the current input returns immediately; Further inputs denied by disabling input first
+Massive rendering lag improvement!!
 
-Removed minimap lastviewingciv - not actually used for anything, ever since initial creation
+ANRs reduction when switching screens
 
-View implementation - More tests, foreign views are readonly-only - see 
-
-View implementation - View rule cleanup - see 
-
-View implementation - Specify View rules in tests (currently not passing) - see 
-
-chore: Simplify TileDescription inputs, mark as readonly
-
-View implementation - Unify "owned object" views - see 
-
-View implementation - Can only get known foreign civ cities - see 
-
-View implementation - Added SpyView, replaced selectedSpy in all places - see 
-
-View implementation - CityPresenter changes, it's obvious we'll need a SpyView as well :/ - see 
-
-chore: Unified seeded randomness in DiplomacyAutomation
-
-View implementation - Declare War automation uses views part 1 - see 
-
-Disable FPS for prod :)
-
-Replaced default Spritebatch with TextureArraySpriteBatch
-
-Perf testing: Added FPS counter to all screens, enableable via debug tab
-
-chore: Deprecated food consumption unique
+By SomeTroglodyte:
+- Disallow spectators to rename units
+- Allow unit rename to "reset" to base unit name
 
 ## 4.22.2
 
