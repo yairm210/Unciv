@@ -17,7 +17,9 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
-                           gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode, gameView) {
+                           gameView: GameView) : OwnedView<City>(city, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = city.civ
+
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 
@@ -64,7 +66,6 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 
-    @Readonly fun belongsTo(civ: Civilization): Boolean = city.civ === civ
     @Readonly fun isCityState(): Boolean = city.civ.isCityState
     @Readonly fun isMajorCiv(): Boolean = city.civ.isMajorCiv()
     @Readonly fun getNationName(): String = city.civ.nation.name

@@ -50,9 +50,8 @@ internal class CityTable(
         pad(0f, 4f, 0f, 4f) // outer pad left and right
 
         val selectedCiv = GUI.getSelectedPlayer()
-        val viewingCiv = city.getViewingCiv()
         when {
-            city.belongsTo(selectedCiv) -> {
+            city.isOwnedByViewer() -> {
                 borderOnTop = true
                 borderSize = 4f
                 bgBorderColor = Color.valueOf("#E9E9AC")
@@ -80,7 +79,7 @@ internal class CityTable(
         if (detailedCityView != null)
             addCityConstruction(detailedCityView)
 
-        if (!city.belongsTo(viewingCiv))
+        if (!city.isOwnedByViewer())
             addCivIcon(city)
     }
 

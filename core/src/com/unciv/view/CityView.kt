@@ -133,7 +133,6 @@ class CityView(city: City,
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
     @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
     @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
         tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)

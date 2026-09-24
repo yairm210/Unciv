@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups.citybutton
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.TutorialTrigger
 import com.unciv.ui.images.ImageGetter
 import com.unciv.view.ForeignCityView
@@ -14,13 +13,12 @@ import com.unciv.view.ForeignCityView
  */
 internal class StatusTable(
     cityView: ForeignCityView,
-    selectedCiv: Civilization,
     iconSize: Float = 18f
 ) : Table() {
     init {
         defaults().space(2f)
 
-        if (cityView.belongsTo(selectedCiv)) {
+        if (cityView.isOwnedByViewer()) {
             if (cityView.isBlockaded()) {
                 val connectionImage = ImageGetter.getImage("OtherIcons/Blockade")
                 add(connectionImage).size(iconSize)
@@ -46,7 +44,7 @@ internal class StatusTable(
             add(fireImage).size(iconSize)
         }
 
-        if (cityView.belongsTo(selectedCiv) && cityView.isWeLoveTheKingDayActive()) {
+        if (cityView.isOwnedByViewer() && cityView.isWeLoveTheKingDayActive()) {
             val wltkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
             add(wltkdImage).size(iconSize)
         }

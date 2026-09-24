@@ -27,7 +27,7 @@ internal class DefenceTable(cityView: ForeignCityView, selectedCiv: Civilization
         bgColor = ImageGetter.CHARCOAL
 
         bgBorderColor = when {
-            cityView.belongsTo(selectedCiv) -> colorFromRGB(255, 237, 200)
+            cityView.isOwnedByViewer() -> colorFromRGB(255, 237, 200)
             cityView.isAtWarWith(selectedCiv) -> Color.RED
             else -> ImageGetter.CHARCOAL
         }

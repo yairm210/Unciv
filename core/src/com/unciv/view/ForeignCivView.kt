@@ -32,7 +32,8 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
         civ.getDiplomacyManager(other.civ)?.let { gameView.getDiplomacyManagerView(it) }
     @Readonly fun isBarbarian(): Boolean = civ.isBarbarian
     @Readonly fun isDefeated(): Boolean = civ.isDefeated()
-    @Readonly open fun cities(): List<ForeignCityView> = civ.cities.map { gameView.getForeignCityView(it) }
+    @Readonly open fun cities(): List<ForeignCityView> =
+        civ.cities.filter { it.getCenterTile().isExplored(viewer) }.map { gameView.getForeignCityView(it) }
     @Readonly fun getNation(): Nation = civ.nation
 
     @Readonly fun getGoldPerTurn(): Int = civ.stats.statsForNextTurn.gold.toInt()

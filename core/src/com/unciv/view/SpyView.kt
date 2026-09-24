@@ -8,7 +8,8 @@ import yairm210.purity.annotations.Readonly
 class SpyView(private val spy: Spy,
               viewer: Civilization,
               spectatorMode: Boolean = false,
-              gameView: GameView) : GameBasedView<Spy>(spy, viewer, spectatorMode, gameView) {
+              gameView: GameView) : OwnedView<Spy>(spy, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = spy.civInfo
 
     // Navigation
     @Deprecated("Scheduled for removal")
