@@ -24,10 +24,14 @@ object SystemUtils {
             builder.appendLine("\t$osRelease")
 
         // Java runtime version
-        val javaVendor: String? = System.getProperty("java.vendor")
+        val javaVendor = System.getProperty("java.vendor")
         if (javaVendor != null) {
-            val javaVersion: String = System.getProperty("java.vendor.version") ?: System.getProperty("java.vm.version") ?: ""
-            builder.appendLine("Java: $javaVendor $javaVersion")
+            val specVersion = System.getProperty("java.specification.version") ?: "?"
+            val detailVersion = System.getProperty("java.vendor.version")
+                ?: System.getProperty("java.vm.version")
+                ?: System.getProperty("java.runtime.version")
+                ?: "unknown"
+            builder.appendLine("Java: $javaVendor $specVersion ($detailVersion)")
         }
 
         // Java VM memory limit as set by -Xmx
