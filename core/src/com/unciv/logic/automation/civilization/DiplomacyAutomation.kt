@@ -22,7 +22,6 @@ import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.Log
-import com.unciv.utils.hashOf
 import com.unciv.view.CivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
@@ -41,20 +40,14 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDeclarationOfFriendship")
             // Default setting is 2, this will be changed according to different civ.
-            if ((1..10).random(getRandom(civInfo, otherCiv, "declaration of friendship"))
-                <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy) 
+            if ((1..10).random(rng)
+                <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
                 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civID))
             }
         }
     }
     
-    @Readonly
-    fun getRandom(civInfo: Civilization, otherCiv: Civilization, context: String): Random {
-        val seed = hashOf(context.hashCode(), civInfo.civID.hashCode(), otherCiv.civID.hashCode(), civInfo.gameInfo.turns)
-        return Random(seed)
-    }
-
     @Readonly
     internal fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
@@ -140,7 +133,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerToEstablishEmbassy")
             // Default setting is 3
-            if ((1..10).random(getRandom(civInfo, otherCiv, "embassy")) < 7) continue
+            if ((1..10).random(rng) < 7) continue
             if (wantsToAcceptEmbassy(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
@@ -188,7 +181,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerOpenBorders")
             // Default setting is 3
-            if ((1..10).random(getRandom(civInfo, otherCiv, "open borders")) < 7) continue
+            if ((1..10).random(rng) < 7) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
@@ -284,7 +277,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanSignDefensivePactWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDefensivePact")
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random(getRandom(civInfo, otherCiv, "defensive pact"))
+            if ((1..10).random(rng)
                 <= 7 * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Loyal)) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
