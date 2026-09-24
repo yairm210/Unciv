@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -111,10 +112,14 @@ abstract class BaseScreen : Screen {
         if (fpsLabel != null && fpsLabelContainer != null) {
             fpsLabelContainer.isVisible = DebugUtils.SHOW_FPS
             if (DebugUtils.SHOW_FPS) {
-                fpsLabel.setText("FPS: ${Gdx.graphics.framesPerSecond}")
+                if (!glProfiler.isEnabled) glProfiler.enable()
+                fpsLabel.setText("FPS: ${Gdx.graphics.framesPerSecond}\nDraw calls: ${glProfiler.drawCalls}\nBinds: ${glProfiler.textureBindings}")
+                glProfiler.reset()
                 fpsLabelContainer.toFront()
                 fpsLabelContainer.pack()
                 fpsLabelContainer.setPosition(0f, stage.height, Align.topLeft)
+            } else if (glProfiler.isEnabled) {
+                glProfiler.disable()
             }
         }
 
@@ -162,6 +167,9 @@ abstract class BaseScreen : Screen {
         /** Colour to use for empty sections of the screen.
          *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
         var clearColor = Color(0f, 0f, 0.2f, 1f)
+
+        /** Shared across all screens - wraps [Gdx.gl] to count draw calls etc. for [DebugUtils.SHOW_FPS]. */
+        private val glProfiler by lazy { GLProfiler(Gdx.graphics) }
 
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings
