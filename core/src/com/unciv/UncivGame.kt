@@ -18,7 +18,6 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.InputDisabling
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -292,13 +291,18 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         setScreen(root)
     }
     /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen]
-     * Disables inputs to avoid ANRs while creating the new screen - we don't want to be handling input in the interim anyway */
-    fun <T: BaseScreen> pushScreen(getScreen: () -> T): T {
+     * @param onScreenCreated optional callback invoked with the new screen once it's created and pushed - e.g. to show a Popup on it, since the screen isn't available synchronously */
+    fun <T: BaseScreen> pushScreen(onScreenCreated: (T) -> Unit = {}, getScreen: () -> T) {
         InputDisabling.disableInput()
-        val newScreen = getScreen()
-        screenStack.addLast(newScreen)
-        setScreen(newScreen)
-        return newScreen
+        // Immediately return, so the *current* input doesn't timeout causing ANR.
+        // Input is disabled so we can wait for the new screen to be created and set without risk of further inputs.
+        // We still need to create the new table on the GL thread though.
+        Concurrency.runOnGLThread {
+            val newScreen = getScreen()
+            screenStack.addLast(newScreen)
+            setScreen(newScreen)
+            onScreenCreated(newScreen)
+        }
     }
 
     /**
@@ -480,13 +484,12 @@ private fun logRunningThreads() {
         return if (screen == worldScreen) worldScreen else null
     }
 
-    fun goToMainMenu(): MainMenuScreen {
+    fun goToMainMenu(onScreenCreated: (MainMenuScreen) -> Unit = {}) {
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
             files.autosaves.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
-        val mainMenuScreen = pushScreen{ MainMenuScreen() }
-        return mainMenuScreen
+        pushScreen(onScreenCreated) { MainMenuScreen() }
     }
 
     override fun getGcCount(): Int = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()

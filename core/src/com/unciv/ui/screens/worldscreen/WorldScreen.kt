@@ -856,16 +856,14 @@ private fun startNewScreenJob(gameInfo: GameInfo, autoPlay: AutoPlay, autosaveDi
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo, autoPlay)
         } catch (notAPlayer: UncivShowableException) {
+            val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
             withGLContext {
-                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
-                val mainMenu = UncivGame.Current.goToMainMenu()
-                ToastPopup(message, mainMenu)
+                UncivGame.Current.goToMainMenu { mainMenu -> ToastPopup(message, mainMenu) }
             }
             return@run
         } catch (_: OutOfMemoryError) {
             withGLContext {
-                val mainMenu = UncivGame.Current.goToMainMenu()
-                ToastPopup("Not enough memory on phone to load game!", mainMenu)
+                UncivGame.Current.goToMainMenu { mainMenu -> ToastPopup("Not enough memory on phone to load game!", mainMenu) }
             }
             return@run
         }
