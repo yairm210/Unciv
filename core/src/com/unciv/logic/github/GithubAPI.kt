@@ -18,6 +18,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
+import java.io.File
 import java.io.FileFilter
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
@@ -509,12 +510,15 @@ object GithubAPI {
         // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
 
         val job = coroutineContext[Job]
+        val destinationPath = unzipDestination.file().canonicalPath + File.separator
         // Actual unpacking
         try {
             while (job?.isActive != false) {
                 val entry = stream.nextEntry ?: break
                 if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
-                val dest = unzipDestination.child(entry.name).file()
+                val dest = unzipDestination.child(entry.name).file().canonicalFile
+                if (!dest.path.startsWith(destinationPath))
+                    throw ZipException("ZIP entry points outside the destination")
                 dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
                 dest.outputStream().use { stream.copyTo(it) }
                 stream.closeEntry()

@@ -57,7 +57,7 @@ class VictoryScreen(
         },
         Illustration('I') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenIllustrations(parent, parent.worldScreen)
-            override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv.gameInfo)
+            override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv)
         },
         Demographics('D', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)

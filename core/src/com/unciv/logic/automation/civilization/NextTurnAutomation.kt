@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import com.unciv.view.GameView
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 
@@ -41,17 +42,19 @@ object NextTurnAutomation {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
+        val civView = GameView(civInfo.gameInfo, civInfo).civView
+
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
-                DiplomacyAutomation.declareWar(civInfo)
+                DiplomacyAutomation.declareWar(civView)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.askForHelp(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
             }
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
 
@@ -81,7 +84,7 @@ object NextTurnAutomation {
         automateUnits(civInfo)  // this is the most expensive part
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 // Can only be done now, as the prophet first has to decide to found/enhance a religion
                 ReligionAutomation.chooseReligiousBeliefs(civInfo)
             }
@@ -349,34 +352,23 @@ object NextTurnAutomation {
     }
 
     fun chooseGreatPerson(civInfo: Civilization) {
-        if (civInfo.greatPeople.freeGreatPeople == 0) return
-        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
-        val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
-        val greatPeople =
-            if (mayanGreatPerson)
-                civInfo.greatPeople.getGreatPeople().filter { it.name in civInfo.greatPeople.longCountGPPool }
-            else civInfo.greatPeople.getGreatPeople()
-
+        val greatPeople = civInfo.greatPeople.getFreeGreatPersonOptions()
         if (greatPeople.isEmpty()) return
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
         var greatPerson = greatPeople.random(rng)
         val scienceGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
         if (scienceGP != null)  greatPerson = scienceGP
         // Humans would pick a prophet or engineer, but it'd require more sophistication on part of the AI - a scientist is the safest option for now
 
-        civInfo.units.addUnit(greatPerson, civInfo.cities.firstOrNull { it.isCapital() })
-
-        civInfo.greatPeople.freeGreatPeople--
-        if (mayanGreatPerson){
-            civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
-            civInfo.greatPeople.mayaLimitedFreeGP--
-        }
+        civInfo.greatPeople.chooseFreeGreatPerson(greatPerson.name)
     }
 
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
         // No need to build spaceship parts just yet
-        if (civInfo.gameInfo.ruleset.victories.none { civInfo.victoryManager.getNextMilestone(it.value)?.type == MilestoneType.AddedSSPartsInCapital } )
+        if (civInfo.victoryManager.getAvailableVictories()
+                .none { civInfo.victoryManager.getNextMilestone(it)?.type == MilestoneType.AddedSSPartsInCapital })
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {
@@ -415,7 +407,11 @@ object NextTurnAutomation {
 
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
-            .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
+            .filter {
+                var count = 0
+                it.getCenterTile().forEachTileInDistance(4) { tile -> if (tile.militaryUnit?.civ == civInfo) count++ }
+                count > 4
+            }
             .toList()
 
         for (unit in sortedUnits) applyPromotions(unit)
@@ -500,7 +496,9 @@ object NextTurnAutomation {
                 unit.movement.getDistanceToTiles(), tilesToTarget)
             if (attackableEnemies.isEmpty()) continue
             val mostSurroundedEnemy = attackableEnemies.maxBy {
-                it.tileToAttack.getTilesAtDistance(1).count { it.militaryUnit?.civ == unit.civ }
+                var count = 0
+                it.tileToAttack.forEachTileAtDistance(1) { tile -> if (tile.militaryUnit?.civ == unit.civ) count++ }
+                count
             } // aims to maximize flanking bonus and number of hits in order to get kills
 
             Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
@@ -599,10 +597,11 @@ object NextTurnAutomation {
         if (CivilianUnitAutomation.isLateGame(civInfo)){
             // all suitable land may be occupied already
             // 10 tiles away and 6 "options" are heuristics based on nothing, feel free to change 
-            val unoccupiedNearishTiles = civInfo.cities.asSequence()
-                .flatMap { it.getCenterTile().getTilesInDistance(10) }
-                .filter { it.owningCity == null && it.neighbors.all { it.owningCity == null } }
-                .count()
+            var unoccupiedNearishTiles = 0
+            for (city in civInfo.cities)
+                city.getCenterTile().forEachTileInDistance(10) {
+                    if (it.owningCity == null && it.neighbors.all { neighbor -> neighbor.owningCity == null }) unoccupiedNearishTiles++
+                }
             if (unoccupiedNearishTiles < 6) return
         } 
 

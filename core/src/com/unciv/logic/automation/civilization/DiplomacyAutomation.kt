@@ -22,7 +22,7 @@ import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.Log
-import com.unciv.utils.hashOf
+import com.unciv.view.CivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.pow
@@ -40,20 +40,14 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDeclarationOfFriendship")
             // Default setting is 2, this will be changed according to different civ.
-            if ((1..10).random(getRandom(civInfo, otherCiv, "declaration of friendship"))
-                <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy) 
+            if ((1..10).random(rng)
+                <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
                 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civID))
             }
         }
     }
     
-    @Readonly
-    fun getRandom(civInfo: Civilization, otherCiv: Civilization, context: String): Random {
-        val seed = hashOf(context.hashCode(), civInfo.civID.hashCode(), otherCiv.civID.hashCode(), civInfo.gameInfo.turns)
-        return Random(seed)
-    }
-
     @Readonly
     internal fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
@@ -73,7 +67,7 @@ object DiplomacyAutomation {
 
         // Warmongerers don't make good allies
         if (diploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
-            motivation -= diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
+            motivation += diploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
         }
 
         // If the other civ is stronger than we are compelled to be nice to them
@@ -139,7 +133,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerToEstablishEmbassy")
             // Default setting is 3
-            if ((1..10).random(getRandom(civInfo, otherCiv, "embassy")) < 7) continue
+            if ((1..10).random(rng) < 7) continue
             if (wantsToAcceptEmbassy(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = civInfo.gameInfo.speed)
@@ -187,7 +181,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanOpenBordersWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerOpenBorders")
             // Default setting is 3
-            if ((1..10).random(getRandom(civInfo, otherCiv, "open borders")) < 7) continue
+            if ((1..10).random(rng) < 7) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
@@ -283,7 +277,7 @@ object DiplomacyAutomation {
         for (otherCiv in civsThatWeCanSignDefensivePactWith) {
             val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDefensivePact")
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random(getRandom(civInfo, otherCiv, "defensive pact"))
+            if ((1..10).random(rng)
                 <= 7 * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Loyal)) continue
             if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
@@ -333,7 +327,7 @@ object DiplomacyAutomation {
 
         // Warmongerers don't make good allies
         if (ourDiploManager.hasModifier(DiplomaticModifiers.WarMongerer)) {
-            motivation -= ourDiploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
+            motivation += ourDiploManager.getModifier(DiplomaticModifiers.WarMongerer) * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
         }
 
         // If they are stronger than us, then we value it a lot more
@@ -360,33 +354,33 @@ object DiplomacyAutomation {
         return motivation > 0
     }
 
-    internal fun declareWar(civInfo: Civilization) {
-        if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
-        if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return
-        if (civInfo.getHappiness() <= 0) return
+    internal fun declareWar(civView: CivView) {
+        if (civView.cities().isEmpty() || civView.getKnownCivs().none()) return
+        if (civView.getPersonalityValue(PersonalityValue.DeclareWar) == 0f) return
+        if (civView.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.units.getCivUnits().count { !it.isCivilian() }
-        if (ourMilitaryUnits < civInfo.cities.size) return
+        val ourMilitaryUnits = civView.getUnits().count { !it.isCivilian() }
+        if (ourMilitaryUnits < civView.cities().size) return
         if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
         // For mods we can't check the number of cities, so we will check the population instead.
-        if (civInfo.cities.sumOf { it.population.population } < 12) return // FAR too early for that what are you thinking!
+        if (civView.cities().sumOf { it.getPopulationCount() } < 12) return // FAR too early for that what are you thinking!
 
         //evaluate war
-        val targetCivs = civInfo.getKnownCivs()
+        val targetCivs = civView.getKnownCivs()
             .filterNot {
-                it.isDefeated() || it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it)!!.canDeclareWar()
-                    || it.cities.none { city -> civInfo.hasExplored(city.getCenterTile()) }
+                it.isDefeated() || it == civView || it.cities().isEmpty() || !civView.getDiplomacyManagerWith(it)!!.canDeclareWar()
+                    || it.cities().none { city -> civView.hasExplored(city.getCenterTile()) }
             }
-        // If the AI declares war on a civ without knowing the location of any cities, 
+        // If the AI declares war on a civ without knowing the location of any cities,
         // it'll just keep amassing an army and not sending it anywhere, and end up at a massive disadvantage.
 
         if (targetCivs.none()) return
 
         val targetCivsWithMotivation: List<Pair<Civilization, Float>> = targetCivs
-            .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, 0f)) }
+            .map { Pair(it.getCiv(), hasAtLeastMotivationToAttack(civView.getCiv(), it.getCiv(), 0f)) }
             .filter { it.second > 0 }.toList()
 
-        DeclareWarTargetAutomation.chooseDeclareWarTarget(civInfo, targetCivsWithMotivation)
+        DeclareWarTargetAutomation.chooseDeclareWarTarget(civView, targetCivsWithMotivation)
     }
 
     internal fun offerPeaceTreaty(civInfo: Civilization) {
@@ -503,7 +497,7 @@ object DiplomacyAutomation {
 
         for (tile in nearbyTiles) {
             val unit = tile.militaryUnit ?: continue
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
+            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || !unit.isVisibleTo(civInfo))
                 continue
             nearbyUnitCountByCiv.add(unit.civ, 1)
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())

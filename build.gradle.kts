@@ -180,10 +180,13 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
+        "implementation"(rootProject.libs.gdx.texture.array.batch)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 
         "implementation"(rootProject.libs.purity.annotations)
+        // androidx isn't actually android-specific and core/desktop are safe to depend on it
+        "implementation"(rootProject.libs.androidx.collection)
 
         "api"(rootProject.libs.bundles.ktor.client)
     }

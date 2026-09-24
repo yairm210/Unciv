@@ -50,9 +50,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (city.civ.isCityState)
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
-        for (unique in city.getMatchingUniques(UniqueType.BorderGrowthPercentage))
+        city.forEachMatchingUnique(UniqueType.BorderGrowthPercentage) { unique ->
             if (city.matchesFilter(unique.params[1]))
                 cultureToNextTile *= unique.params[0].toPercent()
+        }
 
         return cultureToNextTile.roundToInt()
     }
@@ -128,9 +129,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         // It becomes an invisible city and weird shit starts happening
         takeOwnership(city.getCenterTile())
 
-        for (tile in city.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
+        // can't take ownership of owned tiles (by other cities)
+        city.getCenterTile().forEachTileInDistance(1, { it.getCity() == null }) { tile ->
             takeOwnership(tile)
+        }
     }
 
     private fun addNewTileWithCulture(): HexCoord? {

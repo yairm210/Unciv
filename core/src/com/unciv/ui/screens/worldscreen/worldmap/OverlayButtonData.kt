@@ -5,10 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.city.City
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
 import com.unciv.models.translations.tr
@@ -22,7 +20,10 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
+import com.unciv.view.TileView
 
 /** Interface for creating floating "action" buttons on tiles */
 interface OverlayButtonData{
@@ -32,7 +33,7 @@ interface OverlayButtonData{
 const val buttonSize = 60f
 const val smallerCircleSizes = 25f
 
-class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitView, Int>, val tile: Tile) :
+class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitView, Int>, val tileView: TileView) :
     OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveHereButton(worldMapHolder)
@@ -57,7 +58,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
         }
 
         val firstUnit = unitToTurnsToDestination.keys.first()
-        val unitIcon = if (unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit.getUnit(), smallerCircleSizes)
+        val unitIcon = if (unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
         else unitToTurnsToDestination.size.tr().toLabel(fontColor = firstUnit.civ().getInnerColor()).apply { setAlignment(
             Align.center) }
             .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ().getOuterColor() }
@@ -68,7 +69,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
+                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, tileView)
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
         }
@@ -77,7 +78,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
 }
 
 // Contains the data required to draw a "swap with" button
-class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : OverlayButtonData {
+class SwapWithOverlayButtonData(val unitView: MapUnitView, val tileView: TileView) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getSwapWithButton(worldMapHolder)
     }
@@ -94,12 +95,12 @@ class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : Ove
             }
         )
 
-        val unitIcon = UnitIconGroup(unitView.getUnit(), smallerCircleSizes)
+        val unitIcon = UnitIconGroup(unitView, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            worldMapHolder.swapMoveUnitToTargetTile(unitView, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
+            worldMapHolder.swapMoveUnitToTargetTile(unitView, tileView)
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
@@ -108,7 +109,7 @@ class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : Ove
 }
 
 // Contains the data required to draw a "connect road" button
-class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : OverlayButtonData {
+class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: TileView) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getConnectRoadButton(worldMapHolder)
     }
@@ -121,20 +122,20 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : 
         }
         )
 
-        val unitIcon = UnitIconGroup(unitView.getUnit(), smallerCircleSizes)
+        val unitIcon = UnitIconGroup(unitView, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         connectRoadButton.addActor(unitIcon)
 
         connectRoadButton.onActivation(UncivSound.Silent) {
-            connectRoadToTargetTile(worldMapHolder, unitView.getUnit(), tile)
+            connectRoadToTargetTile(worldMapHolder, unitView.getUnit(), tileView.position())
         }
         connectRoadButton.keyShortcuts.add(KeyboardBinding.ConnectRoad)
 
         return connectRoadButton
     }
 
-    private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTile: Tile) {
-        selectedUnit.automatedRoadConnectionDestination = targetTile.position
+    private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTilePosition: HexCoord) {
+        selectedUnit.automatedRoadConnectionDestination = targetTilePosition
         selectedUnit.automatedRoadConnectionPath = null
         selectedUnit.action = UnitActionType.ConnectRoad.value
         selectedUnit.automated = true
@@ -151,7 +152,7 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : 
 }
 
 // Contains the data required to draw a "move spy" button
-class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonData {
+class MoveSpyOverlayButtonData(val spyView: SpyView, val cityView: ForeignCityView?) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveSpyButton(worldMapHolder)
     }
@@ -160,7 +161,7 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
         val spyActionButton = Group()
         spyActionButton.setSize(buttonSize, buttonSize)
         spyActionButton.addActor(ImageGetter.getCircle(size = buttonSize))
-        if (city != null) {
+        if (cityView != null) {
             spyActionButton.addActor(
                 ImageGetter.getStatIcon("Movement").apply {
                     name = "Button"
@@ -182,8 +183,8 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
 
         val worldScreen = worldMapHolder.worldScreen
         spyActionButton.onActivation(UncivSound.Silent) {
-            if (city != null) {
-                spy.moveTo(city)
+            if (cityView != null) {
+                spyView.tryMoveTo(cityView)
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
             } else {
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }

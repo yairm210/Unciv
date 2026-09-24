@@ -76,7 +76,7 @@ class TileGroupMap<T: TileGroup>(
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tileView.getTile().tileMap.getUnwrappedPosition(tileGroup.tileView.position())
+                    tileGroup.tileView.getTileMap().getUnwrappedPosition(tileGroup.tileView.position())
                 )
             } else {
                 HexMath.hex2WorldCoords(tileGroup.tileView.position())
@@ -139,7 +139,7 @@ class TileGroupMap<T: TileGroup>(
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups
         // Profiling is a bit iffy if this is actually better but...probably?
-        val sortedGroups = tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
+        val sortedGroups = tileGroups.groupBy { it.tileView.position().x + it.tileView.position().y }
             .entries.sortedByDescending { it.key }.flatMap { it.value }
 
         for (group in sortedGroups) {

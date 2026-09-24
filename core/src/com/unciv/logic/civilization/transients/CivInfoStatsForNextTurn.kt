@@ -35,7 +35,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits, civInfo.state)) {
+        civInfo.forEachMatchingUnique(UniqueType.FreeUnits, civInfo.state) { unique ->
             freeUnits += unique.params[0].toInt()
         }
 
@@ -100,8 +100,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
         fun addMaintenanceUniques(road: TileImprovement, type: UniqueType, state: GameContext) {
-            for (unique in road.getMatchingUniques(type, state))
+            road.forEachMatchingUnique(type, state) { unique ->
                 transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
         }
 
         for (city in civInfo.cities) {
@@ -125,8 +126,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             addMaintenanceUniques(road, UniqueType.ImprovementAllMaintenance, gameContext)
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
+        civInfo.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
             transportationUpkeep.timesInPlace(unique.params[0].toPercent())
+        }
 
         return transportationUpkeep
     }
@@ -157,7 +159,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     fun getUnitSupplyFromPop(): Int {
         var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleset.modOptions.constants.unitSupplyPerPopulation
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
+        civInfo.forEachMatchingUnique(UniqueType.UnitSupplyPerPop) { unique ->
             val applicablePopulation = civInfo.cities
                 .filter { it.matchesFilter(unique.params[2]) }
                 .sumOf { it.population.population / unique.params[1].toInt() }
@@ -183,7 +185,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             if (!otherCiv.isCityState) continue
             if (otherCiv.getDiplomacyManager(civInfo)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
                 continue
-            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
+            civInfo.forEachMatchingUnique(UniqueType.CityStateStatPercent) { unique ->
                 val stats = Stats()
                 stats.add(
                     Stat.valueOf(unique.params[0]),
@@ -202,7 +204,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
-            for (unique in civInfo.getMatchingUniques(UniqueType.ExcessHappinessToGlobalStat)) {
+            civInfo.forEachMatchingUnique(UniqueType.ExcessHappinessToGlobalStat) { unique ->
                 excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toFloat() / 100f * civInfo.getHappiness()))
             }
             statMap.add("Policies", excessHappinessConversion)
@@ -235,8 +237,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
+        civInfo.forEachMatchingUnique(UniqueType.BonusHappinessFromLuxury) { unique ->
             happinessPerUniqueLuxury += unique.params[0].toInt()
+        }
 
         val ownedLuxuries = civInfo.getCivResourceSupply().map { it.resource }
             .filter { it.resourceType == ResourceType.Luxury }
@@ -295,49 +298,53 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     private fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+            civInfo.religionManager.religion!!.founderBeliefUniqueMap.forEachMatchingUnique(
                 UniqueType.StatsFromGlobalCitiesFollowingReligion, civInfo.state
-            ))
+            ) { unique ->
                 statMap.add(
                     "Religion",
                     unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                 )
+            }
 
-            for (unique in civInfo.religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(
+            civInfo.religionManager.religion!!.founderBeliefUniqueMap.forEachMatchingUnique(
                 UniqueType.StatsFromGlobalFollowers, civInfo.state
-            ))
+            ) { unique ->
                 statMap.add(
                     "Religion",
                     unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
                         unique.params[2]
                     ).toFloat() / unique.params[1].toFloat()
                 )
+            }
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {
+        civInfo.forEachMatchingUnique(UniqueType.StatsPerPolicies) { unique ->
             val amount = civInfo.policies.getAdoptedPolicies()
                 .count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
             statMap.add("Policies", unique.stats.times(amount))
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+        civInfo.forEachMatchingUnique(UniqueType.Stats) { unique ->
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
                 statMap.add(unique.getSourceNameForUser(), unique.stats)
+        }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerStat)) {
+        civInfo.forEachMatchingUnique(UniqueType.StatsPerStat) { unique ->
             val amount = civInfo.getStatReserve(Stat.valueOf(unique.params[2])) / unique.params[1].toInt()
             statMap.add("Stats", unique.stats.times(amount))
         }
 
         val statsPerNaturalWonder = Stats(happiness = 1f)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.StatsFromNaturalWonders))
+        civInfo.forEachMatchingUnique(UniqueType.StatsFromNaturalWonders) { unique ->
             statsPerNaturalWonder.add(unique.stats)
+        }
 
         statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
 
         if (statMap.contains(Constants.cityStates)) {
-            for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
+            civInfo.forEachMatchingUnique(UniqueType.BonusStatsFromCityStates) { unique ->
                 val bonusPercent = unique.params[0].toPercent()
                 val bonusStat = Stat.valueOf(unique.params[1])
                 statMap[Constants.cityStates]!![bonusStat] *= bonusPercent

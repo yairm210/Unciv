@@ -1,6 +1,8 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
@@ -13,44 +15,52 @@ import java.awt.GraphicsEnvironment
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.util.Locale
+import org.lwjgl.opengl.GL14
 
 
 class DesktopFont : FontImplementation {
 
+    override fun configureFontTexture(texture: Texture) {
+        // Prefer slightly finer mip levels to sharpen text while retaining trilinear filtering.
+        texture.bind()
+        Gdx.gl.glTexParameterf(texture.glTarget, GL14.GL_TEXTURE_LOD_BIAS, -0.5f)
+    }
+
     private lateinit var font: Font
     private lateinit var metric: FontMetrics
 
+    // Note that these are all size 1
+    private val allFontsCache by lazy {
+        GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts
+    }
+
+    // Keyed by the size-1 font instances, payload size-X derived fonts
+    private val successfulFallbackFonts = LinkedHashMap<Font, Pair<Font, FontMetrics>>()
+
+    // Theoretically needs dispose, it's still the more efficient compromise to keep it for the lifetime
+    private val metricsProbeGraphics =
+        BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR).createGraphics()
+
     override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
-
-        // Mod font
-        if (fontFamilyData.filePath != null)
-        {
-            this.font = createFontFromFile(fontFamilyData.filePath!!, size)
+        font = if (fontFamilyData.filePath != null) {
+            // Mod font
+            createFontFromFile(fontFamilyData.filePath!!, size)
+        } else {
+            // System font
+            Font(fontFamilyData.invariantName, Font.PLAIN, size)
         }
-        // System font
-        else
-        {
-            this.font = Font(fontFamilyData.invariantName, Font.PLAIN, size)
-        }
-
-        val bufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
-        val graphics = bufferedImage.createGraphics()
-        this.metric = graphics.getFontMetrics(font)
-        graphics.dispose()
+        metric = font.getFontMetrics()
     }
 
     private fun createFontFromFile(path: String, size: Int): Font {
         var font: Font
-        try
-        {
+        try {
             // Try to create and register new font
             val fontFile = UncivGame.Current.files.getLocalFile(path).file()
             val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
             font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(size.toFloat())
             ge.registerFont(font)
-        }
-        catch (_: Exception)
-        {
+        } catch (_: Exception) {
             // Fallback to default, if failed.
             font = Font(Fonts.DEFAULT_FONT_FAMILY, Font.PLAIN, size)
         }
@@ -61,41 +71,75 @@ class DesktopFont : FontImplementation {
         return font.size
     }
 
-    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString(), metric.charWidth(char))
+    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString()) { metric.charWidth(char) }
 
-    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString, metric.stringWidth(symbolString))
+    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString) { metric.stringWidth(symbolString) }
 
-    private fun getCharPixmapCommon(symbolString: String, measuredWidth: Int): Pixmap {
-        var width = measuredWidth
-        var height = metric.height
+    private fun getCharPixmapCommon(symbolString: String, measureWidth: (FontMetrics) -> Int): Pixmap {
+        val renderFont: Font
+        val renderMetric: FontMetrics
+        if (font.canDisplayUpTo(symbolString) == -1) {
+            renderFont = font
+            renderMetric = metric
+        } else {
+            val fallback = findFallbackFont(symbolString)
+            renderFont = fallback.first
+            renderMetric = fallback.second
+        }
+
+        var width = measureWidth(renderMetric)
+        var height = renderMetric.height
         if (width == 0) {
             // This happens e.g. for the Tab character
-            height = font.size
+            height = renderFont.size
             width = height
         }
 
         val bi = BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
         val g = bi.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        g.font = font
+        g.font = renderFont
         g.color = Color.WHITE
-        g.drawString(symbolString, 0, metric.leading + metric.ascent)
+        g.drawString(symbolString, 0, renderMetric.leading + renderMetric.ascent)
 
         val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
+        // Mipmaps average RGB as well as alpha. Transparent black around white glyphs
+        // would darken their edges, then alpha blending would attenuate them again.
+        // Keep white RGB at zero coverage, preserving visible colours from colour fonts.
+        // Copy without blending to preserve the RGB of fully transparent pixels.
+        pixmap.blending = Pixmap.Blending.None
         val data = bi.getRGB(0, 0, bi.width, bi.height, null, 0, bi.width)
         for (i in 0 until bi.width) {
             for (j in 0 until bi.height) {
-                pixmap.setColor(Integer.reverseBytes(data[i + (j * bi.width)]))
-                pixmap.drawPixel(i, j)
+                val rgba = Integer.rotateLeft(data[i + (j * bi.width)], 8)
+                pixmap.drawPixel(i, j, if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba)
             }
         }
         g.dispose()
         return pixmap
     }
 
+    private fun Font.getFontMetrics() = metricsProbeGraphics.getFontMetrics(this)
+
+    private fun findFallbackFont(symbolString: String): Pair<Font, FontMetrics> {
+        val candidateFonts = successfulFallbackFonts.keys.asSequence()
+            .plus(allFontsCache.asSequence().filterNot { it in successfulFallbackFonts })
+        for (font in candidateFonts) {
+            if (font.canDisplayUpTo(symbolString) != -1) continue
+            // Found a font that can render this symbol, now
+            // cache a properly sized Font instance and its metrics
+            return successfulFallbackFonts.getOrPut(font) {
+                val sizedFont = font.deriveFont(getFontSize().toFloat()) // The Int overload is for style, not size
+                sizedFont to sizedFont.getFontMetrics()
+            }
+        }
+        return this.font to this.metric // No fallback, use configured font anyway
+    }
+
+    /** This is for the Options dialog user-choice list of fonts */
     override fun getSystemFonts(): Sequence<FontFamilyData> {
-        val cjkLanguage = " CJK " +System.getProperty("user.language").uppercase()
-        return GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.asSequence()
+        val cjkLanguage = " CJK " + System.getProperty("user.language").uppercase()
+        return allFontsCache.asSequence()
             .filter { " CJK " !in it.fontName || cjkLanguage in it.fontName }
             .map { FontFamilyData(it.family, it.getFamily(Locale.ROOT)) }
             .distinctBy { it.invariantName }

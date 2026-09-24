@@ -1,0 +1,287 @@
+package com.unciv.logic.map.pathingmap
+
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
+import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
+
+/**
+ * All the information we need about a route node, crammed into a single Long
+ *
+ * If we avoid passing this to any methods that are erased, such as generics, then we can eliminate
+ * allocations, leading to huge performance improvements.
+ * API oddities:
+ * - Due to the bitfield cramming, extracting the Tile, or ParentTile, requires passing in a TileMap,
+ *   so we can look up the tile from that.
+ *
+ * Squeezing it into a Long requires a lot of careful considerations.  Not only avoiding passing it
+ * to methods with type erasure, but also ensuring that we squeeze everything into 63 bits, and also
+ * fast compatibility with [PrioritizedNode], and also PrioritizedNode's Comparator.
+ * - If we pack the bits just right, then the PrioritizedNode comparator can simply compare the
+ *   entire Long directly.  So we want to store the highest priority values in the most significant
+ *   bits, and the lowest priority values into the least significant bits.
+ * - Packing everything into bits requires careful consideration of ranges, and then also for
+ *   floats, consideration of precision and accuracy.
+ * - PrioritizedNode needs almost all of the values, so we need to make sure everything that is
+ *   needed fits in 63 bits.
+ *
+ * Movement needs to be stored in fixed-point, in a base that can represent increments of 0.1
+ *   move for railroads, and also increments of 1/3 for normal roads, uniquely. Base 30 (10x3) is
+ *   the obvious choice, as it can store both road fractions with no precision loss whatsoever. So
+ *   movement of 3.666 is stored as 110 (3.666*30), and restored as 3.666 (73/30). This can actually
+ *   make the code simpler, as the rounding during conversion eliminates all floating point
+ *   rounding, so we no longer need to worry about [minimumMovementEpsilon][com.unciv.Constants.minimumMovementEpsilon]. The fastest unit in the
+ *   base game is the Missile Cruiser with 7 movement. The fastest LAND units in the base game have
+ *   6 movement.  There are a few techs which can give double movement under specific conditions, so
+ *   we want to allow ~14 movement. Thus, the biggest value we need to store is 420 (14*30), which
+ *   requires 9 bits. (This actually allows movements up to 17, which is nice for mod support).
+ *
+ * Fields, in order from least to highest priority:
+ * - [tileIdx]: the [zeroBasedIndex][com.unciv.logic.map.tile.Tile.zeroBasedIndex], which is trivial to convert to/from [com.unciv.logic.map.tile.Tile] instances.
+ *   Maximum map size is radius 500, or 748501 tiles, so this takes 20 bits.
+ *   Not strictly needed by [RouteNode], but handy.
+ * - [relationshipLevel]: Used as a tie-breaker when pathing through tiles owned by different civs.
+ *   Unowned tiles are considered Allies. Stored as (7-ordinal), so that Ally=0, and is the highest
+ *   priority. In the future, this can be reduced to 2, or even 1 bits, if needed.
+ * - [moveSinceStoppable]: How much movement we would have used this turn, if we had ended a turn
+ *   at the last place we could physically stop at all -- entirely unrelated to damage. 0 whenever
+ *   this tile is itself such a place, which is also (see [canStopOn]) exactly when this tile is
+ *   itself stoppable, so [canStopOn] is derived from this field rather than stored separately.
+ *   This is used to retroactively calculate how far we could have moved if we'd otherwise be
+ *   forced to end our turn on a tile we can't stop on at all (occupied, foreign territory, etc).
+ *   The retreat tile found this way can itself be damaging, but that needs no extra lookup: it's
+ *   always either the current tile (if IT is stoppable -- the only way this field is ever zero)
+ *   or already folded into the current tile's own damagingTiles (if not) -- see
+ *   [AStarPathfinder.calculateNeighborNode]'s `!canMoveTo` case.
+ *   Avoiding damage specifically is a different, harder concern, handled by a genuine on-demand
+ *   backward search (see [AStarPathfinder.findDamageFreeAnchor]) rather than by this field -- see
+ *   the KNOWN LIMITATION note on [AStarPathfinder.calculateNeighborNode] for why. This is stored as
+ *   fixed-point, base 30, in 9 bits.
+ * - [moveUsedThisTurn]: How much movement we have used this turn so far.  This is stored as
+ *   fixed-point, base 30, in 9 bits.
+ * - [turns]: The number of turns used so far. Tiles reachable on the current turn have turns=0. We
+ *   assume a maximum of 64 turns for pathing. If the AStar calculation hits this limit when
+ *   calculating a tile, it simply returns the route to this tile. Which is a surprisingly
+ *   reasonable approximation, in an unreasonable scenario. This requires 6 bits.
+ * - [underestimatedTotal][PrioritizedNode.underestimatedTotal]: How much movement it would take to reach the target from the current tile,
+ *   if all remaining tiles to the target are railroads.  We store this as base-30 fixed point,
+ *   with a maximum value of 819.15 movement used (25.55*64). This takes 14 bits. This is ONLY
+ *   used by PrioritizedNode. This is never zero, which guarantees that an initialized
+ *   PrioritizedNode is never zero... except for the start node in one edge case.
+ * - [parentClockDir]: The clock-direction index (2-12) of the parent tile, relative to this tile. We
+ *   use 14 to represent "no parent tile" (such as for the root node). Since the values are always
+ *   even, we do not store the last bit, so this only takes 3 bits. This is never zero, which
+ *   guarantees that an initialized RouteNode is never zero.
+ * - [canStopOn]: True if the unit can end turn on the tile, or it's multiple turns away. Derived
+ *   from [moveSinceStoppable] being zero rather than stored as its own bit (see its docs above) --
+ *   this used to be a separate bit here, freed up once that invariant was established.
+ * - [endTurnWithoutMoreDamage]: True if THIS tile itself does NOT cause end-turn damage, regardless
+ *   of whether we actually ended a turn on it. Unlike [damagingTiles] (which only tallies damage
+ *   actually taken, i.e. only increments on tiles a turn ended on), this is set unconditionally for
+ *   every tile, including ones merely passed through -- letting a cheap single backward pass over
+ *   the route (see [PathingMap.pathAsListNoDamage]) tell a genuine "turns" boundary apart from a
+ *   tile that merely happens to be reachable within the same nominal turn number, without
+ *   recomputing anything, and letting [AStarPathfinder.findDamageFreeAnchor] check a candidate
+ *   anchor's own damage status without recomputing [AStarPathfinder.endTurnDamage] either.
+ * - `padding`: In a RouteNode, the other remaining 12 bits of underestimatedTotal just hold zeroes,
+ *   for now.
+ * - [damagingTiles]: How many tiles that cause end-turn damage have been crossed to reach this tile.
+ *   This is the absolute highest priority field, so it goes in the most significant bits. So very
+ *   long routes that do not take damage are prioritized over shorter routes that take damage,
+ *   emulating prior behavior, while also allowing cache reuse.  We only store up to 3 damaging
+ *   tiles, so this takes 2 bits.
+ *   KNOWN LIMITATION: being the primary sort key does NOT guarantee the globally minimal
+ *   damagingTiles count on every possible map -- see the comment on
+ *   [AStarPathfinder.calculateNeighborNode] for why (in short: it's a resource-constrained
+ *   shortest path problem, and we keep one label per tile rather than a full Pareto frontier).
+ * - `sign bit`: Zero.  We *could* use it for values, but then we'd have to handle negative values
+ *   in the comparison, which might involve negation and other complexity when reading other
+ *   fields. Far safer and eaiser and faster to just keep it zero.
+ *
+ * Tiles that cannot be pathed to at all store the maximum value in all fields except
+ * zeroBasedIndex.
+ */
+@JvmInline
+@VisibleForTesting
+value class RouteNode(val bits: Long=0L) {
+    constructor(
+        tile: Tile,
+        relationshipLevel: RelationshipLevel,
+        moveSinceStoppable: FixedPointMovement,
+        moveThisTurn: FixedPointMovement,
+        turns: Int,
+        parentTile: Tile,
+        damagingTiles: Int,
+        damaging: Boolean,
+    ) : this(
+        toTileIdxBits(tile) or
+            toRelationshipLevelBits(relationshipLevel) or
+            toMoveSinceStoppableBits(moveSinceStoppable) or
+            toMoveThisTurnBits(moveThisTurn) or
+            toTurnsBits(turns) or
+            toParentClockDirBits(tile, parentTile) or
+            toDamagingTilesBits(damagingTiles) or
+            toDamagingBits(damaging)
+    ) {
+        require(tile.zeroBasedIndex < tile.tileMap.tileList.size) { "tileList ${tile.zeroBasedIndex} exceeds max ${tile.tileMap.tileList.size}" }
+        require(tile.tileMap.tileList.size <= TILE_IDX_LO_MASK) { "tileList ${tile.tileMap.tileList.size} exceeds max $TILE_IDX_LO_MASK" }
+        require(moveSinceStoppable >= 0) { "moveSinceStoppableThisTurn $moveSinceStoppable must be positive" }
+        require(moveSinceStoppable <= MAX_MOVE_THIS_TURN) { "moveSinceStoppableThisTurn $moveSinceStoppable exceeds max $MAX_MOVE_THIS_TURN" }
+        require(moveThisTurn >= 0) { "moveThisTurn $moveThisTurn must be positive" }
+        require(moveThisTurn <= MAX_MOVE_THIS_TURN) { "moveThisTurn $moveThisTurn exceeds max $MAX_MOVE_THIS_TURN" }
+        require(turns >= 0) { "turns $turns must be positive" }
+        require(turns <= MAX_TURNS) { "turns $turns exceeds max $MAX_TURNS" }
+        require(toParentClockDirBits(tile, parentTile) > 0) {"parentClockDir $parentClockDir must be positive"}
+        require(damagingTiles >= 0) { "damagingTiles $damagingTiles must be positive" }
+        require(damagingTiles <= DAMAGE_TILES_LO_MASK) { "damagingTiles $moveThisTurn exceeds max $DAMAGE_TILES_LO_MASK" }
+    }
+
+    val tileIdx: Int get() { require(initialized); return ((bits shr TILE_IDX_OFFSET) and TILE_IDX_LO_MASK).toInt() }
+    @Readonly
+    fun tile(tileMap: TileMap): Tile = tileMap.tileList[tileIdx]
+
+    private val relationshipLevelBits: Long get() {require(initialized); return ((bits shr RELATIONSHIP_LEVEL_OFFSET) and RELATIONSHIP_LEVEL_LO_MASK) }
+    val relationshipLevel: RelationshipLevel get() = RelationshipLevel.entries[MAX_RELATIONSHIP_LEVEL - relationshipLevelBits.toInt()]
+
+    val moveSinceStoppable: FixedPointMovement get() {
+        require(initialized)
+        val bits = ((bits shr MOVE_SINCE_STOPPABLE_OFFSET) and MOVE_SINCE_STOPPABLE_LO_MASK)
+        return FixedPointMovement.fpmFromFixedPointBits(bits.toInt())
+    }
+
+    val moveUsedThisTurn: FixedPointMovement get() {
+        require(initialized)
+        val bits = ((bits shr MOVE_THIS_TURN_OFFSET) and MOVE_THIS_TURN_LO_MASK)
+        return FixedPointMovement.fpmFromFixedPointBits(bits.toInt())
+    }
+
+    val turns: Int get() { require(initialized); return ((bits shr TURNS_OFFSET) and TURNS_LO_MASK).toInt() }
+
+    val parentClockDir: Int get() { require(initialized); return (((bits shr PARENT_TILE_OFFSET) and PARENT_TILE_LO_MASK)*2).toInt() }
+    @Readonly
+    fun parentTile(tileMap: TileMap): Tile {
+        val idx = parentClockDir
+        if (idx == NO_PARENT_TILE_VALUE) return tile(tileMap)
+        return tileMap.getClockPositionNeighborTile(tile(tileMap), idx)!!
+    }
+
+    // See moveSinceStoppable's docs above: it resets to zero exactly when a tile is itself
+    // stoppable, so canMoveTo is derived from it rather than stored as its own bit.
+    val canStopOn: Boolean get() = moveSinceStoppable == FixedPointMovement.FPM_ZERO
+
+    val endTurnWithoutMoreDamage: Boolean get() { require(initialized); return ((bits shr DAMAGING_OFFSET) and 1L) == 0L }
+
+    val damagingTiles: Int get() { require(initialized); return ((bits shr DAMAGE_TILES_OFFSET) and DAMAGE_TILES_LO_MASK).toInt() }
+
+    // parentClockDir can never be 0, so all zeroes means uninitialized
+    val initialized: Boolean get() = bits != 0L
+
+    internal val isNoPathingNode: Boolean get() = moveSinceStoppable.bits == MOVE_SINCE_STOPPABLE_LO_MASK.toInt()
+
+    @Readonly
+    override fun toString() = "RouteNode[tile=$tileIdx, turns=$turns, moveUsedThisTurn=$moveUsedThisTurn]"
+    @Readonly
+    fun toString(tileMap: TileMap) = "RouteNode[tile=${tile(tileMap)}, turns=$turns, moveThisTurn=$moveUsedThisTurn]"
+
+    companion object {
+        // bits 0-19 (20b = 1048576tiles) are the zeroBasedIndex of this tile (radius 500, or approx 1170x896)
+        internal const val TILE_IDX_OFFSET = 0
+        internal const val TILE_IDX_BIT_COUNT = 20
+        internal const val TILE_IDX_LO_MASK = (0x1L shl TILE_IDX_BIT_COUNT) - 1L
+        // bits 20-22 (3b = 8values) are our relationship with the owning civ
+        private const val RELATIONSHIP_LEVEL_OFFSET = TILE_IDX_OFFSET + TILE_IDX_BIT_COUNT
+        private const val RELATIONSHIP_LEVEL_BIT_COUNT = 3
+        private const val RELATIONSHIP_LEVEL_LO_MASK = (0x1L shl RELATIONSHIP_LEVEL_BIT_COUNT) - 1L
+        private const val MAX_RELATIONSHIP_LEVEL = 7
+        @Suppress("unused")
+        private val relationshipReq = require(RelationshipLevel.entries.size == MAX_RELATIONSHIP_LEVEL + 1)
+        // bits 23-31 (9b = 512values = 25.55move) are the base-30 movement used since the last
+        // tile we could physically stop on at all. Zero exactly when this tile is itself such a
+        // place, which is also exactly when canMoveTo is true (see its docs above).
+        private const val MOVE_SINCE_STOPPABLE_OFFSET = RELATIONSHIP_LEVEL_OFFSET + RELATIONSHIP_LEVEL_BIT_COUNT
+        private const val MOVE_SINCE_STOPPABLE_BIT_COUNT = 9
+        private const val MOVE_SINCE_STOPPABLE_LO_MASK = (0x1L shl MOVE_SINCE_STOPPABLE_BIT_COUNT) - 1L
+        // bits 32-40 (9b = 512values = 25.55move) are the base-30 movement used on this turn.
+        private const val MOVE_THIS_TURN_OFFSET = MOVE_SINCE_STOPPABLE_OFFSET + MOVE_SINCE_STOPPABLE_BIT_COUNT
+        private const val MOVE_THIS_TURN_BIT_COUNT = 9
+        private const val MOVE_THIS_TURN_LO_MASK = (0x1L shl MOVE_THIS_TURN_BIT_COUNT) - 1L
+        val MAX_MOVE_THIS_TURN = FixedPointMovement.fpmFromFixedPointBits(MOVE_THIS_TURN_LO_MASK.toInt())
+        // bits 41-46 (6b = 63turns) are the number of turns to get to this tile. 0=This turn.
+        private const val TURNS_OFFSET = MOVE_THIS_TURN_OFFSET + MOVE_THIS_TURN_BIT_COUNT
+        private const val TURNS_BIT_COUNT = 6
+        private const val TURNS_LO_MASK = (0x1L shl TURNS_BIT_COUNT) - 1L
+        const val MAX_TURNS = TURNS_LO_MASK.toInt()
+        const val MAX_VALID_TURNS = MAX_TURNS - 1
+        // [PrioritizedNode] bits 47-60 (14b) are the underestimated total movement from the initial tile toward the target.
+        internal const val UNDERESTIMATED_TOTAL_OFFSET = TURNS_OFFSET + TURNS_BIT_COUNT
+        internal const val UNDERESTIMATED_TOTAL_BIT_COUNT = 14
+        internal const val UNDERESTIMATED_TOTAL_LO_MASK = (0x1L shl  UNDERESTIMATED_TOTAL_BIT_COUNT) - 1L
+        internal const val UNDERESTIMATED_TOTAL_HI_MASK = UNDERESTIMATED_TOTAL_LO_MASK shl UNDERESTIMATED_TOTAL_OFFSET
+        internal val MAX_UNDERESTIMATED_TOTAL = FixedPointMovement.fpmFromFixedPointBits(UNDERESTIMATED_TOTAL_LO_MASK.toInt())
+        // [RouteNode] bits 47-49 (3b = 8values > 6neighbors +1self) are the parent tile clock direction/2+1.  no-Parent is "7", and "0" is never valid
+        private const val PARENT_TILE_OFFSET = UNDERESTIMATED_TOTAL_OFFSET
+        private const val PARENT_TILE_BIT_COUNT = 3
+        private const val PARENT_TILE_LO_MASK = (0x1L shl PARENT_TILE_BIT_COUNT) - 1L
+        private const val NO_PARENT_TILE_BITS = 7L
+        private const val NO_PARENT_TILE_VALUE = 14
+        // [RouteNode] bit 50 tracks whether THIS tile itself is damaging, unconditionally.
+        private const val DAMAGING_OFFSET = PARENT_TILE_OFFSET + PARENT_TILE_BIT_COUNT
+        // [RouteNode] bits 51-60 (10b) are also padding, only used by PrioritizedNode's
+        // underestimatedTotal field.
+        // bits 61-62 (2b = 4turns) are the number of turns ended in damaging tiles.
+        private const val DAMAGE_TILES_OFFSET = UNDERESTIMATED_TOTAL_OFFSET + UNDERESTIMATED_TOTAL_BIT_COUNT
+        private const val DAMAGE_TILES_BIT_COUNT = 2
+        private const val DAMAGE_TILES_LO_MASK = (0x1L shl DAMAGE_TILES_BIT_COUNT) -1L
+        internal const val MAX_DAMAGING_TILES = DAMAGE_TILES_LO_MASK.toInt()
+
+        @Readonly
+        private fun toParentClockDirBits(tile: Tile, parentTile: Tile): Long
+            = (if (tile == parentTile) NO_PARENT_TILE_BITS else tile.tileMap.getNeighborTileClockPosition(tile, parentTile)/2L) shl PARENT_TILE_OFFSET
+        @Pure
+        private fun toMoveThisTurnBits(moveThisTurn: FixedPointMovement): Long
+            = moveThisTurn.bits.toLong() shl MOVE_THIS_TURN_OFFSET
+        @Pure
+        private fun toMoveSinceStoppableBits(moveSinceStoppable: FixedPointMovement): Long
+            = moveSinceStoppable.bits.toLong() shl MOVE_SINCE_STOPPABLE_OFFSET
+        @Readonly
+        private fun toTileIdxBits(tile: Tile): Long
+            = (tile.zeroBasedIndex.toLong() shl TILE_IDX_OFFSET)
+        @Pure
+        private fun toTurnsBits(turns: Int): Long
+            = (turns.toLong() shl TURNS_OFFSET)
+        @Pure
+        private fun toDamagingTilesBits(damagingTiles: Int): Long
+            = (damagingTiles.toLong() shl DAMAGE_TILES_OFFSET)
+        @Pure
+        private fun toDamagingBits(damaging: Boolean): Long
+            = (if (damaging) 1L else 0L) shl DAMAGING_OFFSET
+        @Pure
+        private fun toRelationshipLevelBits(relationshipLevel: RelationshipLevel): Long
+            = (MAX_RELATIONSHIP_LEVEL - relationshipLevel.ordinal).toLong() shl RELATIONSHIP_LEVEL_OFFSET
+
+        @Pure
+        fun noPathingNode(tile: Tile, turn: Int) = RouteNode(
+            tile,
+            RelationshipLevel.Unforgivable,
+            MAX_MOVE_THIS_TURN,
+            MAX_MOVE_THIS_TURN,
+            turn,
+            tile,
+            MAX_DAMAGING_TILES,
+            false,
+        )
+        @Pure
+        fun rootNode(tile: Tile, moveThisTurn: FixedPointMovement) = RouteNode(
+            tile,
+            RelationshipLevel.Favorable, // irrelevant since we start here
+            FixedPointMovement.FPM_ZERO,
+            moveThisTurn,
+            0,
+            tile,
+            0,
+            false, // irrelevant: the root is never a candidate parentTile in pathAsListNoDamage
+        )
+    }
+}

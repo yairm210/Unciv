@@ -8,6 +8,7 @@ coroutines = "1.10.2"
 
 gdx = "1.14.2"
 discord = "v2.0.1"
+textureArrayBatch = "v1.2"
 
 jna = "5.17.0"
 ktor = "3.2.3"
@@ -25,6 +26,8 @@ mockito = "5.20.0"
 ktxCore = "1.16.0"
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
+
+androidxCollection = "1.4.5"
 
 
 [libraries]
@@ -50,6 +53,8 @@ gdx-backend-headless = { group = "com.badlogicgames.gdx", name = "gdx-backend-he
 
 discord = { group = "com.github.MinnDevelopment", name = "java-discord-rpc", version.ref = "discord" }
 
+gdx-texture-array-batch = { group = "com.github.carlislefox", name = "libgdx-texture-array-batch", version.ref = "textureArrayBatch" }
+
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-client-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
@@ -69,6 +74,8 @@ clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt
 
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 jna-platform = { group = "net.java.dev.jna", name = "jna-platform", version.ref = "jna" }
+
+androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "androidxCollection" }
 
 android-ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "ktxCore" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }

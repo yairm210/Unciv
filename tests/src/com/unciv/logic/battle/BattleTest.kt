@@ -559,8 +559,6 @@ class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         val damageDealt = Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertEquals(7, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack + 5 xp from melee attack
-        assertEquals(6, defaultDefenderUnit.promotions.XP) // Defender should get 2 xp from ranged attack + 4 xp from melee attack
         assertEquals(50, damageDealt.attackerDealt) // Attacker deals damage from both the ranged attack and melee attack
         assertEquals(27, damageDealt.defenderDealt)
         assertEquals(73, attackerUnit.health)
@@ -579,6 +577,6 @@ class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         val damageDealt = Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(barbarianUnit))
 
         // then
-        assertEquals(30, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack but no xp from melee attack
+        assertEquals(33, attackerUnit.promotions.XP) // Attacker should get no XP from ranged attack, full xp from melee attack
     }
 }

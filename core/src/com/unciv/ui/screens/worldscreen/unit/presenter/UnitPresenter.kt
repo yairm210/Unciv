@@ -127,7 +127,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         // single selected unit
         if (selectedUnits.size == 1) with(unitTable) {
 
-            unitIconHolder.add(UnitIconGroup(unit.getUnit(), 30f)).pad(5f)
+            unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
 
             for (promotion in unit.getPromotions().getPromotions(true))
                 if (!promotion.hasUnique(UniqueType.NotShownOnWorldScreen))
@@ -156,14 +156,14 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             }
         } else { // multiple selected units
             for (selectedUnitView in selectedUnits)
-                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView.getUnit(), 30f)).pad(5f)
+                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView, 30f)).pad(5f)
         }
     }
 
     @Readonly
     private fun buildNameLabelText(unit: MapUnitView) : String {
         var nameLabelText = unit.displayName().tr(true)
-        if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
+        if (unit.unitHealth < 100) nameLabelText += " (${unit.unitHealth.tr()})"
         return nameLabelText
     }
 

@@ -65,7 +65,7 @@ class ThreatManager(val civInfo: Civilization) {
         val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {
-            for (searchTile in tile.getTilesAtDistance(i)) {
+            tile.forEachTileAtDistance(i) { searchTile ->
                 if (doesTileHaveMilitaryEnemy(searchTile)) {
                     tilesWithEnemyAtDistance.add(Pair(searchTile, i))
                 }
@@ -116,7 +116,7 @@ class ThreatManager(val civInfo: Civilization) {
         val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
 
         for (i in minDistanceToSearch..maxDist) {
-            for (searchTile in tile.getTilesAtDistance(i)) {
+            tile.forEachTileAtDistance(i) { searchTile ->
                 if (doesTileHaveMilitaryEnemy(searchTile)) {
                     tilesWithEnemies.add(searchTile)
                     tileDataTilesWithEnemies.add(Pair(searchTile, i))
@@ -168,7 +168,7 @@ class ThreatManager(val civInfo: Civilization) {
         if (!tile.isVisible(civInfo)) return false
         if (tile.getUnits().any { it.isMilitary()
             && it.civ.isAtWarWith(civInfo)
-            && !it.isInvisible(civInfo) })
+            && it.isVisibleTo(civInfo) })
             return true
         return false
     }

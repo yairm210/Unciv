@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -122,6 +121,7 @@ class GameOptionsTable(
 
         val expander = ExpanderTab(
             "Advanced Settings",
+            icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
             startsOutOpened = gameParameters.enableRandomNationsPool,
             persistenceID = "GameOptionsTable.Advanced"
         ) {
@@ -527,7 +527,7 @@ class GameOptionsTable(
 
         // Create a checkbox for each VictoryType existing
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
-        for ((i, victoryType) in ruleset.victories.values.withIndex()) {
+        for ((i, victoryType) in ruleset.selectableVictories().withIndex()) {
             val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType.name)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
                 if (it) {
@@ -569,7 +569,7 @@ class GameOptionsTable(
         // Remove victory types which are not in the new ruleset, then default to all if none remain
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
-            gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         // Mod choices will change the number of available civs
         val maxMajorCivs = numberOfMajorCivs()
@@ -579,8 +579,10 @@ class GameOptionsTable(
         val maxCityStates = numberOfCityStates()
         if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
         if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
+        if (gameParameters.numberOfCityStates > maxCityStates) gameParameters.numberOfCityStates = maxCityStates
 
         (previousScreen as? NewGameScreen)?.refreshExampleMap()
+        update()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
@@ -593,7 +595,6 @@ class GameOptionsTable(
         val activeMods = gameParameters.getModsAndBaseRuleset()
         UncivGame.Current.translations.translationActiveMods = activeMods
         reloadRuleset()
-        update()
 
         var desiredCiv = ""
         val rng = GameContext(gameInfo = UncivGame.Current.gameInfo).stateBasedRandom("GameOptionsTable.onChooseMod", mod.hashCode())

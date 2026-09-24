@@ -284,14 +284,15 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     private fun getSpreadRange(): Int {
         var spreadRange = 10
 
-        for (unique in city.getMatchingUniques(UniqueType.ReligionSpreadDistance)) {
+        city.forEachMatchingUnique(UniqueType.ReligionSpreadDistance) { unique ->
             spreadRange += unique.params[0].toInt()
         }
 
         val majorityReligion = getMajorityReligion()
         if (majorityReligion != null) {
-            for (unique in majorityReligion.foundingCiv.getMatchingUniques(UniqueType.ReligionSpreadDistance))
+            majorityReligion.foundingCiv.forEachMatchingUnique(UniqueType.ReligionSpreadDistance) { unique ->
                 spreadRange += unique.params[0].toInt()
+            }
         }
 
         return spreadRange
@@ -338,7 +339,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         var pressure = pressureFromAdjacentCities.toFloat()
 
         // Follower beliefs of this religion
-        for (unique in city.getMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) {
+        city.forEachMatchingUnique(UniqueType.NaturalReligionSpreadStrength) { unique ->
             if (pressuredCity.matchesFilter(unique.params[1]))
                 pressure *= unique.params[0].toPercent()
         }
@@ -346,9 +347,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         // Founder beliefs of this religion
         val majorityReligion = getMajorityReligion()
         if (majorityReligion != null) {
-            for (unique in majorityReligion.foundingCiv.getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+            majorityReligion.foundingCiv.forEachMatchingUnique(UniqueType.NaturalReligionSpreadStrength) { unique ->
                 if (pressuredCity.matchesFilter(unique.params[1]))
                     pressure *= unique.params[0].toPercent()
+            }
         }
 
         return pressure.toInt()

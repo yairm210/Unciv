@@ -117,9 +117,7 @@ enum class UniqueType(
     CarryOverFood("[amount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief,
         docDescription = ADDITIVE_BONUS_EXPLANATION),
     FoodConsumptionByPopulation("[relativeAmount]% Food consumption by [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 4.19.10", ReplaceWith("[relativeAmount]% Food consumption by [Specialists] [cityFilter]"), DeprecationLevel.WARNING)
-    FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-
+    
     /// Happiness
     UnhappinessFromCitiesPercentage("[relativeAmount]% unhappiness from the number of cities", UniqueTarget.Global),
     // Todo: capitalization of 'Unhappiness' -> 'unhappiness'
@@ -341,10 +339,12 @@ enum class UniqueType(
     OnlyAvailable("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
         UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Event, UniqueTarget.EventChoice,
+        UniqueTarget.Victory,
         docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
         UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Event, UniqueTarget.EventChoice,
+        UniqueTarget.Victory,
         docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
     CannotBuildBuildings("Cannot build [buildingFilter] buildings", UniqueTarget.Global),
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
@@ -813,14 +813,10 @@ enum class UniqueType(
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     // Supports also stockpileable resources (Gold, Faith, Culture, Science)
-    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
-        docDescription = "Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when above [amount] Happiness'"),
-    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
-        docDescription = "Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when below [amount] Happiness'"),
+    ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    ConditionalWhenBelowAmountStatResource("when below [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     ConditionalWhenBetweenStatResource("when between [amount] and [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier),
-        docDescription = "Stats refers to the accumulated stat, not stat-per-turn." +
-                " Therefore, does not support Happiness." +
-                " 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
+        docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
@@ -1071,7 +1067,8 @@ enum class UniqueType(
             "Note that when Civilopedia runs from main menu, conditionals will be ignored."),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
-    WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation),
+    WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation, UniqueTarget.Victory,
+        docDescription = "Unconditional - it is evaluated while a game is being set up, where there is nothing to evaluate conditionals against."),
 
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),

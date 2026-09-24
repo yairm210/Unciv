@@ -612,14 +612,19 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileMatrix[tileInfo.position.x - leftX][tileInfo.position.y - bottomY] = tileInfo
         }
         for ((index, tileInfo) in values.withIndex()) {
+            tileInfo.tileMap = this
+            tileInfo.zeroBasedIndex = index
+            tileInfo.ruleset = this.ruleset!!
+        }
+        for (tileInfo in values) {
             // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
             // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
             // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
             // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
-            tileInfo.tileMap = this
-            tileInfo.zeroBasedIndex = index
-            tileInfo.ruleset = this.ruleset!!
+            // Similarly, ruleset must be set on ALL tiles before setTerrainTransients runs on ANY tile,
+            // since transient setup can evaluate unique conditionals (e.g. isAdjacentTo) that read
+            // ruleset on neighbor tiles not yet reached in iteration order.
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }

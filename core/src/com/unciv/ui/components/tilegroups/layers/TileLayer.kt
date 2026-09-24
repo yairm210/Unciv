@@ -10,7 +10,6 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 
 abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
 
-    val tile: Tile get() = tileGroup.tileView.getTile()
     val strings: TileSetStrings = tileGroup.tileSetStrings
 
     /** Absolute X of the tile origin in the parent TileMapLayer. 0 until attachTo() is called. */
@@ -79,7 +78,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         return this
     }
 
-    fun isViewable(viewingCiv: CivView) = tileGroup.isViewable(viewingCiv)
+    fun isViewable(viewingCiv: CivView?) = viewingCiv == null || tileGroup.isViewable(viewingCiv)
 
     fun update(viewingCiv: CivView?) {
         doUpdate(viewingCiv)

@@ -142,7 +142,11 @@ object UnitAutomation {
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
+                .maxBy { tile ->
+                    var unexploredCount = 0
+                    tile.forEachTileAtDistance(unit.getVisibilityRange()) { nearbyTile -> if (!nearbyTile.isExplored(unit.civ)) unexploredCount++ }
+                    tile.tileHeight + unexploredCount
+                }
             // Assign each tile a score for "explore value"
             // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
             // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
