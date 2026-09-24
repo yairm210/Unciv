@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
 import com.unciv.models.translations.tr
@@ -23,6 +22,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
 import com.unciv.view.TileView
 
 /** Interface for creating floating "action" buttons on tiles */
@@ -152,7 +152,7 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: Tile
 }
 
 // Contains the data required to draw a "move spy" button
-class MoveSpyOverlayButtonData(val spy: Spy, val cityView: ForeignCityView?) : OverlayButtonData {
+class MoveSpyOverlayButtonData(val spyView: SpyView, val cityView: ForeignCityView?) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveSpyButton(worldMapHolder)
     }
@@ -184,7 +184,7 @@ class MoveSpyOverlayButtonData(val spy: Spy, val cityView: ForeignCityView?) : O
         val worldScreen = worldMapHolder.worldScreen
         spyActionButton.onActivation(UncivSound.Silent) {
             if (cityView != null) {
-                spy.moveTo(cityView.getCity())
+                spyView.tryMoveTo(cityView)
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
             } else {
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }

@@ -297,7 +297,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private fun onSpyRightClicked(spy: Spy) {
-        worldScreen.bottomUnitTable.selectSpy(spy)
+        worldScreen.bottomUnitTable.selectSpy(worldScreen.selectedGameView.getSpyView(spy))
         worldScreen.game.popScreen()
         worldScreen.shouldUpdate = true
     }

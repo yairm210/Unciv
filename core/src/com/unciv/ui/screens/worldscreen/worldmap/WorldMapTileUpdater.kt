@@ -5,12 +5,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
-import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.view.AttackableTileView
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
 
 object WorldMapTileUpdater {
 
@@ -218,7 +218,7 @@ object WorldMapTileUpdater {
         }
     }
 
-    private fun WorldMapHolder.updateTilesForSelectedSpy(spy: Spy) {
+    private fun WorldMapHolder.updateTilesForSelectedSpy(spyView: SpyView) {
         for (group in tileGroups.values) {
             group.layerOverlay.reset()
             if (!group.tileView.isCityCenter())
@@ -226,7 +226,7 @@ object WorldMapTileUpdater {
             group.layerCityButton.moveDown()
         }
         for (city in worldScreen.gameInfo.getCities()) {
-            if (spy.canMoveTo(city)) {
+            if (spyView.getSpy().canMoveTo(city)) {
                 tileGroups[tileMapView.getTile(city.getCenterTile())]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
             }
         }

@@ -8,6 +8,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import yairm210.purity.annotations.Readonly
 
 /** View of a [GameInfo] from the perspective of [viewer]. */
@@ -25,6 +26,7 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
     @Readonly fun getMapUnitView(unit: MapUnit): MapUnitView = MapUnitView(unit, viewer, spectatorMode, this)
     @Readonly fun getForeignCivView(civ: Civilization): ForeignCivView = ForeignCivView(civ, viewer, spectatorMode, this)
     @Readonly fun getDiplomacyManagerView(diplomacyManager: DiplomacyManager): DiplomacyManagerView = DiplomacyManagerView(diplomacyManager, viewer, spectatorMode, this)
+    @Readonly fun getSpyView(spy: Spy): SpyView = SpyView(spy, viewer, spectatorMode, this)
 
     // Data retrieval
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
