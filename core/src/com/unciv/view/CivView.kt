@@ -116,13 +116,15 @@ class CivView(civ: Civilization,
     @Readonly fun calculateScoreBreakdown(): HashMap<String, Double> = civ.calculateScoreBreakdown()
 
     // Actions
-    fun tryDisableCivConstruction(name: String) {
+    fun tryDisableCivConstruction(name: String): Boolean {
         civ.cities.forEach { it.disabledConstructions.add(name) }
         civ.disabledCityConstructions.add(name)
+        return true
     }
-    fun tryEnableCivConstruction(name: String) {
+    fun tryEnableCivConstruction(name: String): Boolean {
         civ.cities.forEach { it.disabledConstructions.remove(name) }
         civ.disabledCityConstructions.remove(name)
+        return true
     }
     fun trySetGoldPercentConvertedToScience(value: Float): Boolean {
         civ.tech.goldPercentConvertedToScience = value

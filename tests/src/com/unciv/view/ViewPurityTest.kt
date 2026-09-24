@@ -30,7 +30,6 @@ class ViewPurityTest {
     private fun isReadonly(function: KFunction<*>): Boolean =
         function.annotations.any { it.annotationClass.qualifiedName == "yairm210.purity.annotations.Readonly" }
 
-    @Ignore("CivView, TradeView and CityConstructionsView have try* action functions but aren't OwnedView yet - fix by converting them, then re-enable")
     @Test
     fun `all functions in non-owned Views are Readonly`() {
         val violations = mutableListOf<String>()

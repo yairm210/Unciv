@@ -7,7 +7,9 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign civilizations. Superclass of [CivView]. */
-open class ForeignCivView(protected open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<Civilization>(civ, viewer, spectatorMode, gameView) {
+open class ForeignCivView(protected open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : OwnedView<Civilization>(civ, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = civ
+
     val civName: String get() = civ.civName
     val civID: String get() = civ.civID
     val gold: Int get() = civ.gold

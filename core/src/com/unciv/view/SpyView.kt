@@ -12,8 +12,6 @@ class SpyView(private val spy: Spy,
     @Readonly internal override fun owner(): Civilization = spy.civInfo
 
     // Navigation
-    @Deprecated("Scheduled for removal")
-    @Readonly fun getSpy(): Spy = spy
     @Readonly fun getCityViewOrNull(): ForeignCityView? = spy.getCityOrNull()?.let { gameView.getForeignCityView(it) }
 
     // Data retrieval

@@ -183,11 +183,13 @@ class CityView(city: City,
         if (!canChangeState()) return null
         return city.cityConstructions.lowerPriority(index)
     }
+    // TODO Citystats being stateful breaks the "stateless" ideal of View API, think about this :/
     fun updateTileStats(): Boolean {
         city.cityStats.updateTileStats()
         return true
     }
 
+    // TODO Citystats being stateful breaks the "stateless" ideal of View API, think about this :/
     fun updateCityStats(): Boolean {
         city.cityStats.update()
         return true
