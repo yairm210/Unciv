@@ -8,23 +8,28 @@ import java.nio.charset.Charset
 object SystemUtils {
 
     /** desktop implementation for [LogBackend.getSystemInfo][com.unciv.utils.LogBackend.getSystemInfo]. */
-    fun getSystemInfo(): String {
-        val builder = StringBuilder()
-
+    fun getSystemInfo() = buildString(256) {
         // Operating system
         val osName = System.getProperty("os.name") ?: "Unknown"
         val isWindows = osName.startsWith("Windows", ignoreCase = true)
-        builder.append("OS: $osName")
+        append("OS: ").append(osName)
         if (!isWindows) {
-            val osInfo = listOfNotNull(System.getProperty("os.arch"), System.getProperty("os.version")).joinToString()
-            if (osInfo.isNotEmpty()) builder.append(" ($osInfo)")
+            val arch = System.getProperty("os.arch")
+            val ver = System.getProperty("os.version")
+            if (arch != null || ver != null) {
+                append(" (")
+                if (arch != null) append(arch)
+                if (arch != null && ver != null) append(", ")
+                if (ver != null) append(ver)
+                append(')')
+            }
         }
-        builder.appendLine()
+        appendLine()
 
         // Specific release info
         val osRelease = if (isWindows) getWinVer() else getLinuxDistro()
         if (osRelease.isNotEmpty())
-            builder.appendLine("\t$osRelease")
+            append('\t').appendLine(osRelease)
 
         // Java runtime version
         val javaVendor = System.getProperty("java.vendor")
@@ -34,30 +39,28 @@ object SystemUtils {
                 ?: System.getProperty("java.vm.version")
                 ?: System.getProperty("java.runtime.version")
                 ?: "unknown"
-            builder.appendLine("Java: $javaVendor $specVersion ($detailVersion)")
+            append("Java: ").append(javaVendor).append(' ').append(specVersion).append(" (").append(detailVersion).appendLine(")")
         }
 
         // Packaging type
-        val packageType = when {
-            !isRunFromJar(this) -> "source"
-            System.getProperty("unciv.packr") != null -> "packr"
-            else -> "jar"
-        }
-        builder.appendLine("\tRunning from: $packageType")
+        val packageType = try {
+            when {
+                !isRunFromJar(SystemUtils) -> "source"
+                System.getProperty("unciv.packr") != null -> "packr"
+                else -> "jar"
+            }
+        } catch (_: Throwable) { "unknown" }
+        append("\tRunning from: ").appendLine(packageType)
 
         // Java VM memory limit as set by -Xmx
         val maxMemory = try {
             Runtime.getRuntime().maxMemory() / 1024 / 1024
         } catch (_: Throwable) { -1L }
-        if (maxMemory > 0) {
-            builder.append('\t')
-            builder.appendLine("Max Memory: $maxMemory MB")
-        }
+        if (maxMemory > 0)
+            append("\tMax Memory: ").append(maxMemory).appendLine(" MB")
 
         // Encoding used by Java when not explicitly specified/-able (such as atlas loader)
-        builder.appendLine("System default encoding: " + Charset.defaultCharset().name())
-
-        return builder.toString()
+        append("System default encoding: ").appendLine(Charset.defaultCharset().name())
     }
 
     /** Kludge to get the important Windows version info (no easier way than the registry AFAIK)
@@ -73,7 +76,7 @@ object SystemUtils {
             """reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v DisplayVersion"""
         )
 
-        val entries: Map<String,String> = try {
+        val entries: Map<String, String> = try {
             val process = Runtime.getRuntime().exec(winVerCommand)
             process.waitFor()
             val output = process.inputStream.readAllBytes().toString(Charset.defaultCharset())
@@ -87,7 +90,7 @@ object SystemUtils {
             goodLines.map { it.split("REG_SZ") }
                 .filter { it.size == 2 }
                 .associate { it[0].trim() to it[1].trim() }
-        } catch (_: Throwable) { mapOf() }
+        } catch (_: Throwable) { return "" }
 
         if ("ProductName" !in entries) return ""
 
@@ -107,9 +110,8 @@ object SystemUtils {
                 .map { it.split('=') }
                 .filter { it.size == 2 }
                 .associate { it[0] to it[1].removeSuffix("\"").removePrefix("\"") }
-        } catch (_: Throwable) { mapOf() }
+        } catch (_: Throwable) { return "" }
         if ("NAME" !in osRelease) return ""
         return osRelease["PRETTY_NAME"] ?: "${osRelease["NAME"]} ${osRelease["VERSION"]}"
     }
-
 }
