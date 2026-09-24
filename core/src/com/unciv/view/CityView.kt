@@ -183,9 +183,15 @@ class CityView(city: City,
         if (!canChangeState()) return null
         return city.cityConstructions.lowerPriority(index)
     }
-    fun updateTileStats() = city.cityStats.updateTileStats()
+    fun updateTileStats(): Boolean {
+        city.cityStats.updateTileStats()
+        return true
+    }
 
-    fun updateCityStats() = city.cityStats.update()
+    fun updateCityStats(): Boolean {
+        city.cityStats.update()
+        return true
+    }
     fun tryRenameCity(name: String): Boolean {
         if (!canChangeState()) return false
         city.name = name
@@ -216,29 +222,35 @@ class CityView(city: City,
         city.sellBuilding(construction)
         return true
     }
-    fun tryMoveEntryToTop(index: Int) {
-        if (!canChangeState()) return
+    fun tryMoveEntryToTop(index: Int): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.moveEntryToTop(index)
+        return true
     }
-    fun tryMoveEntryToEnd(index: Int) {
-        if (!canChangeState()) return
+    fun tryMoveEntryToEnd(index: Int): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.moveEntryToEnd(index)
+        return true
     }
-    fun tryAddToQueueConstruction(construction: IConstruction, addToTop: Boolean = false) {
-        if (!canChangeState()) return
+    fun tryAddToQueueConstruction(construction: IConstruction, addToTop: Boolean = false): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.addToQueue(construction, addToTop = addToTop)
+        return true
     }
-    fun tryRemoveAllByName(name: String) {
-        if (!canChangeState()) return
+    fun tryRemoveAllByName(name: String): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.removeAllByName(name)
+        return true
     }
-    fun tryDisableConstruction(name: String) {
-        if (!canChangeState()) return
+    fun tryDisableConstruction(name: String): Boolean {
+        if (!canChangeState()) return false
         city.disabledConstructions.add(name)
+        return true
     }
-    fun tryEnableConstruction(name: String) {
-        if (!canChangeState()) return
+    fun tryEnableConstruction(name: String): Boolean {
+        if (!canChangeState()) return false
         city.disabledConstructions.remove(name)
+        return true
     }
     fun tryReassignPopulation(resetLocked: Boolean = false): Boolean {
         if (!canChangeState()) return false

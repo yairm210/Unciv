@@ -31,7 +31,7 @@ object TileDescription {
             var cityString = cityView.name.tr()
             if (isViewableToPlayer) cityString += " (${cityView.getHealth()})"
             lineList += FormattedLine(cityString)
-            if (DebugUtils.VISIBLE_MAP || viewingCiv != null && cityView.isOwnedBy(viewingCiv)
+            if (DebugUtils.VISIBLE_MAP || viewingCiv != null && cityView.isOwnedByViewer()
                     && (spyCity == null || spyCity == cityView))
                 lineList += cityView.getProductionMarkup()
         }

@@ -8,6 +8,5 @@ abstract class OwnedView<T>(wrapped: T, viewer: Civilization, spectatorMode: Boo
     GameBasedView<T>(wrapped, viewer, spectatorMode, gameView) {
     @Readonly internal abstract fun owner(): Civilization
 
-    @Readonly fun isOwnedBy(foreignCivView: ForeignCivView): Boolean = owner() === foreignCivView.unwrap()
     @Readonly fun isOwnedByViewer(): Boolean = owner() === viewer
 }
