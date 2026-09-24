@@ -225,9 +225,11 @@ object WorldMapTileUpdater {
                 group.layerImprovement.dimImprovement(true)
             group.layerCityButton.moveDown()
         }
-        for (city in worldScreen.gameInfo.getCities()) {
-            if (spyView.getSpy().canMoveTo(city)) {
-                tileGroups[tileMapView.getTile(city.getCenterTile())]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+        for (foreignCivView in worldScreen.selectedGameView.civView.getKnownCivs()) {
+            for (cityView in foreignCivView.cities()) {
+                if (spyView.canMoveTo(cityView)) {
+                    tileGroups[cityView.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+                }
             }
         }
     }
