@@ -1,10 +1,13 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.utils.isRunFromJar
 import java.nio.charset.Charset
 
+/** Helper for CrashScreen, desktop only */
 object SystemUtils {
 
+    /** desktop implementation for [LogBackend.getSystemInfo][com.unciv.utils.LogBackend.getSystemInfo]. */
     fun getSystemInfo(): String {
         val builder = StringBuilder()
 
@@ -33,6 +36,14 @@ object SystemUtils {
                 ?: "unknown"
             builder.appendLine("Java: $javaVendor $specVersion ($detailVersion)")
         }
+
+        // Packaging type
+        val packageType = when {
+            !isRunFromJar(this) -> "source"
+            System.getProperty("unciv.packr") != null -> "packr"
+            else -> "jar"
+        }
+        builder.appendLine("\tRunning from: $packageType")
 
         // Java VM memory limit as set by -Xmx
         val maxMemory = try {
