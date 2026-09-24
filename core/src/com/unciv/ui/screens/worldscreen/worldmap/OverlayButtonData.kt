@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.city.City
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
@@ -22,6 +21,7 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 
@@ -152,7 +152,7 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: Tile
 }
 
 // Contains the data required to draw a "move spy" button
-class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonData {
+class MoveSpyOverlayButtonData(val spy: Spy, val cityView: ForeignCityView?) : OverlayButtonData {
     override fun createButton(worldMapHolder: WorldMapHolder): Actor {
         return getMoveSpyButton(worldMapHolder)
     }
@@ -161,7 +161,7 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
         val spyActionButton = Group()
         spyActionButton.setSize(buttonSize, buttonSize)
         spyActionButton.addActor(ImageGetter.getCircle(size = buttonSize))
-        if (city != null) {
+        if (cityView != null) {
             spyActionButton.addActor(
                 ImageGetter.getStatIcon("Movement").apply {
                     name = "Button"
@@ -183,8 +183,8 @@ class MoveSpyOverlayButtonData(val spy: Spy, val city: City?) : OverlayButtonDat
 
         val worldScreen = worldMapHolder.worldScreen
         spyActionButton.onActivation(UncivSound.Silent) {
-            if (city != null) {
-                spy.moveTo(city)
+            if (cityView != null) {
+                spy.moveTo(cityView.getCity())
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
             } else {
                 worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
