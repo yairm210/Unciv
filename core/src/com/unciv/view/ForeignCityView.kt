@@ -1,6 +1,5 @@
 package com.unciv.view
 
-import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
@@ -91,8 +90,4 @@ open class ForeignCityView(internal open val city: City,
 
     /** Wraps [city] as a [CityCombatantView] for battle purposes. */
     @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, viewer, spectatorMode, gameView)
-
-    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
-    fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
-        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 }

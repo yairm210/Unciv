@@ -1,6 +1,8 @@
 package com.unciv.view
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
@@ -296,5 +298,9 @@ class CityView(city: City,
         city.reassignPopulation()
         return true
     }
+
+    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done. */
+    fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
+        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 
 }

@@ -341,7 +341,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val (damageToDefender, damageToAttacker) = when (attacker) {
             is MapUnitCombatantView -> attacker.getUnitView().tryGetMapUnitView()!!.attackOrNuke(attackableTileView)
-            is CityCombatantView -> attacker.getCityView().tryBombard(attackableTileView)
+            is CityCombatantView -> attacker.getCityView().tryGetCityView()!!.tryBombard(attackableTileView)
         }
 
         worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)

@@ -43,7 +43,7 @@ class ViewPurityTest {
             fail("Found ${violations.size} non-@Readonly function(s) in non-owned Views:\n" + violations.joinToString("\n"))
     }
 
-    @Ignore("CityView.tryRaisePriority/tryLowerPriority return Int?, ForeignCityView.tryBombard/MapUnitView.attackOrNuke return Battle.DamageDealt - fix by returning Boolean, then re-enable")
+    @Ignore("CityView.tryRaisePriority/tryLowerPriority return Int?, CityView.tryBombard/MapUnitView.attackOrNuke return Battle.DamageDealt - fix by returning Boolean, then re-enable")
     @Test
     fun `non-Readonly functions in owned Views always return Boolean`() {
         val violations = mutableListOf<String>()
@@ -57,6 +57,19 @@ class ViewPurityTest {
         }
         if (violations.isNotEmpty())
             fail("Found ${violations.size} non-Boolean-returning non-@Readonly function(s) in owned Views:\n" + violations.joinToString("\n"))
+    }
+
+    @Test
+    fun `all functions in Foreign-prefixed Views are Readonly`() {
+        val violations = mutableListOf<String>()
+        for (kClass in findViewClasses().filter { it.simpleName?.startsWith("Foreign") == true }) {
+            for (function in functionsToCheck(kClass)) {
+                if (!isReadonly(function))
+                    violations += "${kClass.simpleName}.${function.name} is a Foreign-prefixed View, but is not marked @Readonly"
+            }
+        }
+        if (violations.isNotEmpty())
+            fail("Found ${violations.size} non-@Readonly function(s) in Foreign-prefixed Views:\n" + violations.joinToString("\n"))
     }
 
     /** Finds every [View] subclass declared directly in the `com.unciv.view` package (this is a flat package, no sub-packages). */
