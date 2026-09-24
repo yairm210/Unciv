@@ -804,7 +804,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         barbarians.setTransients(this)
 
-        guaranteeUnitPromotions()
         migrateToTileHistory()
         migrateGreatGeneralPools()
         ensureUnitIds()
