@@ -1,5 +1,7 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
@@ -57,7 +59,7 @@ enum class Proximity : IsPartOfGameInfoSerialization {
     Distant
 }
 
-class Civilization : IsPartOfGameInfoSerialization {
+class Civilization : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -297,7 +299,21 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Deep clone an ArrayList of [DiscoveredInvisibleUnitMemory]s. */
     @Readonly private fun ArrayList<DiscoveredInvisibleUnitMemory>.copyDiscoveredInvisibleUnitMemories() = ArrayList(this.map { it.clone() })
     /** @see DiscoveredInvisibleUnitMemory */
-    var discoveredInvisibleUnitTiles = ArrayList<DiscoveredInvisibleUnitMemory>()
+    var discoveredInvisibleUnitMemories = ArrayList<DiscoveredInvisibleUnitMemory>()
+
+    override fun write(json: Json) = json.writeFields(this)
+
+    override fun read(json: Json, jsonData: JsonValue) {
+        if (jsonData.get("discoveredInvisibleUnitMemories") == null) {
+            val oldNode = jsonData.get("discoveredInvisibleUnitTiles")
+            // Guard against a null-valued old node: renaming it in place would otherwise
+            // overwrite the non-null discoveredInvisibleUnitMemories field with null,
+            // causing an NPE later in updateViewableInvisibleTiles.
+            if (oldNode != null && !oldNode.isNull)
+                oldNode.name = "discoveredInvisibleUnitMemories"
+        }
+        json.readFields(this, jsonData)
+    }
 
     var hasMovedAutomatedUnits = false
 
@@ -379,7 +395,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copyAttackMemories()
-        toReturn.discoveredInvisibleUnitTiles = discoveredInvisibleUnitTiles.copyDiscoveredInvisibleUnitMemories()
+        toReturn.discoveredInvisibleUnitMemories = discoveredInvisibleUnitMemories.copyDiscoveredInvisibleUnitMemories()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()

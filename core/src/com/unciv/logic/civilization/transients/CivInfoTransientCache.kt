@@ -155,7 +155,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Rebuilds [Civilization.viewableInvisibleUnitsTiles], which holds only *live* detector
      *  visibility - i.e. what a currently-viewable tile's [UniqueType.CanSeeInvisibleUnits] uniques
      *  can detect there right now. Remembered (fog-of-war) visibility of individually discovered
-     *  invisible units is tracked separately in [Civilization.discoveredInvisibleUnitTiles] and is
+     *  invisible units is tracked separately in [Civilization.discoveredInvisibleUnitMemories] and is
      *  checked directly against that list in [MapUnit.isVisibleTo] - it is intentionally kept out of
      *  this map so that one discovered unit's tile-wide detector filter can never make a different,
      *  undiscovered invisible unit on the same tile visible. */
@@ -170,22 +170,41 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 newViewableInvisibleTiles.getOrPut(tile) { HashSet() }.addAll(visibleUnitFilters)
             }
         }
-        civInfo.discoveredInvisibleUnitTiles.removeAll { memory ->
+        civInfo.discoveredInvisibleUnitMemories.removeAll { memory ->
             // The unit isn't stored directly (it needs to persist through save/load), so re-resolve
-            // it from its last-known tile by id each time, and drop the memory once it no longer holds.
+            // it from its last-known tile by id each time, and drop the memory once it no longer holds
+            // there. This is deliberate: a discovered unit stays visible only until it moves off the
+            // tile it was last (re-)registered on and isn't re-registered - see
+            // addDiscoveredInvisibleUnitTile. Letting the memory silently follow the unit instead would
+            // grant unintended permanent x-ray tracking, and would let it wrongly reveal a *different*
+            // invisible unit that later occupies the old tile.
             val lastKnownTile = civInfo.gameInfo.tileMap[memory.tilePosition]
             lastKnownTile.getUnits().none { it.id == memory.unitId && !it.isDestroyed }
         }
+        // O(1) lookup for MapUnit.isVisibleTo(), which runs on a very hot path (every render frame,
+        // for every unit). discoveredInvisibleUnitMemories holds at most one entry per unitId (see
+        // addDiscoveredInvisibleUnitTile), so this map is a faithful, loss-free index of it - rebuilt
+        // here rather than scanned with `.any {}` on every visibility check.
+        discoveredInvisibleUnitPositions = civInfo.discoveredInvisibleUnitMemories
+            .associate { it.unitId to it.tilePosition }
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
+
+    /** O(1) index of [Civilization.discoveredInvisibleUnitMemories], keyed by [MapUnit.id], rebuilt
+     *  in [updateViewableInvisibleTiles]. Used by [MapUnit.isVisibleTo] instead of scanning the list. */
+    var discoveredInvisibleUnitPositions: Map<Int, HexCoord> = emptyMap()
 
     fun addDiscoveredInvisibleUnitTile(unit: MapUnit, tile: Tile) {
         // Replace any existing memory of this unit (it may have moved) rather than accumulating
         // duplicates. No rebuild of viewableInvisibleUnitsTiles is needed here: remembered-unit
-        // visibility is read straight off discoveredInvisibleUnitTiles by MapUnit.isVisibleTo(),
-        // matching both unitId and tilePosition, so it stays independent of live detector filters.
-        civInfo.discoveredInvisibleUnitTiles.removeAll { it.unitId == unit.id }
-        civInfo.discoveredInvisibleUnitTiles.add(Civilization.DiscoveredInvisibleUnitMemory(unit.id, tile.position))
+        // visibility is read by MapUnit.isVisibleTo() from the discoveredInvisibleUnitPositions
+        // index (updated below), matching both unitId and tilePosition, so it stays independent
+        // of live detector filters.
+        civInfo.discoveredInvisibleUnitMemories.removeAll { it.unitId == unit.id }
+        civInfo.discoveredInvisibleUnitMemories.add(Civilization.DiscoveredInvisibleUnitMemory(unit.id, tile.position))
+        // Keep the O(1) lookup cache in sync immediately, rather than waiting for the next
+        // updateViewableInvisibleTiles() pass - isVisibleTo() may be checked before then.
+        discoveredInvisibleUnitPositions = discoveredInvisibleUnitPositions + (unit.id to tile.position)
     }
 
     var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()

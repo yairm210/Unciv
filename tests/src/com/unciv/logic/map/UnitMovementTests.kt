@@ -511,6 +511,43 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun discoveredInvisibleUnitRemainsVisibleAfterMoving() {
+        // Regression test for the discovery memory logic in CivInfoTransientCache.updateViewableInvisibleTiles():
+        // as long as a discovered invisible unit keeps being re-registered (e.g. by a live detector)
+        // as it moves, it must stay visible at each new tile - and the stale memory of its old tile
+        // must not linger to wrongly reveal whatever else later stands there.
+        val otherCiv = testGame.addCiv()
+        val ourTile = testGame.tileMap[0, 0]
+        val oldTile = ourTile.neighbors.first()
+        val newTile = oldTile.neighbors.first { it != ourTile }
+        val hiddenUnit = testGame.addDefaultMeleeUnitWithUniques(otherCiv, oldTile, UniqueType.Invisible.text)
+        testGame.addUnit("Warrior", civInfo, ourTile)
+
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, oldTile)
+        civInfo.cache.updateViewableTiles()
+        assertTrue("The unit must be visible right after being discovered", hiddenUnit.isVisibleTo(civInfo))
+
+        // The unit moves, and is re-detected at its new tile (e.g. by a live detector or a fresh
+        // discovery), so it must remain visible there too.
+        hiddenUnit.movement.moveToTile(newTile)
+        civInfo.cache.addDiscoveredInvisibleUnitTile(hiddenUnit, newTile)
+        civInfo.cache.updateViewableTiles()
+        assertTrue("The unit must remain visible after moving and being re-detected",
+            hiddenUnit.isVisibleTo(civInfo))
+
+        // The old memory must be gone, not just superseded: re-registering hiddenUnit on newTile
+        // must have dropped its old memory entry pointing at oldTile, rather than leaving it
+        // around as a second, stale entry. isVisibleTo() matches purely by unit id, so a
+        // different invisible unit occupying oldTile could never be revealed by this stale entry
+        // regardless of whether it was actually cleaned up - checking the memory itself is
+        // required to actually exercise the cleanup.
+        assertEquals("The memory of hiddenUnit must point at its new tile, not linger on the old one",
+            newTile.position, civInfo.cache.discoveredInvisibleUnitPositions[hiddenUnit.id])
+        assertEquals("hiddenUnit must have exactly one remembered position, not one per tile it has occupied",
+            1, civInfo.discoveredInvisibleUnitMemories.count { it.unitId == hiddenUnit.id })
+    }
+
+    @Test
     fun `hidden capturable civilian is captured without being revealed as a blocker`() {
         val otherCiv = testGame.addCiv()
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)

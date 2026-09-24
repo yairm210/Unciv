@@ -488,8 +488,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (!hasActiveInvisibilityUnique(civ)) return tile.isVisible(civ)
         // A remembered invisible unit remains visible through fog of war, but only the specific unit
         // that was discovered - not any other invisible unit that happens to share its tile. Match
-        // directly against the stored memory rather than a tile-wide filter.
-        if (civ.discoveredInvisibleUnitTiles.any { it.unitId == id && it.tilePosition == tile.position })
+        // directly against the stored memory (via an O(1) index, since this runs on a hot path)
+        // rather than a tile-wide filter.
+        if (civ.cache.discoveredInvisibleUnitPositions[id] == tile.position)
             return true
         // Live detectors reveal matching invisible units only while their tile is actively visible.
         // The tile check also prevents a stale transient detector entry from leaking through fog.

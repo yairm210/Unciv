@@ -25,6 +25,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
         fun getBatch(size: Int = 1000): Batch = try {
             TextureArraySpriteBatch(size)
         } catch (ex: Exception) {
+            Log.error("Failed to create TextureArraySpriteBatch, falling back to SpriteBatch", ex)
             SpriteBatch(size)
         }
     }
