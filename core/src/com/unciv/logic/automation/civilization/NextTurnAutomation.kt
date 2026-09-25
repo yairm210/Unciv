@@ -403,7 +403,12 @@ object NextTurnAutomation {
 
     private fun automateUnits(civInfo: Civilization) {
         val isAtWar = civInfo.isAtWar()
-        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
+        // Instances present when the pass starts. addUnit/removeUnit replace UnitManager's list,
+        // so units acquired later must not extend this pass. The instances stay mutable:
+        // capturedBy changes owner on the same object, and an earlier action can do that to a
+        // later one, so ownership and destruction are checked at each dispatch, not before the loop.
+        val unitsAtStart = civInfo.units.getCivUnits().toList()
+        fun unitsInPriorityOrder() = unitsAtStart.sortedBy { unit -> getUnitPriority(unit, isAtWar) }
 
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
@@ -414,22 +419,34 @@ object NextTurnAutomation {
             }
             .toList()
 
-        for (unit in sortedUnits) applyPromotions(unit)
-        for (unit in sortedUnits) {
+        for (unit in unitsInPriorityOrder()) {
+            if (!isStillOurUnit(unit, civInfo)) continue
+            applyPromotions(unit)
+        }
+        for (unit in unitsInPriorityOrder()) {
             // settlers need to move before automateSettlerEscorting(),
             // move spaceship parts before that to make sure we're not blocking them
-            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) continue
+            if (!isStillOurUnit(unit, civInfo)) continue
+            UnitAutomation.automateUnitMoves(unit)
         }
 
         if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
 
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
 
-        for (unit in sortedUnits) {
+        for (unit in unitsInPriorityOrder()) {
             // spaceship parts and settlers have already moved
-            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) continue
+            if (!isStillOurUnit(unit, civInfo)) continue
+            UnitAutomation.automateUnitMoves(unit)
         }
     }
+
+    /** False once an earlier action in this pass has captured or destroyed [unit]. */
+    @Readonly
+    private fun isStillOurUnit(unit: MapUnit, civInfo: Civilization) =
+        !unit.isDestroyed && unit.civ == civInfo
 
     internal fun applyPromotions(unit: MapUnit) {
         // Restrict Human automated units from promotions via setting

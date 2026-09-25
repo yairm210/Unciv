@@ -425,6 +425,7 @@ class UnitMovement(val unit: MapUnit) {
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
      * allowed position. Does not teleport transported units on their own, these are teleported when
      * the transporting unit is moved.
+     * Does not capture enemy civilians; this is not an attack.
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
@@ -437,11 +438,22 @@ class UnitMovement(val unit: MapUnit) {
         if (canPassThrough(unit.getTile())
             && !isCityCenterCannotEnter(unit.getTile()))
             return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
+
+        // Forced displacement is not an attack. [canMoveTo] treats an enemy civilian as enterable so
+        // ordinary movement can capture them, but accepting that tile here would capture them as a
+        // side effect of borders, trades, or diplomacy, and can leave the victim's old owner
+        // automating an instance that now belongs to Barbarians. Friendly civilians still stack.
+        fun isDisplacementDestination(tile: Tile): Boolean {
+            if (!canMoveTo(tile)) return false
+            val civilian = tile.civilianUnit ?: return true
+            return !unit.civ.isAtWarWith(civilian.civ)
+        }
+
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
                 // can the unit be placed safely there? Is tile either unowned or friendly?
-                .filter { canMoveTo(it) && it.getOwner()?.isAtWarWith(unit.civ) != true }
+                .filter { isDisplacementDestination(it) && it.getOwner()?.isAtWarWith(unit.civ) != true }
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
@@ -450,7 +462,7 @@ class UnitMovement(val unit: MapUnit) {
         val origin = unit.getTile()
         if (allowedTile == null)
             allowedTile = unit.civ.cities.flatMap { it.getTiles() }
-                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull{ canMoveTo(it) }
+                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull { isDisplacementDestination(it) }
 
         if (allowedTile != null) {
             unit.removeFromTile() // we "teleport" them away
