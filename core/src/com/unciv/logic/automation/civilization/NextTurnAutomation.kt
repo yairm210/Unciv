@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import com.unciv.view.GameView
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 
@@ -41,17 +42,19 @@ object NextTurnAutomation {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
+        val civView = GameView(civInfo.gameInfo, civInfo).civView
+
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
-                DiplomacyAutomation.declareWar(civInfo)
+                DiplomacyAutomation.declareWar(civView)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.askForHelp(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
             }
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
 
@@ -81,7 +84,7 @@ object NextTurnAutomation {
         automateUnits(civInfo)  // this is the most expensive part
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 // Can only be done now, as the prophet first has to decide to found/enhance a religion
                 ReligionAutomation.chooseReligiousBeliefs(civInfo)
             }

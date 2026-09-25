@@ -1,3 +1,29 @@
+## 4.22.3
+
+Massive rendering lag improvement!!
+
+ANRs reduction when switching screens
+
+By SomeTroglodyte:
+- Disallow spectators to rename units
+- Allow unit rename to "reset" to base unit name
+
+## 4.22.2
+
+Spectator deselect sets UI correctly
+.
+Fix defensive pact count motivation clamp - By Angais
+
+By SomeTroglodyte:
+- Fix layout for GPP table  
+- Crash fix for UI race conditions 
+
+fix: discover natural wonders when revealing the entire map - By mvanhorn
+
+Fix mod fonts missing from Font family selection - By ethanstoner
+
+AStar puts correct movement in PathsToTilesWithinTurn - By Ambeco
+
 ## 4.22.1
 
 Fixed crash on "ID from clipboard" when clipboard not set

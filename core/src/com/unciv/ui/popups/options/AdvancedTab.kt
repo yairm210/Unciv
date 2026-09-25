@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
@@ -32,6 +31,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.fonts.ModFonts
 import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.keyShortcuts
@@ -49,7 +49,6 @@ import com.unciv.utils.isRunFromJar
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
-import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -57,12 +56,6 @@ import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.isDirectory
-import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.pathString
 
 internal class AdvancedTab(
     optionsPopup: OptionsPopup
@@ -169,43 +162,14 @@ internal class AdvancedTab(
     }
 
     private fun addFontFamilySelect() {
-        // What both java.awt.Font.createFont and android.graphics.Typeface.createFromFile support:
-        val supportedExtensions = setOf("ttf", "otf")
-
-        /** Build provider for [addAsyncSelectBox]: per-mod scan */
-        @Suppress("NewApi")
-        fun loadModFonts(mod: Path) = flow {
-            if (!mod.isDirectory()) return@flow
-            val fontsPath = mod.resolve("fonts")
-            if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
-            java.nio.file.Files.list(fontsPath).use { stream->
-                for (file in stream) {
-                    if (file.extension.lowercase() !in supportedExtensions) continue
-                    emit(FontFamilyData(
-                        "${file.nameWithoutExtension} (${mod.name})",
-                        file.nameWithoutExtension,
-                        file.pathString
-                    ))
-                }
-            }
-        }.flowOn(Dispatchers.IO)
-
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
         @Suppress("NewApi")
         fun loadFonts() = flow {
             // Add default font
             emit(FontFamilyData.default)
             // List mod fonts
-            val modsDir = UncivGame.Current.files.getModsFolder()
-            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26) {
-                if (modsDir.type() == Files.FileType.External) {
-                    val modNio = modsDir.file().toPath()
-                    java.nio.file.Files.list(modNio).use { stream ->
-                        for (mod in stream)
-                            emitAll(loadModFonts(mod))
-                    }
-                }
-            }
+            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26)
+                emitAll(ModFonts.scan(UncivGame.Current.files.getModsFolder()))
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)

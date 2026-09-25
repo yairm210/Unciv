@@ -33,7 +33,8 @@ class CityOverviewTab(
         iconSize = 50f,  //if you set this too low, there is a chance that the tables will be misaligned
         paddingVert = 5f,
         paddingHorz = 8f,
-        separateHeader = true
+        separateHeader = true,
+        gameInfo = gameInfo
     ) {
         header, details, totals ->
         // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!

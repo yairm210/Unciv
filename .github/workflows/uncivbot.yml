@@ -23,7 +23,7 @@ jobs:
           rm package.json
 
       - name: Create new branch with changes
-        uses: EndBug/add-and-commit@v11 # You can change this to use a specific version.
+        uses: EndBug/add-and-commit@v11
         with:
           new_branch: version_rollout
           message: 'Bump version and create initial changelog entry'

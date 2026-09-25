@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.GameInfo
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -45,7 +46,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     /** Passed to [ISortableGridContentProvider.getEntryActor] where it can be used to define `onClick` actions. */
     private val actionContext: ACT,
     /** Sorting state will be kept here - provide your own e.g. if you want to persist it */
-    private val sortState: ISortState<CT> = SortState(columns.first()),
+    sortState: ISortState<CT>? = null,
     /** Size for header icons - if you set this too low, there is a chance that the tables will be misaligned */
     private val iconSize: Float = 50f,
     /** vertical padding for all Cells */
@@ -54,9 +55,16 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     paddingHorz: Float = 8f,
     /** When `true`, the header row isn't part of the widget but delivered through [getHeader] */
     private val separateHeader: Boolean = false,
+    /** Required only when you override [ISortableGridContentProvider.isVisible] and the override requires it */
+    private val gameInfo: GameInfo? = null,
     /** Called after every update - during init and re-sort */
     private val updateCallback: ((header: Table, details: Table, totals: Table) -> Unit)? = null
 ) : Table(BaseScreen.skin) {
+    // Having this complete as defaulted private val constructor param wouldn't have access to isVisible(GameInfo?)
+    // The alternative to move the extension to a companion would require another kludge - star-projected generics for the interface.
+    private val sortState: ISortState<CT> = sortState ?:
+        SortState(columns.first { it.isVisible(gameInfo) })
+
     /** The direction a column may be sorted in */
     // None is the Natural order of underlying data - only available before using any sort-click
     enum class SortDirection { None, Ascending, Descending }
@@ -81,7 +89,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
 
     /** Provides the header row separately if and only if [separateHeader] is true,
      * e.g. to allow scrolling the content but leave the header fixed
-     * (which will need some column width equalization method).
+     * (which will need some column width equalization method - e.g. in [updateCallback]).
      * @see com.unciv.ui.components.extensions.equalizeColumns
      */
     fun getHeader(): Table {
@@ -98,7 +106,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private val totalsRow = Table(skin)
 
     init {
-        require (!separateHeader || columns.none { it.expandX }) {
+        require (!separateHeader || columns.none { it.isVisible(gameInfo) && it.expandX }) {
             "SortableGrid currently does not support separateHeader combined with expanding columns"
         }
 
@@ -130,6 +138,9 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         updateCallback.invoke(headerRow, details, totalsRow)
     }
 
+    private fun ISortableGridContentProvider<IT, ACT>.isVisible(gameInfo: GameInfo?) =
+        if (gameInfo == null) true else isVisible(gameInfo)
+
     private fun initHeader() {
         // Note: These will scale with GameSettings.fontSizeMultiplier - could be *partly* countered
         // with `toLabel(fontSize = (Constants.defaultFontSize / GUI.getSettings().fontSizeMultiplier).toInt())`
@@ -137,12 +148,15 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         sortSymbols[true] = Fonts.sortDownArrow.toString().toLabel()
 
         for (column in columns) {
+            if (!column.isVisible(gameInfo)) continue
             val element = getHeaderElement(column)
             headerElements[column] = element
             val cell = headerRow.add(element.outerActor)
             element.sizeCell(cell)
             cell.align(column.align).fill(column.fillX, false).expand(column.expandX, false)
         }
+        if (headerElements.isEmpty())
+            throw IllegalStateException("SortableGrid initialized with all columns hidden")
     }
 
     /** Calls [updateHeader] and [updateDetails] but not [updateCallback].
@@ -179,6 +193,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         val cellsToEqualize = mutableListOf<Cell<Actor>>()
         for (item in sortedData) {
             for (column in columns) {
+                if (!column.isVisible(gameInfo)) continue
                 val actor = column.getEntryActor(item, iconSize, actionContext)
                 if (actor == null) {
                     details.add()
@@ -201,6 +216,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
 
     private fun initTotals() {
         for (column in columns) {
+            if (!column.isVisible(gameInfo)) continue
             totalsRow.add(column.getTotalsActor(data)).align(column.align)
                 .fill(column.fillX, false).expand(column.expandX, false)
         }
@@ -254,7 +270,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
      *  Where/how the sort symbol is rendered depends on the type returned by [ISortableGridContentProvider.getHeaderActor].
      *  Instantiate through [getHeaderElement] - can be [EmptyHeaderElement], [LayoutHeaderElement] or [IconHeaderElement].
      */
-    // Note - not an Actor because Actor is not an interface. Otherwise we *could* build a class that **is** an Actor which can be
+    // Note - not an Actor because Actor is not an interface. Otherwise, we *could* build a class that **is** an Actor which can be
     // implemented by any Actor subclass but also carry additional fields and methods - via delegation.
     interface IHeaderElement {
         val outerActor: Actor
