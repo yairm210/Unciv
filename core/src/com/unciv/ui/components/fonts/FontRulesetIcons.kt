@@ -16,6 +16,7 @@ import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.civilopediascreen.CivilopediaImageGetters
 import kotlin.math.ceil
@@ -131,6 +132,8 @@ object FontRulesetIcons {
         spriteBatch.end()
         Gdx.gl.glReadPixels(0, 0, boxWidth, boxHeight, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
+        // Also covers the plain SpriteBatch fallback and framebuffer texture allocation.
+        TextureArraySpriteBatch.invalidateTextureBindings()
 
         return pixmap
     }

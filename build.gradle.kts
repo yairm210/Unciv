@@ -180,7 +180,6 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
-        "implementation"(rootProject.libs.gdx.texture.array.batch)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 

@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.PixmapTextureData
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
 
-/** A font atlas page whose mipmaps are refreshed when a batch binds it for drawing.
+/** A font atlas page whose mipmaps are refreshed before drawing, including cached batch bindings.
  * The packer retains the complete CPU image for context restoration; glyph uploads
  * update only level zero, so multiple labels can share one mipmap regeneration.
  */
@@ -19,6 +20,7 @@ internal class MipmappedFontTexture(
     fun uploadGlyph(pixmap: Pixmap, x: Int, y: Int) {
         // Bypass our draw-time bind hook: adding another glyph must not regenerate
         // mipmaps left dirty by a previous label. The packer already updated pagePixmap.
+        TextureArraySpriteBatch.invalidateTextureBindings()
         super.bind()
         Gdx.gl.glTexSubImage2D(glTarget, 0, x, y, pixmap.width, pixmap.height,
             pixmap.glFormat, pixmap.glType, pixmap.pixels)
@@ -26,13 +28,20 @@ internal class MipmappedFontTexture(
     }
 
     override fun bind() {
+        TextureArraySpriteBatch.invalidateTextureBindings()
         super.bind()
         updateMipmaps()
     }
 
     override fun bind(unit: Int) {
+        TextureArraySpriteBatch.invalidateTextureBindings()
         super.bind(unit)
         updateMipmaps()
+    }
+
+    /** Refresh a cached page only when new glyphs require it, keeping its assigned slot. */
+    fun prepareForDraw(unit: Int) {
+        if (mipmapsDirty) bind(unit)
     }
 
     private fun updateMipmaps() {
