@@ -51,7 +51,7 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
 
                 val visibleStage = Rectangle(
                     currentFrame.left * horizontalRatio,
-                    (contentView.height - currentFrame.bottom)  * verticalRatio,
+                    (contentView.height - currentFrame.bottom) * verticalRatio,
                     currentFrame.width() * horizontalRatio,
                     currentFrame.height() * verticalRatio
                 )
@@ -77,21 +77,29 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     /** This is needed in onCreate _and_ onNewIntent to open links and notifications
      *  correctly even if the app was not running */
     fun setDeepLinkedGame(intent: Intent) {
-        if (intent.action != Intent.ACTION_VIEW) {
-            deepLinkedMultiplayerGame = null
+        val uri: Uri? = when (intent.action) {
+            Intent.ACTION_VIEW -> intent.data
+            null -> intent.getStringExtra("targetUrl")?.let(Uri::parse)
+            else -> {
+                deepLinkedMultiplayerGame = null
+                return
+            }
         }
-        val uri: Uri? = intent.data
+
         val idParam = uri?.getQueryParameter("id") //legacy game url
-        deepLinkedMultiplayerGame = 
+        deepLinkedMultiplayerGame =
             if (idParam != null && idParam.isUUID()) idParam
-            else if (IdChecker.isGameDeepLink(uri.toString())) IdChecker.checkAndReturnUuiId(uri.toString())
+            else if (uri != null && IdChecker.isGameDeepLink(uri.toString()))
+                IdChecker.checkAndReturnUuiId(uri.toString())
             else null
     }
 
     fun isInitializedProxy() = super.isInitialized
 
-    override fun getGcCount(): Int = 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
+    override fun getGcCount(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            Debug.getRuntimeStat("art.gc.gc-count").toInt()
+        else 0
 
     override fun getDefaultLocale(): Locale =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) super.getDefaultLocale()
