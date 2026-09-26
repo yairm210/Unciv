@@ -184,7 +184,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     },
 
     Religion {
-        override fun isVisible(gameInfo: GameInfo) = gameInfo.isReligionEnabled()
+        override fun isVisible(viewingPlayer: CivView) = viewingPlayer.isReligionEnabled()
         override val headerTip = "Majority Religion"
         override fun getHeaderActor(iconSize: Float) = getCircledIcon("ReligionIcons/Religion", iconSize)
         override fun getEntryValue(item: City) = // used only for sorting: followers of our religion
