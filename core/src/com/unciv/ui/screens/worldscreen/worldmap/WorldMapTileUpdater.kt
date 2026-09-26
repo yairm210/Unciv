@@ -131,12 +131,12 @@ object WorldMapTileUpdater {
                     group.layerMisc.overlayTerrain(Color.RED)
                 } else if (unitView.civ().hasExplored(tileView) && tileView.aerialDistanceTo(unitView.getTile()) <= unitView.getRange()*2) {
                     // The tile is within move range
-                    group.layerMisc.overlayTerrain(if (unitView.canMoveTo(tileView)) Color.WHITE else Color.BLUE)
+                    group.layerMisc.overlayTerrain(if (unitView.thinksItCanMoveTo(tileView)) Color.WHITE else Color.BLUE)
                 }
             }
 
             // Highlight tile unit can move to
-            if (unitView.canMoveTo(tileView) ||
+            if (unitView.thinksItCanMoveTo(tileView) ||
                 unitView.isUnknownTileWeShouldAssumeToBePassable(tileView) && !isAirUnit
             ) {
                 if (UncivGame.Current.settings.useCirclesToIndicateMovableTiles) {
@@ -225,11 +225,13 @@ object WorldMapTileUpdater {
                 group.layerImprovement.dimImprovement(true)
             group.layerCityButton.moveDown()
         }
-        for (foreignCivView in worldScreen.selectedGameView.civView.getKnownCivs()) {
-            for (cityView in foreignCivView.cities()) {
-                if (spyView.canMoveTo(cityView)) {
-                    tileGroups[cityView.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
-                }
+        // Use every explored city, not just those of civs the player has met: a spy can also be
+        // moved to an explored city of an unmet civ (see EspionageOverviewScreen's location list
+        // and WorldMapHolder.addMovingSpyOverlay), so restricting this to known civs would leave
+        // such a destination selectable elsewhere but without its cyan move highlight here.
+        for (cityView in worldScreen.selectedGameView.getExploredCities()) {
+            if (spyView.canMoveTo(cityView)) {
+                tileGroups[cityView.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
             }
         }
     }

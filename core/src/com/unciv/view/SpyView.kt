@@ -17,10 +17,16 @@ class SpyView(private val spy: Spy,
     // Data retrieval
     val name: String get() = spy.name
     @Readonly fun getEffectiveRank(): Int = spy.getEffectiveRank()
-    @Readonly fun canMoveTo(foreignCityView: ForeignCityView): Boolean = spy.canMoveTo(foreignCityView.getCity())
+    // Spy.canMoveTo() treats the spy's current city as a valid "move" target (so re-selecting it
+    // is a no-op elsewhere), but at the view level that would let the player click their own spy's
+    // city and call tryMoveTo() on it, which resets its action to Moving and interrupts whatever
+    // it was doing (surveillance, counter-intelligence, etc). Exclude it here.
+    @Readonly fun canMoveTo(foreignCityView: ForeignCityView): Boolean =
+        getCityViewOrNull() != foreignCityView && spy.canMoveTo(foreignCityView.getCity())
 
     // Actions
     fun tryMoveTo(foreignCityView: ForeignCityView?): Boolean {
+        if (foreignCityView != null && !canMoveTo(foreignCityView)) return false
         spy.moveTo(foreignCityView?.getCity())
         return true
     }
