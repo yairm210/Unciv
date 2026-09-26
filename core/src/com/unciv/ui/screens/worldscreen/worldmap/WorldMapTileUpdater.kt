@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.worldmap
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
@@ -17,9 +18,11 @@ object WorldMapTileUpdater {
     private val WorldMapHolder.tileMapView get() = worldScreen.selectedGameView.tileMapView
 
      fun WorldMapHolder.updateTiles(civView: CivView) {
-        // General update of all tiles
-        for (tileGroup in tileGroups.values)
-            tileGroup.update(civView)
+         // General update of all tiles 
+         timeThis("tileGroup.update") {
+             for (tileGroup in tileGroups.values)
+                 tileGroup.update(civView)
+         }
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
