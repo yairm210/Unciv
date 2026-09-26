@@ -33,7 +33,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
-    private var lastViewingCiv: Civilization? = null
 
     private var tileSize = 0f
     private var tileMapWidth = 0f
@@ -290,8 +289,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
             minimapTile.updateBorders().updateActorsIn(borderLayer)
         }
-        
-        lastViewingCiv = viewingCiv
     }
 
 

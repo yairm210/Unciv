@@ -91,7 +91,7 @@ class CityConquestFunctions(val city: City) {
                 city.cityConstructions.removeBuilding(building)
 
             // Check if we exceed MaxNumberBuildable for any buildings
-            for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+            building.forEachMatchingUnique(UniqueType.MaxNumberBuildable, GameContext.EmptyState) { unique ->
                 if (city.civ.cities
                         .count {
                             it.cityConstructions.containsBuildingOrEquivalent(building.name)
@@ -142,7 +142,7 @@ class CityConquestFunctions(val city: City) {
             city.removeFlag(CityFlags.Resistance)
         }
 
-        for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv))) {
+        conqueredCiv.forEachTriggeredUnique(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv), ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
     }

@@ -650,8 +650,9 @@ class Tile : IsPartOfGameInfoSerialization {
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getUnpillagedTileImprovement()
         if (tileImprovement != null && includeImprovementBonus) {
-            for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, unit?.cache?.state ?: stateThisTile))
+            tileImprovement.forEachMatchingUnique(UniqueType.DefensiveBonus, unit?.cache?.state ?: stateThisTile) { unique ->
                 bonus += unique.params[0].toFloat() / 100
+            }
         }
         return bonus
     }

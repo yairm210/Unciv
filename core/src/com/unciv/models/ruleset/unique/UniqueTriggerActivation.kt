@@ -955,8 +955,10 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
                     }
-                    civInfo.gameInfo.tileMap.values.asSequence()
-                        .forEach { it.setExplored(civInfo, true) }
+                    val tiles = civInfo.gameInfo.tileMap.values
+                    tiles.forEach { it.setExplored(civInfo, true) }
+                    if (!civInfo.isBarbarian)
+                        civInfo.cache.discoverNaturalWonders(tiles)
                     true
                 }
             }
@@ -1015,9 +1017,9 @@ object UniqueTriggerActivation {
                     ?: return null
 
                 return {
-                    revealCenter.getTilesInDistance(radius)
-                        .filter { tileBasedRandom.nextFloat() < chance }
-                        .forEach { it.setExplored(civInfo, true) }
+                    revealCenter.forEachTileInDistance(radius, { tileBasedRandom.nextFloat() < chance }) {
+                        it.setExplored(civInfo, true)
+                    }
                     civInfo.cache.updateViewableTiles()
                     if (notification != null)
                         civInfo.addNotification(

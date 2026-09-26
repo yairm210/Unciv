@@ -182,7 +182,7 @@ class MapEditorViewTab(
         lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
-        lines.addAll(TileDescription.toMarkup(TileMapView(tile.tileMap, mockCiv).getTile(tile), null))
+        lines.addAll(TileDescription.toMarkup(TileMapView(tile.tileMap, mockCiv).getTile(tile)))
 
         val stats = try {
             tile.stats.getTileStats(null, mockCiv)

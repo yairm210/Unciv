@@ -2,6 +2,8 @@ package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -18,7 +20,13 @@ import com.unciv.utils.Log
 class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
-        fun getBatch(size: Int=1000): Batch = FontLodBiasBatch(size)
+        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
+         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays. */
+        fun getBatch(size: Int = 1000): Batch = try {
+            TextureArraySpriteBatch(size)
+        } catch (ex: Exception) {
+            SpriteBatch(size)
+        }
     }
 
     /**

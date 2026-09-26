@@ -10,7 +10,9 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
 class CityConstructionsView(private val cityConstructions: CityConstructions, gameView: GameView,
-                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<CityConstructions>(cityConstructions, viewer, spectatorMode, gameView) {
+                             viewer: Civilization, spectatorMode: Boolean = false) : OwnedView<CityConstructions>(cityConstructions, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = cityConstructions.city.civ
+
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation

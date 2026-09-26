@@ -1,6 +1,5 @@
 package com.unciv.view
 
-import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
@@ -17,7 +16,9 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
-                           gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode, gameView) {
+                           gameView: GameView) : OwnedView<City>(city, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = city.civ
+
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 
@@ -25,7 +26,9 @@ open class ForeignCityView(internal open val city: City,
     val owningCivView: CivView get() = gameView.getCivView(city.civ)
 
     // Navigation
+    @Deprecated("Scheduled for removal")
     @Readonly fun getCity(): City = city
+    @Deprecated("Scheduled for removal")
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
     @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ)
@@ -51,10 +54,17 @@ open class ForeignCityView(internal open val city: City,
         return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
+    @Readonly fun getPopulationCount(): Int = city.population.population
+    @Readonly fun isCapital(): Boolean = city.isCapital()
+    @Readonly fun isPuppet(): Boolean = city.isPuppet
+    @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun isInResistance(): Boolean = city.isInResistance()
+    @Readonly fun isWeLoveTheKingDayActive(): Boolean = city.isWeLoveTheKingDayActive()
+    @Readonly fun isBlockaded(): Boolean = city.isBlockaded()
+    @Readonly fun isConnectedToCapital(): Boolean = city.isConnectedToCapital()
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 
-    @Readonly fun belongsTo(civ: Civilization): Boolean = city.civ === civ
     @Readonly fun isCityState(): Boolean = city.civ.isCityState
     @Readonly fun isMajorCiv(): Boolean = city.civ.isMajorCiv()
     @Readonly fun getNationName(): String = city.civ.nation.name
@@ -80,8 +90,4 @@ open class ForeignCityView(internal open val city: City,
 
     /** Wraps [city] as a [CityCombatantView] for battle purposes. */
     @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, viewer, spectatorMode, gameView)
-
-    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
-    fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
-        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 }

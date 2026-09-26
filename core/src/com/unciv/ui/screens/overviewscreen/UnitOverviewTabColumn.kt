@@ -3,6 +3,7 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.GameInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.ISortableGridContentProvider.Companion.toCenteredLabel
@@ -49,6 +50,8 @@ enum class UnitOverviewTabColumn(
 
     EditName("") {
         override val defaultSort get() = SortableGrid.SortDirection.None
+        override fun isVisible(gameInfo: GameInfo) =
+            !gameInfo.currentPlayerCiv.isSpectator()
         override fun getEntryActor(item: MapUnitView, iconSize: Float, actionContext: UnitOverviewTab): Actor {
             val selectKey = item.id.toString()
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil")
