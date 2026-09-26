@@ -41,7 +41,10 @@ internal class VictoryScreenCivGroup(
         civEntry.civ,
         ": ",
         // Don't show a `0` for defeated civs.
-        if (civEntry.civ.isDefeated()) "" else civEntry.value.tr(),
+        // Note: pass the raw number, not `.tr()`-formatted - the label's own tr() call
+        // will format it with thousands separators. Pre-formatting here would embed a
+        // comma that gets misparsed as a second number by that later tr() call.
+        if (civEntry.civ.isDefeated()) "" else civEntry.value.toString(),
         currentPlayer,
         defeatedPlayerStyle
     )

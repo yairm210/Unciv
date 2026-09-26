@@ -253,9 +253,10 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
-// Used to match continuous digits 0, 12, 1232 etc
+// Used to match continuous digits 0, 12, 1232 etc, also already comma-grouped ones like 1,232
+// (so re-translating an already-formatted number stays idempotent instead of splitting on the comma)
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val digitsRegex = Regex("""\d+""")
+val digitsRegex = Regex("""\d[\d,]*\d|\d""")
 
 object TranslationActiveModsCache {
     private var cachedHash = Int.MIN_VALUE
@@ -451,7 +452,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
     val translation = UncivGame.Current.translations.getText(
         this, language, TranslationActiveModsCache.activeMods
     ).replace(digitsRegex) {
-        it.value.toLong().tr(language)
+        it.value.replace(",", "").toLong().tr(language)
     }
 
     val stat = Stat.safeValueOf(this)
