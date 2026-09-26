@@ -45,10 +45,10 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.time.Duration
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 
 /**
@@ -113,7 +113,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var turns = 0
     var oneMoreTurnMode = false
     var currentPlayer = ""
-    var currentTurnStartTime = System.currentTimeMillis()
+    var currentTurnStartTime = Clock.System.now().toEpochMilliseconds()
     var gameId = randomGameId()
     var checksum = ""
     private var lastUnitId = 0
@@ -384,12 +384,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var playerIndex = civilizations.indexOf(player)
 
         if (player.isHuman() && player.isAlive()) {
-            player.totalTurnTimeSeconds +=
-                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
-                    .toSeconds().toInt()
+            val elapsed = Clock.System.now() - Instant.fromEpochMilliseconds(currentTurnStartTime)
+            player.totalTurnTimeSeconds += elapsed.inWholeSeconds.toInt()
             player.turnsPlayedAsHuman++
         }
-        
+
         if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
@@ -447,7 +446,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
             val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
-            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns > 0 && turns >= simulateMaxTurns)) {
+            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns in 1..turns)) {
                 simulateUntilWin = false
                 simulateMaxTurns = 0
                 worldScreen?.autoPlay?.stopAutoPlay()
@@ -494,15 +493,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
         player.notificationCountAtStartTurn = player.notifications.size
     }
-    
+
     private fun updateMinutesBeforeForceResign(player: Civilization, shouldGainTime: Boolean) {
-            // Update remaining time before the player who's turn is ending can be forced to resign
-            val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
-            val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
-            val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
-            val rawNewTime = player.playerMinutesBeforeForceResign - timeUsed + timeRegained
-            val maxNewTime = gameParameters.minutesUntilForceResign
-            player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
+        // Update remaining time before the player who's turn is ending can be forced to resign
+        val turnStart = Instant.fromEpochMilliseconds(currentTurnStartTime)
+        val timeUsed = (Clock.System.now() - turnStart).inWholeMinutes.toInt()
+        val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
+        val rawNewTime = player.playerMinutesBeforeForceResign - timeUsed + timeRegained
+        val maxNewTime = gameParameters.minutesUntilForceResign
+        player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
     }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
