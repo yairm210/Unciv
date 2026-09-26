@@ -3,7 +3,6 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.GUI
 import com.unciv.logic.city.City
@@ -28,6 +27,7 @@ import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.addCapitalIndicator
 import com.unciv.ui.components.extensions.getTurnsToConstructionString
+import com.unciv.view.CivView
 import kotlin.math.roundToInt
 
 
@@ -118,8 +118,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             item.cityStats.happinessList.values.sum().roundToInt()
     },
     Faith {
-        override fun isVisible(gameInfo: GameInfo) =
-            gameInfo.isReligionEnabled()
+        override fun isVisible(viewingPlayer: CivView) =
+            viewingPlayer.isReligionEnabled()
     },
 
     WLTK {
@@ -184,7 +184,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     },
 
     Religion {
-        override fun isVisible(gameInfo: GameInfo) = gameInfo.isReligionEnabled()
+        override fun isVisible(viewingPlayer: CivView) = viewingPlayer.isReligionEnabled()
         override val headerTip = "Majority Religion"
         override fun getHeaderActor(iconSize: Float) = getCircledIcon("ReligionIcons/Religion", iconSize)
         override fun getEntryValue(item: City) = // used only for sorting: followers of our religion
