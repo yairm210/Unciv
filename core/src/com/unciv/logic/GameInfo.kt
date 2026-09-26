@@ -7,7 +7,6 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.ensureUnitIds
-import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
@@ -803,7 +802,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         barbarians.setTransients(this)
 
-        guaranteeUnitPromotions()
         migrateToTileHistory()
         migrateGreatGeneralPools()
         ensureUnitIds()
