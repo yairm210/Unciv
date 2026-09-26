@@ -169,6 +169,9 @@ class GameSettings {
     // Controlled by dragging the minimap
     var minimapSize = 6    // default corresponds to 15% screen space
 
+    // Controlled by dragging the tile info pane
+    var tileInfoPosition: WidgetPosition = WidgetPosition.Right
+
     // This was a checkbox setting long ago
     val showPixelUnits get() = unitSet != null
 
@@ -264,6 +267,11 @@ class GameSettings {
     }
 
     enum class NationPickerListMode { Icons, List }
+
+    enum class WidgetPosition {
+        Right,
+        Bottom
+    }
 
     /**
      *  Knowledge on Window "state", limited.
