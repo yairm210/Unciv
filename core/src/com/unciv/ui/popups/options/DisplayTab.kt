@@ -53,6 +53,7 @@ internal class DisplayTab(
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials()
+        addCheckbox("Hint city production", settings::hintCityProduction, updateWorld = true)
         addCheckbox("Show long-press indicators", settings.showLongPressIndicators.toBoolean()) {
             settings.showLongPressIndicators = GameSettings.LongPressIndicatorSetting.of(it)
         }
