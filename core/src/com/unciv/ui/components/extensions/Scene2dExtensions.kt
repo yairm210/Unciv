@@ -523,10 +523,11 @@ fun equalizeColumns(vararg tables: Table) {
     }
     if (tables.count { it.rows > 0 } <= 1) return // Nothing to do when at most one table has actual cells
 
-    val columns = tables.maxOf { it.columns }
+    val tablesWithRows = tables.filter { it.rows > 0 } // getColumnWidth crashes on tables with no cells at all
+    val columns = tablesWithRows.maxOf { it.columns }
     val widths = (0 until columns)
         .mapTo(ArrayList(columns)) { column ->
-            tables.maxOf { it.getColumnWidth(column) } // getColumnWidth is 0f for non-existent columns
+            tablesWithRows.maxOf { it.getColumnWidth(column) } // getColumnWidth is 0f for non-existent columns
         }
     fun neutralActor() = Actor().apply { touchable = Touchable.disabled }
 
