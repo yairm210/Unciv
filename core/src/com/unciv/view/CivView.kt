@@ -36,8 +36,6 @@ class CivView(civ: Civilization,
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.unwrap().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
-    @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.unwrap().civ
-    @Readonly fun isOwnerOf(unitView: ForeignMapUnitView): Boolean = civ === unitView.unwrap().civ
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
         tileView.unwrap().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
@@ -118,13 +116,15 @@ class CivView(civ: Civilization,
     @Readonly fun calculateScoreBreakdown(): HashMap<String, Double> = civ.calculateScoreBreakdown()
 
     // Actions
-    fun tryDisableCivConstruction(name: String) {
+    fun tryDisableCivConstruction(name: String): Boolean {
         civ.cities.forEach { it.disabledConstructions.add(name) }
         civ.disabledCityConstructions.add(name)
+        return true
     }
-    fun tryEnableCivConstruction(name: String) {
+    fun tryEnableCivConstruction(name: String): Boolean {
         civ.cities.forEach { it.disabledConstructions.remove(name) }
         civ.disabledCityConstructions.remove(name)
+        return true
     }
     fun trySetGoldPercentConvertedToScience(value: Float): Boolean {
         civ.tech.goldPercentConvertedToScience = value

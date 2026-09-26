@@ -1,3 +1,13 @@
+## 4.22.3
+
+Massive rendering lag improvement!!
+
+ANRs reduction when switching screens
+
+By SomeTroglodyte:
+- Disallow spectators to rename units
+- Allow unit rename to "reset" to base unit name
+
 ## 4.22.2
 
 Spectator deselect sets UI correctly

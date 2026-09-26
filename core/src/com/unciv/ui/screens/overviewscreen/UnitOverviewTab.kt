@@ -66,7 +66,8 @@ class UnitOverviewTab(
         iconSize = 20f,
         paddingVert = 5f,
         paddingHorz = 8f,
-        separateHeader = true
+        separateHeader = true,
+        gameInfo = gameInfo
     ) { header, details, totals ->
         // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!
         // horizontal "slack" if available width > content width is taken up between SortableGrid and CityOverviewTab for the details,

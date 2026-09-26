@@ -56,7 +56,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
 
     val viewingPlayer = foreignCityView.getViewingCiv()
 
-    @Readonly private fun belongsToViewingCiv() = foreignCityView.belongsTo(viewingPlayer)
+    @Readonly private fun belongsToViewingCiv() = foreignCityView.isOwnedByViewer()
 
     fun update(isCityViewable: Boolean) {
         val selectedPlayer = foreignCityView.getViewingCiv()
@@ -87,7 +87,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         }
 
         // Add statuses: connection, resistance, puppet, raze, WLTKD
-        add(StatusTable(foreignCityView, selectedPlayer)).padTop(3f)
+        add(StatusTable(foreignCityView)).padTop(3f)
 
         pack()
 
