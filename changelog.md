@@ -1,14 +1,12 @@
 ## 4.22.4
 
-Resolved  - avoid cityscreen update when screen has already been replaced
+Fixed error on cityscreen update when screen has already been replaced
 
-Fixed victory number formatting bug - see https://discord.com/channels/586194543280390151/1552398135110668399
+Fixed victory screen number-formatting bug
 
-By SomeTroglodyte:
-- Add a `--log` option to the Linux Unciv.sh launcher to enable logs from the release build 
-- Fix Java 9+ specific method use crashing NextTurn on Java 8 
+Fix Java 9+ specific method use crashing NextTurn on Java 8 - By SomeTroglodyte: 
 
-Fix overview screen column visibility - now per civ - By dangdinhbaohoang12
+Fix overview screen column visibility - By dangdinhbaohoang12
 
 Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
 
