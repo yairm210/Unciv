@@ -539,6 +539,10 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         val distanceToTiles = getDistanceToTiles(considerZoneOfControl)
+        // Movement can change the set of reachable tiles before a reroute is attempted.
+        // In that case the original destination may no longer be reachable this turn.
+        // Treat that as a completed movement attempt instead of throwing from getPathToTile().
+        if (!distanceToTiles.containsKey(destination)) return
         val pathToDestination = distanceToTiles.getPathToTile(destination)
         val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
         // thinksItCanMoveTo, not canMoveTo: a tile with an undetected enemy on it must still count
