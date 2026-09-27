@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.GameInfo
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -23,6 +22,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.CivView
 
 
 /**
@@ -55,15 +55,16 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     paddingHorz: Float = 8f,
     /** When `true`, the header row isn't part of the widget but delivered through [getHeader] */
     private val separateHeader: Boolean = false,
-    /** Required only when you override [ISortableGridContentProvider.isVisible] and the override requires it */
-    private val gameInfo: GameInfo? = null,
+    /** Required only when you override [ISortableGridContentProvider.isVisible] and the override requires it -
+     *  the actual viewer of this grid, as opposed to whoever's turn it currently is */
+    private val viewingPlayer: CivView? = null,
     /** Called after every update - during init and re-sort */
     private val updateCallback: ((header: Table, details: Table, totals: Table) -> Unit)? = null
 ) : Table(BaseScreen.skin) {
-    // Having this complete as defaulted private val constructor param wouldn't have access to isVisible(GameInfo?)
+    // Having this complete as defaulted private val constructor param wouldn't have access to isVisible(CivView?)
     // The alternative to move the extension to a companion would require another kludge - star-projected generics for the interface.
     private val sortState: ISortState<CT> = sortState ?:
-        SortState(columns.first { it.isVisible(gameInfo) })
+        SortState(columns.first { it.isVisible(viewingPlayer) })
 
     /** The direction a column may be sorted in */
     // None is the Natural order of underlying data - only available before using any sort-click
@@ -106,7 +107,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private val totalsRow = Table(skin)
 
     init {
-        require (!separateHeader || columns.none { it.isVisible(gameInfo) && it.expandX }) {
+        require (!separateHeader || columns.none { it.isVisible(viewingPlayer) && it.expandX }) {
             "SortableGrid currently does not support separateHeader combined with expanding columns"
         }
 
@@ -138,8 +139,8 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         updateCallback.invoke(headerRow, details, totalsRow)
     }
 
-    private fun ISortableGridContentProvider<IT, ACT>.isVisible(gameInfo: GameInfo?) =
-        if (gameInfo == null) true else isVisible(gameInfo)
+    private fun ISortableGridContentProvider<IT, ACT>.isVisible(viewingPlayer: CivView?) =
+        if (viewingPlayer == null) true else isVisible(viewingPlayer)
 
     private fun initHeader() {
         // Note: These will scale with GameSettings.fontSizeMultiplier - could be *partly* countered
@@ -148,7 +149,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         sortSymbols[true] = Fonts.sortDownArrow.toString().toLabel()
 
         for (column in columns) {
-            if (!column.isVisible(gameInfo)) continue
+            if (!column.isVisible(viewingPlayer)) continue
             val element = getHeaderElement(column)
             headerElements[column] = element
             val cell = headerRow.add(element.outerActor)
@@ -193,7 +194,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         val cellsToEqualize = mutableListOf<Cell<Actor>>()
         for (item in sortedData) {
             for (column in columns) {
-                if (!column.isVisible(gameInfo)) continue
+                if (!column.isVisible(viewingPlayer)) continue
                 val actor = column.getEntryActor(item, iconSize, actionContext)
                 if (actor == null) {
                     details.add()
@@ -216,7 +217,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
 
     private fun initTotals() {
         for (column in columns) {
-            if (!column.isVisible(gameInfo)) continue
+            if (!column.isVisible(viewingPlayer)) continue
             totalsRow.add(column.getTotalsActor(data)).align(column.align)
                 .fill(column.fillX, false).expand(column.expandX, false)
         }

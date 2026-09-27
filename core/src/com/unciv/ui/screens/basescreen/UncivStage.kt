@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.input.VirtualMouseButtonKeys
@@ -20,11 +21,15 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
         /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
-         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays. */
-        fun getBatch(size: Int = 1000): Batch = try {
-            FontLodBiasBatch(size)
-        } catch (ex: Exception) {
-            SpriteBatch(size)
+         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays,
+         *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.disableNewerRendering]. */
+        fun getBatch(size: Int = 1000): Batch {
+            if (UncivGame.Current.settings.disableNewerRendering) return SpriteBatch(size)
+            return try {
+                FontLodBiasBatch(size)
+            } catch (ignored: Exception) {
+                SpriteBatch(size)
+            }
         }
     }
 

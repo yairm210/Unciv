@@ -147,7 +147,7 @@ for (platform in Platform.entries) {
                     " --executable Unciv" +
                     " --classpath $jarFile" +
                     " --mainclass $mainClassName" +
-                    " --vmargs Xmx4G " +
+                    " --vmargs Xmx4G Dunciv.packr=true" +
                     " --output $outputDir"
             command.runCommand(rootDir)
             Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "Unciv.ico"))

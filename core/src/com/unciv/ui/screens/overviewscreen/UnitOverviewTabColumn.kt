@@ -3,7 +3,6 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.GameInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.ISortableGridContentProvider.Companion.toCenteredLabel
@@ -17,6 +16,7 @@ import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
+import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
@@ -50,8 +50,10 @@ enum class UnitOverviewTabColumn(
 
     EditName("") {
         override val defaultSort get() = SortableGrid.SortDirection.None
-        override fun isVisible(gameInfo: GameInfo) =
-            !gameInfo.currentPlayerCiv.isSpectator()
+        // Use the actual viewer, not gameInfo.currentPlayerCiv - that's whoever's turn it currently
+        // is, which is not necessarily the person looking at this screen (e.g. spectating an AI's turn).
+        override fun isVisible(viewingPlayer: CivView) =
+            !viewingPlayer.isSpectator()
         override fun getEntryActor(item: MapUnitView, iconSize: Float, actionContext: UnitOverviewTab): Actor {
             val selectKey = item.id.toString()
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil")

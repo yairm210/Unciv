@@ -209,13 +209,6 @@ object BackwardCompatibility {
         civilizations.flatMap { civ -> civ.diplomacy.values }.forEach { it.replaceFlag() }
     }
 
-    /** Make sure all MapUnits have the starting promotions that they're supposed to. */
-    fun GameInfo.guaranteeUnitPromotions() {
-        for (tileInfo in tileMap.values) for (unit in tileInfo.getUnits())
-            for (startingPromo in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(startingPromo, true)
-    }
-
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION", "EmptyFunctionBlock")
     fun ModOptions.updateDeprecations() { }

@@ -34,7 +34,7 @@ class CityOverviewTab(
         paddingVert = 5f,
         paddingHorz = 8f,
         separateHeader = true,
-        gameInfo = gameInfo
+        viewingPlayer = viewingPlayer
     ) {
         header, details, totals ->
         // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!
