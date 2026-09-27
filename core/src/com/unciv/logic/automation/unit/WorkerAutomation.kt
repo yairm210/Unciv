@@ -483,8 +483,9 @@ class WorkerAutomation(
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
             && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
             val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
-            // We still want some forest chopping and farm building to compete with road building,
-            // but connecting cities (see #15417) shouldn't need close-to-maximum priority (previously -9)
+            // We still want good farm/mine building to be able to outrank a low-value road (e.g. an
+            // upgrade-only Road -> Railroad on an already-connected route), but connecting a genuinely
+            // disconnected city (see #15417) shouldn't need a near-maximum roadPlan.priority (previously -9)
             // to ever get built - that left roads languishing for dozens of turns behind minor tile upgrades.
             val value = (roadPlan.priority - WorkerAutomationConst.connectRoadPriorityOffset)
             return value

@@ -33,9 +33,11 @@ internal object WorkerAutomationConst {
      * workers could go dozens of turns without making any progress on road connections. This still leaves
      * a real threshold - trivial road upgrades (e.g. Road -> Railroad on an already-connected route) remain
      * lower priority than good tile improvements - but a genuinely disconnected city no longer has to wait
-     * for a very high population before workers will act on it.
+     * for a large population before workers will act on it: two freshly-founded (population 1) cities with
+     * no road between them already score positively (base 4 + population term 0.5 = 4.5 > 4), whereas the
+     * old offset of 9 required a combined population in the double digits before roads ever won out.
      */
-    const val connectRoadPriorityOffset = 5f
+    const val connectRoadPriorityOffset = 4f
 }
 
 /**

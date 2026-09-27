@@ -335,14 +335,18 @@ internal class WorkerAutomationTest {
     }
 
     @Test
-    fun `should connect small cities with roads without needing a huge population`() {
+    fun `should connect small cities with roads despite competing farm tiles`() {
         // Regression test for https://github.com/yairm210/Unciv/issues/15417 (report 3):
         // automated workers used to all but ignore connecting small/new cities with roads,
         // preferring farms and mines almost indefinitely. See connectRoadPriorityOffset.
-        for (improvement in listOf(RoadStatus.Road.name)) {
+        //
+        // Farm tech is deliberately kept available (unlike the older `should build roads in turns`
+        // test, which removes it) so this test actually exercises the road-vs-farm priority
+        // competition the offset change is meant to fix, rather than only reaching the road via
+        // the tryConnectingCities last-resort fallback.
+        for (improvement in listOf(RoadStatus.Road.name, "Farm")) {
             civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
         }
-        civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
 
         val city1 = testGame.addCity(civInfo, testGame.tileMap[3, 3])
         val city2 = testGame.addCity(civInfo, testGame.tileMap[-3, -3])
@@ -352,12 +356,11 @@ internal class WorkerAutomationTest {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
                 if (tile.owningCity == null)
                     city.expansion.buyTile(tile)
+                tile.baseTerrain = Constants.grassland // plenty of farmable tiles to compete with the road
             }
         }
-        // Deliberately small, "early game" populations - previously roads this small were never prioritized
-        for (city in cities) {
-            city.population.addPopulation(1)
-        }
+        // Cities are founded at population 1 by default - deliberately left at that "early game"
+        // floor, since that's exactly the case that used to never get roads prioritized.
 
         val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
         for (i in 0..37) {
@@ -376,9 +379,8 @@ internal class WorkerAutomationTest {
             TurnManager(civInfo).endTurn()
             // Invalidate WorkerAutomationCache
             testGame.gameInfo.turns++
-            // Because the civ will annoyingly try to research it again
-            civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
             for (city in cities) {
+                // Keep population at the "early game" floor this test is about
                 if (city.population.population != 1)
                     city.population.addPopulation(1 - city.population.population)
             }
@@ -386,7 +388,8 @@ internal class WorkerAutomationTest {
 
         civInfo.cache.updateCitiesConnectedToCapital()
         assertTrue(
-            "A single worker should connect two small, nearby cities with roads within a reasonable number of turns",
+            "A single worker should connect two small (population 1), nearby cities with roads " +
+                "within a reasonable number of turns, even with farmable tiles competing for its attention",
             city2.isConnectedToCapital()
         )
     }
