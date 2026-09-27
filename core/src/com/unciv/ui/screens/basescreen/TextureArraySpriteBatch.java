@@ -1,7 +1,7 @@
 /*
  * Forked from carlislefox/libgdx-texture-array-batch v1.2 (acbb5b7b515d0acf6dd57d43c98bf56c31d6008c).
  * https://github.com/carlislefox/libgdx-texture-array-batch
- * License: CC0-1.0, see TextureArraySpriteBatch.LICENSE.
+ * License: CC0-1.0, see LICENSE-TextureArraySpriteBatch.
  * Unciv changes: package, pre-flush/texture inspection hooks, and binding-cache
  * invalidation for dynamic texture uploads and nested offscreen batches.
  */
