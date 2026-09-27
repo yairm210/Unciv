@@ -22,7 +22,7 @@ class SpyView(private val spy: Spy,
     // city and call tryMoveTo() on it, which resets its action to Moving and interrupts whatever
     // it was doing (surveillance, counter-intelligence, etc). Exclude it here.
     @Readonly fun canMoveTo(foreignCityView: ForeignCityView): Boolean =
-        getCityViewOrNull() != foreignCityView && spy.canMoveTo(foreignCityView.getCity())
+        spy.getCityOrNull() != foreignCityView.city && spy.canMoveTo(foreignCityView.city)
 
     // Actions
     fun tryMoveTo(foreignCityView: ForeignCityView?): Boolean {

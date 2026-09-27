@@ -398,6 +398,49 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun `air unit discovers hidden blocker instead of overwriting it`() {
+        val otherCiv = testGame.addCiv()
+        val ourTile = testGame.tileMap[0, 0]
+        val hiddenTile = ourTile.neighbors.first()
+
+        testGame.addCity(civInfo, ourTile)
+        testGame.addCity(otherCiv, hiddenTile)
+        val hiddenUnit = testGame.addDefaultMeleeUnitWithUniques(
+            otherCiv, hiddenTile, UniqueType.Invisible.text
+        )
+        val airUnit = testGame.addUnit("Fighter", civInfo, ourTile)
+
+        assertFalse("Hidden unit must not be visible before movement", hiddenUnit.isVisibleTo(civInfo))
+
+        airUnit.movement.moveToTile(hiddenTile)
+
+        assertEquals("Air unit must stop before a hidden blocker", ourTile, airUnit.currentTile)
+        assertEquals("Hidden blocker must not be overwritten", hiddenUnit, hiddenTile.militaryUnit)
+        assertTrue("Attempting the move must reveal the hidden blocker", hiddenUnit.isVisibleTo(civInfo))
+    }
+
+    @Test
+    fun `paradrop discovers hidden blocker instead of overwriting it`() {
+        val otherCiv = testGame.addCiv()
+        val ourTile = testGame.tileMap[0, 0]
+        val hiddenTile = ourTile.neighbors.first()
+        val hiddenUnit = testGame.addDefaultMeleeUnitWithUniques(
+            otherCiv, hiddenTile, UniqueType.Invisible.text
+        )
+        val paratrooper = testGame.addUnit("Paratrooper", civInfo, ourTile)
+        paratrooper.action = UnitActionType.Paradrop.value
+
+        assertFalse(hiddenUnit.isVisibleTo(civInfo))
+
+        paratrooper.movement.moveToTile(hiddenTile)
+
+        assertEquals("Paratrooper must stop before a hidden blocker", ourTile, paratrooper.currentTile)
+        assertEquals("Hidden blocker must not be overwritten", hiddenUnit, hiddenTile.militaryUnit)
+        assertTrue("Attempting the paradrop must reveal the hidden blocker", hiddenUnit.isVisibleTo(civInfo))
+        assertEquals("Blocked paradrop must leave the unit out of preparing-paradrop mode", null, paratrooper.action)
+    }
+
+    @Test
     fun `hidden enemy unit blocks canMoveTo but not thinksItCanMoveTo, and attempting to move into it reveals without overwriting`() {
         val otherCiv = testGame.addCiv()
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)

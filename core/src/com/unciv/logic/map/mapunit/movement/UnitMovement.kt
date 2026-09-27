@@ -286,7 +286,8 @@ class UnitMovement(val unit: MapUnit) {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
 
-        // If we can fly, head there directly
+        // Air/paradrop movement is a direct placement, so use the same strict destination
+        // check as normal movement. A hidden blocker must never be bypassed by the direct branch.
         if ((unit.baseUnit.isAirUnit() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
@@ -505,6 +506,13 @@ class UnitMovement(val unit: MapUnit) {
         val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null
 
         if (unit.baseUnit.isAirUnit()) { // air units move differently from all other units
+            // Direct aerial movement bypasses the normal tile-by-tile loop, so explicitly check
+            // for a hidden blocker before placing the unit on the destination tile.
+            getHiddenBlockingUnit(destination)?.let {
+                unit.action = null
+                notifyHiddenBlockingUnitDiscovered(it, destination)
+                return@timeThis
+            }
             if (unit.action != UnitActionType.Automate.value) unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
@@ -516,8 +524,14 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         if (unit.isPreparingParadrop()) { // paradropping units move differently
-            val origin = unit.getTile()
             unit.action = null
+            // Paradrop is also a direct placement path, so it must not bypass hidden-blocker
+            // discovery and overwrite the hidden unit on the destination tile.
+            getHiddenBlockingUnit(destination)?.let {
+                notifyHiddenBlockingUnitDiscovered(it, destination)
+                return@timeThis
+            }
+            val origin = unit.getTile()
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
