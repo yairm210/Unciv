@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.input.VirtualMouseButtonKeys
@@ -20,13 +21,22 @@ import com.unciv.utils.Log
 class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
-        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
-         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays. */
-        fun getBatch(size: Int = 1000): Batch = try {
-            TextureArraySpriteBatch(size)
-        } catch (ex: Exception) {
-            Log.error("Failed to create TextureArraySpriteBatch, falling back to SpriteBatch", ex)
-            SpriteBatch(size)
+        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls.*/
+    fun getBatch(size: Int = 1000): Batch {
+    if (UncivGame.Current.settings.disableNewerRendering) {
+        return SpriteBatch(size)
+    }
+
+    return try {
+        TextureArraySpriteBatch(size)
+    } catch (ex: Exception) {
+        Log.error(
+            "Failed to create TextureArraySpriteBatch, falling back to SpriteBatch",
+            ex
+        )
+        SpriteBatch(size)
+    }
+}
         }
     }
 

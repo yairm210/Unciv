@@ -1,3 +1,15 @@
+## 4.22.4
+
+Fixed error on cityscreen update when screen has already been replaced
+
+Fixed victory screen number-formatting bug
+
+Fix Java 9+ specific method use crashing NextTurn on Java 8 - By SomeTroglodyte: 
+
+Fix overview screen column visibility - By dangdinhbaohoang12
+
+Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
+
 ## 4.22.3
 
 Massive rendering lag improvement!!
