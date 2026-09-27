@@ -37,6 +37,30 @@ class SerializationTests {
     // use @RedirectOutput(RedirectPolicy.Show) to see the actual json
 
     @Test
+    fun `test discovered invisible unit memory migration prefers legacy data when new field is null`() {
+        val memory = Civilization.DiscoveredInvisibleUnitMemory(42, HexCoord(1, 2))
+        val memoryJson = json.toJson(memory)
+        val civilization = json.fromJson(
+            Civilization::class.java,
+            """{"discoveredInvisibleUnitTiles":[$memoryJson],"discoveredInvisibleUnitMemories":null}"""
+        )
+
+        Assert.assertEquals(42, civilization.discoveredInvisibleUnitMemories.single().unitId)
+        Assert.assertEquals(HexCoord(1, 2), civilization.discoveredInvisibleUnitMemories.single().tilePosition)
+    }
+
+    @Test
+    fun `test discovered invisible unit memory null field keeps initialized list`() {
+        val civilization = json.fromJson(
+            Civilization::class.java,
+            """{"discoveredInvisibleUnitMemories":null}"""
+        )
+
+        Assert.assertNotNull(civilization.discoveredInvisibleUnitMemories)
+        Assert.assertTrue(civilization.discoveredInvisibleUnitMemories.isEmpty())
+    }
+
+    @Test
     fun `test DurationSerializer`() {
         val data = arrayListOf(
             // Java Duration! (even though kotlin.Duration is perfectly fine - all the multiplayer code is outdated in that respect)
