@@ -184,7 +184,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         )
     }
 
-    /** Puts [unit]'s spy in the civ unit list and runs [action] the first time automation asks it for terrain damage on its current tile. */
+    /** Puts [unit]'s Mockito-spy in the civ unit list and runs [action] the first time automation asks it for terrain damage on its current tile. */
     private fun onFirstAutomation(unit: MapUnit, action: () -> Unit) {
         val spy = replaceWithSpy(unit)
         val tile = unit.currentTile

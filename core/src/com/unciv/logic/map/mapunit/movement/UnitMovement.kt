@@ -442,11 +442,12 @@ class UnitMovement(val unit: MapUnit) {
         // Forced displacement is not an attack. [canMoveTo] treats an enemy civilian as enterable so
         // ordinary movement can capture them, but accepting that tile here would capture them as a
         // side effect of borders, trades, or diplomacy, and can leave the victim's old owner
-        // automating an instance that now belongs to Barbarians. Friendly civilians still stack.
+        // automating an instance that now belongs to Barbarians. Another civ's unit can only be
+        // passed through, so a destination must be empty or already hold a unit of ours.
         fun isDisplacementDestination(tile: Tile): Boolean {
             if (!canMoveTo(tile)) return false
-            val civilian = tile.civilianUnit ?: return true
-            return !unit.civ.isAtWarWith(civilian.civ)
+            val currentCivInTile = tile.getFirstUnit()?.civ
+            return currentCivInTile == null || currentCivInTile == unit.civ
         }
 
         while (allowedTile == null && distance < 5) {

@@ -345,7 +345,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
-    fun `forced displacement stacks with a friendly civilian`() {
+    fun `forced displacement stacks with an own civilian`() {
         testGame.makeHexagonalMap(5)
         val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
         for (neighbor in unit.currentTile.neighbors) {
@@ -363,6 +363,33 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         assertSame(worker.currentTile, unit.currentTile)
         assertSame(unit, unit.currentTile.militaryUnit)
         assertSame(worker, unit.currentTile.civilianUnit)
+    }
+
+    @Test
+    fun `forced displacement does not stop on another civ's civilian`() {
+        testGame.makeHexagonalMap(5)
+        val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        for (neighbor in unit.currentTile.neighbors) {
+            if (neighbor.position.eq(1,2)) continue
+            neighbor.baseTerrain = Constants.mountain
+            neighbor.setTransients()
+        }
+
+        val friend = testGame.addCiv()
+        friend.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        civInfo.getDiplomacyManager(friend)!!.hasOpenBorders = true
+        friend.getDiplomacyManager(civInfo)!!.hasOpenBorders = true
+        val worker = testGame.addUnit("Worker", friend, testGame.tileMap[1,2])
+        val workerTile = worker.currentTile
+
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, tile)
+
+        assertSame("Worker stays with its owner", friend, worker.civ)
+        assertSame("Worker stays on its tile", workerTile, worker.currentTile)
+        assertFalse("Displaced unit takes another tile", unit.isDestroyed)
+        assertNotEquals(worker.currentTile, unit.currentTile)
+        assertFalse(unit.currentTile.position.eq(1, 2))
     }
 
     @Test
