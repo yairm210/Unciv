@@ -1202,6 +1202,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#testing-packaged-releases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing packaged releases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#next-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1933,6 +1944,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#testing-packaged-releases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing packaged releases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#next-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2128,6 +2150,26 @@ After building, the output .JAR file should be in <code>/desktop/build/libs/Unci
 <h2 id="debugging-on-android">Debugging on Android</h2>
 <p>Sometimes, checking things out on the desktop version is not enough and you need to debug Unciv running on an Android device.
 For an introduction, see <a href="../Testing-Android-Builds/">Testing android builds</a>.</p>
+<h2 id="testing-packaged-releases">Testing packaged releases</h2>
+<p>You can produce most of the files that get listed in https://github.com/yairm210/Unciv/releases locally.</p>
+<p>All of the following will run commands from a terminal in the project's root directory:</p>
+<ul>
+<li>'Unciv.jar': run <code>./gradlew desktop:dist</code> and find the jar in 'desktop/build/libs'.</li>
+<li>'Unciv-Windows64.zip': run <code>./gradlew desktop:dist desktop:zipWindows64</code> - the result will appear in the 'deploy' folder.</li>
+<li>'Unciv-Linux64.zip': run <code>./gradlew desktop:dist desktop:zipLinux64</code> - the result will appear in the 'deploy' folder.</li>
+<li>'Unciv-MacOS.zip' (despite not being included in official releases due to preferring homebrew, it can be built - your mileage may vary): run <code>./gradlew desktop:dist desktop:zipMacOS</code>.</li>
+<li>'linuxFilesForJar.zip': run <code>./gradlew desktop:zipLinuxFilesForJar</code></li>
+<li>'Unciv-signed.apk': Not possible, but you can build a debug-signed APK: run <code>./gradlew android:assembleDebug</code> and get 'Unciv-debug.apk' in 'android/build/outputs/apk/debug'.</li>
+<li>'Unciv.msi': Requires the Windows64 zip (see above) and the .NET SDK installed. On a powershell prompt in the project's root directory, replacing the <version> placeholder with an appropriate value of the form X.Y.Z (three numeric parts — the .wxs file appends a fourth automatically), run:
+    <div class="highlight"><pre><span></span><code><span class="n">dotnet</span> <span class="n">tool</span> <span class="n">install</span> <span class="p">-</span><span class="n">-global</span> <span class="n">wix</span> <span class="p">-</span><span class="n">-version</span> <span class="n">5</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">2</span>
+<span class="n">mkdir</span> <span class="p">.</span><span class="n">github</span><span class="p">/</span><span class="n">workflows</span><span class="p">/</span><span class="n">wix-msi-files</span>
+<span class="n">tar</span> <span class="n">-xf</span> <span class="n">deploy</span><span class="p">/</span><span class="n">Unciv-Windows64</span><span class="p">.</span><span class="n">zip</span> <span class="n">-C</span> <span class="p">.</span><span class="n">github</span><span class="p">/</span><span class="n">workflows</span><span class="p">/</span><span class="n">wix-msi-files</span>
+<span class="nv">$env:UNCIV_VERSION</span><span class="p">=</span><span class="s2">"&lt;version&gt;"</span><span class="p">;</span> <span class="n">wix</span> <span class="n">build</span> <span class="p">.</span><span class="n">github</span><span class="p">/</span><span class="n">workflows</span><span class="p">/</span><span class="n">unciv</span><span class="p">.</span><span class="n">wxs</span>
+</code></pre></div>
+    The result appears as '.github/workflows/Unciv.msi'.
+    Cross-building from Linux should be possible, but we won't test and document the details here.</li>
+<li>'UncivServer.jar': run <code>./gradlew server:dist</code>, look in 'server/build/libs'.</li>
+</ul>
 <h2 id="next-steps">Next steps</h2>
 <p>Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!</p>
 <p>Now would be a good time to get to know the project in general at <a href="../Project-structure-and-major-classes/">the Project Structure overview!</a></p>
