@@ -565,6 +565,7 @@ class UnitMovement(val unit: MapUnit) {
         // dropping the reveal-on-approach behavior.
         val lastReachableTile = movableTiles.lastOrNull { thinksItCanMoveTo(it) }
             ?: return  // no tiles can pass though/can move to
+
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
@@ -600,7 +601,7 @@ class UnitMovement(val unit: MapUnit) {
             // actually enters this tile, so it must never pay for it. Only the cost of tiles it
             // genuinely passed through/entered before this one (already accumulated in
             // passingMovementSpent) gets deducted.
-            val hiddenBlocker = getHiddenBlockingUnit(tile)
+            val hiddenBlocker = getHiddenBlockingUnit(tile, requireNoOtherBlockingReason = true)
             if (hiddenBlocker != null) {
                 unit.useMovementPoints(passingMovementSpent)
                 notifyHiddenBlockingUnitDiscovered(hiddenBlocker, tile)
@@ -812,7 +813,20 @@ class UnitMovement(val unit: MapUnit) {
      * calling putInTile, so [thinksItCanMoveTo]'s permissiveness can never reach an actual overwrite.
      */
     @Readonly
-    private fun getHiddenBlockingUnit(tile: Tile): MapUnit? {
+    private fun getHiddenBlockingUnit(tile: Tile, requireNoOtherBlockingReason: Boolean = false): MapUnit? {
+        // During ordinary ground movement, hidden occupancy is only a discovery trigger
+        // when it is the lowest-priority reason the tile cannot be entered. A visible blocker
+        // (including a visible unit in the other occupancy slot) must explain the restriction
+        // without revealing an unrelated hidden unit.
+        //
+        // Air/paradrop movement use the helper for direct placement, where this extra priority
+        // check must not alter the existing hidden-blocker behavior.
+        if (requireNoOtherBlockingReason) {
+            val blockingReason = getCannotMoveToReason(tile)
+            if (blockingReason != null && blockingReason != CannotMoveToReason.TileIsNotEmptyHiddenUnit)
+                return null
+        }
+
         // Do not use cannotPassThroughReason() here: it checks only getFirstUnit(), so an
         // occupant in the military slot can mask an invisible foreign civilian in the other slot.
         // Check each slot for both units that are moving together instead.
