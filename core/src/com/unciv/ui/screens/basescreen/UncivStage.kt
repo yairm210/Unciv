@@ -123,7 +123,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
         { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true
 
     override fun scrolled(amountX: Float, amountY: Float) =
-        { super.scrolled(amountX, screenY) }.wrapCrashHandling()() ?: true
+        { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
 
     override fun keyDown(keyCode: Int) =
         { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
