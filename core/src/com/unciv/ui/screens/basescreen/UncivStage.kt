@@ -1,3 +1,23 @@
+package com.unciv.ui.screens.basescreen
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch
+import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
+import com.unciv.ui.crashhandling.wrapCrashHandling
+import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.ui.screens.basescreen.BaseScreen.Companion.enableSceneDebug
+import com.unciv.utils.Log
+
+
+/** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
 class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
