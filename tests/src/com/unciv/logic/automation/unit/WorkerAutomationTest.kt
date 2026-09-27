@@ -335,6 +335,63 @@ internal class WorkerAutomationTest {
     }
 
     @Test
+    fun `should connect small cities with roads without needing a huge population`() {
+        // Regression test for https://github.com/yairm210/Unciv/issues/15417 (report 3):
+        // automated workers used to all but ignore connecting small/new cities with roads,
+        // preferring farms and mines almost indefinitely. See connectRoadPriorityOffset.
+        for (improvement in listOf(RoadStatus.Road.name)) {
+            civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+        civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
+
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[3, 3])
+        val city2 = testGame.addCity(civInfo, testGame.tileMap[-3, -3])
+        val cities = listOf(city1, city2)
+        civInfo.addGold(100000000)
+        for (city in cities) {
+            for (tile in city.getCenterTile().getTilesInDistance(3)) {
+                if (tile.owningCity == null)
+                    city.expansion.buyTile(tile)
+            }
+        }
+        // Deliberately small, "early game" populations - previously roads this small were never prioritized
+        for (city in cities) {
+            city.population.addPopulation(1)
+        }
+
+        val worker = testGame.addUnit("Worker", civInfo, city1.getCenterTile())
+        for (i in 0..37) {
+            worker.currentMovement = 2f
+            for (unit in civInfo.units.getCivUnits()) {
+                // Disband any workers that may have been built in this time period
+                if (unit != worker && unit.isCivilian()) {
+                    unit.disband()
+                }
+            }
+            // Prevent any sort of worker spawning
+            civInfo.addGold(-civInfo.gold)
+            civInfo.policies.freePolicies = 0
+
+            NextTurnAutomation.automateCivMoves(civInfo)
+            TurnManager(civInfo).endTurn()
+            // Invalidate WorkerAutomationCache
+            testGame.gameInfo.turns++
+            // Because the civ will annoyingly try to research it again
+            civInfo.tech.techsResearched.remove(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
+            for (city in cities) {
+                if (city.population.population != 1)
+                    city.population.addPopulation(1 - city.population.population)
+            }
+        }
+
+        civInfo.cache.updateCitiesConnectedToCapital()
+        assertTrue(
+            "A single worker should connect two small, nearby cities with roads within a reasonable number of turns",
+            city2.isConnectedToCapital()
+        )
+    }
+
+    @Test
     fun `should repair pillaged tile`() {
         // Add the needed tech to construct the improvements below
         for (improvement in listOf("Mine")) {
