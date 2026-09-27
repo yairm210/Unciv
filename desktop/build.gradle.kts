@@ -201,7 +201,6 @@ for (platform in Platform.entries) {
             Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "Unciv.ico"))
         }
 
-        finalizedBy("zip$platform")
     }
 
     tasks.register<Zip>("zip$platform") {

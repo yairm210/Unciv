@@ -180,7 +180,6 @@ for (platform in Platform.entries) {
             )
         }
 
-        finalizedBy("zip$platform")
     }
 
     tasks.register<Zip>("zip$platform") {
