@@ -629,6 +629,19 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
     }
 
     @Test
+    fun getMovementToTilesAtPosition_whenLessThanFullMovement_reportsTotalMovementCorrectly() {
+        verticalWall(0) {it.setRoadStatus(RoadStatus.Road, civInfo)  }
+        val unit = testGame.addUnit("Archer", civInfo, originTile)
+        unit.currentMovement = 1.6666667f
+
+        val paths = unit.movement.getMovementToTilesAtPosition(originTile.position, 1.6666667f)
+
+        val moreThanHalfMovement = testGame.tileMap[0,3]
+        assertEquals(0f, paths[originTile]!!.totalMovement, 0.01f)
+        assertEquals(1.5f, paths[moreThanHalfMovement]!!.totalMovement, 0.01f)
+    }
+
+    @Test
     fun whenPathingToStartDoNotCrash() {
         val baseUnit = testGame.createBaseUnit()
         baseUnit.movement = 1

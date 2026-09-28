@@ -74,6 +74,8 @@ allprojects {
             "io.ktor.http.Parameters.get",
 
             "java.util.BitSet.clone",
+
+            "kotlin.collections.orEmpty",
         )
         wellKnownPureClasses = setOf(
         )
@@ -180,6 +182,7 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
+        "implementation"(rootProject.libs.gdx.texture.array.batch)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 

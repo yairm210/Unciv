@@ -72,7 +72,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         val cityView = worldScreen.selectedGameView.getCityView(cityObject)
-        if (worldScreen.selectedGameView.civView.isOwnerOf(cityView))
+        if (cityView.isOwnedByViewer())
             worldScreen.game.pushScreen{ CityScreen(cityView) }
     }
     companion object {

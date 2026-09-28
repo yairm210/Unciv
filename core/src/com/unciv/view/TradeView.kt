@@ -9,7 +9,9 @@ import yairm210.purity.annotations.Readonly
 
 /** View of a trade negotiation between [civ] (always the viewer's own civ) and [otherCiv].
  *  Always built fresh, same as [TradeLogic] itself - staged offers live in this instance only. */
-class TradeView(private val civ: Civilization, private val otherCiv: Civilization, gameView: GameView) : GameBasedView<Civilization>(civ, civ, gameView = gameView) {
+class TradeView(private val civ: Civilization, private val otherCiv: Civilization, gameView: GameView) : OwnedView<Civilization>(civ, civ, gameView = gameView) {
+    @Readonly internal override fun owner(): Civilization = civ
+
     private val tradeLogic = TradeLogic(civ, otherCiv)
 
     // Data retrieval - lists are the live mutable instances, callers may add/remove offers directly
@@ -21,7 +23,10 @@ class TradeView(private val civ: Civilization, private val otherCiv: Civilizatio
         otherCiv.tradeRequests.any { it.requestingCiv == civ.civID }
 
     // Actions - staging
-    fun setStagedTrade(trade: Trade) = tradeLogic.currentTrade.set(trade)
+    fun setStagedTrade(trade: Trade): Boolean {
+        tradeLogic.currentTrade.set(trade)
+        return true
+    }
 
     /** Restores a trade we already sent to [otherCiv] (if any) into staging, so it can be re-displayed or retracted. */
     fun tryLoadOurPendingOffer(): Boolean {

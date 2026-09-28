@@ -653,11 +653,6 @@ class CityStats(val city: City) {
     private fun calcFoodEaten(): Float {
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
         var foodEaten = city.population.population.toFloat() * 2 - foodEatenBySpecialists
-        
-        city.forEachMatchingUnique(UniqueType.FoodConsumptionBySpecialists) { unique ->
-            if (city.matchesFilter(unique.params[1]))
-                foodEatenBySpecialists *= unique.params[0].toPercent()
-        }
 
         foodEaten += foodEatenBySpecialists
 

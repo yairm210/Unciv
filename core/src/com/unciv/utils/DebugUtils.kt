@@ -25,6 +25,9 @@ object DebugUtils {
     /** For when you need to test something in an advanced game and don't have time to faff around */
     var SUPERCHARGED: Boolean = false
 
+    /** Shows the current FPS in the top-right corner of every screen. */
+    var SHOW_FPS: Boolean = false
+
     /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
