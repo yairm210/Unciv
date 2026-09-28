@@ -211,8 +211,9 @@ for (platform in Platform.entries) {
             if (platform.unixPermissions) {
                 filesMatching(listOf(
                     "Unciv", "jre/bin/*",
-                    "Unciv.app/Contents/MacOS/Unciv",
-                    "Unciv.app/Contents/Resources/jre/bin/*"
+                    "Contents/MacOS/Unciv", "**/Contents/MacOS/Unciv",
+                    "Contents/Resources/jre/bin/*", "**/Contents/Resources/jre/bin/*",
+                    "**/MacOS/Unciv", "**/jre/bin/*"
                 )) {
                     permissions { unix("rwxr-xr-x") }
                 }

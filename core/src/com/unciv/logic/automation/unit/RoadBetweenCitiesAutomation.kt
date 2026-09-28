@@ -34,10 +34,10 @@ internal object WorkerAutomationConst {
      * a real threshold - trivial road upgrades (e.g. Road -> Railroad on an already-connected route) remain
      * lower priority than good tile improvements - but a genuinely disconnected city no longer has to wait
      * for a large population before workers will act on it: two freshly-founded (population 1) cities with
-     * no road between them need enough priority to beat a good farm on the same tile (4.5 - 3 = 1.5),
-     * whereas the old offset of 9 left road tiles below ordinary farm work until the cities had grown much larger.
+     * no-road connections get an explicit priority bonus below, so this offset can stay high enough to
+     * keep ordinary road upgrades below worthwhile tile improvements.
      */
-    const val connectRoadPriorityOffset = 3f
+    const val connectRoadPriorityOffset = 4f
 }
 
 /**
@@ -166,7 +166,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             // Make sure that we are taking in to account the other cities needs
             var roadPriority = max(basePriority, rankRoadCapitalPriority(closeCity.cityStats.getRoadTypeOfConnectionToCapital()))
             if (worstRoadStatus == RoadStatus.None) {
-                roadPriority += 2
+                // A completely unroaded connection is a strategic task, not just another tile improvement.
+                // Give it enough extra weight to compete with ordinary farms/mines while preserving the
+                // normal offset for routes that already have some road infrastructure.
+                roadPriority += 4
             } else if (worstRoadStatus == RoadStatus.Road && bestRoadAvailable == RoadStatus.Railroad) {
                 roadPriority += 1
             }
