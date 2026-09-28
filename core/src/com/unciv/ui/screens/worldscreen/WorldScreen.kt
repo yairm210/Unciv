@@ -564,7 +564,11 @@ class WorldScreen(
     }
 
     private fun updateSelectedCiv() {
+        // Only spectators/replays follow the selection's owner. For ordinary players selectedCiv must stay viewingCiv:
+        // otherwise a selected unit that just changed owner (gifted to a city-state, captured) would switch the
+        // whole view to its new owner, defeat UnitPresenter's "no longer ours" deselection, and leave a stale selection.
         setSelectedCiv(when {
+            !viewingCiv.isSpectator() -> viewingCiv
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
