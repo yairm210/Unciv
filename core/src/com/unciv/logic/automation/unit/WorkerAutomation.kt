@@ -234,7 +234,7 @@ class WorkerAutomation(
                     && getBasePriority(it, unit) >= 0
             }
 
-        val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
+        val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getTileSelectionPriority(it, unit) }
             .asSequence().sortedByDescending { it.key }
 
         // Search through each group by priority
@@ -256,6 +256,24 @@ class WorkerAutomation(
             }
         }
         return null
+    }
+
+    /**
+     * Road tiles may be outside our borders, so their normal tile priority can be lower than nearby
+     * improvements even though [getImprovementRanking] gives the planned road a positive value.
+     * Use the road plan priority when ordering tile groups so those strategic tiles get considered.
+     */
+    @Readonly
+    private fun getTileSelectionPriority(tile: Tile, unit: MapUnit): Float {
+        val basePriority = getBasePriority(tile, unit)
+        val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile] ?: return basePriority
+        val bestRoad = roadBetweenCitiesAutomation.bestRoadAvailable
+        val roadImprovement = bestRoad.improvement(ruleSet) ?: return basePriority
+
+        if (tile.getUnpillagedRoad() >= bestRoad || !unit.canBuildImprovement(roadImprovement, tile))
+            return basePriority
+
+        return maxOf(basePriority, roadPlan.priority)
     }
 
     @Readonly
