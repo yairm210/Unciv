@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
@@ -33,6 +34,7 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.map.CarrierSlotMatcher
 import org.jetbrains.annotations.VisibleForTesting
+import java.text.NumberFormat
 
 
 /**
@@ -250,8 +252,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val type: UnitType
         get() = baseUnit.type
 
-    @Readonly fun getMovementString(): String =
-        (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
+    @Readonly fun getMovementString(): String {
+        // DecimalFormat("0.#") would use _system_ Locale, and a subsequent tr() might misread the thousands separator.
+        // Therefore, settings-dependent Locale->NumberfFormat, and avoid double translation.
+        // This clone is cheap enough for UI, caching not worthwhile - and remember these are not thread-safe.
+        val format = (UncivGame.Current.settings.getCurrentNumberFormat().clone() as NumberFormat).apply {
+            minimumFractionDigits = 0
+            maximumFractionDigits = 1
+            isGroupingUsed = false
+        }
+        // Note: This passes boxed numbers since only Double and Long exist directly. Negligible.
+        return format.format(currentMovement) + "/" + format.format(getMaxMovement())
+    }
 
 
     @Readonly fun getTile(): Tile = currentTile
