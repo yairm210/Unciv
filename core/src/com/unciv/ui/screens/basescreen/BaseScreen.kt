@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -62,7 +63,11 @@ abstract class BaseScreen : Screen {
     val globalShortcuts = KeyShortcutDispatcher()
 
     // GameStartScreen is constructed before BaseScreen.setSkin() runs, so it can't use the skin yet.
-    private val fpsLabel: Label? = if (this !is GameStartScreen) "".toLabel() else null
+    // CrashScreen can also be constructed before setSkin() runs - the crash handler creates it for
+    // any uncaught throwable, including ones raised during early startup - so it must be excluded
+    // too, or toLabel() here would throw UninitializedPropertyAccessException inside the crash
+    // handler itself, turning a handled crash into a crash loop.
+    private val fpsLabel: Label? = if (this !is GameStartScreen && this !is CrashScreen) "".toLabel() else null
     private val fpsLabelContainer: Table? = fpsLabel?.let {
         Table().apply {
             background = ImageGetter.getWhiteDotDrawable().tint(Color(0f, 0f, 0.4f, 1f))
@@ -85,6 +90,7 @@ abstract class BaseScreen : Screen {
         stage.installShortcutDispatcher(globalShortcuts, this::createDispatcherVetoer)
 
         if (fpsLabelContainer != null) {
+            fpsLabelContainer.touchable = Touchable.disabled
             fpsLabelContainer.pack()
             fpsLabelContainer.setPosition(0f, stage.height, Align.topLeft)
             stage.addActor(fpsLabelContainer)
@@ -151,6 +157,12 @@ abstract class BaseScreen : Screen {
     override fun dispose() {
         // FYI - This is a method of Gdx [Screen], not of Gdx [Disposable], but the one below _is_.
         stage.dispose()
+        // glProfiler.enable() replaces Gdx.gl with a delegating interceptor wrapping whatever GL
+        // instance was current at the time. If the GL context is destroyed and recreated (e.g.
+        // backgrounding on Android) while a screen using it is disposed, leaving it enabled would
+        // leak that stale GL instance and silently stop counting draw calls. render() re-enables
+        // it on demand, so it's always safe to disable here.
+        if (glProfiler.isEnabled) glProfiler.disable()
     }
 
     fun displayTutorial(tutorial: TutorialTrigger, test: (() -> Boolean)? = null) {
