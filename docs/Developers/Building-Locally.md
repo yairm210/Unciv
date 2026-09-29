@@ -182,7 +182,7 @@ All of the following will run commands from a terminal in the project's root dir
     dotnet tool install --global wix --version 5.0.2
     mkdir .github/workflows/wix-msi-files
     tar -xf deploy/Unciv-Windows64.zip -C .github/workflows/wix-msi-files
-    $env:UNCIV_VERSION="<version>"; wix build .github/workflows/unciv.wxs
+    $env:UNCIV_VERSION="<version>"; wix build -arch x64 .github/workflows/unciv.wxs
     ```
     The result appears as '.github/workflows/Unciv.msi'.
     Cross-building from Linux should be possible, but we won't test and document the details here.
