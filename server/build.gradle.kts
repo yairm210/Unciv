@@ -32,7 +32,7 @@ private enum class Platform(
     Windows64("windows64", "jre-windows-64.zip", false, "https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jre/hotspot/normal/eclipse"),
     Linux64("linux64", "jre-linux-64.tar.gz", true, "https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse"),
     MacOS("mac", "jre-macOS.tar.gz", true, "https://api.adoptium.net/v3/binary/latest/21/ga/mac/x64/jre/hotspot/normal/eclipse",
-        vmArgs = arrayOf("XstartOnFirstThread", "java.awt.headless=true")
+        vmArgs = arrayOf("XstartOnFirstThread", "Djava.awt.headless=true")
     )
     // Linux32 is dropped by packr and there's no jre's anymore
     ;
@@ -108,20 +108,32 @@ private fun downloadIfOutdated(url: String, dest: File) {
 
 //  https://gist.github.com/seanf/58b76e278f4b7ec0a2920d8e5870eed6
 private fun runCommand(workingDir: File, vararg args: String) {
-    val process = ProcessBuilder(*args)
-        .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
+    val command = args.joinToString(" ")
+    val outputFile = File.createTempFile("packr-", ".log")
+    try {
+        // Capture both streams directly to a file so pipe buffers cannot block Packr.
+        val process = ProcessBuilder(*args)
+            .directory(workingDir)
+            .redirectErrorStream(true)
+            .redirectOutput(outputFile)
+            .start()
 
-    if (!process.waitFor(30, TimeUnit.SECONDS)) {
-        process.destroy()
-        throw RuntimeException("execution timed out: $this")
+        val finished = process.waitFor(5, TimeUnit.MINUTES)
+        if (!finished) {
+            process.destroyForcibly()
+            process.waitFor(5, TimeUnit.SECONDS)
+        }
+        val output = outputFile.readText()
+        if (!finished) {
+            throw RuntimeException("execution timed out: $command\\n$output")
+        }
+        if (process.exitValue() != 0) {
+            throw RuntimeException("execution failed with code ${process.exitValue()}: $command\\n$output")
+        }
+        print(output)
+    } finally {
+        outputFile.delete()
     }
-    if (process.exitValue() != 0) {
-        throw RuntimeException("execution failed with code ${process.exitValue()}: $this")
-    }
-    println(process.inputStream.bufferedReader().readText())
 }
 
 for (platform in Platform.entries) {
@@ -168,7 +180,6 @@ for (platform in Platform.entries) {
             )
         }
 
-        finalizedBy("zip$platform")
     }
 
     tasks.register<Zip>("zip$platform") {
@@ -177,7 +188,11 @@ for (platform in Platform.entries) {
         archiveFileName.set("UncivServer-$platform.zip")
         from(outputDir) {
             if (platform.unixPermissions) {
-                filesMatching(listOf("UncivServer", "jre/bin/*")) {
+                filesMatching(listOf(
+                    "UncivServer", "jre/bin/*",
+                    "Contents/MacOS/UncivServer", "**/Contents/MacOS/UncivServer", "**/MacOS/UncivServer",
+                    "Contents/Resources/jre/bin/*", "**/Contents/Resources/jre/bin/*", "**/jre/bin/*"
+                )) {
                     permissions { unix("rwxr-xr-x") }
                 }
             }
