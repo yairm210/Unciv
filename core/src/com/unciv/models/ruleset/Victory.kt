@@ -176,7 +176,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.WinDiplomaticVote -> civInfo.victoryManager.hasEverWonDiplomaticVote
             MilestoneType.ScoreAfterTimeOut -> {
                 civInfo.gameInfo.turns >= civInfo.gameInfo.gameParameters.maxTurns
-                && civInfo == civInfo.gameInfo.civilizations.maxByOrNull { it.calculateTotalScore() }
+                && civInfo == civInfo.gameInfo.getAliveMajorCivs().maxByOrNull { it.calculateTotalScore() }
             }
             MilestoneType.WorldReligion -> {
                 civInfo.gameInfo.isReligionEnabled()

@@ -20,14 +20,19 @@ import com.unciv.utils.Log
 class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     companion object {
-        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
-         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays,
-         *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.disableNewerRendering]. */
+        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls. */
         fun getBatch(size: Int = 1000): Batch {
-            if (UncivGame.Current.settings.disableNewerRendering) return SpriteBatch(size)
+            if (UncivGame.Current.settings.disableNewerRendering) {
+                return SpriteBatch(size)
+            }
+
             return try {
                 FontLodBiasBatch(size)
-            } catch (ignored: Exception) {
+            } catch (ex: Exception) {
+                Log.error(
+                    "Failed to create FontLodBiasBatch, falling back to SpriteBatch",
+                    ex
+                )
                 SpriteBatch(size)
             }
         }
@@ -47,6 +52,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
         set(value) {
             mouseOverDebugImpl = if (value) StageMouseOverDebug() else null
         }
+
     private var mouseOverDebugImpl: StageMouseOverDebug? = null
 
     private val events = EventBus.EventReceiver()
@@ -98,7 +104,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     }.wrapCrashHandlingUnit()()
 
     override fun act(delta: Float) =
-            { super.act(delta) }.wrapCrashHandlingUnit()()
+        { super.act(delta) }.wrapCrashHandlingUnit()()
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         mouseOverDebugImpl?.touchDown(this, screenX, screenY, pointer, button)
@@ -107,7 +113,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
-            { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
+        { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (VirtualMouseButtonKeys.fromButton(button)?.keyUp() == true) return true
@@ -115,19 +121,19 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int) =
-            { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true
+        { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true
 
     override fun scrolled(amountX: Float, amountY: Float) =
-            { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
+        { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
 
     override fun keyDown(keyCode: Int) =
-            { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
+        { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
 
     override fun keyUp(keyCode: Int) =
-            { super.keyUp(keyCode) }.wrapCrashHandling()() ?: true
+        { super.keyUp(keyCode) }.wrapCrashHandling()() ?: true
 
     override fun keyTyped(character: Char) =
-            { super.keyTyped(character) }.wrapCrashHandling()() ?: true
+        { super.keyTyped(character) }.wrapCrashHandling()() ?: true
 
     class VisibleAreaChanged(
         val visibleArea: Rectangle

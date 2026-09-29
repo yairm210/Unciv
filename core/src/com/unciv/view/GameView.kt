@@ -33,6 +33,12 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
     /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
     @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
 
+    /** All cities [viewer] has explored the center tile of, regardless of whether [viewer] has met
+     *  their owning civ - matches the visibility rule used for spy move targets in
+     *  [EspionageOverviewScreen][com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen]. */
+    @Readonly fun getExploredCities(): List<ForeignCityView> =
+        wrapped.getCities().filter { viewer.hasExplored(it.getCenterTile()) }.map { getForeignCityView(it) }.toList()
+
     /** Units whose past movements may be displayed from this view's perspective. */
     @Readonly fun getUnitsWithVisibleMovementHistory(): Sequence<ForeignMapUnitView> =
         wrapped.civilizations.asSequence()

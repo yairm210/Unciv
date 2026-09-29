@@ -114,21 +114,11 @@ Interestingly, [Civilization is a registered trademark](https://tsdr.uspto.gov/#
 
 ## Run with Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
 
-If you have docker compose installed:
+`docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv`
+Then go to http://localhost:6901/vnc.html?password=headless
 
- ```$ docker compose build && docker compose up```
-
-and then goto http://localhost:6901/vnc.html?password=headless
-
-If just docker:
-
-```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
-
-Or just use our already built one:
-
-```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
-
-and then goto http://localhost:6901/vnc.html?password=headless
+For more details, e.g. installing Docker, keeping saves between runs and over image updates, building the image yourself,
+troubleshooting connection issues, or using a native VNC client instead of a browser, see [Building-Locally](https://yairm210.github.io/Unciv/Developers/Building-Locally/#running-via-docker).
 
 ## Licensing and credits
 

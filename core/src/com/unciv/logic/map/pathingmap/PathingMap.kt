@@ -98,6 +98,28 @@ class PathingMap(
         cacheRef.set(null)
     }
 
+    /** @return Whether this map's current cache has already explored (has an initialized
+     *  [RouteNode] for) [tile] - i.e. whether a change to [tile]'s passability could actually be
+     *  reflected in a cached route. Used to skip clearing caches that never looked at [tile].
+     *
+     *  NOTE: [PathingMapCache.routeNodes] is read here without synchronization, while
+     *  [PathingMapAStarPathfinder] writes to it from pathfinding threads (e.g. `routeNodes[i] =
+     *  newNode.bits`) without holding any lock either - writes aren't synchronized in the first
+     *  place, so reading under a lock here wouldn't by itself make this race-free. A concurrent
+     *  reader can in theory observe a torn 64-bit [RouteNode.bits] value and treat an explored
+     *  tile as unexplored, but this only ever causes an unnecessary cache clear (this method's
+     *  only caller, [UnitMovement.pathCachePassesThroughTile], is a "should I invalidate?" check
+     *  where a false negative just means a route that should have been re-pathed isn't - not a
+     *  crash or data corruption) - a rare, benign miss rather than a correctness bug, so full
+     *  synchronization here (which would still require synchronizing every write, too) isn't
+     *  worth the added contention on this very hot path. */
+    @Readonly
+    @Suppress("purity")
+    fun hasExploredTile(tile: Tile): Boolean {
+        val cache = cacheRef.get() ?: return false
+        return RouteNode(cache.routeNodes[tile.zeroBasedIndex]).initialized
+    }
+
     @Suppress("purity")
     private fun fetchCache(): PathingMapCache {
         val latestKey = getCurrentCacheKey()
@@ -227,7 +249,10 @@ class PathingMap(
         fun addWaypoint(tile: Tile) {
             if (tile != startTile && (result.isEmpty() || result.last() != tile)) result.add(tile)
         }
-        var moveThisTurn = FixedPointMovement.FPM_ZERO
+        var moveThisTurn = (cache.key.fullMove - cache.key.moveRemaining).coerceIn(
+            FixedPointMovement.FPM_ZERO,
+            MAX_MOVE_THIS_TURN
+        )
         var previousTile = startTile
         var previousNode = RouteNode(cache.routeNodes[startTile.zeroBasedIndex])
         var lastFullSafeTile = startTile
@@ -519,8 +544,13 @@ class PathingMap(
                 unit,
                 name,
                 getCurrentCacheKey,
-                { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
-                { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
+                // canPassThrough (not a strict null check on cannotPassThroughReason): a tile
+                // whose only problem is an undetected unit of another civ must stay passable here
+                // too, or multi-turn routes would silently detour around such tiles instead of
+                // letting the player order a move onto/through them - the same permissiveness
+                // getMovementToTilesAtPosition's BFS already gives via canPassThrough.
+                { unit.movement.canPassThrough(it, includeEscortUnit) },
+                { unit.movement.thinksItCanMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
                 { from, to ->
                     fpmFromMovement(
