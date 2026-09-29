@@ -1191,6 +1191,117 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-via-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running via Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running via Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buildx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        buildx
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnc-viewers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNC viewers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-getting-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building / getting the image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connecting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#debugging-on-android" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1933,6 +2044,117 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-via-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running via Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running via Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buildx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        buildx
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnc-viewers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNC viewers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-getting-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building / getting the image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connecting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#debugging-on-android" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2147,11 +2369,72 @@
 After building, the output .JAR file should be in <code>/desktop/build/libs/Unciv.jar</code></p>
 </blockquote>
 <p>For actual development, you'll probably need to download Android Studio and build it yourself - see above :)</p>
+<h2 id="running-via-docker">Running via Docker</h2>
+<h3 id="installing-prerequisites">Installing prerequisites</h3>
+<h4 id="docker">Docker</h4>
+<ul>
+<li>Ubuntu or other apt-based Linux distributions: <code>sudo apt install -y docker.io</code> (<em>Not</em> the 'docker' package which is unrelated). Sufficient but will need buildx, below, unless you only want to run the prebuilt container.</li>
+<li>For a more current and complete coverage, follow <a href="https://docs.docker.com/engine/install/">instructions</a> to use Docker's own repositories. With those, you would <code>sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code> instead of 'docker.io' and also get buildx easier.</li>
+<li>Windows: Since you'll need a Linux kernel first, starting at <a href="https://docs.docker.com/desktop/setup/install/windows-install/">the Docker desktop page</a> is your best bet. Includes buildx. Or install WSL2, follow the Linux instructions, and pay attention to network routing issues between the desktop/wsl/docker layers.</li>
+</ul>
+<h4 id="buildx">buildx</h4>
+<p>This plugin is <strong>required</strong> to build (but not to run) the container. If you used the 'docker.io' package above, you must install manually:</p>
+<ul>
+<li>Visit <a href="https://github.com/docker/buildx/releases">buildx releases</a>, fetch the latest release for your platform and architecture.</li>
+<li>Rename to <code>docker-buildx</code>, make executable, and move to <code>~/.docker/cli-plugins</code>.</li>
+<li>Verify with <code>docker buildx version</code>.</li>
+</ul>
+<h4 id="vnc-viewers">VNC viewers</h4>
+<p>Optional. Any compliant viewer should do. Look for open source to avoid malware.</p>
+<ul>
+<li><a href="https://tigervnc.org/">TigerVNC</a> is a lean and solid option. <code>sudo apt install -y tigervnc-viewer</code> is good enough on Ubuntu-based distros. They also have a Windows portable binary available.</li>
+</ul>
+<h3 id="building-getting-the-image">Building / getting the image</h3>
+<p>Building is optional if you just want to run the prebuilt, public container, see below.
+From a terminal in your Unciv clone's root folder, with spare time (several minutes) and disk space (~10G):</p>
+<ul>
+<li>If you have docker compose installed: run <code>docker compose build &amp;&amp; docker compose up</code></li>
+<li>Otherwise: <code>docker build . -t unciv</code> and for a first start:
+    <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>unciv<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">6901</span>:6901<span class="w"> </span>-p<span class="w"> </span><span class="m">5901</span>:5901<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>unciv-data:/home/headless/.local/share/Unciv<span class="w"> </span>unciv
+</code></pre></div></li>
+</ul>
+<p>To use our already built one:
+  <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>unciv<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">6901</span>:6901<span class="w"> </span>-p<span class="w"> </span><span class="m">5901</span>:5901<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>unciv-data:/home/headless/.local/share/Unciv<span class="w"> </span>ghcr.io/yairm210/unciv
+</code></pre></div></p>
+<p>To update your image when the source has changed:</p>
+<ul>
+<li>Run <code>docker rm -f unciv</code>. Removes the container (the updated image is a new one, and any container is bound to a specific image).</li>
+<li>If you used the prebuilt image: <code>docker pull ghcr.io/yairm210/unciv</code></li>
+<li>Then repeat the above steps. Once it works, run <code>docker image prune</code> to clear outdated dangling images.</li>
+</ul>
+<h3 id="running">Running</h3>
+<p>By following the above steps, you have made sure you have a container with the logical name "unciv",
+and from now on, you can run <code>docker stop unciv</code> and <code>docker start unciv</code> as needed.
+That single named container, via a docker-managed volume, also ensures you can keep settings, saves and mods.</p>
+<h3 id="connecting">Connecting</h3>
+<ul>
+<li>Launch <a href="http://localhost:6901/vnc.html?password=headless">http://localhost:6901/vnc.html?password=headless</a></li>
+<li><strong>Or</strong> use your VNC viewer, connect to localhost:5901, and use password <code>headless</code>.</li>
+</ul>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p>For moderately advanced users - in case you can't connect:</p>
+<ul>
+<li>Try VNC instead of the web shim</li>
+<li>A "deny-all" ufw setup can silently break Docker's port publishing: If connections time out or drop immediately, try with a temporary <code>sudo ufw disable</code> to confirm this.</li>
+<li><code>docker ps</code>: containers currently running</li>
+<li><code>docker port unciv</code>: confirm ports are as configured</li>
+<li><code>docker logs unciv</code>: top-level container output</li>
+<li><code>docker exec unciv ps aux</code>: verify Unciv, X11, VNC and noVNC processes are OK</li>
+<li><code>docker exec unciv cat /dockerstartup/vnc.log</code> VNC daemon's logs</li>
+<li><code>docker exec unciv cat /dockerstartup/novnc.log</code> web shim's logs</li>
+</ul>
 <h2 id="debugging-on-android">Debugging on Android</h2>
 <p>Sometimes, checking things out on the desktop version is not enough and you need to debug Unciv running on an Android device.
 For an introduction, see <a href="../Testing-Android-Builds/">Testing android builds</a>.</p>
 <h2 id="testing-packaged-releases">Testing packaged releases</h2>
-<p>You can produce most of the files that get listed in https://github.com/yairm210/Unciv/releases locally.</p>
+<p>You can produce most of the files that get listed in <a href="https://github.com/yairm210/Unciv/releases">https://github.com/yairm210/Unciv/releases</a> locally.</p>
 <p>All of the following will run commands from a terminal in the project's root directory:</p>
 <ul>
 <li>'Unciv.jar': run <code>./gradlew desktop:dist</code> and find the jar in 'desktop/build/libs'.</li>
@@ -2239,12 +2522,21 @@ This may leave a few gigabytes of dead files on your system. If these bother you
   This will force the next gradle sync to re-download a large amount of support files, but this way you will also clean out remnants of superseded support libraries for kotlin, Gdx and so on.</li>
 </ul>
 </li>
+<li>Clean Android Studio settings and cache folders for replaced versions:<ul>
+<li>File-&gt;Manage IDE Settings-&gt;Import Settings will tell you the current configuration folder.</li>
+<li>Help-&gt;Show log in Files (or in Explorer) will tell you where the cache folder is.
+Then, navigate with your file manager to the "Google" parents, and clear all folders named for outdated versions.</li>
+</ul>
+</li>
+<li>Check <code>~/.gradle/wrapper/dists</code> for Gradle distributions you no longer use (over all your projects) and clean them - too much only costs bandwidth and time.</li>
 </ul>
 <p>Additionally, git prioritizes safety of your changes over efficiency to the extreme, leading to some bloat.
- <code>git gc</code> is automatically done for you, but sparingly, and running it manually won't hurt.
+<code>git gc</code> is automatically done for you, but sparingly, and running it manually won't hurt.
 For a more thorough cleanup, run <code>git gc --prune=now --aggressive</code> sporadically from Studio's terminal (or any shell within Unicv's project folder),
 making sure to clean up all your obsolete branches first, and that all remaining branches are in sync with the online branches they're backing
 or based on master if they're local only.</p>
+<p>Building artifacts (running <code>./gradlew desktop:packrWindows64</code>, <code>./gradlew server:zipLinux64</code> or similar commands) will keep copies of downloaded packr jar and JRE archives in <code>desktop/.jre-cache</code>, which you can clean out at your leisure. A later run of these Gradle tasks will re-download as required.</p>
+<p>If you have been running the Unciv Docker image, it's your only use of Docker, and you no longer need it: stop containers, then <code>docker system prune -a --volumes &amp;&amp; docker builder prune -a</code> will clear everything and reclaim the maximum disk space. Caution: nukes <em>everything</em> Docker-related except the software itself.</p>
 <h3 id="uncivserver">UncivServer</h3>
 <p>The simple multiplayer host included in the sources can be set up to debug or run analogously to the main game:
 -   In Android Studio, Run &gt; Edit configurations.
