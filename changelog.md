@@ -1,40 +1,15 @@
-## 4.22.4
+## 4.22.5
 
-perf: Improve tech screen init latency by iterating all objects once, instead of all objects per tech, to find dependencies
-
-Resolved  - Fix spectator overview, for real this time
-
-.
-
-Fixed template.properties
-
-Added fallback option to allow users to return to older rendering - see 
-
-Bump version and create initial changelog entry 
-
-Resolved  - avoid cityscreen update when screen has already been replaced
-
-Fixed victory number formatting bug - see https://discord.com/channels/586194543280390151/1552398135110668399
-
-By SomeTroglodyte:
-- chore: FormattedLine List builder 
-- fix: Correct display of fractional movement when system and game language differ 
-- Change versioning inside the MSI installer to allow patch versions 
-- chore: Improve Gradle build scripts for desktop and server 
-- Add a `--log` option to the Linux Unciv.sh launcher to enable logs from the release build 
-- Fix Java 9+ specific method use crashing NextTurn on Java 8 
+Faster tech screen 
 
 By dangdinhbaohoang12:
-- fix:Refactor movement logic for hidden unit handling 
-- Fix overview screen column visibility - now per civ 
+- Better movement logic when discovering hidden units
 
-fix: prevent displacement captures and stale unit automation - By mvanhorn
+Prevent displacement captures and stale unit automation - By mvanhorn
 
-only alive major civs for time victory - By ssamt
+Only alive major civs for time victory - By ssamt
 
 Added default promotion entry to tutorial.json - By Emandac
-
-Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
 
 ## 4.22.4
 
