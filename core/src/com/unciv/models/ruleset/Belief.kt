@@ -71,7 +71,7 @@ class Belief() : RulesetObject() {
         private fun getBeliefsMatching(name: String, ruleset: Ruleset) =
             ruleset.beliefs.values.asSequence()
             .filterNot { it.isHiddenFromCivilopedia(ruleset) }
-            .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } } }
+            .filter { it.hasUniquesMentioning(name) }
 
         /** Get CivilopediaText lines for all Beliefs referencing a given name in an unique parameter,
          *  With optional spacing and "See Also:" header.

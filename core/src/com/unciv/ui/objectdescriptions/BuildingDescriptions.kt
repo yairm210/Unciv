@@ -264,7 +264,7 @@ object BuildingDescriptions {
         val seeAlso = ArrayList<FormattedLine>()
         for (seeAlsoBuilding in ruleset.buildings.values) {
             if (seeAlsoBuilding.replaces == name
-                || seeAlsoBuilding.uniqueObjects.any { unique -> unique.params.any { it == name } })
+                || seeAlsoBuilding.hasUniquesMentioning(name))
                 seeAlso += FormattedLine(seeAlsoBuilding.name, link = seeAlsoBuilding.makeLink(), indent=1)
         }
         seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
