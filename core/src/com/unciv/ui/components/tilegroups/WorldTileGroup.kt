@@ -23,7 +23,7 @@ class WorldTileGroup(tileView: TileView, tileSetStrings: TileSetStrings)
 
         val shouldShowWorkedIcon = UncivGame.Current.settings.showWorkedTiles   // Overlay enabled;
                 && isViewable(viewingCiv)                                       // We see tile;
-                && tileView.owningCity()?.let { viewingCiv.isOwnerOf(it) } == true // Tile belongs to us;
+                && tileView.owningCity()?.isOwnedByViewer() == true                // Tile belongs to us;
                 && tileView.isWorked()                                          // Tile is worked;
 
         if (!shouldShowWorkedIcon)

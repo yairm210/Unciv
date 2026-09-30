@@ -38,7 +38,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         val tileView = selectedTileView?.let { civView.gameView.getTile(it) }
         if (tileView != null && (DebugUtils.VISIBLE_MAP || civView.hasExplored(tileView))) {
             add(getStatsTable(tileView)).left().row()
-            add(MarkupRenderer.render(TileDescription.toMarkup(tileView, civView), padding = 0f, iconDisplay = IconDisplay.None) {
+            add(MarkupRenderer.render(TileDescription.toMarkup(tileView), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
             } ).padTop(5f).row()
             if (DebugUtils.VISIBLE_MAP) add(tileView.position().toPrettyString().toLabel()).colspan(2).pad(5f)
