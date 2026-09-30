@@ -9,6 +9,7 @@ import com.unciv.logic.map.HexMath.getLongitude
 import com.unciv.logic.map.HexMath.worldFromLatLong
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
@@ -238,5 +239,23 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
      */
     fun markMinimapUpdated() {
         shouldUpdateMinimap = false
+    }
+
+    /** Reset and rebuild for every tile [civ] has explored in [tileMap] */
+    fun rebuildFor(tileMap: TileMap, civ: Civilization) {
+        val exploredPositions = tileMap.values.asSequence()
+            .filter { civ.hasExplored(it) }.map { it.position }
+        rebuildFrom(tileMap.mapParameters, exploredPositions)
+    }
+
+    /** Reset and rebuild with [mapParameters] for all [exploredPositions] */
+    fun rebuildFrom(mapParameters: MapParameters, exploredPositions: Sequence<HexCoord>) {
+        setMapParameters(mapParameters)
+        topLeft.set(0f, 0f)
+        bottomRight.set(0f, 0f)   // back to the "empty" sentinel
+        for (position in exploredPositions)
+            expandToInclude(position, null)
+        shouldRecalculateCoords = true
+        shouldUpdateMinimap = true
     }
 }
