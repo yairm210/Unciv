@@ -1,3 +1,16 @@
+## 4.22.5
+
+Faster tech screen 
+
+By dangdinhbaohoang12:
+- Better movement logic when discovering hidden units
+
+Prevent displacement captures and stale unit automation - By mvanhorn
+
+Only alive major civs for time victory - By ssamt
+
+Added default promotion entry to tutorial.json - By Emandac
+
 ## 4.22.4
 
 Fixed error on cityscreen update when screen has already been replaced

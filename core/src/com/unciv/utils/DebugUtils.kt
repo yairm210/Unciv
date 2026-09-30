@@ -25,7 +25,10 @@ object DebugUtils {
     /** For when you need to test something in an advanced game and don't have time to faff around */
     var SUPERCHARGED: Boolean = false
 
-    /** Shows the current FPS in the top-right corner of every screen. */
+    /** Shows the current FPS in the top-left corner of every [BaseScreen][com.unciv.ui.screens.basescreen.BaseScreen]
+     *  except [GameStartScreen][com.unciv.ui.screens.GameStartScreen] and
+     *  [CrashScreen][com.unciv.ui.crashhandling.CrashScreen] (both are constructed before the skin
+     *  is set up and so can't render it). */
     var SHOW_FPS: Boolean = false
 
     /** Simulate until this turn on the first "Next turn" button press.

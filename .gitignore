@@ -192,3 +192,8 @@ detekt/reports.html
 
 # Used by the desktop:packr<platform> tasks and intentionally not included in a 'clean':
 /desktop/.jre-cache/
+
+/.github/workflows/unciv.msi
+/.github/workflows/unciv.wixpdb
+/.github/workflows/wix-msi-files/
+/desktop/packr/*
