@@ -65,16 +65,19 @@ class Belief() : RulesetObject() {
     }
 
     companion object {
-        // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         @Readonly
-        private fun getBeliefsMatching(name: String, ruleset: Ruleset) =
+        fun getBeliefsMatching(name: String, ruleset: Ruleset) =
             ruleset.beliefs.values.asSequence()
             .filterNot { it.isHiddenFromCivilopedia(ruleset) }
             .filter { it.hasUniquesMentioning(name) }
 
         /** Get CivilopediaText lines for all Beliefs referencing a given name in an unique parameter,
          *  With optional spacing and "See Also:" header.
+         *
+         *  The gradual builder pattern conversion will need to replace this with [getBeliefsMatching], appending to any other see-also objects,
+         *  then format the list themselves. In a later stage, that formatting will get a helper in the builder.
          */
+        @Deprecated("TODO - see Kdoc")
         fun getCivilopediaTextMatching(
             name: String,
             ruleset: Ruleset,
