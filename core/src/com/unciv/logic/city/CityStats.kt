@@ -210,7 +210,7 @@ class CityStats(val city: City) {
         val cityStateStatsMultipliers = city.civ.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
 
         fun addUniqueStats(unique: Unique) {
-            @LocalState val stats = unique.stats.clone()
+            val stats = unique.stats.clone()
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
                     stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
@@ -653,11 +653,6 @@ class CityStats(val city: City) {
     private fun calcFoodEaten(): Float {
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
         var foodEaten = city.population.population.toFloat() * 2 - foodEatenBySpecialists
-        
-        city.forEachMatchingUnique(UniqueType.FoodConsumptionBySpecialists) { unique ->
-            if (city.matchesFilter(unique.params[1]))
-                foodEatenBySpecialists *= unique.params[0].toPercent()
-        }
 
         foodEaten += foodEatenBySpecialists
 

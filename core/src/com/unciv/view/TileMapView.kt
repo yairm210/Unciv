@@ -34,6 +34,9 @@ class TileMapView(private val tileMap: TileMap,
     /** Returns the [TileView] at [position], or `null` if it isn't explored by [viewer]. */
     @Readonly fun getTile(position: HexCoord): TileView? = tileMap[position].toViewIfExplored()
 
+    /** Position of [position] normalized to the map's non-wrapped bounds, for world-wrap rendering. */
+    @Readonly fun getUnwrappedPosition(position: HexCoord): HexCoord = tileMap.getUnwrappedPosition(position)
+
     // Not sure if I want these as part of the API -
     // we can separate the "get coord" part and put it in HexMath,
     // And add a new function of "get tile by coord" in here :thunk:

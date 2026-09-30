@@ -59,7 +59,6 @@ object IdChecker {
     // or "http://unciv.app/P-2ddb3a34-0699-4126-b7a5-38603e665928-2?name=%C4%90%E1%BA%B7ng"
     @Pure
     private fun checkAndReturnIdFromUrl(id: String, prefix: String): Friend? {
-        @LocalState
         val url = try {
             Url(id)
         } catch (e: URLParserException) {

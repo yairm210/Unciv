@@ -337,6 +337,7 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         verticalWall(2, {tile -> testGame.addUnit("Warrior", barbarianCiv, tile)})
         testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
         val unit = testGame.addUnit("Warrior", civInfo, originTile)
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
         val paths = unit.movement.getShortestPath(testGame.tileMap[4,4])
         assertEquals(listOf<Tile>(), paths)
     }
@@ -496,6 +497,7 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         verticalWall(2, {tile -> testGame.addUnit("Warrior", barbarianCiv, tile)})
         testGame.addUnit("Worker", civInfo, testGame.tileMap[1,1])
         val unit = testGame.addUnit("Worker", civInfo, originTile)
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
         val paths = unit.movement.getShortestPath(testGame.tileMap[4,4])
         assertEquals(listOf<Tile>(), paths)
     }
@@ -626,6 +628,19 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
 
         assertEquals(path.toString(), 1, path.size)
 //        assertEquals(path.firstEntry().key, originTile)
+    }
+
+    @Test
+    fun getMovementToTilesAtPosition_whenLessThanFullMovement_reportsTotalMovementCorrectly() {
+        verticalWall(0) {it.setRoadStatus(RoadStatus.Road, civInfo)  }
+        val unit = testGame.addUnit("Archer", civInfo, originTile)
+        unit.currentMovement = 1.6666667f
+
+        val paths = unit.movement.getMovementToTilesAtPosition(originTile.position, 1.6666667f)
+
+        val moreThanHalfMovement = testGame.tileMap[0,3]
+        assertEquals(0f, paths[originTile]!!.totalMovement, 0.01f)
+        assertEquals(1.5f, paths[moreThanHalfMovement]!!.totalMovement, 0.01f)
     }
 
     @Test
