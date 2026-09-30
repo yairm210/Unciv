@@ -9,6 +9,7 @@ import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -22,12 +23,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
-    @Pure
+    @Pure @ReturnsNewInstance
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
-    @Pure
+    @Pure @ReturnsNewInstance
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -126,10 +127,10 @@ object HexMath {
     @Pure
     fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        val xVector = getVectorByClockHour(10)
+        @LocalState val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
 
-        val yVector = getVectorByClockHour(2)
+        @LocalState val yVector = getVectorByClockHour(2)
         yVector.scl(sqrt(3.0).toFloat() * hexCoord.y)
 
         return xVector.add(yVector)

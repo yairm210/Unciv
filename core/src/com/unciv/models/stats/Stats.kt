@@ -263,7 +263,7 @@ open class Stats(
         @Pure
         fun parse(string: String): Stats {
             val toReturn = Stats()
-            val statsWithBonuses = string.split(", ")
+            @LocalState val statsWithBonuses = string.split(", ")
             statsWithBonuses.forEach { statWithBonuses ->
                 val match = statRegex.matchEntire(statWithBonuses)!!
                 @Immutable val groupValues = match.groupValues
