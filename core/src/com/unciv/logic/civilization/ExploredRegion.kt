@@ -101,6 +101,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
         if (isEmpty()) {
             topLeft = Vector2(longitude, latitude)
             bottomRight = Vector2(longitude, latitude)
+            shouldRecalculateCoords = true
+            shouldUpdateMinimap = true
             return
         }
 
@@ -208,19 +210,21 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isPositionInRegion(position: HexCoord): Boolean {
+        if (isEmpty()) return false
         val long = getLongitude(position)
         val lat = getLatitude(position)
-        return if (topLeft.x > bottomRight.x)
-                (long <= topLeft.x && long >= bottomRight.x && lat <= topLeft.y && lat >= bottomRight.y)
-            else
-                (((long >= topLeft.x && long >= bottomRight.x) || (long <= topLeft.x && long <= bottomRight.x)) && lat <= topLeft.y && lat >= bottomRight.y)
+        if (lat > topLeft.y || lat < bottomRight.y) return false
+        return if (topLeft.x >= bottomRight.x)
+            long <= topLeft.x && long >= bottomRight.x   // plain range
+        else
+            long <= topLeft.x || long >= bottomRight.x   // wrapped: outside the gap
     }
 
     @Readonly
     fun getWidth(): Int {
-        val result: Float
-        if (topLeft.x > bottomRight.x) result = topLeft.x - bottomRight.x
-        else result = mapRadius * 2f - (bottomRight.x - topLeft.x)
+        val result =
+            if (topLeft.x >= bottomRight.x) topLeft.x - bottomRight.x
+            else mapRadius * 2f - (bottomRight.x - topLeft.x)
         return result.toInt() + 1
     }
 
