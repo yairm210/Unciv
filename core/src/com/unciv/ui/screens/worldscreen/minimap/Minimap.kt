@@ -16,13 +16,12 @@ import com.unciv.ui.components.input.UncivActorGestureListener
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class TileLayerGroup: NonTransformGroup(){
+class TileLayerGroup: NonTransformGroup() {
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
@@ -68,7 +67,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         addActor(borderLayer)
         addActor(cityLayer)
 
-        val scrollIndicatorLayer = NonTransformGroup() // Do not block!
+        val scrollIndicatorLayer = Group().apply { touchable = Touchable.disabled } // Do not block!
         scrollIndicatorLayer.setSize(width, height)
         scrollPositionIndicators = createScrollPositionIndicators()
         scrollPositionIndicators.forEach(scrollIndicatorLayer::addActor)
@@ -220,7 +219,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         worldHeight: Float,
         worldViewport: Rectangle
     ) {
-        @Pure
         fun Rectangle.mul(other: Vector2) =
             set(x * other.x, y * other.y, width * other.x, height * other.y)
 
