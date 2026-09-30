@@ -19,9 +19,6 @@ open class TileGroup(
     /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
     var tileView: TileView = tileView
         private set
-
-    @Deprecated("Use tileView instead")
-    private val tile: Tile get() = tileView.getTile()
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -101,11 +98,13 @@ open class TileGroup(
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
             if (tileView.getCivView() != null)
-                tileView = TileMapView(tile.tileMap, null).getTile(tile)
+                throw Exception("Shouldn't be able to get from civ-view to null-view -" +
+                        " civ-view is for games, null-view is for map editor and single-tile visualization!")
         } else {
             val newTileMapView = viewingCiv.gameView.tileMapView
-            if (tileView.tileMapView !== newTileMapView)
-                tileView = newTileMapView.getTile(tile)
+            if (tileView.tileMapView !== newTileMapView) 
+                // We switched viewers - e.g. spectator changing who it's spectating as
+                tileView = viewingCiv.gameView.getTile(tileView)
         }
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()

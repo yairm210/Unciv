@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexCoord
+import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -10,6 +11,7 @@ enum class AttackParticipantOutcome {
 }
 
 /** A participant's identity at attack time, independent of later movement, renaming or capture. */
+@InternalState
 class AttackParticipant() : IsPartOfGameInfoSerialization {
     var unitID: Int? = null
     var civID = ""
@@ -46,7 +48,7 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun clone(): AttackParticipant {
-        @LocalState val result = AttackParticipant()
+        val result = AttackParticipant()
         result.unitID = unitID
         result.civID = civID
         result.name = name

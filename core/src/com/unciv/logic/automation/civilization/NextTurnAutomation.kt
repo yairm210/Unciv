@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import com.unciv.view.GameView
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 
@@ -41,17 +42,19 @@ object NextTurnAutomation {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
+        val civView = GameView(civInfo.gameInfo, civInfo).civView
+
         respondToPopupAlerts(civInfo)
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
-                DiplomacyAutomation.declareWar(civInfo)
+                DiplomacyAutomation.declareWar(civView)
                 DiplomacyAutomation.offerPeaceTreaty(civInfo)
                 DiplomacyAutomation.askForHelp(civInfo)
                 DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
             }
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
 
@@ -81,7 +84,7 @@ object NextTurnAutomation {
         automateUnits(civInfo)  // this is the most expensive part
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
-            if (civInfo.gameInfo.isReligionEnabled()) {
+            if (civView.isReligionEnabled()) {
                 // Can only be done now, as the prophet first has to decide to found/enhance a religion
                 ReligionAutomation.chooseReligiousBeliefs(civInfo)
             }
@@ -400,7 +403,12 @@ object NextTurnAutomation {
 
     private fun automateUnits(civInfo: Civilization) {
         val isAtWar = civInfo.isAtWar()
-        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
+        // Instances present when the pass starts. addUnit/removeUnit replace UnitManager's list,
+        // so units acquired later must not extend this pass. The instances stay mutable:
+        // capturedBy changes owner on the same object, and an earlier action can do that to a
+        // later one, so ownership and destruction are checked at each dispatch, not before the loop.
+        val unitsAtStart = civInfo.units.getCivUnits().toList()
+        fun unitsInPriorityOrder() = unitsAtStart.sortedBy { unit -> getUnitPriority(unit, isAtWar) }
 
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
@@ -411,22 +419,34 @@ object NextTurnAutomation {
             }
             .toList()
 
-        for (unit in sortedUnits) applyPromotions(unit)
-        for (unit in sortedUnits) {
+        for (unit in unitsInPriorityOrder()) {
+            if (!isStillOurUnit(unit, civInfo)) continue
+            applyPromotions(unit)
+        }
+        for (unit in unitsInPriorityOrder()) {
             // settlers need to move before automateSettlerEscorting(),
             // move spaceship parts before that to make sure we're not blocking them
-            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) continue
+            if (!isStillOurUnit(unit, civInfo)) continue
+            UnitAutomation.automateUnitMoves(unit)
         }
 
         if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
 
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
 
-        for (unit in sortedUnits) {
+        for (unit in unitsInPriorityOrder()) {
             // spaceship parts and settlers have already moved
-            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) continue
+            if (!isStillOurUnit(unit, civInfo)) continue
+            UnitAutomation.automateUnitMoves(unit)
         }
     }
+
+    /** False once an earlier action in this pass has captured or destroyed [unit]. */
+    @Readonly
+    private fun isStillOurUnit(unit: MapUnit, civInfo: Civilization) =
+        !unit.isDestroyed && unit.civ == civInfo
 
     internal fun applyPromotions(unit: MapUnit) {
         // Restrict Human automated units from promotions via setting

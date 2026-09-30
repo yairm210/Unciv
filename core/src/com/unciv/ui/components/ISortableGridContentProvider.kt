@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.images.ImageGetter
+import com.unciv.view.CivView
 
 /**
  * This defines all behaviour of a sortable Grid per column through overridable parts:
@@ -46,8 +46,10 @@ interface ISortableGridContentProvider<IT, ACT> {
     // Relevant for visuals (simply inverting the comparator would leave the displayed arrow not matching)
     val defaultSort: SortableGrid.SortDirection
 
-    /** @return whether the column should be rendered */
-    fun isVisible(gameInfo: GameInfo): Boolean = true
+    /** @return whether the column should be rendered
+     *  @param viewingPlayer The Civilization (wrapped for view purposes) that opened the overview screen -
+     *         this is the actual person looking at the grid, as opposed to whoever's turn it currently is. */
+    fun isVisible(viewingPlayer: CivView): Boolean = true
 
     /** [Comparator] Factory used for sorting.
      * - The default will sort by [getEntryValue] ascending.

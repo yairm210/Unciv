@@ -7,7 +7,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign units. Superclass of [MapUnitView]. */
-open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<MapUnit>(unit, viewer, spectatorMode, gameView) {
+open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : OwnedView<MapUnit>(unit, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = unit.civ
+
     val name: String get() = unit.name
     val civName: String get() = unit.civ.civName
     val unitHealth: Int get() = unit.health

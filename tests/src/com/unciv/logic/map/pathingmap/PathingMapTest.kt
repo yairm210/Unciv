@@ -245,6 +245,7 @@ class PathingMapTest {
         baseUnit.range = 2
         val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
         unit.currentMovement = 3f
+        civInfo.viewableTiles = testGame.tileMap.values.toSet()
 
         val pathing = PathingMap.createUnitPathingMap(unit)
         val attackableTiles = pathing.bfsAllMatchingTiles(1) { tile, _ -> tile.militaryUnit?.civ == evemyCiv}
@@ -342,6 +343,32 @@ class PathingMapTest {
         Assert.assertEquals(listOf(testGame.getTile(HexCoord(1, 0)), target), path)
         val node = pathing.getCachedNode(target)
         Assert.assertEquals(1, node.damagingTiles)
+    }
+
+    @Test
+    fun damagedRoute_respectsPartiallySpentMovement() {
+        // The first Plains tile consumes the last point this turn. Subsequent Mountain tiles make
+        // ending a turn with damage unavoidable, so this must use the damaged-route reconstruction.
+        for (tile in testGame.tileMap.tileList) {
+            testGame.setTileTerrain(tile.position, "Mountain")
+        }
+        val firstTurnWaypoint = testGame.setTileTerrain(HexCoord(0, 1), "Plains")
+        val target = testGame.setTileTerrain(HexCoord(0, 5), "Plains")
+        val civ = testGame.addCiv("Land units may cross [Mountain] tiles after the first [Great General] is earned")
+        civ.passThroughImpassableUnlocked = true
+        civ.passableImpassables.add("Mountain")
+
+        val baseUnit = testGame.createBaseUnit()
+        baseUnit.movement = 3
+        val unit = testGame.addUnit(baseUnit.name, civ, originTile)
+        unit.currentMovement = 1f
+
+        val pathing = PathingMap.createUnitPathingMap(unit)
+        val path = pathing.getShortestPath(target)!!
+
+        Assert.assertEquals(firstTurnWaypoint, path.first())
+        Assert.assertEquals(target, path.last())
+        Assert.assertTrue(pathing.getCachedNode(target).damagingTiles > 0)
     }
 
     @Test

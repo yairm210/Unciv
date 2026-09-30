@@ -9,18 +9,17 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 class UnitRenamePopup(val screen: BaseScreen, val unit: MapUnit, val actionOnClose: ()->Unit) {
     init {
+        val defaultName = unit.baseUnit.name.tr(hideIcons = true)
         AskTextPopup(
             screen,
             label = "Choose name for [${unit.baseUnit.name}]",
             icon = ImageGetter.getUnitIcon(unit.baseUnit).surroundWithCircle(80f),
-            defaultText = unit.instanceName ?: unit.baseUnit.name.tr(hideIcons = true),
-            validate = { it != unit.name },
+            defaultText = unit.instanceName ?: defaultName,
             actionOnOk = { userInput ->
-                //If the user inputs an empty string, clear the unit instanceName so the base name is used
-                unit.instanceName = if (userInput == "") null else userInput
+                //If the user inputs an empty string OR the original name, clear the unit instanceName so the base name is used
+                unit.instanceName = if (userInput == "" || userInput == defaultName) null else userInput
                 actionOnClose()
             }
         ).open()
     }
-
 }

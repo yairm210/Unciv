@@ -8,13 +8,14 @@ coroutines = "1.10.2"
 
 gdx = "1.14.2"
 discord = "v2.0.1"
+textureArrayBatch = "v1.2"
 
 jna = "5.17.0"
 ktor = "3.2.3"
 logback = "1.5.21"
 clikt = "5.0.3"
 
-purity = "1.7.1"
+purity = "1.8.1"
 detekt = "1.23.8"
 
 # tests
@@ -51,6 +52,8 @@ gdx-backend-android = { group = "com.badlogicgames.gdx", name = "gdx-backend-and
 gdx-backend-headless = { group = "com.badlogicgames.gdx", name = "gdx-backend-headless", version.ref = "gdx" }
 
 discord = { group = "com.github.MinnDevelopment", name = "java-discord-rpc", version.ref = "discord" }
+
+gdx-texture-array-batch = { group = "com.github.carlislefox", name = "libgdx-texture-array-batch", version.ref = "textureArrayBatch" }
 
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }

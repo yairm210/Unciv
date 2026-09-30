@@ -75,17 +75,12 @@ object Automation {
     fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean): Float
         = timeThis("Automation.rankStatsForCityWork") {
         val cityAIFocus = city.getCityFocus()
-        @LocalState val yieldStats = stats.clone()
+        val yieldStats = stats.clone()
         val cityStatsObj = city.cityStats
         val civInfo = city.civ
         val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
 
         if (areWeRankingSpecialist) {
-            // If you have the Food Bonus, count as 1 extra food production (base is 2food)
-            city.forEachMatchingUnique(UniqueType.FoodConsumptionBySpecialists, city.state) { unique: Unique ->
-                if (city.matchesFilter(unique.params[1]))
-                    yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
-            }
             // Specialist Happiness Percentage Change 0f-1f
             city.forEachMatchingUnique(UniqueType.UnhappinessFromPopulationTypePercentageChange, city.state) { unique: Unique ->
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
