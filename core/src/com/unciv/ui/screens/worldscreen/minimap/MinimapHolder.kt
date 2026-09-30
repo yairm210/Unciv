@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.minimap
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
@@ -71,9 +70,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         improvementsImageButton
     )
 
-    private fun rebuildIfSizeChanged(civInfo: Civilization) {
+    private fun rebuildIfStale(civInfo: Civilization) {
         // For Spectator should not restrict minimap
-        val civ: Civilization? = civInfo.takeUnless { GUI.getWorldScreen().selectedGameView.spectatorMode }
+        val civ: Civilization? = civInfo.takeUnless { worldScreen.selectedGameView.spectatorMode }
         val newMinimapSize = worldScreen.game.settings.minimapSize
         val cutoutSetting = worldScreen.game.settings.androidCutout
         if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return
@@ -194,7 +193,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     fun update(civInfo: Civilization) {
-        rebuildIfSizeChanged(civInfo)
+        rebuildIfStale(civInfo)
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
