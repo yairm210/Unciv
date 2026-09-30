@@ -558,7 +558,7 @@ class WorldScreen(
         tutorialTaskTable.isVisible = true
     }
 
-    fun setSelectedCiv(civ: Civilization) {
+    private fun setSelectedCiv(civ: Civilization) {
         selectedCiv = civ
         selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }

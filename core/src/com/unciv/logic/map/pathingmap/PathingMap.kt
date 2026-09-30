@@ -71,7 +71,6 @@ import kotlin.collections.get
  *     37+ times. Instead, this class could ~BFS to (movement-1) + (range tiles), do a linear scan
  *     for enemies, and return the path to each enemy. Or similar.
  */
-@InternalState
 class PathingMap(
     private val tileMap: TileMap,
     private val debugId: Any,
