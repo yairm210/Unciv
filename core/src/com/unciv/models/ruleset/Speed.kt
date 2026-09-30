@@ -4,7 +4,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 import java.util.*
@@ -93,23 +93,24 @@ class Speed : RulesetObject() {
 
     override fun makeLink(): String = "Speed/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2)
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
-        yield(FormattedLine("General speed modifier: [${modifier * 100}]%${Fonts.turn}"))
-        yield(FormattedLine("Production cost modifier: [${productionCostModifier * 100}]%${Fonts.production}"))
-        yield(FormattedLine("Gold cost modifier: [${goldCostModifier * 100}]%${Fonts.gold}"))
-        yield(FormattedLine("Science cost modifier: [${scienceCostModifier * 100}]%${Fonts.science}"))
-        yield(FormattedLine("Culture cost modifier: [${cultureCostModifier * 100}]%${Fonts.culture}"))
-        yield(FormattedLine("Faith cost modifier: [${faithCostModifier * 100}]%${Fonts.faith}"))
-        yield(FormattedLine("Improvement build length modifier: [${improvementBuildLengthModifier * 100}]%${Fonts.turn}"))
-        yield(FormattedLine("Diplomatic deal duration: [$dealDuration] turns${Fonts.turn}"))
-        yield(FormattedLine("Gold gift influence gain modifier: [${goldGiftModifier * 100}]%${Fonts.gold}"))
-        yield(FormattedLine("City-state tribute scaling interval: [${cityStateTributeScalingInterval}] turns${Fonts.turn}"))
-        yield(FormattedLine("Barbarian spawn modifier: [${barbarianModifier * 100}]%${Fonts.strength}"))
-        yield(FormattedLine("Golden age length modifier: [${goldenAgeLengthModifier * 100}]%${Fonts.happiness}"))
-        yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}"))
-        yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
-        yield(FormattedLine("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr()))
-        yieldAll(uniquesToCivilopediaTextLines())
-    }.toList()
+    @Readonly
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        add("General speed modifier: [${modifier * 100}]%${Fonts.turn}")
+        add("Production cost modifier: [${productionCostModifier * 100}]%${Fonts.production}")
+        add("Gold cost modifier: [${goldCostModifier * 100}]%${Fonts.gold}")
+        add("Science cost modifier: [${scienceCostModifier * 100}]%${Fonts.science}")
+        add("Culture cost modifier: [${cultureCostModifier * 100}]%${Fonts.culture}")
+        add("Faith cost modifier: [${faithCostModifier * 100}]%${Fonts.faith}")
+        add("Improvement build length modifier: [${improvementBuildLengthModifier * 100}]%${Fonts.turn}")
+        add("Diplomatic deal duration: [$dealDuration] turns${Fonts.turn}")
+        add("Gold gift influence gain modifier: [${goldGiftModifier * 100}]%${Fonts.gold}")
+        add("City-state tribute scaling interval: [${cityStateTributeScalingInterval}] turns${Fonts.turn}")
+        add("Barbarian spawn modifier: [${barbarianModifier * 100}]%${Fonts.strength}")
+        add("Golden age length modifier: [${goldenAgeLengthModifier * 100}]%${Fonts.happiness}")
+        add("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}")
+        add("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}")
+        add("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr())
+        addUniques()
+    }
     override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
 }

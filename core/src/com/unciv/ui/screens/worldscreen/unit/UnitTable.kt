@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.HexCoord
-import com.unciv.models.Spy
 import com.unciv.ui.components.extensions.addRoundCloseButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -27,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
 import com.unciv.view.ForeignCityView
 import com.unciv.view.ForeignMapUnitView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
 import java.awt.Label
@@ -73,7 +73,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     val selectedCity: ForeignCityView?
         get() = (presenter as? CityPresenter)?.selectedCity
 
-    val selectedSpy: Spy?
+    val selectedSpy: SpyView?
         get() = (presenter as? SpyPresenter)?.selectedSpy
 
     val selectedUnits: List<MapUnitView> by unitPresenter::selectedUnits
@@ -147,9 +147,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         resetUnitTable()
     }
 
-    fun selectSpy(spy: Spy?) {
+    fun selectSpy(spyView: SpyView?) {
         presenter = spyPresenter
-        spyPresenter.selectSpy(spy)
+        spyPresenter.selectSpy(spyView)
         resetUnitTable()
     }
 
@@ -222,7 +222,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         val civView = worldScreen.selectedGameView.civView
 
         @Readonly
-        fun ForeignMapUnitView.isEligible(): Boolean = (civView.isOwnerOf(this) || civView.isSpectator())
+        fun ForeignMapUnitView.isEligible(): Boolean = (this.isOwnedByViewer() || civView.isSpectator())
                 && this !in selectedUnits
 
         // This is the Civ 5 Order of selection:
@@ -261,7 +261,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         val selectedTileCity = selectedTileView.owningCity()
         val isCitySelected = selectedTileView.isCityCenter()
             && selectedTileCity != null
-            && (civView.isOwnerOf(selectedTileCity) || civView.isSpectator())
+            && (selectedTileCity.isOwnedByViewer() || civView.isSpectator())
             && !selectedUnitIsConnectingRoad
         when {
             forceSelectUnitView != null -> selectUnit(forceSelectUnitView)

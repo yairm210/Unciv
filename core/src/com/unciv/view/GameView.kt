@@ -3,10 +3,12 @@ package com.unciv.view
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
 import yairm210.purity.annotations.Readonly
 
 /** View of a [GameInfo] from the perspective of [viewer]. */
@@ -23,11 +25,19 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
     @Readonly fun getForeignMapUnitView(unit: MapUnit): ForeignMapUnitView = ForeignMapUnitView(unit, viewer, spectatorMode, this)
     @Readonly fun getMapUnitView(unit: MapUnit): MapUnitView = MapUnitView(unit, viewer, spectatorMode, this)
     @Readonly fun getForeignCivView(civ: Civilization): ForeignCivView = ForeignCivView(civ, viewer, spectatorMode, this)
+    @Readonly fun getDiplomacyManagerView(diplomacyManager: DiplomacyManager): DiplomacyManagerView = DiplomacyManagerView(diplomacyManager, viewer, spectatorMode, this)
+    @Readonly fun getSpyView(spy: Spy): SpyView = SpyView(spy, viewer, spectatorMode, this)
 
     // Data retrieval
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
     /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
     @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
+
+    /** All cities [viewer] has explored the center tile of, regardless of whether [viewer] has met
+     *  their owning civ - matches the visibility rule used for spy move targets in
+     *  [EspionageOverviewScreen][com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen]. */
+    @Readonly fun getExploredCities(): List<ForeignCityView> =
+        wrapped.getCities().filter { viewer.hasExplored(it.getCenterTile()) }.map { getForeignCityView(it) }.toList()
 
     /** Units whose past movements may be displayed from this view's perspective. */
     @Readonly fun getUnitsWithVisibleMovementHistory(): Sequence<ForeignMapUnitView> =

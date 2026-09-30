@@ -74,11 +74,16 @@ allprojects {
             "io.ktor.http.Parameters.get",
 
             "java.util.BitSet.clone",
+
+            "kotlin.collections.orEmpty",
         )
         wellKnownPureClasses = setOf(
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+        )
+        wellKnownNewInstanceFunctions = setOf(
+            "kotlin.text.split"
         )
         warnOnPossibleAnnotations = false
     }
@@ -180,6 +185,7 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
+        "implementation"(rootProject.libs.gdx.texture.array.batch)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 

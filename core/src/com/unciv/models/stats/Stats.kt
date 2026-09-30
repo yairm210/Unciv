@@ -65,7 +65,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new instance containing the same values as `this` */
-    @Readonly fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+    @Readonly @ReturnsNewInstance fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
     @Readonly
