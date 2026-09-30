@@ -7,7 +7,6 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /** A builder for use in [ICivilopediaText.getCivilopediaTextLines].
@@ -34,7 +33,6 @@ interface FormattedLineListBuilder {
             capacity: Int = 16,
             block: FormattedLineListBuilder.() -> Unit
         ): List<FormattedLine> {
-            @LocalState
             val builder = FormattedLineListBuilderImpl(defaults, capacity)
             builder.block()
             return builder.build()

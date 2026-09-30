@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import yairm210.purity.annotations.ReturnsNewInstance

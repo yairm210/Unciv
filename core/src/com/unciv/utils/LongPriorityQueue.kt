@@ -2,7 +2,6 @@ package com.unciv.utils
 
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.Objects
 import java.util.Spliterator.CONCURRENT
