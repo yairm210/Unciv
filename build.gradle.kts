@@ -82,6 +82,9 @@ allprojects {
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
         )
+        wellKnownNewInstanceFunctions = setOf(
+            "kotlin.text.split"
+        )
         warnOnPossibleAnnotations = false
     }
 

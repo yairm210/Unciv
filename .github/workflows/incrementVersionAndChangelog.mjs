@@ -75,10 +75,34 @@ async function tryMergeTranslationPr(github, pr) {
 
 //region Function Definitions
 
+// Finds the most recently released version by looking at git tags (the actual release marker),
+// Returns: {sha, major, minor, patch} of the highest released version tag
+async function getLatestVersionTag(octokit) {
+    const tags = await octokit.paginate(octokit.repos.listTags, {
+        owner: "yairm210", repo: "Unciv", per_page: 100
+    });
+    const versionTags = tags
+        // Ignore patch versions
+        .map(tag => ({ sha: tag.commit.sha, match: tag.name.match(/^(\d+)\.(\d+)\.(\d+)$/) }))
+        .filter(tag => tag.match)
+        .map(tag => ({
+            sha: tag.sha,
+            major: Number(tag.match[1]), minor: Number(tag.match[2]), patch: Number(tag.match[3])
+        }));
+    versionTags.sort((a, b) => b.major - a.major || b.minor - a.minor || b.patch - a.patch);
+    return versionTags[0];
+}
+
 // Returns: [nextVersionString, changelogString]
 async function parseCommits() {
     // no need to add auth: token since we're only reading from the commit list, which is public anyway
     const octokit = new Octokit({});
+
+    const latestVersionTag = await getLatestVersionTag(octokit);
+    if (!latestVersionTag) throw new Error("No version tags found on the repo");
+    const nextVersionString = `${latestVersionTag.major}.${latestVersionTag.minor}.${latestVersionTag.patch + 1}`;
+    console.log("Previous version tag commit: " + latestVersionTag.sha);
+    console.log("Next version: " + nextVersionString);
 
     const result = await octokit.repos.listCommits({
         owner: "yairm210",
@@ -89,23 +113,17 @@ async function parseCommits() {
     let commitSummary = "";
     const ownerToCommits = {};
     let reachedPreviousVersion = false;
-    let nextVersionString = "";
     result.data.forEach(commit => {
     // See https://github.com/yairm210/Unciv/actions/runs/4136712446/jobs/7151150557 for example of strange commit with null author
             if (reachedPreviousVersion || commit.author == null) return;
+            if (commit.sha === latestVersionTag.sha) { // this is the last-released commit - stop here, don't include it
+                reachedPreviousVersion = true;
+                return;
+            }
             const author = commit.author.login;
             if (author === "uncivbot[bot]") return;
             let commitMessage = commit.commit.message.split("\n")[0];
 
-            const versionMatches = commitMessage.match(/^\d+\.\d+\.(\d+)$/);
-            if (versionMatches) { // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
-                reachedPreviousVersion = true;
-                const minorVersion = Number(versionMatches[1]);
-                console.log("Previous version: " + commitMessage);
-                nextVersionString = commitMessage.replace(RegExp(minorVersion + "$"), minorVersion + 1);
-                console.log("Next version: " + nextVersionString);
-                return;
-            }
             if (commitMessage.startsWith("Merge ") || commitMessage.startsWith("Update ")) return;
             commitMessage = commitMessage.replace(/\(\#\d+\)/, "").replace(/\#\d+/, ""); // match PR auto-text, like (#2345) or just #2345
             if (author !== "yairm210") {
@@ -116,6 +134,8 @@ async function parseCommits() {
             }
         }
     );
+
+    if (!reachedPreviousVersion) throw new Error("Did not find the previous version tag commit within the fetched commit history - fetch more commits");
 
     for (const [author, commits] of Object.entries(ownerToCommits)) {
         if (commits.length === 1) {
