@@ -78,7 +78,7 @@ class Victory : RulesetObject() {
     override fun makeLink() = "Victory/$name"
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        @LocalState val lines = arrayListOf(
+        val lines = arrayListOf(
             FormattedLine(victoryScreenHeader),
             FormattedLine(extraImage="VictoryIllustrations/$name/Won", centered = true),
             FormattedLine(),

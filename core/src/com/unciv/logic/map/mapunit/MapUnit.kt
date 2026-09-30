@@ -34,6 +34,7 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.map.CarrierSlotMatcher
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.InternalState
 import java.text.NumberFormat
 
 
@@ -238,9 +239,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        @LocalState val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
+        val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
         for ((name, status) in statusMap) {
-            @LocalState val newStatus = status.clone()
+            val newStatus = status.clone()
             newStatusMap[name] = newStatus
         }
         toReturn.statusMap = newStatusMap

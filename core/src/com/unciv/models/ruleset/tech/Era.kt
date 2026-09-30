@@ -15,6 +15,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -87,7 +88,7 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
-    @Readonly
+    @Readonly @ReturnsNewInstance
     fun getStartingUnits(ruleset: Ruleset): MutableList<String> {
         val startingUnits = mutableListOf<String>()
         val startingSettlerName: String =
