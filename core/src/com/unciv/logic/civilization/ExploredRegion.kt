@@ -91,8 +91,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     @Readonly
     fun isEmpty() = topLeft == Vector2.Zero && bottomRight == Vector2.Zero
 
-    // Check if tilePosition is beyond explored region
-    fun checkTilePosition(tilePosition: HexCoord, explorerPosition: HexCoord?) {
+    /** Check if tilePosition is beyond explored region and expand region if not */ 
+    fun expandToInclude(tilePosition: HexCoord, explorerPosition: HexCoord?) {
         var mapExplored = false
         var longitude = getLongitude(tilePosition).toFloat()
         val latitude = getLatitude(tilePosition).toFloat()
@@ -165,7 +165,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
             mapExplored = true
         }
 
-        if(mapExplored) {
+        if (mapExplored) {
             shouldRecalculateCoords = true
             shouldUpdateMinimap = true
         }
@@ -207,9 +207,9 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun isPositionInRegion(postition: HexCoord): Boolean {
-        val long = getLongitude(postition)
-        val lat = getLatitude(postition)
+    fun isPositionInRegion(position: HexCoord): Boolean {
+        val long = getLongitude(position)
+        val lat = getLatitude(position)
         return if (topLeft.x > bottomRight.x)
                 (long <= topLeft.x && long >= bottomRight.x && lat <= topLeft.y && lat >= bottomRight.y)
             else
@@ -226,8 +226,13 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     @Readonly fun getHeight(): Int = (topLeft.y - bottomRight.y).toInt() + 1
 
-    fun getMinimapLeft(tileSize: Float): Float {
+    @Readonly fun getMinimapLeft(tileSize: Float) = (topLeft.x + 1f) * tileSize * -0.75f
+
+    /** Helper to determine `MiniMap` staleness, together with [shouldUpdateMinimap].
+     *  As [ExploredRegion] exists per Civilization, this requires there to be no more than one
+     *  active `MiniMap` at a time. Call this when the MiniMap is done.
+     */
+    fun markMinimapUpdated() {
         shouldUpdateMinimap = false
-        return (topLeft.x + 1f) * tileSize * -0.75f
     }
 }

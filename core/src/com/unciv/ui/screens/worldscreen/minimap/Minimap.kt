@@ -75,6 +75,12 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
         addClickListener()
+
+        // This would belong in MinimapHolder.rebuild, not here, but we assume single consumer.
+        // To make this academically clean, one want need to allow parallel MiniMap instances,
+        // which could use a version counter instead of a flag to decouple them.
+        // Only then the call would really need to move there.
+        civInfo?.exploredRegion?.markMinimapUpdated()
     }
 
     @Readonly
