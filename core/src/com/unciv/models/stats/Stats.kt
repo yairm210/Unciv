@@ -65,7 +65,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new instance containing the same values as `this` */
-    @Readonly fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+    @Readonly @ReturnsNewInstance fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
     @Readonly
@@ -263,7 +263,7 @@ open class Stats(
         @Pure
         fun parse(string: String): Stats {
             val toReturn = Stats()
-            @LocalState val statsWithBonuses = string.split(", ")
+            val statsWithBonuses = string.split(", ")
             statsWithBonuses.forEach { statWithBonuses ->
                 val match = statRegex.matchEntire(statWithBonuses)!!
                 @Immutable val groupValues = match.groupValues

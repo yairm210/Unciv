@@ -127,10 +127,10 @@ object HexMath {
     @Pure
     fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        @LocalState val xVector = getVectorByClockHour(10)
+        val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
 
-        @LocalState val yVector = getVectorByClockHour(2)
+        val yVector = getVectorByClockHour(2)
         yVector.scl(sqrt(3.0).toFloat() * hexCoord.y)
 
         return xVector.add(yVector)
@@ -221,7 +221,6 @@ object HexMath {
         fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
 
-        @LocalState
         var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current
