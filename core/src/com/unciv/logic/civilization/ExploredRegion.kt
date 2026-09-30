@@ -46,17 +46,17 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     // Top left point of the explored region in stage (x;y) starting from the top left corner
     @Transient
-    private var topLeftStage = Vector2()
+    private val topLeftStage = Vector2()
 
     // Bottom right point of the explored region in stage (x;y) starting from the top left corner
     @Transient
-    private var bottomRightStage = Vector2()
+    private val bottomRightStage = Vector2()
 
     // Top left point of the explored region in hex (long;lat) from the center of the map
-    private var topLeft = Vector2()
+    private val topLeft = Vector2()
 
     // Bottom right point of the explored region in hex (long;lat) from the center of the map
-    private var bottomRight = Vector2()
+    private val bottomRight = Vector2()
 
     // Getters
     @Readonly fun shouldRecalculateCoords(): Boolean = shouldRecalculateCoords
@@ -70,8 +70,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     fun clone(): ExploredRegion {
         val toReturn = ExploredRegion()
-        toReturn.topLeft = topLeft
-        toReturn.bottomRight = bottomRight
+        toReturn.topLeft.set(topLeft)
+        toReturn.bottomRight.set(bottomRight)
         return toReturn
     }
 
@@ -99,8 +99,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
         // First time call
         if (isEmpty()) {
-            topLeft = Vector2(longitude, latitude)
-            bottomRight = Vector2(longitude, latitude)
+            topLeft.set(longitude, latitude)
+            bottomRight.set(longitude, latitude)
             shouldRecalculateCoords = true
             shouldUpdateMinimap = true
             return
@@ -197,8 +197,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
         val top = mapCenterY-topLeftWorld.y
         val bottom = mapCenterY-bottomRightWorld.y
 
-        topLeftStage = Vector2(left, top)
-        bottomRightStage = Vector2(right, bottom)
+        topLeftStage.set(left, top)
+        bottomRightStage.set(right, bottom)
 
         // Calculate rectangle for positioning the camera viewport on the minimap
         val yOffset = tileRadius * sqrt(3f) * 0.5f
