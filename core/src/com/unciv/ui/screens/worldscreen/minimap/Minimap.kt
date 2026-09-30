@@ -37,6 +37,9 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     private var tileMapWidth = 0f
     private var tileMapHeight = 0f
 
+    // Don't use AI exploredRegion in case some glitch passes us an AI civInfo
+    private val exploredRegion = civInfo?.takeIf { it.isHuman() }?.exploredRegion
+
     init {
         // Set fixed minimap size
         val stageMinimapSize = calcMinimapSize(minimapSize)
@@ -62,7 +65,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             group.moveBy(padX, padY)
         }
 
-
         addActor(tileLayer)
         addActor(borderLayer)
         addActor(cityLayer)
@@ -80,7 +82,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // To make this academically clean, one want need to allow parallel MiniMap instances,
         // which could use a version counter instead of a flag to decouple them.
         // Only then the call would really need to move there.
-        civInfo?.exploredRegion?.markMinimapUpdated()
+        exploredRegion?.markMinimapUpdated()
     }
 
     @Readonly
@@ -89,10 +91,9 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         val width: Float
         val mapParameters = mapHolder.tileMap.mapParameters
 
-        // Don't use AI exploredRegion in case some glitch passes us an AI civInfo
-        if (civInfo != null && !civInfo.exploredRegion.isEmpty()) {
-            height = civInfo.exploredRegion.getHeight().toFloat()
-            width = civInfo.exploredRegion.getWidth().toFloat()
+        if (exploredRegion?.isEmpty() == false) {
+            height = exploredRegion.getHeight().toFloat()
+            width = exploredRegion.getWidth().toFloat()
         } else {
             if (mapParameters.shape != MapShape.rectangular) {
                 val diameter = mapParameters.mapSize.radius * 2f + 1f
@@ -191,7 +192,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         else
             (mapHolder.tileMap.mapParameters.mapSize.width - 1f) * tileSize * 0.75f
         val leftSide =
-                if (civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else -Float.MAX_VALUE
+            exploredRegion?.getMinimapLeft(tileSize) ?: -Float.MAX_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
             if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
             val minimapTile = MinimapTile(tileInfo, tileSize)
@@ -238,13 +239,13 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         val worldToMiniFactor: Vector2
         val miniViewport = Rectangle(worldViewport) // it gets mutated
 
-        if (civInfo != null) {
-            if (civInfo.exploredRegion.shouldRecalculateCoords()) civInfo.exploredRegion.calculateStageCoords(
+        if (exploredRegion != null) {
+            if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(
                 worldWidth,
                 worldHeight
             )
 
-            val exploredRectangle = civInfo.exploredRegion.getRectangle()
+            val exploredRectangle = exploredRegion.getRectangle()
             worldToMiniFactor = Vector2(
                 tileMapWidth / exploredRectangle.width,
                 tileMapHeight / exploredRectangle.height
