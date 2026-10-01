@@ -103,19 +103,19 @@ object OdMapExport {
         }
 
         // In grid order, so the table reads the way the raster is laid out.
-        val provinces = ArrayList<String>(provinceOf.size)
-        for (ri in 0 until rows) for (ci in 0 until columns) {
-            val key = cellKey(ci + colMin, ri + rowMin)
-            val id = provinceOf[key] ?: continue
-            val tile = byCell[key]!!
-            val country = countryOf[tile.getContinent()] ?: 1
-            provinces.add(
-                """"$id":{"id":$id,"color":"#%06X","country_id":$country,""".format(id)
-                    + """"iso_a3":"${isoFor(country)}","name":"Province $id","""
-                    + """"terrain":"${odTerrainFor(tile)}"}"""
-            )
-        }
-        val provincesJson = provinces.joinToString(",", "{", "}")
+        val provincesJson = sequence {
+            for (ri in 0 until rows) for (ci in 0 until columns) {
+                val key = cellKey(ci + colMin, ri + rowMin)
+                val id = provinceOf[key] ?: continue
+                val tile = byCell[key]!!
+                val country = countryOf[tile.getContinent()] ?: 1
+                yield(
+                    """"$id":{"id":$id,"color":"#%06X","country_id":$country,""".format(id)
+                        + """"iso_a3":"${isoFor(country)}","name":"Province $id","""
+                        + """"terrain":"${odTerrainFor(tile)}"}"""
+                )
+            }
+        }.joinToString(",", "{", "}")
 
         val countriesJson = countryOf.values.sorted().joinToString(",", "{", "}") { country ->
             """"$country":{"id":$country,"color":"${countryColour(country)}",""" +
