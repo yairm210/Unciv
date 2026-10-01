@@ -49,7 +49,7 @@ object OdMapExport {
         cellSize: Int = defaultCellSize
     ) {
         val tiles = map.values.toList()
-        if (tiles.isEmpty()) throw UncivShowableException("That map has no tiles")
+        require(tiles.isNotEmpty()) { "a TileMap with no tiles" }
 
         // The grid is walked FORWARDS, the way the importer and TileMap's own
         // constructor walk it, and never by inverting a hex coordinate back to
@@ -92,8 +92,6 @@ object OdMapExport {
 
         val countryOf = continents.withIndex().associate { (i, c) -> c to i + 1 }
 
-        val width = columns * cellSize
-        val height = rows * cellSize
         val provincePng = paint(columns, rows, cellSize) { ci, ri ->
             val id = provinceOf[cellKey(ci + colMin, ri + rowMin)] ?: 0
             (id shl 8) or 0xFF                      // RGBA8888; id in the top three bytes
@@ -104,32 +102,25 @@ object OdMapExport {
             (v shl 24) or (v shl 16) or (v shl 8) or 0xFF
         }
 
-        val provincesJson = StringBuilder("{")
-        var first = true
+        // In grid order, so the table reads the way the raster is laid out.
+        val provinces = ArrayList<String>(provinceOf.size)
         for (ri in 0 until rows) for (ci in 0 until columns) {
             val key = cellKey(ci + colMin, ri + rowMin)
             val id = provinceOf[key] ?: continue
             val tile = byCell[key]!!
             val country = countryOf[tile.getContinent()] ?: 1
-            if (!first) provincesJson.append(',')
-            first = false
-            provincesJson.append(
+            provinces.add(
                 """"$id":{"id":$id,"color":"#%06X","country_id":$country,""".format(id)
                     + """"iso_a3":"${isoFor(country)}","name":"Province $id","""
                     + """"terrain":"${odTerrainFor(tile)}"}"""
             )
         }
-        provincesJson.append('}')
+        val provincesJson = provinces.joinToString(",", "{", "}")
 
-        val countriesJson = StringBuilder("{")
-        for ((index, country) in countryOf.values.sorted().withIndex()) {
-            if (index > 0) countriesJson.append(',')
-            countriesJson.append(
-                """"$country":{"id":$country,"color":"${countryColour(country)}",""" +
-                    """"iso_a3":"${isoFor(country)}","name":"Continent $country","treasury":100.0}"""
-            )
+        val countriesJson = countryOf.values.sorted().joinToString(",", "{", "}") { country ->
+            """"$country":{"id":$country,"color":"${countryColour(country)}",""" +
+                """"iso_a3":"${isoFor(country)}","name":"Continent $country","treasury":100.0}"""
         }
-        countriesJson.append('}')
 
         val metadata = """{"name":${quote(name)},""" +
             """"description":"Exported from Unciv","author":"Unciv","""" +
@@ -139,11 +130,10 @@ object OdMapExport {
             zip.setLevel(Deflater.BEST_COMPRESSION)
             zip.putEntry("provinces.png", provincePng)
             zip.putEntry("land_sea.png", landSeaPng)
-            zip.putEntry("provinces.json", provincesJson.toString().toByteArray())
-            zip.putEntry("countries.json", countriesJson.toString().toByteArray())
+            zip.putEntry("provinces.json", provincesJson.toByteArray())
+            zip.putEntry("countries.json", countriesJson.toByteArray())
             zip.putEntry("metadata.json", metadata.toByteArray())
         }
-        require(width > 0 && height > 0)
     }
 
     private fun ZipOutputStream.putEntry(name: String, bytes: ByteArray) {
