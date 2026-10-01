@@ -71,8 +71,8 @@ object OdMapExport {
         }
         if (byCell.size != tiles.size)
             throw UncivShowableException(
-                "That map's declared size (${columns}x${rows}) does not match its "
-                    + "${tiles.size} tiles - ${byCell.size} were found on the grid"
+                "That map's declared size [${columns}x${rows}] does not match its "
+                    + "[${tiles.size}] tiles - [${byCell.size}] were found on the grid"
             )
 
         map.assignContinents(TileMap.AssignContinentsMode.Ensure)

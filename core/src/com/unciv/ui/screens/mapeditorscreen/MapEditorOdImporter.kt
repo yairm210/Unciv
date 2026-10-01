@@ -55,7 +55,7 @@ class MapEditorOdImporter(private val editorScreen: MapEditorScreen) : Disposabl
             try {
                 OdMapExport.write(map, file, name)
                 Concurrency.runOnGLThread {
-                    ToastPopup("Map saved as [${file.name()}]", editorScreen)
+                    ToastPopup("Map exported as [${file.name()}]", editorScreen)
                 }
             } catch (ex: UncivShowableException) {
                 Log.error("Could not export map", ex)
