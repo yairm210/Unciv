@@ -185,7 +185,7 @@ class WorldMapHolder(
                 true
             } else {
                 previousSelectedUnitViews.any {
-                    it.thinksItCanMoveTo(tileView) ||
+                    it.canMoveTo(tileView) ||
                         (it.isUnknownTileWeShouldAssumeToBePassable(tileView) && !it.isAirUnit())
                 }
             }
@@ -251,10 +251,7 @@ class WorldMapHolder(
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
                 val attackerCombatant = unitView.asCombatant()
-                if (!unitView.tryMovePreparingAttack(attackableTile)) {
-                    worldScreen.shouldUpdate = true
-                    return
-                }
+                if (!unitView.tryMovePreparingAttack(attackableTile)) return
                 if (!SoundPlayer.play(UncivSound(attackerCombatant.getCombatantName())))
                     SoundPlayer.play(attackerCombatant.getAttackSound())
                 val (damageToDefender, damageToAttacker) = unitView.attackOrNuke(attackableTile)
