@@ -3,6 +3,7 @@ package com.unciv.ui.screens.mapeditorscreen
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.FileChooser
+import com.unciv.logic.map.OdMapExport
 import com.unciv.logic.map.OdMapImport
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
@@ -13,10 +14,11 @@ import kotlinx.coroutines.DisposableHandle
 import kotlinx.coroutines.Job
 
 /**
- * The map editor's "Import an Open Doctrines map" button.
+ * The map editor's two Open Doctrines buttons, import and export.
  *
- * The reading itself is [OdMapImport]; this is the file dialog, the background
- * job and the error toast, shaped after [MapEditorWesnothImporter].
+ * The reading and writing themselves are [OdMapImport] and [OdMapExport]; this
+ * is the file dialog, the background job and the error toast, shaped after
+ * [MapEditorWesnothImporter].
  */
 class MapEditorOdImporter(private val editorScreen: MapEditorScreen) : DisposableHandle {
     companion object {
@@ -32,6 +34,37 @@ class MapEditorOdImporter(private val editorScreen: MapEditorScreen) : Disposabl
 
     fun onImportButtonClicked() {
         editorScreen.askIfDirtyForLoad(::openFileDialog)
+    }
+
+    fun onExportButtonClicked() {
+        FileChooser.createSaveDialog(editorScreen.stage, "Export as an Open Doctrines map", lastFileFolder) {
+            success: Boolean, file: FileHandle ->
+            if (!success) return@createSaveDialog
+            lastFileFolder = file.parent()
+            startExport(if (file.extension() == "odmap") file else file.sibling(file.name() + ".odmap"))
+        }.apply {
+            filter = FileChooser.createExtensionFilter("odmap")
+        }.open()
+    }
+
+    private fun startExport(file: FileHandle) {
+        dispose()
+        val map = editorScreen.getMapCloneForSave()
+        val name = editorScreen.tileMap.mapParameters.name.ifBlank { "Unciv map" }
+        importJob = Concurrency.run("Open Doctrines map export") {
+            try {
+                OdMapExport.write(map, file, name)
+                Concurrency.runOnGLThread {
+                    ToastPopup("Map saved as [${file.name()}]", editorScreen)
+                }
+            } catch (ex: UncivShowableException) {
+                Log.error("Could not export map", ex)
+                Concurrency.runOnGLThread { ToastPopup(ex.message, editorScreen, 4000L) }
+            } catch (ex: Throwable) {
+                Log.error("Could not export map", ex)
+                Concurrency.runOnGLThread { ToastPopup("Could not save map!", editorScreen) }
+            }
+        }
     }
 
     private fun openFileDialog() {

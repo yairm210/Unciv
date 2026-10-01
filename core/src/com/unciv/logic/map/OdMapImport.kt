@@ -122,7 +122,11 @@ object OdMapImport {
             var feature: String? = null
             when {
                 id == 0 || province?.isSea == true -> base = "Ocean"
-                province?.terrain != null -> base = terrainFor(province.terrain)
+                province?.terrain != null -> {
+                    val stated = terrainFor(province.terrain)
+                    base = stated.base
+                    feature = stated.feature
+                }
                 else -> {
                     val latitude = 90.0 - 180.0 * (py + 0.5) / rasterHeight
                     base = climateFor(latitude)
@@ -140,15 +144,36 @@ object OdMapImport {
         return map
     }
 
-    /** Open Doctrines terrain tokens that have a name here. */
-    private fun terrainFor(token: String) = when (token.lowercase()) {
-        "ocean", "sea", "water" -> "Ocean"
-        "coast" -> "Coast"
-        "desert" -> "Desert"
-        "tundra" -> "Tundra"
-        "snow", "ice", "arctic" -> "Snow"
-        "plains", "steppe" -> "Plains"
-        else -> "Grassland"
+    /** A base terrain and, where the token implies one, a feature. */
+    class OdTerrain(val base: String, val feature: String?)
+
+    /**
+     * The model's thirteen terrain tokens, and nothing else.
+     *
+     * This is the SAME list as [OdMapExport.odTerrainFor] writes, read the
+     * other way, and the same list dragoman uses. Having only part of it here
+     * is not a graceful degradation: a token this does not know silently
+     * becomes Grassland, so a Snow hex exported as `frozen` came back as
+     * grassland and the round trip quietly lost a quarter of the map.
+     *
+     * Note the one place it cannot be a bijection: the model has no plain
+     * grassland of its own, so both Grassland and Plains are written as
+     * `plains` and both come back as Plains.
+     */
+    fun terrainFor(token: String): OdTerrain = when (token.lowercase()) {
+        "ocean" -> OdTerrain("Ocean", null)
+        "coastal_sea" -> OdTerrain("Coast", null)
+        "inland_sea", "lakes" -> OdTerrain("Lakes", null)
+        "mountain" -> OdTerrain("Mountain", null)
+        "hills" -> OdTerrain("Plains", "Hill")
+        "desert" -> OdTerrain("Desert", null)
+        "plains" -> OdTerrain("Plains", null)
+        "forest" -> OdTerrain("Grassland", "Forest")
+        "jungle" -> OdTerrain("Plains", "Jungle")
+        "swamp" -> OdTerrain("Grassland", "Marsh")
+        "tundra" -> OdTerrain("Tundra", null)
+        "frozen" -> OdTerrain("Snow", null)
+        else -> OdTerrain("Grassland", null)
     }
 
     private fun climateFor(latitude: Double): String {

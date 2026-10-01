@@ -90,6 +90,10 @@ class MapEditorOptionsTab(
 
         add("Import an Open Doctrines map".toTextButton().onActivation {
             MapEditorOdImporter(editorScreen).onImportButtonClicked()
+        }).row()
+
+        add("Export as an Open Doctrines map".toTextButton().onActivation {
+            MapEditorOdImporter(editorScreen).onExportButtonClicked()
         })
         addSeparator(Color.GRAY)
 
