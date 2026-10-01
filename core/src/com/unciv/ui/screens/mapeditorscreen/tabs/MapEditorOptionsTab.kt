@@ -27,6 +27,7 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.mapeditorscreen.MapEditorOdImporter
 import com.unciv.ui.screens.mapeditorscreen.MapEditorWesnothImporter
 import com.unciv.utils.Log
 
@@ -85,6 +86,10 @@ class MapEditorOptionsTab(
 
         add("Import a Wesnoth map".toTextButton().onActivation {
             MapEditorWesnothImporter(editorScreen).onImportButtonClicked()
+        }).row()
+
+        add("Import an Open Doctrines map".toTextButton().onActivation {
+            MapEditorOdImporter(editorScreen).onImportButtonClicked()
         })
         addSeparator(Color.GRAY)
 
