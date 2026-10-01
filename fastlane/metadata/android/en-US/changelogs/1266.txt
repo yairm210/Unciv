@@ -1,0 +1,30 @@
+
+
+Resolve  - F6 no longer changes "fog of war" toggle
+
+Temp: Add visualization for max texture units to try and locate source of slower rendering on some devices
+
+chore(purity): ModifiesInternalStateOnly migration, which now includes validation, for less "trust me bro" @LocalState usages
+
+chore(purity): Remove more unnecessary localstate - proof that our new changes are good :D
+
+chore(purity): Remove (unvalidated) localstate, replacing with (validated) returnsnewinstance on the called function
+
+chore: Purity 1.8.1 update
+
+ci: Find "last version" by tags (which trigger version release) and not by commit name (which is NOT enforced for releases and should remain "human standard", i.e. fallible)
+
+By dangdinhbaohoang12:
+- Prioritize roads when connecting new cities 
+- Prevent attacks with units after ownership change 
+- Fix desktop and server packaging reliability 
+
+By SomeTroglodyte:
+- FormattedLine: Simplify allObjectNamesCategoryMap and a fix for running from MainMenu 
+- chore: Fix MiniMap derailing when passed an AI observing civ 
+- chore: Formatted line list builder 1 
+- Fix the debug tile coordinates shown on/for tiles 
+
+Keep the world screen tutorial task card on screen and scrollable - By JN0V
+
+remove community ad from the begin button - By finalpatch
