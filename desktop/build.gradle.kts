@@ -37,7 +37,7 @@ private enum class Platform(
     MacOS("mac", "jre-macOS.tar.gz", true, "https://api.adoptium.net/v3/binary/latest/21/ga/mac/x64/jre/hotspot/normal/eclipse",
         // See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
         // and https://github.com/yairm210/Unciv/issues/5679
-        vmArgs = arrayOf("XstartOnFirstThread", "java.awt.headless=true")
+        vmArgs = arrayOf("XstartOnFirstThread", "Djava.awt.headless=true")
     )
     // Linux32 is dropped by packr and there's no jre's anymore
     ;
@@ -123,20 +123,32 @@ private fun downloadIfOutdated(url: String, dest: File) {
 
 //  https://gist.github.com/seanf/58b76e278f4b7ec0a2920d8e5870eed6
 private fun runCommand(workingDir: File, vararg args: String) {
-    val process = ProcessBuilder(*args)
-        .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
+    val command = args.joinToString(" ")
+    val outputFile = File.createTempFile("packr-", ".log")
+    try {
+        // Capture both streams directly to a file so pipe buffers cannot block Packr.
+        val process = ProcessBuilder(*args)
+            .directory(workingDir)
+            .redirectErrorStream(true)
+            .redirectOutput(outputFile)
+            .start()
 
-    if (!process.waitFor(30, TimeUnit.SECONDS)) {
-        process.destroy()
-        throw RuntimeException("execution timed out: $this")
+        val finished = process.waitFor(30, TimeUnit.SECONDS)
+        if (!finished) {
+            process.destroyForcibly()
+            process.waitFor(5, TimeUnit.SECONDS)
+        }
+        val output = outputFile.readText()
+        if (!finished) {
+            throw RuntimeException("execution timed out: $command\\n$output")
+        }
+        if (process.exitValue() != 0) {
+            throw RuntimeException("execution failed with code ${process.exitValue()}: $command\\n$output")
+        }
+        print(output)
+    } finally {
+        outputFile.delete()
     }
-    if (process.exitValue() != 0) {
-        throw RuntimeException("execution failed with code ${process.exitValue()}: $this")
-    }
-    println(process.inputStream.bufferedReader().readText())
 }
 
 for (platform in Platform.entries) {
@@ -189,7 +201,6 @@ for (platform in Platform.entries) {
             Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "Unciv.ico"))
         }
 
-        finalizedBy("zip$platform")
     }
 
     tasks.register<Zip>("zip$platform") {
@@ -198,7 +209,11 @@ for (platform in Platform.entries) {
         archiveFileName.set("${BuildConfig.appName}-$platform.zip")
         from(outputDir) {
             if (platform.unixPermissions) {
-                filesMatching(listOf("Unciv", "jre/bin/*")) {
+                filesMatching(listOf(
+                    "Unciv", "jre/bin/*",
+                    "Contents/MacOS/Unciv",
+                    "Contents/Resources/jre/bin/*",
+                )) {
                     permissions { unix("rwxr-xr-x") }
                 }
             }
