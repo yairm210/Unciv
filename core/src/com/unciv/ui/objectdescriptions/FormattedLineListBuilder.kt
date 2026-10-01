@@ -131,6 +131,7 @@ interface FormattedLineListBuilder {
      *  Supports automatic links for ruleset objects mentioned in Unique parameters.
      *  @param leadingSeparator Used only when actual uniques content follows, calls [add]([SeparatorType]).
      *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
+     *  @param extraSeparator If set, this is called after [separator] is added to the builder.
      *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
      */
     @Readonly
@@ -138,6 +139,24 @@ interface FormattedLineListBuilder {
     fun addUniques(
         leadingSeparator: SeparatorType = SeparatorType.Space,
         colorConsumesResources: Boolean = false,
+        extraSeparator: (() -> Unit)? = null,
+        exclude: Unique.() -> Boolean = { false }
+    ) = addUniques(source.uniqueObjects.asSequence(), leadingSeparator, colorConsumesResources, extraSeparator, exclude)
+
+    /** Add lines for [uniques], ignoring [defaults].
+     *
+     *  Supports automatic links for ruleset objects mentioned in Unique parameters.
+     *  @param leadingSeparator Used only when actual uniques content follows, calls [add]([SeparatorType]).
+     *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
+     *  @param extraSeparator If set, this is called after [separator] is added to the builder.
+     *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
+     */
+    @Readonly
+    fun addUniques(
+        uniques: Sequence<Unique>,
+        leadingSeparator: SeparatorType = SeparatorType.Space,
+        colorConsumesResources: Boolean = false,
+        extraSeparator: (() -> Unit)? = null,
         exclude: Unique.() -> Boolean = { false }
     )
 
@@ -219,17 +238,20 @@ private class FormattedLineListBuilderImpl(
             add(item.transform())
     }
 
-    context(source: IHasUniques)
     override fun addUniques(
+        uniques: Sequence<Unique>,
         leadingSeparator: FormattedLineListBuilder.SeparatorType,
         colorConsumesResources: Boolean,
+        extraSeparator: (() -> Unit)?,
         exclude: Unique.() -> Boolean
     ) {
-        val orderedUniques = source.uniqueObjects.asSequence()
-            .filterNot { it.isHiddenToUsers() || it.exclude() }
+        val orderedUniques = uniques.filterNot { it.isHiddenToUsers() || it.exclude() }
 
         for ((index, unique) in orderedUniques.withIndex()) {
-            if (index == 0) add(leadingSeparator)
+            if (index == 0) {
+                add(leadingSeparator)
+                extraSeparator?.invoke()
+            }
             // Optionally special-case ConsumesResources to give it a reddish color. Also ensures link always points to the resource
             // (the other constructor guesses the first object by name in the Unique parameters).
             if (colorConsumesResources && unique.type == UniqueType.ConsumesResources)
