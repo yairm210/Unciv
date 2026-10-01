@@ -46,7 +46,7 @@ import kotlin.math.max
  *  - A separator line ([separator])
  *  - Automatic external links ([link] begins with a URL protocol)
  */
-class FormattedLine (
+data class FormattedLine (
     /** Text to display. */
     val text: String = "",
     /** Create link: Line gets a 'Link' icon and is linked to either
@@ -386,6 +386,9 @@ class FormattedLine (
             else -> "'$text'->$link"
         }
     }
+
+    override fun hashCode() = throw IllegalStateException("FormattedLine isn't supposed to be compared or used as hash key")
+    override fun equals(other: Any?) = throw IllegalStateException("FormattedLine isn't supposed to be compared or used as hash key")
 
     // region Helpers to crop an image to content
     private fun TextureRegionDrawable.cropToContent(): Image {
