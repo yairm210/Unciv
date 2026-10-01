@@ -112,7 +112,7 @@ object OdMapExport {
                 yield(
                     """"$id":{"id":$id,"color":"#%06X","country_id":$country,""".format(id)
                         + """"iso_a3":"${isoFor(country)}","name":"Province $id","""
-                        + """"terrain":"${odTerrainFor(tile)}"}"""
+                        + """"terrain":"${OdTerrain.forTile(tile).token}"}"""
                 )
             }
         }.joinToString(",", "{", "}")
@@ -168,30 +168,6 @@ object OdMapExport {
         }
     }
 
-    /** The inverse of OdMapImport.terrainFor, as far as that mapping goes. */
-    private fun odTerrainFor(tile: Tile): String {
-        val features = tile.terrainFeatures
-        return when (tile.baseTerrain) {
-            "Ocean" -> "ocean"
-            "Coast" -> "coastal_sea"
-            "Lakes" -> "lakes"
-            "Mountain" -> "mountain"
-            "Snow" -> "frozen"
-            "Tundra" -> "tundra"
-            "Desert" -> "desert"
-            "Plains" -> when {
-                features.contains("Hill") -> "hills"
-                features.contains("Jungle") -> "jungle"
-                else -> "plains"
-            }
-            "Grassland" -> when {
-                features.contains("Forest") -> "forest"
-                features.contains("Marsh") -> "swamp"
-                else -> "plains"    // the model has no plain grassland of its own
-            }
-            else -> "plains"
-        }
-    }
 
     /** AAA, AAB, ... - a placeholder code, since a continent has no country. */
     private fun isoFor(country: Int): String {

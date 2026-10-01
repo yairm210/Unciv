@@ -5,6 +5,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.OdMapExport
 import com.unciv.logic.map.OdMapImport
+import com.unciv.logic.map.OdTerrain
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -96,21 +97,29 @@ class OdMapExportTests {
             original.values.count { it.baseTerrain == "Grassland" }, grasslandBecamePlains)
     }
 
-    /** Every token the exporter can write is one the importer knows. */
+    /**
+     * Every terrain the two sides share is one the ruleset has.
+     *
+     * Iterating the enum rather than a list written out here is the point: a
+     * token added to [OdTerrain] is covered by this the moment it exists, and
+     * there is no second list to forget to update. This test used to carry its
+     * own copy of all thirteen.
+     */
     @Test
-    fun `the two terrain vocabularies are one list`() {
-        val tokens = listOf("ocean", "coastal_sea", "inland_sea", "lakes", "mountain",
-                            "hills", "desert", "plains", "forest", "jungle", "swamp",
-                            "tundra", "frozen")
-        for (token in tokens) {
-            val t = OdMapImport.terrainFor(token)
-            Assert.assertNotNull("$token has no base terrain", t.base)
-            Assert.assertNotNull("$token maps to a terrain outside the ruleset: ${t.base}",
-                ruleset.terrains[t.base])
-            if (t.feature != null)
-                Assert.assertNotNull("$token maps to an unknown feature: ${t.feature}",
-                    ruleset.terrains[t.feature])
+    fun `every shared terrain exists in the ruleset`() {
+        for (terrain in OdTerrain.entries) {
+            Assert.assertNotNull(
+                "${terrain.token} maps to ${terrain.baseTerrain}, which the ruleset has not got",
+                ruleset.terrains[terrain.baseTerrain])
+            if (terrain.feature != null)
+                Assert.assertNotNull(
+                    "${terrain.token} implies the feature ${terrain.feature}, which the ruleset has not got",
+                    ruleset.terrains[terrain.feature])
+            Assert.assertSame("forToken(${terrain.token}) is not itself",
+                terrain, OdTerrain.forToken(terrain.token))
         }
+        Assert.assertNull("a token nothing defines should be null",
+            OdTerrain.forToken("not_a_terrain"))
     }
 
     /** Water hexes must leave the raster unpainted, which that game reads as sea. */
