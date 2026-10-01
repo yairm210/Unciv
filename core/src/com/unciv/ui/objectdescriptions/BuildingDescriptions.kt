@@ -177,11 +177,11 @@ object BuildingDescriptions {
         }
 
         if (uniqueTo != null) {
-            add()
+            space()
             add("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
             if (replaces != null) {
                 val replacesBuilding = ruleset.buildings[replaces]
-                add("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent=1)
+                add("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent = 1)
             }
         }
 
@@ -205,7 +205,7 @@ object BuildingDescriptions {
         }
 
         if (requiredResource != null) {
-            add()
+            space()
             val resource = ruleset.tileResources[requiredResource]
             add(
                 requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
@@ -216,7 +216,7 @@ object BuildingDescriptions {
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
-            add()
+            space()
 
         if (replacementTextForUniques.isNotEmpty()) {
             add(replacementTextForUniques)
@@ -248,14 +248,14 @@ object BuildingDescriptions {
         }
 
         if (requiredNearbyImprovedResources != null) {
-            add()
+            space()
             add("Requires at least one of the following resources improved near the city:")
             requiredNearbyImprovedResources!!.forEach {
                 add(it, indent = 1, link = "Resource/$it")
             }
         }
 
-        if (cityStrength != 0.0 || cityHealth != 0 || maintenance != 0) add()
+        if (cityStrength != 0.0 || cityHealth != 0 || maintenance != 0) space()
         if (cityStrength != 0.0) add("{City strength} +$cityStrength")
         if (cityHealth != 0) add("{City health} +$cityHealth")
         if (maintenance != 0) add("{Maintenance cost}: $maintenance {Gold}")

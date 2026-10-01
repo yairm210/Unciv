@@ -168,6 +168,7 @@ class FormattedLine (
     private fun isValidInternalLink(link: String) = link.matches(Regex("""^[^/]+/[^/]+$"""))
 
     /** Constants used by [FormattedLine] */
+    @Suppress("ConstPropertyName")
     companion object {
         /** Array of text sizes to translate the [header] attribute */
         val headerSizes = arrayOf(Constants.defaultFontSize,36,32,27,24,21,15,12,9)    // pretty arbitrary, yes

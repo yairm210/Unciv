@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 
@@ -30,6 +29,7 @@ interface FormattedLineListBuilder {
          *  @param block Your code, having direct access to [FormattedLineListBuilder] methods.
          */
         @Readonly
+        @ModifiesInternalStateOnly
         fun buildCivilopediaText(
             defaults: FormattedLine = FormattedLine(),
             capacity: Int = 16,
@@ -106,6 +106,13 @@ interface FormattedLineListBuilder {
     /** Add several lines, ignoring [defaults]. Each is built from one input element, transformed by [transform]. */
     @Readonly
     fun <T> add(input: Iterable<T>, transform: T.() -> FormattedLine)
+
+    /** Add several lines for ruleset objects, only simple name and link, ignoring [defaults]. */
+    @Readonly
+    fun addObjects(input: Iterable<IRulesetObject>): Unit = add(input) { FormattedLine(name, makeLink()) }
+    /** Add several lines for ruleset objects, only simple name and link, ignoring [defaults]. */
+    @Readonly
+    fun addObjects(input: Sequence<IRulesetObject>): Unit = addObjects(input.asIterable())
 
     /** Add a vertical separator of type [separator]. [size] (line thickness) and [color] are used for type [SeparatorType.Line]. */
     @Readonly
@@ -234,7 +241,7 @@ private class FormattedLineListBuilderImpl(
     override fun addSeeAlso(seeAlso: Sequence<IRulesetObject>) {
         val iterator = seeAlso.iterator()
         if (!iterator.hasNext()) return
-        add()
+        space()
         add("{See also}:")
         for (item in iterator)
             add(item.name, item.makeLink(), indent = 1)

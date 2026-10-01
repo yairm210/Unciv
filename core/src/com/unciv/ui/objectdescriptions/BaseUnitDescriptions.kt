@@ -25,6 +25,7 @@ import yairm210.purity.annotations.Readonly
 object BaseUnitDescriptions {
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
+    @Readonly
     fun getShortDescription(baseUnit: BaseUnit, uniqueExclusionFilter: Unique.() -> Boolean = {false}): String {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength.tr()}${Fonts.strength}"
@@ -115,14 +116,14 @@ object BaseUnitDescriptions {
             add("Air Intercept Range: [$interceptRange]")
 
         if (replacementTextForUniques.isNotEmpty()) {
-            add()
+            space()
             add(replacementTextForUniques)
         } else {
             addUniques(colorConsumesResources = true)
         }
 
         if (requiredResource != null) {
-            add()
+            space()
             val resource = ruleset.tileResources[requiredResource]
             add(
                 requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
@@ -131,14 +132,14 @@ object BaseUnitDescriptions {
         }
 
         if (uniqueTo != null) {
-            add()
+            space()
             add("Unique to [$uniqueTo]", link = "Nation/$uniqueTo")
             if (replaces != null)
                 add("Replaces [$replaces]", link = "Unit/$replaces", indent = 1)
         }
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null)
-            add()
+            space()
         if (requiredTech != null)
             add("Required tech: [$requiredTech]", link = "Technology/$requiredTech")
 
@@ -151,11 +152,11 @@ object BaseUnitDescriptions {
             if (canUpgradeFrom.size == 1)
                 add("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
             else {
-                add()
+                space()
                 add("Can upgrade from:")
                 for (unitName in canUpgradeFrom.sorted())
                     add(unitName, link = "Unit/$unitName", indent = 2)
-                add()
+                space()
             }
         }
 
@@ -165,7 +166,7 @@ object BaseUnitDescriptions {
             add("Obsolete with [$obsoleteTech]", link = "Technology/$obsoleteTech")
 
         if (promotions.isNotEmpty()) {
-            add()
+            space()
             promotions.withIndex().forEach {
                 add(
                     when {
