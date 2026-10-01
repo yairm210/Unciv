@@ -3,7 +3,10 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.view.GameView
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -28,6 +31,27 @@ class EspionageTests {
         assertEquals(0, espionageManagerA.spyList.size)
         espionageManagerA.addSpy()
         assertEquals(1, espionageManagerA.spyList.size)
+    }
+
+    @Test
+    fun `spy view rejects ineligible cities but allows eligible cities and hideout`() {
+        val spy = civA.espionageManager.addSpy()
+        val city = civB.addCity(HexCoord(1, 1))
+        val cityTile = city.getCenterTile()
+        cityTile.setExplored(civA, false)
+        val gameView = GameView(testGame.gameInfo, civA)
+        val spyView = gameView.getSpyView(spy)
+        val cityView = gameView.getForeignCityView(city)
+
+        assertFalse(spyView.tryMoveTo(cityView))
+        assertNull(spy.getCityOrNull())
+
+        cityTile.setExplored(civA, true)
+        assertTrue(spyView.tryMoveTo(cityView))
+        assertEquals(city, spy.getCityOrNull())
+
+        assertTrue(spyView.tryMoveTo(null))
+        assertNull(spy.getCityOrNull())
     }
 
     @Test

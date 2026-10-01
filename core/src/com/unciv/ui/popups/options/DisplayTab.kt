@@ -86,6 +86,16 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
+        addCheckbox("Disable newer rendering", settings::disableNewerRendering)
+
+        val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
+        val disableNewerRenderingLabel = WrappableLabel(
+            disableNewerRenderingDescription,
+            optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
+        )
+        disableNewerRenderingLabel.wrap = true
+        add(disableNewerRenderingLabel).colspan(2).padTop(10f).row()
+
         addHeader("Experimental")
 
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
