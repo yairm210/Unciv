@@ -11,12 +11,21 @@ class StatusButtons(
     var smallUnitButton: SmallUnitButton? = null
     private val padXSpace = 10f
     private val padYSpace = 5f
-    
+
+    // (verticalWrap, autoPlayStatusButton, multiplayerStatusButton, smallUnitButton) as last laid out.
+    // clear()+re-add()ing children (even the same instances) cancels any in-progress touch/gesture
+    // on them - e.g. a click on nextTurnButton - so skip the rebuild when nothing actually changed.
+    private var lastLayout: List<Any?>? = null
+
     init {
         add(nextTurnButton)
     }
     
     fun update(verticalWrap: Boolean) {
+        val layout = listOf(verticalWrap, autoPlayStatusButton, multiplayerStatusButton, smallUnitButton)
+        if (layout == lastLayout) return
+        lastLayout = layout
+
         clear()
         if(verticalWrap) {
             add(nextTurnButton)

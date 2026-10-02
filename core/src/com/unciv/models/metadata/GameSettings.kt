@@ -343,6 +343,7 @@ class GameSettings {
         var autoPlayPolicies = true
         var autoPlayReligion = true
         var autoPlayDiplomacy = true
+        var autoPlayOneUnit = false
     }
 
     //endregion

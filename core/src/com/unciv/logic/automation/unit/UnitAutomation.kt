@@ -35,6 +35,7 @@ object UnitAutomation {
 
     fun automateUnitMoves(unit: MapUnit):Unit = timeThis("automateUnitMoves") {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
+        unit.due = false
 
         // Might die next turn - move!
         if (unit.getDamageFromTerrain() > 0 && tryHealUnit(unit)) return
