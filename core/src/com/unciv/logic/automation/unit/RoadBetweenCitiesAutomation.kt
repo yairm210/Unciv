@@ -18,10 +18,26 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 
-private object WorkerAutomationConst {
+internal object WorkerAutomationConst {
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
     // two tiles longer than the distance to the nearest connected city should be enough as the 'reach' of a BFS is increased by blocked tiles
     const val maxBfsReachPadding = 2
+
+    /**
+     * Subtracted from a [RoadBetweenCitiesAutomation.RoadPlan.priority] to decide whether an automated
+     * worker will treat building that road as *the* best thing to do on a tile (see
+     * [WorkerAutomation.getImprovementRanking]).
+     *
+     * Lowered from 9 to address https://github.com/yairm210/Unciv/issues/15417 (report 3): with the old
+     * value, connecting two small/new cities practically never outweighed a farm or mine, so automated
+     * workers could go dozens of turns without making any progress on road connections. This still leaves
+     * a real threshold - trivial road upgrades (e.g. Road -> Railroad on an already-connected route) remain
+     * lower priority than good tile improvements - but a genuinely disconnected city no longer has to wait
+     * for a large population before workers will act on it: two freshly-founded (population 1) cities with
+     * no-road connections get an explicit priority bonus below, so this offset can stay high enough to
+     * keep ordinary road upgrades below worthwhile tile improvements.
+     */
+    const val connectRoadPriorityOffset = 4f
 }
 
 /**
@@ -150,7 +166,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             // Make sure that we are taking in to account the other cities needs
             var roadPriority = max(basePriority, rankRoadCapitalPriority(closeCity.cityStats.getRoadTypeOfConnectionToCapital()))
             if (worstRoadStatus == RoadStatus.None) {
-                roadPriority += 2
+                // A completely unroaded connection is a strategic task, not just another tile improvement.
+                // Give it enough extra weight to compete with ordinary farms/mines while preserving the
+                // normal offset for routes that already have some road infrastructure.
+                roadPriority += 4
             } else if (worstRoadStatus == RoadStatus.Road && bestRoadAvailable == RoadStatus.Railroad) {
                 roadPriority += 1
             }

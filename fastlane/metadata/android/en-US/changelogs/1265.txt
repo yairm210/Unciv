@@ -1,13 +1,10 @@
+Faster tech screen 
 
+By dangdinhbaohoang12:
+- Better movement logic when discovering hidden units
 
-Resolved  - avoid cityscreen update when screen has already been replaced
+Prevent displacement captures and stale unit automation - By mvanhorn
 
-Fixed victory number formatting bug - see https://discord.com/channels/586194543280390151/1552398135110668399
+Only alive major civs for time victory - By ssamt
 
-By SomeTroglodyte:
-- Add a `--log` option to the Linux Unciv.sh launcher to enable logs from the release build 
-- Fix Java 9+ specific method use crashing NextTurn on Java 8 
-
-Fix overview screen column visibility - now per civ - By dangdinhbaohoang12
-
-Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
+Added default promotion entry to tutorial.json - By Emandac

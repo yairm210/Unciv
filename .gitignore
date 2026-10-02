@@ -196,3 +196,4 @@ detekt/reports.html
 /.github/workflows/unciv.msi
 /.github/workflows/unciv.wixpdb
 /.github/workflows/wix-msi-files/
+/desktop/packr/*

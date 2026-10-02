@@ -1,3 +1,30 @@
+## 4.22.6
+
+Fixed F6 crashes
+
+By dangdinhbaohoang12:
+- Prioritize roads when connecting new cities 
+- Prevent attacks with units after ownership change 
+
+By SomeTroglodyte: 
+- Fix Minimap derailing when passed an AI observing civ
+- Fix the debug tile coordinates shown on/for tiles 
+
+Keep the world screen tutorial task card on screen and scrollable - By JN0V
+
+## 4.22.5
+
+Faster tech screen 
+
+By dangdinhbaohoang12:
+- Better movement logic when discovering hidden units
+
+Prevent displacement captures and stale unit automation - By mvanhorn
+
+Only alive major civs for time victory - By ssamt
+
+Added default promotion entry to tutorial.json - By Emandac
+
 ## 4.22.4
 
 Fixed error on cityscreen update when screen has already been replaced

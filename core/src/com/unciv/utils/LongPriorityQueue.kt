@@ -2,7 +2,6 @@ package com.unciv.utils
 
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.Objects
 import java.util.Spliterator.CONCURRENT
@@ -17,7 +16,6 @@ import java.util.stream.StreamSupport
 // A PriorityQueue<Long>, except that it minimizes memory allocations
 // 
 // This does NOT extend any interfaces to avoid boxing Long to Long Objects.
-@InternalState
 class LongPriorityQueue(
     initialCapacity: Int = 100,
     val comparator : Comparator = DefaultComparator
@@ -310,7 +308,6 @@ class LongPriorityQueue(
     @Readonly
     fun iterator() : Iterator = Iterator(mutCounter)
 
-    @InternalState
    inner class Iterator(@Cache private var mutSnapshot: Int) : MutableIterator<Long> {
         @Cache private var index: Int = -1
         @Cache private var canRemove: Boolean = true
@@ -352,7 +349,7 @@ class LongPriorityQueue(
     @Readonly
     fun spliterator() :Spliterator = Spliterator(-1, size-1, mutCounter)
 
-    @InternalState
+    
     inner class Spliterator(var index: Int, var endIndex: Int, val mutSnapshot: Int) : java.util.Spliterator.OfLong {
        
         override fun tryAdvance(action: LongConsumer?): Boolean {

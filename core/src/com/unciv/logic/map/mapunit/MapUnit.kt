@@ -34,6 +34,7 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.map.CarrierSlotMatcher
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.InternalState
 import java.text.NumberFormat
 
 
@@ -238,9 +239,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        @LocalState val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
+        val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
         for ((name, status) in statusMap) {
-            @LocalState val newStatus = status.clone()
+            val newStatus = status.clone()
             newStatusMap[name] = newStatus
         }
         toReturn.statusMap = newStatusMap
@@ -496,18 +497,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun isVisibleTo(civ: Civilization): Boolean {
         if (civ == this.civ) return true
-        val tile = getTile()
-        if (!hasActiveInvisibilityUnique(civ)) return tile.isVisible(civ)
-        // A remembered invisible unit remains visible through fog of war, but only the specific unit
-        // that was discovered - not any other invisible unit that happens to share its tile. Match
-        // directly against the stored memory (via an O(1) index, since this runs on a hot path)
-        // rather than a tile-wide filter.
-        if (civ.cache.discoveredInvisibleUnitPositions[id] == tile.position)
-            return true
-        // Live detectors reveal matching invisible units only while their tile is actively visible.
-        // The tile check also prevents a stale transient detector entry from leaking through fog.
-        if (!tile.isVisible(civ)) return false
-        return civ.viewableInvisibleUnitsTiles[tile]?.any { matchesFilter(it) } == true
+        if (!getTile().isVisible(civ)) return false
+        if (!hasActiveInvisibilityUnique(civ)) return true
+        // viewableInvisibleUnitsTiles records which unit filters *could* be detected on each tile,
+        // independent of what's actually there - so it never goes stale when units move.
+        return civ.viewableInvisibleUnitsTiles[getTile()]?.any { matchesFilter(it) } == true
     }
 
     @Readonly

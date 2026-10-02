@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
+import yairm210.purity.annotations.Mutated
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -15,7 +17,7 @@ import yairm210.purity.annotations.Readonly
  *  - Therefore, Deserialization works properly ***only*** with [K] === String.
  *    (ignoring this will return a deserialized map, but the keys will violate the compile-time type and BE strings)
  */
-@InternalState
+@ModifiesInternalStateOnly
 open class Counter<K>(
     fromMap: Map<K, Int>? = null
 ) : LinkedHashMap<K, Int>(fromMap?.size ?: 10), IsPartOfGameInfoSerialization, Json.Serializable {
@@ -78,16 +80,16 @@ open class Counter<K>(
         }
 
     }
-
-    override fun write(json: Json) {
-        for ((key, value) in entries) {
+    
+    override fun write(@Mutated json: Json) {
+        for ((@LocalState key, value) in entries) {
             val name = if (key is String) key else key.toString()
             json.writeValue(name, value, Int::class.java)
         }
     }
 
     override fun read(json: Json, jsonData: JsonValue) {
-        for (entry in jsonData) {
+        for (@LocalState entry in jsonData) {
             @Suppress("UNCHECKED_CAST")
             // Default Gdx does the same. If K is NOT String, then Gdx would still store String keys. And we can't reify K to check..
             val key = entry.name as K
