@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.TextureArraySpriteBatch
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
@@ -85,6 +86,30 @@ internal class DisplayTab(
         )
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
+
+        addCheckbox("Disable newer rendering", settings::disableNewerRendering)
+
+        val maxTextureUnitsText = 
+            try {
+                val maxTextureUnits = TextureArraySpriteBatch().maxTextureUnits
+                "Max texture units: $maxTextureUnits"
+            } catch (e: Exception) { "Error creating TextureArraySpriteBatch" }
+        
+        val maxTextureUnitsLabel = WrappableLabel(
+            maxTextureUnitsText,
+            optionsPopup.tabs.prefWidth, Color.WHITE, 14
+        )
+        maxTextureUnitsLabel.wrap = true
+        add(maxTextureUnitsLabel).colspan(2).padTop(10f).row()
+        
+
+        val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
+        val disableNewerRenderingLabel = WrappableLabel(
+            disableNewerRenderingDescription,
+            optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
+        )
+        disableNewerRenderingLabel.wrap = true
+        add(disableNewerRenderingLabel).colspan(2).padTop(10f).row()
 
         addHeader("Experimental")
 

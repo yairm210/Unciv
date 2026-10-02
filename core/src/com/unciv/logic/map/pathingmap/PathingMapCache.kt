@@ -38,7 +38,6 @@ data class PathingMapCacheKey(
  *            Theoretically, this can be replaced with three separate arrays for each field, eliminating
  *            the separate allocations per-node, but it's unclear if the performance is worth the complexity.
  */
-@InternalState
 internal class PathingMapCache private constructor(
     internal val key: PathingMapCacheKey,
     internal val nodesNeedingNeighbors: BitSet,

@@ -74,11 +74,19 @@ allprojects {
             "io.ktor.http.Parameters.get",
 
             "java.util.BitSet.clone",
+
+            "kotlin.collections.orEmpty",
+            "kotlin.collections.toTypedArray",
         )
         wellKnownPureClasses = setOf(
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+            "kotlin.collections.ArrayDeque",
+            "java.util.PriorityQueue",
+        )
+        wellKnownNewInstanceFunctions = setOf(
+            "kotlin.text.split"
         )
         warnOnPossibleAnnotations = false
     }

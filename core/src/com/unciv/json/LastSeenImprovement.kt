@@ -12,6 +12,7 @@ import yairm210.purity.annotations.Pure
  *
  *  Deals with the problem that serialization uses map keys converted to strings as json object field names,
  *   and generic deserialization can't convert them back,
+ *   and generic deserialization can't convert them back,
  *   by implementing Json.Serializable and parsing the key string explicitly.
  *  See git history for previous more complicated solutions.
  */
