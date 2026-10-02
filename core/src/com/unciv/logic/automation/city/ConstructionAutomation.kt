@@ -110,29 +110,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
 
     fun chooseNextConstruction(): Unit = timeThis("ConstructionAutomation.chooseNextConstruction") {
-        if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
-        
-        addBuildingChoices()
-
-        if (!city.isPuppet) {
-            addSpaceshipPartChoice()
-            addWorkerChoice()
-            addWorkBoatChoice()
-            addMilitaryUnitChoice()
-        }
-
-        val chosenConstruction: IConstruction =
-            if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
-                // add science!
-                when {
-                    PerpetualConstruction.Science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.Science
-                    PerpetualConstruction.Gold.isBuildable(cityConstructions) -> PerpetualConstruction.Gold
-                    PerpetualConstruction.Culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.Culture
-                    PerpetualConstruction.Faith.isBuildable(cityConstructions) -> PerpetualConstruction.Faith
-                    else -> PerpetualConstruction.Idle
-                }
-            } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
-            //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead
+        val chosenConstruction = getChosenConstruction() ?: return
 
         // Do not notify while in resistance (you can't do anything about it) - still notify for puppets ("annex already!")
         // Also do not notify while city screen open - might be a buying spree, not helpful
@@ -150,6 +128,32 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             NotificationCategory.Production,
             NotificationIcon.Construction
         )
+    }
+
+    fun getChosenConstruction(): IConstruction? {
+        if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return null
+
+        addBuildingChoices()
+
+        if (!city.isPuppet) {
+            addSpaceshipPartChoice()
+            addWorkerChoice()
+            addWorkBoatChoice()
+            addMilitaryUnitChoice()
+        }
+
+        return if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
+            // add science!
+            when {
+                PerpetualConstruction.Science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.Science
+                PerpetualConstruction.Gold.isBuildable(cityConstructions) -> PerpetualConstruction.Gold
+                PerpetualConstruction.Culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.Culture
+                PerpetualConstruction.Faith.isBuildable(cityConstructions) -> PerpetualConstruction.Faith
+                else -> PerpetualConstruction.Idle
+            }
+        } else {
+            relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice
+        }
     }
 
     private fun addMilitaryUnitChoice() {
