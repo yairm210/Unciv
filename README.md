@@ -122,6 +122,13 @@ troubleshooting connection issues, or using a native VNC client instead of a bro
 
 ## Licensing and credits
 
-This game is available under the MPL 2.0 (see [LICENSE](LICENSE]). The media
-files are authored by many people, available under a mix of CC BY-SA 4.0,
-CC BY 3.0/4.0, CC0, Public Domain (see [docs/Credits.md](docs/Credits.md)).
+Unciv's source code is available under the Mozilla Public License 2.0
+(see [LICENSE](LICENSE)), except where otherwise noted.
+TextureArraySpriteBatch.java, forked from
+[carlislefox/libgdx-texture-array-batch](https://github.com/carlislefox/libgdx-texture-array-batch),
+is available under CC0 1.0 Universal
+(see [LICENSE-TextureArraySpriteBatch](LICENSE-TextureArraySpriteBatch)).
+
+The media files are authored by many people and are available under a mix of
+CC BY-SA 4.0, CC BY 3.0/4.0, CC0, and public domain terms
+(see [docs/Credits.md](docs/Credits.md)).
