@@ -123,49 +123,45 @@ object BuildingDescriptions {
     }
 
     /**
-     * Lists differences: how a nation-unique Building compares to its replacement.
+     * Lists differences to a [FormattedLineListBuilder]: how a nation-unique Building compares to its replacement.
      *
-     * Cost is **is** included.
-     * Result as indented, non-linking [FormattedLine]s
+     * Cost **is** included.
      *
      * @param originalBuilding The "standard" Building
      * @param replacementBuilding The "uniqueTo" Building
      */
-    fun getDifferences(
-        originalBuilding: Building, replacementBuilding: Building
-    ): Sequence<FormattedLine> = sequence {
-
+    fun FormattedLineListBuilder.addBuildingDifferences(originalBuilding: Building, replacementBuilding: Building) {
         for (stat in Stat.entries) // Do not iterate on object since that excludes zero values
             if (replacementBuilding[stat] != originalBuilding[stat])
-                yield(FormattedLine( stat.name.tr() + " " +"[${replacementBuilding[stat].toInt()}] vs [${originalBuilding[stat].toInt()}]".tr(), indent=1))
+                add(stat.name.tr() + " " +"[${replacementBuilding[stat].toInt()}] vs [${originalBuilding[stat].toInt()}]".tr(), indent=1)
 
         val originalStatBonus = originalBuilding.getStatPercentageBonuses(null)
         val replacementStatBonus = replacementBuilding.getStatPercentageBonuses(null)
         for (stat in Stat.entries)
             if (replacementStatBonus[stat] != originalStatBonus[stat])
-                yield(FormattedLine("[${replacementStatBonus[stat].toInt()}]% [${stat.name}] vs [${originalStatBonus[stat].toInt()}]% [${stat.name}]", indent=1))
+                add("[${replacementStatBonus[stat].toInt()}]% [${stat.name}] vs [${originalStatBonus[stat].toInt()}]% [${stat.name}]", indent = 1)
 
         if (replacementBuilding.maintenance != originalBuilding.maintenance)
-            yield(FormattedLine("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
+            add("{Maintenance} ".tr() + "[${replacementBuilding.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent = 1)
         if (replacementBuilding.cost != originalBuilding.cost)
-            yield(FormattedLine("{Cost} ".tr() + "[${replacementBuilding.cost}] vs [${originalBuilding.cost}]".tr(), indent=1))
+            add("{Cost} ".tr() + "[${replacementBuilding.cost}] vs [${originalBuilding.cost}]".tr(), indent = 1)
         if (replacementBuilding.cityStrength != originalBuilding.cityStrength)
-            yield(FormattedLine("{City strength} ".tr() + "[${replacementBuilding.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1))
+            add("{City strength} ".tr() + "[${replacementBuilding.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent = 1)
         if (replacementBuilding.cityHealth != originalBuilding.cityHealth)
-            yield(FormattedLine("{City health} ".tr() + "[${replacementBuilding.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1))
+            add("{City health} ".tr() + "[${replacementBuilding.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent = 1)
 
         if (replacementBuilding.replacementTextForUniques.isNotEmpty()) {
-            yield(FormattedLine(replacementBuilding.replacementTextForUniques, indent=1))
+            add(replacementBuilding.replacementTextForUniques, indent = 1)
         } else {
             val newAbilityPredicate: (Unique)->Boolean = { it.text in originalBuilding.uniques || it.isHiddenToUsers() }
             for (unique in replacementBuilding.uniqueObjects.filterNot(newAbilityPredicate))
-                yield(FormattedLine(unique.getDisplayText(), indent=1))  // FormattedLine(unique) would look worse - no indent and autolinking could distract
+                add(unique.getDisplayText(), indent = 1)  // FormattedLine(unique) would look worse - no indent and autolinking could distract
         }
 
         val lostAbilityPredicate: (Unique)->Boolean = { it.text in replacementBuilding.uniques || it.isHiddenToUsers() }
         for (unique in originalBuilding.uniqueObjects.filterNot(lostAbilityPredicate)) {
             // Need double translation of the "ability" here - unique texts may contain square brackets
-            yield(FormattedLine("Lost ability (vs [${originalBuilding.name}]): [${unique.text.tr()}]", indent=1))
+            add("Lost ability (vs [${originalBuilding.name}]): [${unique.text.tr()}]", indent = 1)
         }
     }
 
@@ -177,11 +173,11 @@ object BuildingDescriptions {
         }
 
         if (uniqueTo != null) {
-            add()
+            space()
             add("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
             if (replaces != null) {
                 val replacesBuilding = ruleset.buildings[replaces]
-                add("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent=1)
+                add("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent = 1)
             }
         }
 
@@ -205,7 +201,7 @@ object BuildingDescriptions {
         }
 
         if (requiredResource != null) {
-            add()
+            space()
             val resource = ruleset.tileResources[requiredResource]
             add(
                 requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
@@ -216,7 +212,7 @@ object BuildingDescriptions {
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
-            add()
+            space()
 
         if (replacementTextForUniques.isNotEmpty()) {
             add(replacementTextForUniques)
@@ -248,14 +244,14 @@ object BuildingDescriptions {
         }
 
         if (requiredNearbyImprovedResources != null) {
-            add()
+            space()
             add("Requires at least one of the following resources improved near the city:")
             requiredNearbyImprovedResources!!.forEach {
                 add(it, indent = 1, link = "Resource/$it")
             }
         }
 
-        if (cityStrength != 0.0 || cityHealth != 0 || maintenance != 0) add()
+        if (cityStrength != 0.0 || cityHealth != 0 || maintenance != 0) space()
         if (cityStrength != 0.0) add("{City strength} +$cityStrength")
         if (cityHealth != 0) add("{City health} +$cityHealth")
         if (maintenance != 0) add("{Maintenance cost}: $maintenance {Gold}")
