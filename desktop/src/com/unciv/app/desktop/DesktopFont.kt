@@ -71,9 +71,9 @@ class DesktopFont : FontImplementation {
         return font.size
     }
 
-    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString()) { metric.charWidth(char) }
+    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString()) { it.charWidth(char) }
 
-    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString) { metric.stringWidth(symbolString) }
+    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString) { it.stringWidth(symbolString) }
 
     private fun getCharPixmapCommon(symbolString: String, measureWidth: (FontMetrics) -> Int): Pixmap {
         val renderFont: Font
