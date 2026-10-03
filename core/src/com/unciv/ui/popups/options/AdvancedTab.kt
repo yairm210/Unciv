@@ -233,6 +233,9 @@ internal class AdvancedTab(
         val modSelect = TranslatedSelectBox(entries, "All mods")
 
         val backupCheckBox = "backup".toCheckBox()
+        modSelect.onChange {
+            backupCheckBox.isDisabled = modSelect.selected.value == BaseRuleset.Civ_V_GnK.fullName
+        }
 
         addWrapped {
             defaults().space(10f)
@@ -242,6 +245,14 @@ internal class AdvancedTab(
         }
         val resultCell = add().colspan(2)
         row()
+
+        if (entries.size == 1) {
+            // nothing to do - neither builtin translations nor mods
+            generateTranslationsButton.disable()
+            modSelect.isDisabled = true
+            backupCheckBox.isDisabled = true
+            return
+        }
 
         generateTranslationsButton.onActivation {
             resultCell.setActor(null)
