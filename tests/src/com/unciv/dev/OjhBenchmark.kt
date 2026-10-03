@@ -60,29 +60,55 @@ import java.util.Locale
  * ## Running it
  *
  * ```
- * ./gradlew :tests:ojhTurns -Pojh.args="--turns 250 --players 63 --map /path/map.json"
+ * ./gradlew :tests:ojh -Pojh.args="turns --turns 250 --players 63 --map /path/map.json"
+ * ./gradlew :tests:ojh -Pojh.args="fps --seconds 5 --late-turns 20 --players 8"
  * ```
  *
  * or directly, with the tests classpath:
  *
  * ```
- * java -cp <tests runtime classpath> com.unciv.dev.OjhBenchmark --turns 250 --players 8
+ * java -cp <tests runtime classpath> com.unciv.dev.OjhBenchmark turns --turns 250
  * ```
  *
  * ## Output
  *
- * OJH's line protocol on stdout, one line per fact, everything else on stderr:
+ * OJH's line protocol on stdout, one line per fact, everything else on stderr.
+ * Both modes name the world they measured, because a frame rate or a turn time
+ * means nothing without it:
  *
  * ```
  * OJH players <n>
  * OJH regions <n> tiles
+ * OJH view spectator|civ          whether the map is drawn with fog of war
+ * ```
+ *
+ * then, for `turns`:
+ *
+ * ```
  * OJH ready                       the game is loaded; turn 1 starts next
  * OJH turn <n> <seconds>
+ * ```
+ *
+ * and for `fps`:
+ *
+ * ```
+ * OJH renderer <gl renderer>, OpenGL <major>.<minor> via LWJGL3
+ * OJH resolution <w>x<h>
+ * OJH vsync off
+ * OJH scene <name> <frames> <seconds> <p50 ms> <p95 ms> <p99 ms> <1% low fps>
  * ```
  */
 object OjhBenchmark {
 
     private fun say(line: String) = println(line)
+
+    /**
+     * A spectator sees every tile, an ordinary civ sees what it has explored, and
+     * the map scenes cost very different amounts in the two cases -- about a
+     * third, measured. Whichever a run used belongs in its output.
+     */
+    internal fun view(info: GameInfo): String =
+        if (info.civilizations.any { it.isSpectator() }) "spectator" else "civ"
     private fun note(line: String) = System.err.println(line)
 
     @JvmStatic
@@ -141,6 +167,7 @@ object OjhBenchmark {
 
         say("OJH players ${info.civilizations.count { it.playerType == PlayerType.AI && !it.isBarbarian }}")
         say("OJH regions ${info.tileMap.values.size} tiles")
+        say("OJH view ${view(info)}")
         note(String.format(Locale.ROOT, "loaded in %.3f s", bootSeconds))
         say("OJH ready")
 
@@ -232,6 +259,17 @@ object OjhBenchmark {
      */
     private fun fps(players: Int, size: String, mapPath: String?, seed: Long,
                     seconds: Double, lateTurns: Int) {
+        // Headless AWT, as desktop/build.gradle.kts already asks for. GLFW owns
+        // the process's NSApplication and polls it from the first thread, which
+        // is why this mode needs -XstartOnFirstThread; the first use of AWT
+        // (FontDesktop rasterising a glyph) queues -[NSApplication run] onto
+        // that same run loop, glfwPollEvents runs it, and it never returns --
+        // the window stays up at 0% CPU with nothing timed. Set here as well as
+        // in the Gradle task so a plain `java -cp ... OjhBenchmark fps` is
+        // correct, and set before anything can load AWT; glyph rasterisation
+        // needs only Font and BufferedImage, which work headless.
+        System.setProperty("java.awt.headless", "true")
+
         // UncivGame.create asks Display for the screen mode, and the desktop
         // launcher is what normally sets it. Every method on the interface has
         // a default, so an empty one is a complete one: this is measuring frame
@@ -246,6 +284,13 @@ object OjhBenchmark {
         // Without this the window stops rendering the moment anything else is
         // clicked, and a frame rate measured on a paused window is zero.
         config.setPauseWhenLostFocus(false)
+        // libGDX sleeps 1000/idleFPS ms on an iteration where no window drew.
+        // With continuous rendering on below, every iteration draws and this
+        // never fires -- it is here so that a frame the game chooses not to
+        // draw costs 0.1 ms rather than 16.
+        config.setIdleFPS(10000)
+        config.setPauseWhenMinimized(false)
+        config.setAutoIconify(false)
         // macOS gives a covered window about one frame a second, so it has to
         // be in front of whatever else is on screen.
         Lwjgl3Application(FpsRun(players, size, mapPath, seed, seconds, lateTurns), config)
@@ -317,6 +362,16 @@ object OjhBenchmark {
             // thing being drawn.
             Fonts.fontImplementation = FontDesktop()
             super.create()
+
+            // After super.create(), not before: UncivGame.create() ends with
+            // `Gdx.graphics.isContinuousRendering = settings.continuousRendering`
+            // and that setting defaults to false, so anything set earlier is
+            // overwritten. Without it libGDX draws on demand and the scene
+            // machine only advances on the frames a posted runnable happens to
+            // force. An unfocused window on macOS gets about one frame a
+            // second, which measures macOS rather than this game.
+            Gdx.graphics.setContinuousRendering(true)
+            (Gdx.graphics as Lwjgl3Graphics).window.focusWindow()
         }
 
         override fun render() {
@@ -341,11 +396,6 @@ object OjhBenchmark {
                         return
                     }
                     if (screen is MainMenuScreen) {
-                        // macOS gives a covered or unfocused window about one
-                        // frame a second, so the measurement has to happen with
-                        // the window in front. This TAKES OVER THE SCREEN for
-                        // the length of the run.
-                        (Gdx.graphics as Lwjgl3Graphics).window.focusWindow()
                         val gl = Gdx.graphics.glVersion
                         OjhBenchmark.say("OJH renderer ${gl.rendererString}, OpenGL "
                             + "${gl.majorVersion}.${gl.minorVersion} via LWJGL3")
@@ -358,6 +408,13 @@ object OjhBenchmark {
                 1 -> if (elapsed(now)) {
                     report()
                     started = OjhBenchmark.start(players, size, mapPath, seed)
+                    // Frame rate depends on how much world is on screen, so the
+                    // run has to record the world: civ count, tile count, and
+                    // whether fog of war hides most of it.
+                    OjhBenchmark.say("OJH players ${started!!.civilizations.count {
+                        it.playerType == PlayerType.AI && !it.isBarbarian }}")
+                    OjhBenchmark.say("OJH regions ${started!!.tileMap.values.size} tiles")
+                    OjhBenchmark.say("OJH view ${OjhBenchmark.view(started!!)}")
                     load(started!!)
                     stage = 2
                 }
