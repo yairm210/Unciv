@@ -84,20 +84,27 @@ object TranslationFileWriter {
     //region Update translation files
     fun writeNewTranslationFiles(modSelection: String, backup: Boolean): String {
         val allSelected = modSelection == "All mods"
-        val baseSelected = allSelected || BaseRuleset.entries.any { it.fullName == modSelection }
+        val baseSelected = allSelected && !isRunFromJar(this) || BaseRuleset.entries.any { it.fullName == modSelection }
+        val newLanguagePattern = Regex("""New language: \[(.+)]""")
+        val newLanguage = newLanguagePattern.matchEntire(modSelection)?.groupValues?.get(1)
 
         try {
             val translations = Translations()
-            translations.readAllLanguagesTranslation()
-            val modSelected = !baseSelected && modSelection in translations.modsWithTranslations
+            if (newLanguage != null)
+                translations.tryReadTranslationForSpecificLanguage(newLanguage)
+            else
+                translations.readAllLanguagesTranslation()
+            val modSelected = !baseSelected && newLanguage == null && modSelection in translations.modsWithTranslations
 
             var fastlaneOutput = ""
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
-            if (baseSelected && !isRunFromJar(this)) {
+            if (baseSelected) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
                 fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
+            } else if (newLanguage != null) {
+                generateTranslationFiles(translations, backup = backup)
             }
 
             fun processMod(modName: String, modTranslations: Translations) {
@@ -415,7 +422,7 @@ object TranslationFileWriter {
         val finalFileText = stringBuilder.toString().replace(multipleNewlinesRegex, "\n\n\n")
 
         if (backup) {
-            // Mod files get a backup
+            // Mod files or new languages (modFolder==null works as Gdx.local(".")) get a backup
             val backup = getFileHandle(modFolder, backupFileLocation.format(language))
             if (backup.exists()) backup.delete()
             file.moveTo(backup)
