@@ -10,8 +10,8 @@ jobs:
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
@@ -39,7 +39,7 @@ jobs:
     steps:
 
       - name: Merge Pull Request
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
           script: |
@@ -51,13 +51,13 @@ jobs:
               repo: repository.repo,
             })
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           ref: master # By default will checkout *the version at time of trigger* which does *not* contain the PR we just merged!
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
 
       - name: Increment version and release
         run: |
@@ -68,3 +68,22 @@ jobs:
         with:
           commit_message: ${{env.VERSION}}
           tagging_message: ${{env.VERSION}}
+
+  merge_translations:
+    if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
+    # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+
+          # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
+          # _Badly_ documented in multiple places, including here: https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+          # To get around this, we created a Personal Access Token,
+          #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
+          #  and use that instead.
+        run: |
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} translations
+ 

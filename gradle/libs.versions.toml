@@ -3,15 +3,15 @@
 #noinspection AndroidGradlePluginVersion
 agp = "9.2.0"
 
-kotlin = "2.4.10"
-coroutines = "1.10.2"
+kotlin = "2.4.20"
+coroutines = "1.11.0"
 
 gdx = "1.14.2"
 discord = "v2.0.1"
 textureArrayBatch = "v1.2"
 
-jna = "5.17.0"
-ktor = "3.2.3"
+jna = "5.19.1"
+ktor = "3.6.0"
 logback = "1.5.21"
 clikt = "5.0.3"
 
@@ -23,8 +23,8 @@ junit = "4.13.2"
 mockito = "5.20.0"
 
 #android
-ktxCore = "1.16.0"
-ktxRuntime = "2.10.3"
+ktxCore = "1.19.0"
+ktxRuntime = "2.11.2"
 desugar = "2.1.5"
 
 androidxCollection = "1.4.5"
