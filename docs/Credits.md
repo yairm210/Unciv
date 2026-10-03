@@ -21,6 +21,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 -   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): (public domain)
 -   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): (public domain)
 -   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): (public domain)
+-   [Navajo flag] gimped by Sometroglodyte, inspired by [Seal of the Navajo Nation](https://en.wikipedia.org/wiki/Seal_of_the_Navajo_Nation) (public domain, [XCF available here](https://github.com/user-attachments/files/29069491/Great_Seal_of_the_Navajo_Nation.xcf.zip)
 
 Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraImages/Icons/Unciv128.png` and other files) by yairm210 and u-ndefine, licensed under CC BY 4.0. This logo includes the following icons:
 - [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov (CC BY 3.0)
