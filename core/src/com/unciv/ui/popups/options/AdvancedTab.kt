@@ -227,16 +227,7 @@ internal class AdvancedTab(
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
 
-        val notNewLanguages = LocaleCode.getSupportedLanguages().toMutableSet().apply {
-            add("template")
-            add("completionPercentages")
-        }
-        val newLanguages =
-            UncivGame.Current.files.getLocalFile("jsons/translations")
-                .list(".properties")
-                .map { it.nameWithoutExtension() }
-                .filter { it !in notNewLanguages }
-                .map { "New language: [$it]" }
+        val newLanguages = LocaleCode.getUnsupportedLanguages().map { "New language: [$it]" }
         // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
         val entries = newLanguages + listOf("All mods") +
             (if (isRunFromJar(this)) emptyList() else listOf(BaseRuleset.Civ_V_GnK.fullName)) +
