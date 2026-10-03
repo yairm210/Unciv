@@ -117,6 +117,18 @@ enum class LocaleCode(
         fun getSupportedLanguages() =
             entries.asSequence().filterNot { it.unused }.map { it.languageName() }
 
+        /** Get names of language files that exist in <data-dir>/jsons/translations, but not in LocaleCode (or only with unused=true) */
+        fun getUnsupportedLanguages(): List<String> {
+            val notNewLanguages = getSupportedLanguages().toMutableSet().apply {
+                add("template")
+                add("completionPercentages")
+            }
+            return UncivGame.Current.files.getLocalFile("jsons/translations")
+                .list(".properties")
+                .map { it.nameWithoutExtension() }
+                .filter { it !in notNewLanguages }
+        }
+
         /** Get the fastlane folder name for a [language] as stored in GameSettings */
         fun fastlaneFolder(language: String) =
             find(language)?.fastlaneFolder() ?: "en"
