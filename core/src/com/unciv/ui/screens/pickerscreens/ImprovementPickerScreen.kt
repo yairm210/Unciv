@@ -357,6 +357,10 @@ class ImprovementPickerScreen(
                     .filter { currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt() }
                     .map { "Acquire more [${it.params[1]}]" to ruleset.tileResources[it.params[1]]?.makeLink() }
                 proposedSolutions.addAll(resources)
+                val stockpiledResources = improvement.getStockpiledResourceRequirements(unit.cache.state)
+                    .filter { (resourceName, amount) -> currentPlayerCiv.getResourceAmount(resourceName) < amount }
+                    .map { (resourceName, _) -> "Acquire more [$resourceName]" to ruleset.tileResources[resourceName]?.makeLink() }
+                proposedSolutions.addAll(stockpiledResources)
             }
         }
         return report
