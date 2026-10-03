@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.ArrayDeque
 
@@ -11,10 +12,10 @@ import kotlin.collections.ArrayDeque
  * @param startingPoint Starting [Tile] from which to start the search
  * @param predicate A condition for subsequent neighboring tiles to be considered in search
  */
-@InternalState
+@ModifiesInternalStateOnly
 class BFS(
     val startingPoint: Tile,
-    private val predicate : (Tile) -> Boolean
+    @Readonly private val predicate : (Tile) -> Boolean
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE

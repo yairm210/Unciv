@@ -4,13 +4,15 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.IConstruction  // Kdoc only
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *
  *  @param keepZeroAmounts If `false`, entries with [amount][ResourceSupply.amount] 0 are eliminated
  */
-@InternalState
+@ModifiesInternalStateOnly
 class ResourceSupplyList(
     private val keepZeroAmounts: Boolean = false
 ) : ArrayList<ResourceSupplyList.ResourceSupply>(24) {
@@ -48,7 +50,7 @@ class ResourceSupplyList(
      *  @return `true` if the length of the list changed.
      */
     override fun add(element: ResourceSupply): Boolean {
-        val existingResourceSupply = get(element.resource, element.origin)
+        @LocalState val existingResourceSupply = get(element.resource, element.origin)
         if (existingResourceSupply != null) {
             // This is at the time of writing the _only_ place updating the field.
             // To check: Change to val, comment out this line, compile, revert.
@@ -99,7 +101,10 @@ class ResourceSupplyList(
     }
 
     /** Create a new [ResourceSupplyList] aggregating resources over all origins */
-    fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
+    fun sumByResource(newOrigin: String): ResourceSupplyList {
+        val list = ResourceSupplyList(keepZeroAmounts)
+        return list.addByResource(this, newOrigin)
+    }
 
     /**
      *  Remove all entries from a specific [origin]
@@ -114,7 +119,7 @@ class ResourceSupplyList(
     /** Multiply each entry's amount by its resource's modifier, if one exists. */
     fun applyModifiers(modifiers: Map<String, Float>) {
         if (modifiers.isEmpty()) return
-        for (resourceSupply in this) {
+        for (@LocalState resourceSupply in this) {
             val modifier = modifiers[resourceSupply.resource.name] ?: continue
             resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
         }

@@ -41,12 +41,12 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
             add(MarkupRenderer.render(TileDescription.toMarkup(tileView), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
             } ).padTop(5f).row()
-            if (DebugUtils.VISIBLE_MAP) add(tileView.position().toPrettyString().toLabel()).colspan(2).pad(5f)
+            if (DebugUtils.VISIBLE_MAP)
+                add(tileView.position().toPrettyString()).colspan(2).pad(5f) // No toLabel() to avoid tr(), eats comma
             if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
                 val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tileView]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
                 add(imagesString.toLabel())
             }
-            
         }
 
         pack()

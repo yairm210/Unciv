@@ -22,7 +22,8 @@ RUN chmod +x ./gradlew && ./gradlew --version
 
 # Build unciv
 COPY . /src/
-RUN chmod +x ./gradlew && \
+RUN --mount=type=cache,target=/src/desktop/.jre-cache \
+    chmod +x ./gradlew && \
     ./gradlew desktop:dist desktop:packrLinux64 --stacktrace --info
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 AS run

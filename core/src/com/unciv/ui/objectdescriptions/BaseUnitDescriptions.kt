@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -18,6 +17,7 @@ import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getCostsAmountString
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import yairm210.purity.annotations.Readonly
@@ -55,7 +55,7 @@ object BaseUnitDescriptions {
         // Costs
         for ((resourceName, amount) in baseUnit.getStockpiledResourceRequirements(city.civ.state)) {
             val available = city.getAvailableResourceAmount(resourceName)
-            val resource = city.getRuleset().tileResources[resourceName] ?: continue
+            if (baseUnit.ruleset.tileResources[resourceName] == null) continue
             lines += resourceName.getCostsAmountString(amount, available).tr()
         }
 
@@ -83,187 +83,162 @@ object BaseUnitDescriptions {
         return lines.joinToString("\n")
     }
 
-    fun getCivilopediaTextLines(baseUnit: BaseUnit, ruleset: Ruleset): List<FormattedLine> {
-        val textList = ArrayList<FormattedLine>()
-
+    fun BaseUnit.getBaseUnitCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
         // Potentially show pixel unit on top (other civilopediaText is handled by the caller)
-        textList.addPixelUnitImage(baseUnit)
+        addPixelUnitImage(this@getBaseUnitCivilopediaTextLines)
 
         // Don't call baseUnit.getType() here - coming from the main menu baseUnit isn't fully initialized
-        val unitTypeLink = ruleset.unitTypes[baseUnit.unitType]?.makeLink() ?: ""
-        textList += FormattedLine("{Unit type}: ${baseUnit.unitType.tr()}", unitTypeLink)
+        val unitTypeLink = ruleset.unitTypes[unitType]?.makeLink() ?: ""
+        add("{Unit type}: {$unitType}", unitTypeLink)
 
         val stats = ArrayList<String>()
-        if (baseUnit.strength != 0) stats += "${baseUnit.strength}${Fonts.strength}"
-        if (baseUnit.rangedStrength != 0) {
-            stats += "${baseUnit.rangedStrength}${Fonts.rangedStrength}"
-            stats += "${baseUnit.range}${Fonts.range}"
+        if (strength != 0) stats += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) {
+            stats += "$rangedStrength${Fonts.rangedStrength}"
+            stats += "$range${Fonts.range}"
         }
-        if (baseUnit.movement != 0 && ruleset.unitTypes[baseUnit.unitType]?.isAirUnit() != true)
-            stats += "${baseUnit.movement}${Fonts.movement}"
+        if (movement != 0 && ruleset.unitTypes[unitType]?.isAirUnit() != true)
+            stats += "$movement${Fonts.movement}"
         if (stats.isNotEmpty())
-            textList += FormattedLine(stats.joinToString(", "))
+            add(stats.joinToString(", "))
 
-        if (baseUnit.cost > 0) {
+        if (cost > 0) {
             stats.clear()
-            stats += "${baseUnit.cost}${Fonts.production}"
-            if (baseUnit.canBePurchasedWithStat(null, Stat.Gold)) {
-                stats += "${baseUnit.getCivilopediaGoldCost()}${Fonts.gold}"
+            stats += "$cost${Fonts.production}"
+            if (canBePurchasedWithStat(null, Stat.Gold)) {
+                stats += "${getCivilopediaGoldCost()}${Fonts.gold}"
             }
-            textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
+            add(stats.joinToString("/", "{Cost}: "))
         }
 
-        if (baseUnit.interceptRange > 0) {
-            textList += FormattedLine("Air Intercept Range: [${baseUnit.interceptRange}]")
-        }
+        if (interceptRange > 0)
+            add("Air Intercept Range: [$interceptRange]")
 
-        if (baseUnit.replacementTextForUniques.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine(baseUnit.replacementTextForUniques)
+        if (replacementTextForUniques.isNotEmpty()) {
+            add()
+            add(replacementTextForUniques)
         } else {
-            baseUnit.uniquesToCivilopediaTextLines(textList, colorConsumesResources = true)
+            addUniques(colorConsumesResources = true)
         }
 
-        if (baseUnit.requiredResource != null) {
-            textList += FormattedLine()
-            val resource = ruleset.tileResources[baseUnit.requiredResource]
-            textList += FormattedLine(
-                baseUnit.requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
-                link="Resources/${baseUnit.requiredResource}", color="#F42")
+        if (requiredResource != null) {
+            add()
+            val resource = ruleset.tileResources[requiredResource]
+            add(
+                requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
+                link="Resources/$requiredResource", color="#F42"
+            )
         }
 
-        if (baseUnit.uniqueTo != null) {
-            textList += FormattedLine()
-            textList += FormattedLine("Unique to [${baseUnit.uniqueTo}]", link = "Nation/${baseUnit.uniqueTo}")
-            if (baseUnit.replaces != null)
-                textList += FormattedLine(
-                    "Replaces [${baseUnit.replaces}]",
-                    link = "Unit/${baseUnit.replaces}",
-                    indent = 1
-                )
+        if (uniqueTo != null) {
+            add()
+            add("Unique to [$uniqueTo]", link = "Nation/$uniqueTo")
+            if (replaces != null)
+                add("Replaces [$replaces]", link = "Unit/$replaces", indent = 1)
         }
 
-        if (baseUnit.requiredTech != null || baseUnit.upgradesTo != null || baseUnit.obsoleteTech != null) textList += FormattedLine()
-        if (baseUnit.requiredTech != null) textList += FormattedLine(
-            "Required tech: [${baseUnit.requiredTech}]",
-            link = "Technology/${baseUnit.requiredTech}"
-        )
+        if (requiredTech != null || upgradesTo != null || obsoleteTech != null)
+            add()
+        if (requiredTech != null)
+            add("Required tech: [$requiredTech]", link = "Technology/$requiredTech")
 
         val canUpgradeFrom = ruleset.units
             .filterValues {
-                (it.upgradesTo == baseUnit.name || it.upgradesTo != null && it.upgradesTo == baseUnit.replaces)
-                        && (it.uniqueTo == null || it.uniqueTo == baseUnit.uniqueTo)
+                (it.upgradesTo == name || it.upgradesTo != null && it.upgradesTo == replaces)
+                        && (it.uniqueTo == null || it.uniqueTo == uniqueTo)
             }.keys
         if (canUpgradeFrom.isNotEmpty()) {
             if (canUpgradeFrom.size == 1)
-                textList += FormattedLine(
-                    "Can upgrade from [${canUpgradeFrom.first()}]",
-                    link = "Unit/${canUpgradeFrom.first()}"
-                )
+                add("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
             else {
-                textList += FormattedLine()
-                textList += FormattedLine("Can upgrade from:")
+                add()
+                add("Can upgrade from:")
                 for (unitName in canUpgradeFrom.sorted())
-                    textList += FormattedLine(unitName, indent = 2, link = "Unit/$unitName")
-                textList += FormattedLine()
+                    add(unitName, link = "Unit/$unitName", indent = 2)
+                add()
             }
         }
 
-        if (baseUnit.upgradesTo != null) textList += FormattedLine(
-            "Upgrades to [${baseUnit.upgradesTo}]",
-            link = "Unit/${baseUnit.upgradesTo}"
-        )
-        if (baseUnit.obsoleteTech != null) textList += FormattedLine(
-            "Obsolete with [${baseUnit.obsoleteTech}]",
-            link = "Technology/${baseUnit.obsoleteTech}"
-        )
+        if (upgradesTo != null)
+            add("Upgrades to [$upgradesTo]", link = "Unit/$upgradesTo")
+        if (obsoleteTech != null)
+            add("Obsolete with [$obsoleteTech]", link = "Technology/$obsoleteTech")
 
-        if (baseUnit.promotions.isNotEmpty()) {
-            textList += FormattedLine()
-            baseUnit.promotions.withIndex().forEach {
-                textList += FormattedLine(
+        if (promotions.isNotEmpty()) {
+            add()
+            promotions.withIndex().forEach {
+                add(
                     when {
-                        baseUnit.promotions.size == 1 -> "{Free promotion:} "
+                        promotions.size == 1 -> "{Free promotion:} "
                         it.index == 0 -> "{Free promotions:} "
                         else -> ""
                     } + "{${it.value.tr()}}" +   // tr() not redundant as promotion names now can use []
-                            (if (baseUnit.promotions.size == 1 || it.index == baseUnit.promotions.size - 1) "" else ","),
+                            (if (promotions.size == 1 || it.index == promotions.size - 1) "" else ","),
                     link = "Promotions/${it.value}",
                     indent = if (it.index == 0) 0 else 1
                 )
             }
         }
 
-        val seeAlso = ArrayList<FormattedLine>()
-        for ((other, unit) in ruleset.units) {
-            if (unit.replaces == baseUnit.name || baseUnit.uniques.contains("[${baseUnit.name}]")) {
-                seeAlso += FormattedLine(other, link = "Unit/$other", indent = 1)
-            }
-        }
-        if (seeAlso.isNotEmpty()) {
-            textList += FormattedLine()
-            textList += FormattedLine("{See also}:")
-            textList += seeAlso
-        }
-
-        return textList
+        fun filterOtherUnit(unit: BaseUnit) = unit.replaces == name || unit.hasUniquesMentioning(name)
+        val seeAlso = ruleset.units.values.asSequence().filter(::filterOtherUnit)
+        addSeeAlso(seeAlso)
     }
 
     /** Show Pixel Unit Art for the unit.
-     *  * _Unless_ the mod already uses [extraImage][FormattedLine.extraImage] in the unit's [civilopediaText][IRulesetObject.civilopediaText]
+     *  * _Unless_ the mod already uses [extraImage][FormattedLine.extraImage] in the unit's [civilopediaText][com.unciv.models.ruleset.IRulesetObject.civilopediaText]
      *  * _Unless_ user has selected no [unitSet][GameSettings.unitSet]
      *  * For units with era or style variants, only the default is shown (todo: extend FormattedLine with slideshow capability)
      */
     // Note: By popular request (this is a simple variant of one of the ideas in #10175)
-    private fun ArrayList<FormattedLine>.addPixelUnitImage(baseUnit: BaseUnit) {
+    private fun FormattedLineListBuilder.addPixelUnitImage(baseUnit: BaseUnit) {
         val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${baseUnit.name}")
         if (baseUnit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) }) return
         val settings = GUI.getSettings()
         if (settings.unitSet.isNullOrEmpty() || settings.pediaUnitArtSize < 1f) return
         val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
         if (!ImageGetter.imageExists(imageName)) return  // Some units don't have Unit art (e.g. nukes)
-        add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true))
-        add(FormattedLine(separator = true, color = "GRAY"))
+        add(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true)
+        separator(color = "GRAY")
     }
 
-    @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
-    fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+    fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
         @Readonly
-        fun getDomainLines() = sequence<FormattedLine> {
-            yield(FormattedLine("{Unit types}:", header = 4))
+        fun getDomainLines()  {
+            add("{Unit types}:", header = 4)
             val myMovementType = getMovementType()
             for (unitType in ruleset.unitTypes.values) {
                 if (unitType.getMovementType() != myMovementType) continue
                 if (!unitType.isUsed(ruleset)) continue
-                yield(FormattedLine(unitType.name, unitType.makeLink()))
+                add(unitType.name, unitType.makeLink())
             }
         }
-        fun getUnitTypeLines() = sequence<FormattedLine> {
+        fun getUnitTypeLines() {
             getMovementType()?.let {
                 val color = when (it) {
                     UnitMovementType.Land -> "#ffc080"
                     UnitMovementType.Water -> "#80d0ff"
                     UnitMovementType.Air -> "#e0e0ff"
                 }
-                yield(FormattedLine("Domain: [${it.name}]", "UnitType/Domain: [${it.name}]", color = color))
-                yield(FormattedLine(separator = true))
+                add("Domain: [${it.name}]", link = "UnitType/Domain: [${it.name}]", color = color)
+                separator()
             }
-            yield(FormattedLine("Units:", header = 4))
+            add("Units:", header = 4)
             for (unit in ruleset.units.values) {
                 if (unit.unitType != name) continue
-                yield(FormattedLine(unit.name, unit.makeLink()))
+                add(unit.name, unit.makeLink())
             }
 
             val relevantPromotions = ruleset.unitPromotions.values.filter { it.unitTypes.contains(name) }
             if (relevantPromotions.isNotEmpty()) {
-                yield(FormattedLine("Promotions", header = 4))
+                add("Promotions", header = 4)
                 for (promotion in relevantPromotions)
-                    yield(FormattedLine(promotion.name, promotion.makeLink()))
+                    add(promotion.name, promotion.makeLink())
             }
 
-            yieldAll(uniquesToCivilopediaTextLines(leadingSeparator = { yield(FormattedLine(separator = true)) }))
+            addUniques(FormattedLineListBuilder.SeparatorType.Line)
         }
-        return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
+        if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()
     }
 
     /**

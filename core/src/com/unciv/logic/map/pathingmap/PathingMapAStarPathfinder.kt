@@ -22,7 +22,6 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 
-@InternalState
 internal class AStarPathfinder(
     private val debugId: Any,
     private val debugMapType: String,

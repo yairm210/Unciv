@@ -1,5 +1,6 @@
 package com.unciv.ui.objectdescriptions
 
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -7,6 +8,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 
 /** A builder for use in [ICivilopediaText.getCivilopediaTextLines].
@@ -132,6 +134,14 @@ interface FormattedLineListBuilder {
         exclude: Unique.() -> Boolean = { false }
     )
 
+    /** Adds a see-also list including header and separator, but does nothing if [seeAlso] is empty.
+     *
+     *  TODO: Interim. A later stage of the builder conversion will probably get a more flexible helper
+     *        covering other content and formatting a 1-entry list as single line (several usecases)
+     */
+    @Readonly
+    fun addSeeAlso(seeAlso: Sequence<IRulesetObject>)
+
     /** Change the template default values are drawn from */
     @Readonly
     fun defaults(line: FormattedLine)
@@ -140,7 +150,7 @@ interface FormattedLineListBuilder {
     fun defaults(): FormattedLine
 }
 
-@InternalState
+@ModifiesInternalStateOnly
 private class FormattedLineListBuilderImpl(
     defaults: FormattedLine,
     capacity: Int
@@ -219,6 +229,15 @@ private class FormattedLineListBuilderImpl(
                 add(unique.getDisplayText(), link = "Resources/${unique.params[1]}", color = "#F42")
             else add(unique)
         }
+    }
+
+    override fun addSeeAlso(seeAlso: Sequence<IRulesetObject>) {
+        val iterator = seeAlso.iterator()
+        if (!iterator.hasNext()) return
+        add()
+        add("{See also}:")
+        for (item in iterator)
+            add(item.name, item.makeLink(), indent = 1)
     }
 
     override fun defaults(line: FormattedLine) {
