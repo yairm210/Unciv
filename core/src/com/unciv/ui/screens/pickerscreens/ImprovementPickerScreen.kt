@@ -353,14 +353,14 @@ class ImprovementPickerScreen(
             if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile inside your empire" to null)
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
-                val resources = improvement.getMatchingUniques(UniqueType.ConsumesResources)
-                    .filter { currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt() }
-                    .map { "Acquire more [${it.params[1]}]" to ruleset.tileResources[it.params[1]]?.makeLink() }
-                proposedSolutions.addAll(resources)
-                val stockpiledResources = improvement.getStockpiledResourceRequirements(unit.cache.state)
-                    .filter { (resourceName, amount) -> currentPlayerCiv.getResourceAmount(resourceName) < amount }
-                    .map { (resourceName, _) -> "Acquire more [$resourceName]" to ruleset.tileResources[resourceName]?.makeLink() }
-                proposedSolutions.addAll(stockpiledResources)
+                fun proposeMissingResource(name: String, amount: Int) {
+                    if (currentPlayerCiv.getResourceAmount(name) >= amount) return
+                    proposedSolutions.add("Acquire more [$name]" to ruleset.tileResources[name]?.makeLink())
+                }
+                for (unique in improvement.getMatchingUniques(UniqueType.ConsumesResources))
+                    proposeMissingResource(unique.params[1], unique.params[0].toInt())
+                for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(unit.cache.state))
+                    proposeMissingResource(resourceName, amount)
             }
         }
         return report
