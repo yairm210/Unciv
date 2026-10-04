@@ -445,7 +445,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
             val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
-            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns in 1..turns)) {
+            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns in 1..turns
+                    || getAliveMajorCivs().isEmpty())) {
                 simulateUntilWin = false
                 simulateMaxTurns = 0
                 worldScreen?.autoPlay?.stopAutoPlay()
