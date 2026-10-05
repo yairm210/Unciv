@@ -140,7 +140,7 @@ internal class DisplayTab(
         }.actor.apply {
             setSnapToValues(threshold = 60f,
                 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f,
-                editLabel = "Please enter the size of Unitset art:"
+                editLabel = "{Size of Unitset art in Civilopedia}:"
             )
         }
     }
