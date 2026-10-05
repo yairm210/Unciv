@@ -46,6 +46,8 @@ In this order:
 * G&K mechanics - see [#4697](https://www.github.com/yairm210/Unciv/issues/4697)
 * BNW mechanics - trade routes, world congress, etc.
 
+At the moment, no one is explicitly working to add these mechanics in - you could be the one! :D
+
 ## Contributing
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
