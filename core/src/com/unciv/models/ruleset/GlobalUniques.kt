@@ -4,8 +4,7 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import yairm210.purity.annotations.Readonly
 
 class GlobalUniques: RulesetObject() {
@@ -19,24 +18,9 @@ class GlobalUniques: RulesetObject() {
     @Readonly fun hasUniques(): Boolean =
         uniqueObjects.any { !it.isHiddenToUsers() } || unitUniques.isNotEmpty()
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        val lines = mutableListOf<FormattedLine>()
-
-        uniquesToCivilopediaTextLines(lines, leadingSeparator = {
-            yield(FormattedLine())
-            yield(FormattedLine("Global Effect", header=4))
-        })
-
-        val visibleUnitUniques = unitUniques.asSequence()
-            .map { Unique(it) }
-            .filter { !it.isHiddenToUsers() }
-            .map { FormattedLine(it) }
-        if (visibleUnitUniques.any()) {
-            lines += FormattedLine()
-            lines += FormattedLine("Units", header=4)
-            lines += visibleUnitUniques
-        }
-        return lines
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        addUniques(extraSeparator = { add("Global Effect", header = 4) })
+        addUniques(unitUniques.asSequence().map { Unique(it) }, extraSeparator = { add("Units", header = 4) })
     }
 
     companion object {
@@ -56,14 +40,14 @@ class GlobalUniques: RulesetObject() {
         fun combine(globalUniques: GlobalUniques, vararg otherSources: IHasUniques) = GlobalUniques().apply {
             /** This must happen before [uniqueMap] and [uniqueObjects] are triggered */
             /** We're not copying [name] which means any assignments in actual jsons differing from the default will be lost, but still be picked up by TFW */
-            val combinedPediaText = mutableListOf<FormattedLine>()
-            for (source in sequenceOf(globalUniques) + otherSources) {
-                uniques.addAll(source.uniques)
-                if (source !is GlobalUniques) continue
-                unitUniques.addAll(source.unitUniques)
-                combinedPediaText.addAll(source.civilopediaText)
+            civilopediaText = buildCivilopediaText {
+                for (source in sequenceOf(globalUniques) + otherSources) {
+                    uniques.addAll(source.uniques)
+                    if (source !is GlobalUniques) continue
+                    unitUniques.addAll(source.unitUniques)
+                    add(source.civilopediaText)
+                }
             }
-            civilopediaText = combinedPediaText
         }
     }
 }
