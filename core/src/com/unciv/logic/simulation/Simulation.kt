@@ -128,6 +128,8 @@ class Simulation(
                         step.saveTurnStats(gameInfo)
                         step.winner = step.currentPlayer
                         println("${step.winner} won ${step.victoryType} victory on turn ${step.turns}")
+                    } else if (gameInfo.getAliveMajorCivs().isEmpty()) {
+                        println("No major civ left on turn ${step.turns}: Draw")
                     } else {
                         println("Max simulation ${step.turns} turns reached: Draw")
                     }
