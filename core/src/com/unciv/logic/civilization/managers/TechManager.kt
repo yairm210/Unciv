@@ -262,8 +262,18 @@ class TechManager : IsPartOfGameInfoSerialization {
         addScience(finalScienceToAdd)
     }
 
+    /**
+     *  Adds science "income" e.g. from normal research (see [endTurn]) or a triggered Unique.
+     *
+     *  Also called from [updateResearchProgress] to _apply_ overflow.
+     *  Adds the points to the [current research][currentTechnology], or, if there is none, to [overflow][overflowScience].
+     */
     fun addScience(scienceGet: Int) {
-        val currentTechnology = currentTechnologyName() ?: return
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) {
+            overflowScience += scienceGet
+            return
+        }
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
