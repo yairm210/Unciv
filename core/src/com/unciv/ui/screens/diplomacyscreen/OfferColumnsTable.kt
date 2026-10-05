@@ -17,7 +17,7 @@ import com.unciv.view.TradeView
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
 class OfferColumnsTable(
     private val tradeView: TradeView,
-    private val screen: DiplomacyScreen,
+    screen: DiplomacyScreen,
     private val ourCiv: ForeignCivView,
     private val theirCiv: ForeignCivView,
     private val onChange: () -> Unit
@@ -117,7 +117,7 @@ class OfferColumnsTable(
         if (existingGoldOffer != null)
             offer.amount = existingGoldOffer.amount
         AskNumberPopup(
-            screen,
+            stage,
             label = "Enter the amount of gold",
             icon = ImageGetter.getStatIcon("Gold").surroundWithCircle(80f),
             defaultValue = offer.amount,
