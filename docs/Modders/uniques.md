@@ -1166,6 +1166,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
@@ -2319,6 +2321,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
