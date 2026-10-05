@@ -140,4 +140,10 @@ object Constants {
     const val uncivRepoURL = "https://github.com/yairm210/Unciv/"
     /** URL to the wiki, including trailing slash */
     const val wikiURL = "https://yairm210.github.io/Unciv/"
+
+    /** Gdx's own default (only visible in the ActorGestureListener() constructor) for the "tap square" -
+     *  distance the pointer can travel between tap events while still being considered the same tap.
+     *  Gdx docs say unit is pixels, but they're actually stage units for an ActorGestureListener.
+     */
+    const val DEFAULT_HALF_TAP_SQUARE_SIZE = 20f
 }
