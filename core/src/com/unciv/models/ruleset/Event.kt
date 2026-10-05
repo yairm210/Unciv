@@ -8,7 +8,18 @@ import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 
 class Event : RulesetObject() {
-    enum class Presentation { /** Does not display a popup, choice chosen randomly */ None, Alert, Floating }
+    /** Controls how an Event is shown to the player when triggered (see [UniqueTriggerActivation.triggerUnique] for [UniqueType.TriggerEvent]).
+     *  Note: AI civs always behave as [None] (weighted random) for [Alert]/[Floating] presentations, since they can't see a popup. */
+    enum class Presentation {
+        /** No popup. A choice is picked immediately via weighted random ([EventChoice.getWeightForAiDecision]) and triggered right away. */
+        None,
+        /** No popup. The first available choice (in declaration order, after filtering by condition) is picked and triggered right away - like a `when`/`case` fallthrough. Applies to both AI and human civs. */
+        PickFirstAvailableChoice,
+        /** Queues a [com.unciv.logic.civilization.PopupAlert] of type [com.unciv.logic.civilization.AlertType.Event], shown as a blocking modal dialog ([com.unciv.ui.screens.worldscreen.AlertPopup]) the player must resolve before continuing. */
+        Alert,
+        /** Not yet implemented - triggering an Event with this presentation currently throws [NotImplementedError]. Intended to park the choice non-blockingly instead of forcing an immediate popup. */
+        Floating
+    }
     val presentation = Presentation.Alert
     var text = ""
 

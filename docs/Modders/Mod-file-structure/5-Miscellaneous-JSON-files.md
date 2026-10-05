@@ -135,7 +135,7 @@ Events allow users to choose between options of triggers to activate.
 |-----------------|-------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------|
 | name            | String                              | Required | Used for triggering via "Triggers a [event] event" unique                                                                |
 | text            | String                              | None     | Flavor text displayed to user                                                                                            |
-| presentation    | One of: "None", "Alert", "Floating" | Alert    | "Alert" indicates a regular popup, "None" means the choice is made randomly, "Floating" is for tutorial-style indicators |
+| presentation    | One of: "None", "PickFirstAvailableChoice", "Alert", "Floating" | Alert    | "Alert" indicates a regular popup, "None" means the choice is made randomly, "PickFirstAvailableChoice" means the first viable choice (in list order) is picked, like a `when`/`case` statement, "Floating" is for tutorial-style indicators |
 | civilopediaText | List                                | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                            |
 | choices         | List of EventChoices                |          | User can choose to trigger one of the viable choices                                                                     |
 
