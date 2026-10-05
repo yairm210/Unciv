@@ -1,0 +1,31 @@
+
+
+4.22.6-patch1
+
+Revert "fix:Refactor movement logic for hidden unit handling " ()
+
+doc: "All healing effects doubled" does not stack
+
+By SomeTroglodyte:
+- chore: Formatted line list builder 2 
+- Improve numeric text fields localized formatting and parsing 
+- Add missing translation templates for battle notifications 
+- Templates alone aren't the whole requirement - actually routing through tr() is needed too, and original Gdx methods don't do it for you 
+- chore: A few things around language and TFW UI 
+- Add flag for the Navajo language 
+- AskNumberPopup defers range check (for certain ranges, bounding the value and writing it back on each key press would prevent any meaningful entry) and disables OK instead. 
+- Replace sort arrows across all translation files 
+
+Share font LOD bias shader across platforms and bulk-copy glyph pixels - By finalpatch
+
+game ends with no alive major civ - By ssamt
+
+Import and export Open Doctrines maps in the map editor - By Pr1nted
+
+Block tile improvements when the stockpiled resource cost is unpaid - By mvanhorn
+
+Adjust happiness threshold for yieldStats - By EmperorPinguin
+
+Desktop: fix fallback-font glyphs being clipped on the right - By xysggol
+
+Remove the dead merge_translations job from UncivBot - By RizgarOzan
