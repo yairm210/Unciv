@@ -17,7 +17,9 @@ enum class OptionsPopupPages(
     Gameplay("Gameplay", "OtherIcons/Options", { GameplayTab(this) }),
     Automation("Automation", "OtherIcons/NationSwap", { AutomationTab(this) }),
     Language("Language", "FlagIcons/", { LanguageTab(this) }) {
-        override fun getIcon(language: String) = ImageGetter.getImage(iconPath + language)
+        override fun getIcon(language: String) =
+            if (ImageGetter.imageExists(iconPath + language)) ImageGetter.getImage(iconPath + language)
+            else ImageGetter.getImage("OtherIcons/ExclamationMark")
     },
     Sound("Sound", "OtherIcons/Speaker", { SoundTab(this) }),
     Multiplayer("Multiplayer", "OtherIcons/Multiplayer", { MultiplayerTab(this) }),
