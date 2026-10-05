@@ -255,9 +255,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly fun getMovementString(): String {
         // DecimalFormat("0.#") would use _system_ Locale, and a subsequent tr() might misread the thousands separator.
-        // Therefore, settings-dependent Locale->NumberfFormat, and avoid double translation.
+        // Therefore, settings-dependent Locale->NumberFormat, and avoid double translation.
         // This clone is cheap enough for UI, caching not worthwhile - and remember these are not thread-safe.
-        val format = (UncivGame.Current.settings.getCurrentNumberFormat().clone() as NumberFormat).apply {
+        @Suppress("purity") // Someone tell me how to properly tell purity this does not endanger anything outside this function
+        val format = UncivGame.Current.settings.getAndModifyCurrentNumberFormat {
             minimumFractionDigits = 0
             maximumFractionDigits = 1
             isGroupingUsed = false

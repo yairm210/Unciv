@@ -32,8 +32,10 @@ internal class LanguageTable(val language: String, val percentComplete: Int) : T
         pad(10f)
         defaults().pad(10f)
         left()
-        if(ImageGetter.imageExists("FlagIcons/$language"))
+        if (ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
+        else
+            add(Actor()).minWidth(40f)
 
         val spaceSplitLang = language.replace("_"," ")
         add("$spaceSplitLang ($percentComplete%)".toLabel())

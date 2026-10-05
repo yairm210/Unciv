@@ -163,10 +163,9 @@ class NativeBitmapFontData(
 
     private fun updateTextureRegions() {
         while (regions.size < packer.pages.size) {
-            val texture = MipmappedFontTexture(packer.pages[regions.size].pixmap, fontImplementation)
+            val texture = MipmappedFontTexture(packer.pages[regions.size].pixmap)
             texture.setFilter(minFilter, magFilter)
             regions.add(TextureRegion(texture))
-            fontImplementation.configureFontTexture(texture)
         }
     }
 
