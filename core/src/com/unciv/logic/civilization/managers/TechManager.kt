@@ -391,7 +391,11 @@ class TechManager : IsPartOfGameInfoSerialization {
             return obsoleteUnits[old]?.name  // Replacement, or pass through null to remove from queue
         }
         for (city in civInfo.cities) {
-            city.cityConstructions.transformQueue(::transformConstruction)
+            city.cityConstructions.editQueue {
+                val transformed = mapNotNull { transformConstruction(it, city) }
+                clear()
+                addAll(transformed)
+            }
         }
 
         // Add notifications for obsolete units/constructions
