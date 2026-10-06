@@ -3504,6 +3504,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ## Event uniques
+??? example  "Only the first available choice is offered"
+	When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement.
+
+	Applicable to: Event
+
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 

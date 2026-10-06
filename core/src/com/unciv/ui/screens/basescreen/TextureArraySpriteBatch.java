@@ -216,7 +216,7 @@ public class TextureArraySpriteBatch implements Batch {
         for (int i = 0; i < maxTextureUnits; i++) {
             textureUnitIndicesBuffer.put(i);
         }
-        textureUnitIndicesBuffer.flip();
+        ((java.nio.Buffer) textureUnitIndicesBuffer).flip();
 
         VertexDataType vertexDataType = (Gdx.gl30 != null) ? VertexDataType.VertexBufferObjectWithVAO : VertexDataType.VertexBufferObject;
 
