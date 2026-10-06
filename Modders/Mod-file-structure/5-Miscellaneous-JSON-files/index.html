@@ -2641,9 +2641,9 @@ However, this is used when starting a game in a later Era: Era.startPercent is r
 </tr>
 <tr>
 <td>presentation</td>
-<td>One of: "None", "PickFirstAvailableChoice", "Alert", "Floating"</td>
+<td>One of: "None", "Alert", "Floating"</td>
 <td>Alert</td>
-<td>"Alert" indicates a regular popup, "None" means the choice is made randomly, "PickFirstAvailableChoice" means the first viable choice (in list order) is picked, like a <code>when</code>/<code>case</code> statement, "Floating" is for tutorial-style indicators</td>
+<td>"Alert" indicates a regular popup, "None" means the choice is made randomly, "Floating" is for tutorial-style indicators</td>
 </tr>
 <tr>
 <td>civilopediaText</td>
@@ -2660,6 +2660,7 @@ However, this is used when starting a game in a later Era: Era.startPercent is r
 </tbody>
 </table>
 <p>You can use text and/or civilopediaText, if both are present both are shown (but why would you?)</p>
+<p>Add the "Only the first available choice is offered" unique to an Event to restrict it to just the first viable choice (in list order), like a <code>when</code>/<code>case</code> statement.</p>
 <p>Event choices are comprised of:</p>
 <table>
 <thead>
