@@ -9,12 +9,11 @@ import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 class Event : RulesetObject() {
     /** Controls how an Event is shown to the player when triggered (see [UniqueTriggerActivation.triggerUnique] for [UniqueType.TriggerEvent]).
-     *  Note: AI civs always behave as [None] (weighted random) for [Alert]/[Floating] presentations, since they can't see a popup. */
+     *  Note: AI civs always behave as [None] (weighted random) for [Alert]/[Floating] presentations, since they can't see a popup.
+     *  See also [UniqueType.OnlyFirstAvailableChoiceIsChosen], which restricts the choice pool to a single entry regardless of presentation. */
     enum class Presentation {
         /** No popup. A choice is picked immediately via weighted random ([EventChoice.getWeightForAiDecision]) and triggered right away. */
         None,
-        /** No popup. The first available choice (in declaration order, after filtering by condition) is picked and triggered right away - like a `when`/`case` fallthrough. Applies to both AI and human civs. */
-        PickFirstAvailableChoice,
         /** Queues a [com.unciv.logic.civilization.PopupAlert] of type [com.unciv.logic.civilization.AlertType.Event], shown as a blocking modal dialog ([com.unciv.ui.screens.worldscreen.AlertPopup]) the player must resolve before continuing. */
         Alert,
         /** Not yet implemented - triggering an Event with this presentation currently throws [NotImplementedError]. Intended to park the choice non-blockingly instead of forcing an immediate popup. */
@@ -36,7 +35,10 @@ class Event : RulesetObject() {
     fun getMatchingChoices(gameContext: GameContext): Collection<EventChoice>? {
         if (!isAvailable(gameContext)) return null
         if (choices.isEmpty()) return emptyList()
-        return choices.filter { it.isAvailable(gameContext) }.ifEmpty { null }
+        val matchingChoices = choices.filter { it.isAvailable(gameContext) }.ifEmpty { null } ?: return null
+        if (hasUnique(UniqueType.OnlyFirstAvailableChoiceIsChosen, gameContext))
+            return listOf(matchingChoices.first())
+        return matchingChoices
     }
 }
 

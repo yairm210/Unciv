@@ -121,9 +121,6 @@ object UniqueTriggerActivation {
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
                 if (choices.isEmpty()) return null
-                if (event.presentation == Event.Presentation.PickFirstAvailableChoice) return {
-                    choices.first().triggerChoice(civInfo, unit)
-                }
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
                     val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
