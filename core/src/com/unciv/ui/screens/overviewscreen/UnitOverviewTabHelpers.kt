@@ -29,7 +29,7 @@ open class UnitOverviewTabHelpers {
 
     private fun showWorldScreenAt(position: HexCoord, unit: MapUnitView?) {
         GUI.resetToWorldScreen()
-        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit?.getUnit())
+        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
     }
 
     protected fun showWorldScreenAt(unit: MapUnitView) = showWorldScreenAt(unit.getTile().position(), unit)

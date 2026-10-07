@@ -152,7 +152,7 @@ class MapUnitAction(
         else null
         if (unit != null) {
             val unitLocation = unit.currentTile.position.toHexCoord()
-            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = unit)
+            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView())
         }
         else {
             worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = id == Constants.NO_ID)
