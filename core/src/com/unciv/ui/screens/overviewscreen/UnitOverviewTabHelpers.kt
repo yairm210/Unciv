@@ -100,12 +100,12 @@ open class UnitOverviewTabHelpers {
         val selectKey = unitView.id.toString()
 
         fun onPromotionsTableClick() {
-            val canPromote = canEnable && unitView.getPromotions().canBePromoted()
-            if (!canPromote && unitView.getPromotions().promotions.isEmpty()) return
+            val canPromote = canEnable && unitView.canBePromoted()
+            if (!canPromote && unitView.getPromotionNames().isEmpty()) return
             // We can either add a promotion or at least view existing ones.
             // PromotionPickerScreen is reponsible for checking viewingPlayer.isCurrentPlayer and isAllowedChangeState **again**.
             actionContext.overviewScreen.game.pushScreen {
-                PromotionPickerScreen(unit) {
+                PromotionPickerScreen(unitView) {
                     // Todo seems the picker does not call this if only the unit rename was used
                     actionContext.update()
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
@@ -121,8 +121,8 @@ open class UnitOverviewTabHelpers {
 
         // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
         // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
-        val promotions = unitView.getPromotions().getPromotions(true)
-        val showPromoteStar = unitView.getPromotions().canBePromoted()
+        val promotions = unitView.getPromotions(true)
+        val showPromoteStar = unitView.canBePromoted()
         if (promotions.any()) {
             val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)
             val numberOfLines = (iconCount - 1) / 8 + 1  // Int math: -1,/,+1 means divide rounding *up*

@@ -10,6 +10,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
+import com.unciv.logic.map.mapunit.AvailablePromotion
+import com.unciv.models.ruleset.unit.Promotion
 import yairm210.purity.annotations.Readonly
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
@@ -20,6 +22,20 @@ class MapUnitView internal constructor(
     gameView: GameView,
 ) : ForeignMapUnitView(unit, viewer, spectatorMode, gameView) {
     val due: Boolean get() = unit.due
+
+    val xp: Int get() = unit.promotions.XP
+    @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
+    @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
+    @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
+    /** The unit's promotions as objects - [sorted] gives json order for display. */
+    @Readonly fun getPromotions(sorted: Boolean = false): Sequence<Promotion> = unit.promotions.getPromotions(sorted)
+    @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
+    @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
+    /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
+    @Readonly fun canSaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        return city.civ == unit.civ && !city.isPuppet
+    }
 
     @Readonly override fun civ(): CivView = gameView.getCivView(unit.civ)
 
@@ -98,6 +114,17 @@ class MapUnitView internal constructor(
     }
     fun trySetInstanceName(name: String?): Boolean {
         unit.instanceName = name
+        return true
+    }
+    fun tryAddPromotion(promotionName: String): Boolean {
+        unit.promotions.addPromotion(promotionName)
+        return true
+    }
+    /** Remembers this unit's promotions as the default for new units of its type built in the city it stands in. */
+    fun trySaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        city.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
+        city.unitToPromotions[unit.baseUnit.name] = unit.promotions
         return true
     }
     fun tryResetAction(): Boolean {

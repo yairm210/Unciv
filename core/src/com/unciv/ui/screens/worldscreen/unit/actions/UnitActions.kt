@@ -251,8 +251,7 @@ object UnitActions {
         yield(UnitAction(UnitActionType.Promote,
             useFrequency = 150f, // We want to show the player that they can promote
             action = {
-                UncivGame.Current.pushScreen { PromotionPickerScreen(unit) }
-                Unit
+                UncivGame.Current.pushScreen { PromotionPickerScreen(GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)) }
             }.takeIf { unit.hasMovement() && unit.attacksThisTurn == 0 }
         ))
     }

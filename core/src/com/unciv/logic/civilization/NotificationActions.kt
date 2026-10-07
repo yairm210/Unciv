@@ -191,7 +191,7 @@ class PromoteUnitAction(
             val tile = worldScreen.gameInfo.tileMap[location]
             tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
         } ?: return
-        worldScreen.game.pushScreen { PromotionPickerScreen(unit) }
+        worldScreen.game.pushScreen { PromotionPickerScreen(worldScreen.selectedGameView.getMapUnitView(unit)) }
     }
 }
 
