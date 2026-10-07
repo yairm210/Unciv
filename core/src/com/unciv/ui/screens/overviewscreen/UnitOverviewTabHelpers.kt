@@ -70,7 +70,7 @@ open class UnitOverviewTabHelpers {
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
-                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unit, unitAction, enable) {
+                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unitView, unitAction, enable) {
                     actionContext.update(true)
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
                 }

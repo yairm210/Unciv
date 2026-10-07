@@ -11,6 +11,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.AvailablePromotion
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import yairm210.purity.annotations.Readonly
 
@@ -29,6 +30,9 @@ class MapUnitView internal constructor(
     @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
     /** The unit's promotions as objects, in json order. */
     @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
+    @Readonly fun canUpgradeTo(unitToUpgradeTo: BaseUnit, ignoreResources: Boolean = false): Boolean =
+        unit.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = ignoreResources)
+    @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
