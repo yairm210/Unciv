@@ -27,8 +27,8 @@ class MapUnitView internal constructor(
     @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
     @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
     @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
-    /** The unit's promotions as objects - [sorted] gives json order for display. */
-    @Readonly fun getPromotions(sorted: Boolean = false): Sequence<Promotion> = unit.promotions.getPromotions(sorted)
+    /** The unit's promotions as objects, in json order. */
+    @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */

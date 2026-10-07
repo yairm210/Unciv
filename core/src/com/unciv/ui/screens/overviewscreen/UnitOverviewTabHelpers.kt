@@ -121,7 +121,7 @@ open class UnitOverviewTabHelpers {
 
         // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
         // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
-        val promotions = unitView.getPromotions(true)
+        val promotions = unitView.getPromotions()
         val showPromoteStar = unitView.canBePromoted()
         if (promotions.any()) {
             val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)

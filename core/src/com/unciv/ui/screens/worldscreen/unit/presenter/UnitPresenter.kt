@@ -129,7 +129,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
 
             unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
 
-            for (promotion in unit.getPromotions(true))
+            for (promotion in unit.getPromotions())
                 if (!promotion.hasUnique(UniqueType.NotShownOnWorldScreen))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
                         .padBottom(2f)
