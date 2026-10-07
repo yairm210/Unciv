@@ -89,7 +89,7 @@ class PromotionPickerScreen private constructor(
             //Always allow the user to rename the unit as many times as they like.
             val renameButton = "Choose name for [${unit.name}]".toTextButton()
             renameButton.onClick {
-                UnitRenamePopup(this, unit) {
+                UnitRenamePopup(this, GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)) {
                     game.replaceCurrentScreen{ recreate() }
                 }
             }

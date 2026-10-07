@@ -15,6 +15,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val unitHealth: Int get() = unit.health
     val religiousStrengthLost: Int get() = unit.religiousStrengthLost
     val id: Int get() = unit.id
+    val instanceName: String? get() = unit.instanceName
     val currentMovement: Float get() = unit.currentMovement
     val attacksThisTurn: Int get() = unit.attacksThisTurn
 

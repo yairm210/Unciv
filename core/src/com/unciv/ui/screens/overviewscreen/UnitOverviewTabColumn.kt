@@ -60,7 +60,7 @@ enum class UnitOverviewTabColumn(
                 .apply { this.color = Color.WHITE }
                 .surroundWithCircle(30f, true, Color(0x000c31))
             editIcon.onClick {
-                UnitRenamePopup(actionContext.overviewScreen, item.getUnit()) {
+                UnitRenamePopup(actionContext.overviewScreen, item) {
                     actionContext.update()
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey)
                 }

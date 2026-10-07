@@ -96,6 +96,10 @@ class MapUnitView internal constructor(
         unit.movement.swapMoveToTile(tileView.unwrap(), keepEscorting)
         return true
     }
+    fun trySetInstanceName(name: String?): Boolean {
+        unit.instanceName = name
+        return true
+    }
     fun tryResetAction(): Boolean {
         unit.action = null
         return true

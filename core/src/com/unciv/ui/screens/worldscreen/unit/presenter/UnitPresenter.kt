@@ -68,7 +68,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 if (!worldScreen.canChangeState) return@onClick
                 UnitRenamePopup(
                     screen = worldScreen,
-                    unit = unit.getUnit(),
+                    unit = unit,
                     actionOnClose = {
                         unitNameLabel.setText(buildNameLabelText(unit))
                         shouldUpdate = true
