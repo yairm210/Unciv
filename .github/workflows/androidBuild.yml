@@ -10,12 +10,14 @@ on:
     paths:
       - 'build.gradle.kts'
       - 'gradle-wrapper.properties'
+      - 'gradle/libs.versions.toml'
       - 'android/build.gradle.kts'
       - '.github/workflows/androidBuild.yml'
   pull_request_target:
     paths:
       - 'build.gradle.kts'
       - 'gradle-wrapper.properties'
+      - 'gradle/libs.versions.toml'
       - '.github/workflows/androidBuild.yml'
       - 'android/build.gradle.kts'
 
