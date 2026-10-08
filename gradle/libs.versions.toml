@@ -22,7 +22,10 @@ junit = "4.13.2"
 mockito = "5.20.0"
 
 #android
-ktxCore = "1.16.0"
+#Be careful raising this. May raise minSdk, compileSdk or targetJvm dependencies. Do no only run unit tests, build an apk as well. Problems will mention androidx.core.
+#This is the latest one compatible with minSdk 21, 1.18+ will require minSdk 23+.
+ktxCore = "1.17.0"
+#Be careful raising this. May raise minSdk, compileSdk or targetJvm dependencies. Do no only run unit tests, build an apk as well. Problems will mention androidx.work.
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
 
