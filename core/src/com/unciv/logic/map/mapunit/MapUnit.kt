@@ -21,21 +21,17 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
-import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.map.CarrierSlotMatcher
 import org.jetbrains.annotations.VisibleForTesting
-import yairm210.purity.annotations.InternalState
-import java.text.NumberFormat
 
 
 /**

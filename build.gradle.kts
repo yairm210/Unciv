@@ -73,12 +73,14 @@ allprojects {
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
 
+            "java.text.ParsePosition.getIndex",
             "java.util.BitSet.clone",
 
             "kotlin.collections.orEmpty",
             "kotlin.collections.toTypedArray",
         )
         wellKnownPureClasses = setOf(
+            "java.text.DecimalFormatSymbols"
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
