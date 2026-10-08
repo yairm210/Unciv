@@ -138,7 +138,10 @@ internal class DisplayTab(
         addSlider("Size of Unitset art in Civilopedia", settings::pediaUnitArtSize, 0f, 360f) {
             GUI.setUpdateWorldOnNextRender() // TODO: I doubt that helps, the setting has only influence on CivilopediaScreen
         }.actor.apply {
-            setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
+            setSnapToValues(threshold = 60f,
+                0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f,
+                editLabel = "{Size of Unitset art in Civilopedia}:"
+            )
         }
     }
 
