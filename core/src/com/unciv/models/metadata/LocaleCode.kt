@@ -5,6 +5,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.util.Locale
+import java.util.regex.Pattern
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
@@ -127,6 +128,10 @@ enum class LocaleCode(
         @Cache
         private val languageToNumberFormat = mutableMapOf<String, DecimalFormat>()
 
+        // Cache for Regex to recognize numbers as words in tr(), key: language, value: Regex
+        @Cache
+        private val languageToNumberRegex = mutableMapOf<String, Regex>()
+
         @Readonly
         fun getNumberFormatFromLanguage(language: String): DecimalFormat =
             languageToNumberFormat.getOrPut(language) {
@@ -138,5 +143,48 @@ enum class LocaleCode(
         @Readonly
         private fun getFallbackDecimalFormat(language: String) =
             DecimalFormat("#,##0.###", DecimalFormatSymbols.getInstance(getLocale(language)))
+
+        private fun StringBuilder.optional(str: String) = when {
+            str.isEmpty() -> Unit
+            str.length == 1 -> {
+                append('\\')
+                append(str)
+                append('?')
+            }
+            else -> {
+                append("(?:")
+                append(Pattern.quote(str))
+                append(")?")
+            }
+        }
+
+        @Suppress("purity") // Using builder
+        @Readonly
+        fun getNumberRegexForLanguage(language: String): Regex =
+            languageToNumberRegex.getOrPut(language) {
+                val formatter = getNumberFormatFromLanguage(language)
+                val symbols = formatter.decimalFormatSymbols
+                val pattern = buildString {
+                    append("\\b")
+                    optional(formatter.negativePrefix)
+                    append("\\p{Nd}+")
+                    if (formatter.isGroupingUsed) {
+                        append("(?:\\")
+                        append(symbols.groupingSeparator)
+                        append("\\p{Nd}{")
+                        append(formatter.groupingSize)
+                        append("})*")
+                    }
+                    /* Activate the following to allow post-processing numbers with fractions (would change number of decimal places, therefore disabled)
+                    append("(?:\\")
+                    append(symbols.decimalSeparator)
+                    append("\\p{Nd}+")
+                    append(")?")
+                    */
+                    optional(formatter.negativeSuffix)
+                    append("\\b")
+                }
+                Regex(pattern)
+            }
     }
 }

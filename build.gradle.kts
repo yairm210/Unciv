@@ -73,6 +73,7 @@ allprojects {
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
 
+            "java.text.ParsePosition.getIndex",
             "java.util.BitSet.clone",
 
             "kotlin.collections.orEmpty",
