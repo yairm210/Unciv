@@ -19,7 +19,7 @@
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  Gradlew startup script for Windows
+@rem  Gradle startup script for Windows
 @rem
 @rem ##########################################################################
 
@@ -72,7 +72,7 @@ goto fail
 
 
 
-rem Execute Gradle
+@rem Execute Gradle
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
 
 :end
@@ -91,4 +91,3 @@ exit /b %EXIT_CODE%
 if "%OS%"=="Windows_NT" endlocal
 
 :omega
-
