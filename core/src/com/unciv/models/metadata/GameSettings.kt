@@ -20,6 +20,7 @@ import com.unciv.utils.ScreenOrientation
 import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
@@ -253,16 +254,19 @@ class GameSettings {
 
     /** A NumberFormat for the chosen [language] - cached instance, do not mutate */
     @Readonly
-    fun getCurrentNumberFormat(): NumberFormat {
+    fun getCurrentNumberFormat(): DecimalFormat {
         return LocaleCode.getNumberFormatFromLanguage(language)
     }
 
     /** A NumberFormat for the chosen [language] - mutable and can be configured in [block] right away */
-    fun getAndModifyCurrentNumberFormat(block: (NumberFormat.() -> Unit)?): NumberFormat {
-        val formatter = LocaleCode.getNumberFormatFromLanguage(language).clone() as NumberFormat
+    fun getAndModifyCurrentNumberFormat(block: (DecimalFormat.() -> Unit)?): DecimalFormat {
+        val formatter = LocaleCode.getNumberFormatFromLanguage(language).clone() as DecimalFormat
         if (block != null) formatter.block()
         return formatter
     }
+
+    /** Gets the localized percent pattern matching the chosen [language] */
+    fun getCurrentPercentPattern() = (NumberFormat.getPercentInstance(getCurrentLocale()) as? DecimalFormat)?.toPattern() ?: "0%"
 
     //endregion
     //region <Nested classes>

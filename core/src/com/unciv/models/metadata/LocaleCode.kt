@@ -1,10 +1,12 @@
 package com.unciv.models.metadata
 
 import com.unciv.UncivGame
-import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.Readonly
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.util.Locale
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Readonly
 
 /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
  *  It is also used to list all available languages ([getSupportedLanguages]).
@@ -121,13 +123,20 @@ enum class LocaleCode(
         fun fastlaneFolder(language: String) =
             find(language)?.fastlaneFolder() ?: "en"
 
-        // NumberFormat cache, key: language, value: NumberFormat
-        @Cache private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
+        // DecimalFormat cache, key: language, value: DecimalFormat
+        @Cache
+        private val languageToNumberFormat = mutableMapOf<String, DecimalFormat>()
 
         @Readonly
-        fun getNumberFormatFromLanguage(language: String): NumberFormat =
+        fun getNumberFormatFromLanguage(language: String): DecimalFormat =
             languageToNumberFormat.getOrPut(language) {
-                NumberFormat.getInstance(getLocale(language))
+                NumberFormat.getInstance(getLocale(language)) as? DecimalFormat
+                // This should never happen, at least not in stock Java 21:
+                    ?: getFallbackDecimalFormat(language)
             }
+
+        @Readonly
+        private fun getFallbackDecimalFormat(language: String) =
+            DecimalFormat("#,##0.###", DecimalFormatSymbols.getInstance(getLocale(language)))
     }
 }

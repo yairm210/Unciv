@@ -79,6 +79,7 @@ allprojects {
             "kotlin.collections.toTypedArray",
         )
         wellKnownPureClasses = setOf(
+            "java.text.DecimalFormatSymbols"
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
