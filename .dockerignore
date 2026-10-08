@@ -1,5 +1,4 @@
 .git
 Dockerfile
 docker-compose.yml
-desktop/.jre-cache/jre-windows-64.zip
-desktop/.jre-cache/jre-macOS.tar.gz
+desktop/.jre-cache/

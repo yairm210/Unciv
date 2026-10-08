@@ -76,11 +76,14 @@ allprojects {
             "java.util.BitSet.clone",
 
             "kotlin.collections.orEmpty",
+            "kotlin.collections.toTypedArray",
         )
         wellKnownPureClasses = setOf(
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+            "kotlin.collections.ArrayDeque",
+            "java.util.PriorityQueue",
         )
         wellKnownNewInstanceFunctions = setOf(
             "kotlin.text.split"
@@ -185,7 +188,6 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
-        "implementation"(rootProject.libs.gdx.texture.array.batch)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 

@@ -21,7 +21,6 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
-@InternalState
 class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
@@ -205,7 +204,7 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromUniquesBySource(): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         val cityStateStatsMultipliers = city.civ.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
 
@@ -248,7 +247,7 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique: Unique, stat: Stat, amount: Float) {
             val stats = Stats()
@@ -466,7 +465,7 @@ class CityStats(val city: City) {
     
     @Readonly
     private fun getStatPercentBonusList(currentConstruction: IConstruction): StatTreeNode = timeThis("CityStats.getStatPercentBonusList") {
-        val newStatsBonusTree = StatTreeNode()
+        @LocalState val newStatsBonusTree = StatTreeNode()
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")

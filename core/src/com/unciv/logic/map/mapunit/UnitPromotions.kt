@@ -6,11 +6,14 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.components.extensions.toPercent
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
-@InternalState
+/** A promotion that may appear in a promotion tree for a unit.
+ *  @property isAdopted The unit already has this promotion
+ *  @property isBlockedByUniques The promotion's own uniques currently disallow picking it (`Unavailable`, or unmet `OnlyAvailable` conditionals) */
+class AvailablePromotion(val promotion: Promotion, val isAdopted: Boolean, val isBlockedByUniques: Boolean)
+
 class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
     // saved game and as usual the json deserializer needs a default constructor.
@@ -184,6 +187,22 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     fun getAvailablePromotions(): Sequence<Promotion> {
         return unit.civ.gameInfo.ruleset.unitPromotions.values.asSequence().filter { isAvailable(it) }
     }
+
+    /** All promotions this unit could have in its promotion tree: those matching its unit type, plus those already adopted. */
+    @Readonly
+    fun getPromotionTreeCandidates(): List<AvailablePromotion> {
+        val state = unit.cache.state
+        return unit.civ.gameInfo.ruleset.unitPromotions.values
+            .filter { unit.baseUnit.unitType in it.unitTypes || it.name in promotions }
+            .map { promotion ->
+                val blocked = promotion.hasUnique(UniqueType.Unavailable, state)
+                    || promotion.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                        .any { !it.conditionalsApply(state) }
+                AvailablePromotion(promotion, promotion.name in promotions, blocked)
+            }
+    }
+
+    @Readonly fun canAffordPromotions(count: Int): Boolean = XP >= xpForNextNPromotions(count)
 
     @Readonly
     private fun isAvailable(promotion: Promotion): Boolean {

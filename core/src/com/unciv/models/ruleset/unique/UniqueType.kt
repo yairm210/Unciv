@@ -317,6 +317,9 @@ enum class UniqueType(
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
+    OnlyFirstAvailableChoiceIsChosen("Only the first available choice is offered", UniqueTarget.Event,
+        docDescription = "When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement."),
+
     // endregion Other global uniques
 
     // endregion 01 Global uniques
@@ -496,7 +499,8 @@ enum class UniqueType(
 
     // Healing
     HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit, UniqueTarget.Global),
-    HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit, UniqueTarget.Global),
+    HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "Does not stack"),
     HealsAfterKilling("Heals [amount] damage if it kills a unit", UniqueTarget.Unit, UniqueTarget.Global),
     HealOnlyByPillaging("Can only heal by pillaging", UniqueTarget.Unit, UniqueTarget.Global),
     HealsEvenAfterAction("Unit will heal every turn, even if it performs an action", UniqueTarget.Unit),

@@ -15,6 +15,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -87,6 +88,20 @@ internal class DisplayTab(
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
         addCheckbox("Disable newer rendering", settings::disableNewerRendering)
+
+        val maxTextureUnitsText = 
+            try {
+                val maxTextureUnits = TextureArraySpriteBatch().maxTextureUnits
+                "Max texture units: $maxTextureUnits"
+            } catch (e: Exception) { "Error creating TextureArraySpriteBatch" }
+        
+        val maxTextureUnitsLabel = WrappableLabel(
+            maxTextureUnitsText,
+            optionsPopup.tabs.prefWidth, Color.WHITE, 14
+        )
+        maxTextureUnitsLabel.wrap = true
+        add(maxTextureUnitsLabel).colspan(2).padTop(10f).row()
+        
 
         val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
         val disableNewerRenderingLabel = WrappableLabel(

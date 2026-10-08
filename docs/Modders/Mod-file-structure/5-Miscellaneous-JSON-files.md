@@ -142,6 +142,8 @@ Events allow users to choose between options of triggers to activate.
 
 You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 
+Add the "Only the first available choice is offered" unique to an Event to restrict it to just the first viable choice (in list order), like a `when`/`case` statement.
+
 Event choices are comprised of:
 
 | Attribute       | Type                                           | Default    | Notes                                                                                                               |

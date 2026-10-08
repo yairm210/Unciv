@@ -231,10 +231,10 @@ class WorkerAutomation(
             .filter {
                 (it.getOwner() == null || it.getOwner() == unit.civ || it.getOwner()!!.isCityState)
                     && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
-                    && getBasePriority(it, unit) >= 0
+                    && getTileSelectionPriority(it, unit) >= 0
             }
 
-        val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
+        val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getTileSelectionPriority(it, unit) }
             .asSequence().sortedByDescending { it.key }
 
         // Search through each group by priority
@@ -256,6 +256,24 @@ class WorkerAutomation(
             }
         }
         return null
+    }
+
+    /**
+     * Road tiles may be outside our borders, so their normal tile priority can be lower than nearby
+     * improvements even though [getImprovementRanking] gives the planned road a positive value.
+     * Use the road plan priority when ordering tile groups so those strategic tiles get considered.
+     */
+    @Readonly
+    private fun getTileSelectionPriority(tile: Tile, unit: MapUnit): Float {
+        val basePriority = getBasePriority(tile, unit)
+        val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile] ?: return basePriority
+        val bestRoad = roadBetweenCitiesAutomation.bestRoadAvailable
+        val roadImprovement = bestRoad.improvement(ruleSet) ?: return basePriority
+
+        if (tile.getUnpillagedRoad() >= bestRoad || !unit.canBuildImprovement(roadImprovement, tile))
+            return basePriority
+
+        return maxOf(basePriority, roadPlan.priority)
     }
 
     @Readonly
@@ -483,7 +501,11 @@ class WorkerAutomation(
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
             && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
             val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
-            val value = (roadPlan.priority - 9) // We want some forest chopping and farm building first if the road doesn't have high priority
+            // We still want good farm/mine building to be able to outrank a low-value road (e.g. an
+            // upgrade-only Road -> Railroad on an already-connected route), but connecting a genuinely
+            // disconnected city (see #15417) shouldn't need a near-maximum roadPlan.priority (previously -9)
+            // to ever get built - that left roads languishing for dozens of turns behind minor tile upgrades.
+            val value = (roadPlan.priority - WorkerAutomationConst.connectRoadPriorityOffset)
             return value
         }
 

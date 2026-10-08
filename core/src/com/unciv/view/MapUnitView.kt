@@ -10,6 +10,9 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
+import com.unciv.logic.map.mapunit.AvailablePromotion
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.Promotion
 import yairm210.purity.annotations.Readonly
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
@@ -20,6 +23,23 @@ class MapUnitView internal constructor(
     gameView: GameView,
 ) : ForeignMapUnitView(unit, viewer, spectatorMode, gameView) {
     val due: Boolean get() = unit.due
+
+    val xp: Int get() = unit.promotions.XP
+    @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
+    @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
+    @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
+    /** The unit's promotions as objects, in json order. */
+    @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
+    @Readonly fun canUpgradeTo(unitToUpgradeTo: BaseUnit, ignoreResources: Boolean = false): Boolean =
+        unit.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = ignoreResources)
+    @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
+    @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
+    @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
+    /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
+    @Readonly fun canSaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        return city.civ == unit.civ && !city.isPuppet
+    }
 
     @Readonly override fun civ(): CivView = gameView.getCivView(unit.civ)
 
@@ -58,10 +78,6 @@ class MapUnitView internal constructor(
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
-    /** Permissive twin of [canMoveTo] for the player deciding whether a move may be *attempted* -
-     *  treats a tile whose only problem is an undetected unit of another civ as movable, since
-     *  ordering the move is how such a unit gets revealed. See [UnitMovement.thinksItCanMoveTo]. */
-    @Readonly fun thinksItCanMoveTo(tileView: TileView): Boolean = unit.movement.thinksItCanMoveTo(tileView.unwrap())
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
@@ -98,6 +114,21 @@ class MapUnitView internal constructor(
     // Actions
     fun trySwapMoveToTile(tileView: TileView, keepEscorting: Boolean = false): Boolean {
         unit.movement.swapMoveToTile(tileView.unwrap(), keepEscorting)
+        return true
+    }
+    fun trySetInstanceName(name: String?): Boolean {
+        unit.instanceName = name
+        return true
+    }
+    fun tryAddPromotion(promotionName: String): Boolean {
+        unit.promotions.addPromotion(promotionName)
+        return true
+    }
+    /** Remembers this unit's promotions as the default for new units of its type built in the city it stands in. */
+    fun trySaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        city.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
+        city.unitToPromotions[unit.baseUnit.name] = unit.promotions
         return true
     }
     fun tryResetAction(): Boolean {
