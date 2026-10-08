@@ -3388,13 +3388,13 @@ Fixed uniques of marble - By woo1127
 
 ## 4.10.21
 
-Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependent building filter activating *when initializing ruleset*
 
 Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
 Fixed rare crash on city-state diplomatic relationship update
 
-Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+Fix loop when improvement is unbuildable and removes feature  - By SeventhM
 
 ## 4.10.20
 
