@@ -250,6 +250,8 @@ class UncivFiles(
 
         val gameInfo = try {
             FileConversions.readJson(gameFile, GameInfo::class.java)
+        } catch (outOfMemory: OutOfMemoryError) {
+            throw UncivShowableException("Not enough memory on phone to load game!", outOfMemory)
         } catch (ex: Exception) {
             Log.error("Exception while deserializing GameInfo JSON", ex)
             val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!

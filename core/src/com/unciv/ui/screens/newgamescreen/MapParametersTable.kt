@@ -12,6 +12,7 @@ import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -269,8 +270,8 @@ class MapParametersTable(
     private fun updateHexagonalWarnings() {
         val tiles = HexMath.getNumberOfTilesInHexagon(customMapSizeRadius.intValue ?: 0)
         hexWarningLabel.isVisible = tiles >= LARGE_MAP_TILES
-        if (tiles >= VERY_LARGE_MAP_TILES) hexWarningLabel.setText(VERY_LARGE_MAP_WARNING)
-        else hexWarningLabel.setText(LARGE_MAP_WARNING)
+        if (tiles >= VERY_LARGE_MAP_TILES) hexWarningLabel.setText(VERY_LARGE_MAP_WARNING.tr())
+        else hexWarningLabel.setText(LARGE_MAP_WARNING.tr())
     }
 
     private fun addRectangularSizeTable() {
@@ -302,8 +303,8 @@ class MapParametersTable(
     private fun updateRectangularWarnings() {
         val tiles = (customMapWidth.intValue ?: 0) * (customMapHeight.intValue ?: 0)
         rectWarningLabel.isVisible = tiles >= LARGE_MAP_TILES
-        if (tiles >= VERY_LARGE_MAP_TILES) rectWarningLabel.setText(VERY_LARGE_MAP_WARNING)
-        else rectWarningLabel.setText(LARGE_MAP_WARNING)
+        if (tiles >= VERY_LARGE_MAP_TILES) rectWarningLabel.setText(VERY_LARGE_MAP_WARNING.tr())
+        else rectWarningLabel.setText(LARGE_MAP_WARNING.tr())
     }
 
     private fun updateWorldSizeTable() {

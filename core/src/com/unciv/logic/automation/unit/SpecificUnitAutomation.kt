@@ -322,10 +322,7 @@ object SpecificUnitAutomation {
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
                     getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
-                0,
-                wonderToHurry.name
-            )
+            nearbyCityWithAvailableWonders.cityConstructions.editQueue { add(0, wonderToHurry.name) }
             return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
                 || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }

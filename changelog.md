@@ -1,3 +1,21 @@
+## 4.22.7
+
+Sharper text on Android - By finalpatch
+
+game ends with no alive major civ - By ssamt
+
+Block tile improvements when the stockpiled resource cost is unpaid - By mvanhorn
+
+Adjust happiness threshold for AI valuation - By EmperorPinguin
+
+Desktop: fix fallback-font glyphs being clipped on the right - By xysggol
+
+By SomeTroglodyte:
+- Improve numeric text fields localized formatting and parsing
+- Add missing translation templates for battle notifications
+- Add flag for the Navajo language
+- Replace sort arrows across all translation files
+
 ## 4.22.6
 
 Fixed F6 crashes

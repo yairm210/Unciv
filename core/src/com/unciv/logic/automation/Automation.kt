@@ -157,7 +157,7 @@ object Automation {
             yieldStats.gold *= 2
         }
 
-        if (city.civ.getHappiness() < 0) {
+        if (city.civ.getHappiness() < 5) {
             yieldStats.happiness *= 2
         }
 

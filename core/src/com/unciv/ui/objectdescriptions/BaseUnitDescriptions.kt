@@ -25,6 +25,7 @@ import yairm210.purity.annotations.Readonly
 object BaseUnitDescriptions {
 
     /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
+    @Readonly
     fun getShortDescription(baseUnit: BaseUnit, uniqueExclusionFilter: Unique.() -> Boolean = {false}): String {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength.tr()}${Fonts.strength}"
@@ -115,14 +116,14 @@ object BaseUnitDescriptions {
             add("Air Intercept Range: [$interceptRange]")
 
         if (replacementTextForUniques.isNotEmpty()) {
-            add()
+            space()
             add(replacementTextForUniques)
         } else {
             addUniques(colorConsumesResources = true)
         }
 
         if (requiredResource != null) {
-            add()
+            space()
             val resource = ruleset.tileResources[requiredResource]
             add(
                 requiredResource!!.getConsumesAmountString(1, resource!!.isStockpiled),
@@ -131,14 +132,14 @@ object BaseUnitDescriptions {
         }
 
         if (uniqueTo != null) {
-            add()
+            space()
             add("Unique to [$uniqueTo]", link = "Nation/$uniqueTo")
             if (replaces != null)
                 add("Replaces [$replaces]", link = "Unit/$replaces", indent = 1)
         }
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null)
-            add()
+            space()
         if (requiredTech != null)
             add("Required tech: [$requiredTech]", link = "Technology/$requiredTech")
 
@@ -151,11 +152,11 @@ object BaseUnitDescriptions {
             if (canUpgradeFrom.size == 1)
                 add("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
             else {
-                add()
+                space()
                 add("Can upgrade from:")
                 for (unitName in canUpgradeFrom.sorted())
                     add(unitName, link = "Unit/$unitName", indent = 2)
-                add()
+                space()
             }
         }
 
@@ -165,7 +166,7 @@ object BaseUnitDescriptions {
             add("Obsolete with [$obsoleteTech]", link = "Technology/$obsoleteTech")
 
         if (promotions.isNotEmpty()) {
-            add()
+            space()
             promotions.withIndex().forEach {
                 add(
                     when {
@@ -242,16 +243,24 @@ object BaseUnitDescriptions {
     }
 
     /**
-     * Lists differences e.g. for help on an upgrade, or how a nation-unique compares to its replacement.
+     * Lists differences e.g. for help on an upgrade, or how a nation-unique compares to its replacement to a FormattedLineListBuilder.
      *
      * Cost is **not** included.
-     * Result lines are **not** translated.
      *
      * @param originalUnit The "older" unit
      * @param betterUnit The "newer" unit
-     * @return Sequence of Pairs - first is the actual text, second is an optional link for Civilopedia use
      */
-    fun getDifferences(ruleset: Ruleset, originalUnit: BaseUnit, betterUnit: BaseUnit):
+    fun FormattedLineListBuilder.addUnitDifferences(ruleset: Ruleset, originalUnit: BaseUnit, betterUnit: BaseUnit, linked: Boolean = false, indent: Int = 0) {
+        for ((text, link) in getDifferences(ruleset, originalUnit, betterUnit)) {
+            when {
+                link == null -> add(text, indent = indent)
+                linked -> add(text, link = link, indent = indent)
+                else -> add(text, icon = link, indent = indent)
+            }
+        }
+    }
+
+    private fun getDifferences(ruleset: Ruleset, originalUnit: BaseUnit, betterUnit: BaseUnit):
             Sequence<Pair<String, String?>> = sequence {
         if (betterUnit.strength != originalUnit.strength)
             yield("${Fonts.strength} {[${betterUnit.strength}] vs [${originalUnit.strength}]}" to null)
@@ -276,8 +285,8 @@ object BaseUnitDescriptions {
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the
         // auto-linking FormattedLine(Unique) - two reasons in favor:
-        // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
-        // No .copy() factory on FormattedLine and no (Unique, all other val's) constructor either
+        // Would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
+        // No (Unique, all other val's) constructor on FormattedLine
         if (betterUnit.replacementTextForUniques.isNotEmpty()) {
             yield(betterUnit.replacementTextForUniques to null)
         } else {
@@ -302,10 +311,10 @@ object BaseUnitDescriptions {
      *  Used by UnitUpgradeMenu (but formerly also for a tooltip).
      */
     fun getUpgradeInfoTable(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): Table {
-        val ruleset = unitToUpgradeTo.ruleset
-        val info = sequenceOf(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)) +
-            getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
-                .map { FormattedLine(it.first, icon = it.second ?: "") }
-        return MarkupRenderer.render(info.asIterable(), 400f)
+        val info = buildCivilopediaText {
+            add(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)
+            addUnitDifferences(unitToUpgradeTo.ruleset, unitUpgrading, unitToUpgradeTo)
+        }
+        return MarkupRenderer.render(info, 400f)
     }
 }

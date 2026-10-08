@@ -57,7 +57,7 @@ class Belief() : RulesetObject() {
     fun getCivilopediaTextLines(withHeader: Boolean) = buildCivilopediaText {
         if (withHeader) {
             add(name, size = Constants.headingFontSize, centered = true, link = makeLink())
-            add()
+            space()
         }
         if (type != BeliefType.None)
             add("{Type}: {$type}", color = type.color, centered = withHeader)

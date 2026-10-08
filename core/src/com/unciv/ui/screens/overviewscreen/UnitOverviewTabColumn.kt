@@ -60,7 +60,7 @@ enum class UnitOverviewTabColumn(
                 .apply { this.color = Color.WHITE }
                 .surroundWithCircle(30f, true, Color(0x000c31))
             editIcon.onClick {
-                UnitRenamePopup(actionContext.overviewScreen, item.getUnit()) {
+                UnitRenamePopup(actionContext.overviewScreen, item) {
                     actionContext.update()
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey)
                 }
@@ -106,8 +106,8 @@ enum class UnitOverviewTabColumn(
     Promotions(isNumeric = true) {
         override val defaultSort get() = SortableGrid.SortDirection.Descending
         override fun getEntryValue(item: MapUnitView) =
-            (if (item.getPromotions().canBePromoted()) 10000 else 0) +
-            item.getPromotions().promotions.size // Not numberOfPromotions - DO count free ones. Or sort by totalXpProduced?
+            (if (item.canBePromoted()) 10000 else 0) +
+            item.getPromotionNames().size // Not numberOfPromotions - DO count free ones. Or sort by totalXpProduced?
         override fun getEntryActor(item: MapUnitView, iconSize: Float, actionContext: UnitOverviewTab) = getPromotionsTable(item, actionContext)
     },
 
@@ -125,11 +125,11 @@ enum class UnitOverviewTabColumn(
     },
 
     XP {
-        override fun getEntryValue(item: MapUnitView) = item.getPromotions().XP
+        override fun getEntryValue(item: MapUnitView) = item.xp
         override fun getEntryString(item: MapUnitView) = if (item.isCivilian()) ""
-            else "{${item.getPromotions().XP}}/{${item.getPromotions().xpForNextPromotion()}}"
-        override fun getComparator() = compareBy<MapUnitView> { it.getPromotions().xpForNextPromotion() }.thenBy { it.getPromotions().XP }
-        override fun getTotalsActor(items: Iterable<MapUnitView>) = items.sumOf { it.getPromotions().XP }.toLabel()
+            else "{${item.xp}}/{${item.xpForNextPromotion()}}"
+        override fun getComparator() = compareBy<MapUnitView> { it.xpForNextPromotion() }.thenBy { it.xp }
+        override fun getTotalsActor(items: Iterable<MapUnitView>) = items.sumOf { it.xp }.toLabel()
     },
     ;
     //endregion

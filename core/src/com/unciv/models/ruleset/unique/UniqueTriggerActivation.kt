@@ -120,6 +120,7 @@ object UniqueTriggerActivation {
                 val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
+                if (choices.isEmpty()) return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
                     val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)

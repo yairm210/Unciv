@@ -22,7 +22,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
-import java.text.ParseException
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.ParsePosition
+import java.util.Locale
 import kotlinx.coroutines.delay
 
 /**
@@ -176,12 +179,12 @@ open class UncivTextField(
 
     /**
      *  Specialization of [UncivTextField] for numbers. See its documentation for improvements over [TextField].
-     *  - Note: It uses the generic [Number] class and thus supports both floating-point and integer as input.
-     *          You might need a conversion when retrieving the result.
-     *  - Note: [maxLength] is set to 26, but you can change it later.
-     *  - Limitation: Depending on Java's decisions for your locale, the displayed string will likely contain thousands separators.
-     *                These are ignored when parsing!
-     *                However, user input will not update them, fix misplaced ones, or add them to pasted numbers.
+     *  - It uses the generic [Number] class and thus supports both floating-point and integer as input.
+     *    You might need a conversion when retrieving the result.
+     *  - [maxLength] is set to 26, but you can change it later.
+     *  - Thousands separators are not used for formatting, but are accepted and ignored when parsing (locale-dependent).
+     *  - If the Thousands separators happens to be whitespace (French: NNBSP), then space, NBSP or NNBSP can be entered and are ignored parsing.
+     *  - The ASCII minus is always accepted as sign, even if the Locale would use another character (e.g. in Scandinavia U+2212 "minus sign" is used - U+002D is "hyphen-minus").
      *
      *  @property value Gets/sets the [text], using localized formatting according to the language chosen in the settings, in both directions.
      *                  Note null is allowed and represents an empty text field.
@@ -196,31 +199,54 @@ open class UncivTextField(
         initialValue: Number?,
         integerOnly: Boolean = false,
         onFocusChange: (TextField.(Boolean) -> Unit)? = null
-    ) : UncivTextField(hint, initialValue?.tr() ?: "", onFocusChange) {
-        private val formatter = UncivGame.Current.settings.getCurrentNumberFormat()
-        private val symbols = formatter.format(if (integerOnly) -9999 else -9999.9).filter { !it.isDigit() }
+    ) : UncivTextField(hint, "", onFocusChange) {
+        private val formatter = UncivGame.Current.settings.getAndModifyCurrentNumberFormat {
+            isParseIntegerOnly = integerOnly
+            isGroupingUsed = false
+        }
+        private val decimalFormatSymbols = (formatter as? DecimalFormat)?.decimalFormatSymbols
+            ?: DecimalFormatSymbols.getInstance(Locale.ROOT)
+        private val thousandsChar = decimalFormatSymbols.groupingSeparator
+        private val minusChar = decimalFormatSymbols.minusSign
+        private val symbols = buildString {
+            if (!integerOnly) append(decimalFormatSymbols.decimalSeparator)
+            append(minusChar)
+            if (minusChar != '-') append('-')
+            append(thousandsChar)
+            if (thousandsChar.isWhitespace()) append(" \u00a0\u202f")
+        }
+
         init {
+            // using setText here can be avoided while still using our freshly created formatter for the initial text, but it involves a lot of boilerplate (two constructors) 
+            setText(initialValue)
             textFieldFilter = TextFieldFilter { _, c -> c.isDigit() || c in symbols }
-            formatter.isParseIntegerOnly = integerOnly
             maxLength = 26 // enough for signed int64 including thousands separators - floating point shouldn't need more.
         }
+
         open var value: Number?
-            get() = try {
-                formatter.parse(text)
-            } catch (_: ParseException) {
-                null
+            get() {
+                val pos = ParsePosition(0)
+                val cleaned = text
+                    .replace('-', minusChar)
+                    .filterNot { it == thousandsChar || (thousandsChar.isWhitespace() && it.isWhitespace()) }
+                return formatter.parse(cleaned, pos).takeIf { pos.index == cleaned.length }
             }
-            set(value) { super.setText(value?.tr()) }
+            set(value) { setText(value) }
+
+        private fun setText(value: Number?) {
+            if (value == null) super.setText(null)
+            else super.setText(formatter.format(value))
+        }
 
         // Enlist compiler to make sure no-one calls this *from our project*
         @Deprecated("Don't assign `text` on a numeric UncivTextField!", ReplaceWith("value"), DeprecationLevel.ERROR)
-        // But: Gdx is leaking `this` and calls this override from its constructor, therefore don't throw.
+        // But: Gdx calls this override from its constructor, therefore don't throw.
         override fun setText(str: String?) = super.setText(str)
     }
 
     /**
      *  Specialization of [UncivTextField.Numeric] for 32-bit integers. Do read its Kdoc.
-     *  - maxLength is reduced to 14 accommodating the largest negative 32-bit integer with thousands separators.
+     *  - maxLength is reduced to 11 accommodating the largest negative 32-bit integer without thousands separators.
      *  @property intValue please prefer this over [value], it's easier!
      */
     class Integer (
@@ -229,7 +255,7 @@ open class UncivTextField(
         onFocusChange: (TextField.(Boolean) -> Unit)? = null
     ) : Numeric(hint, initialValue, integerOnly = true, onFocusChange) {
         init {
-            maxLength = 14
+            maxLength = 11
         }
         var intValue: Int?
             get() = value?.toInt()

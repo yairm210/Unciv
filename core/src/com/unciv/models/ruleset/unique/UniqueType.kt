@@ -317,6 +317,9 @@ enum class UniqueType(
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
+    OnlyFirstAvailableChoiceIsChosen("Only the first available choice is offered", UniqueTarget.Event,
+        docDescription = "When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement."),
+
     // endregion Other global uniques
 
     // endregion 01 Global uniques
