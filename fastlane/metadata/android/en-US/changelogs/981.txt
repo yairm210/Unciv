@@ -1,4 +1,4 @@
-Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependent building filter activating *when initializing ruleset*
 
 Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
