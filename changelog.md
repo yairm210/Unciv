@@ -1,43 +1,19 @@
 ## 4.22.8
 
-View implementation - CivilianUnitAutomation - see 
+Liberated city states make peace with anyone they were at war with pre-liberation
 
-View implementation - setCenterPosition - see 
+When loading a game that causes Out Of Memory, show error message instead of crashing
 
-View implementation - UnitUpgradeMenu - see 
+Added "Only the first available choice is offered" event unique, for switch/case style options
 
-View implementation - No reason for getPromotions to ever return unsorted - see 
-
-View implementation - View-ify unit promotions - see 
-
-View implementation - UnitRenamePopup - see 
-
-Resolved 
-
-Resolved 
-
-Resolved 
-
-Resolved 
+By SomeTroglodyte:
+- Add science income without a research target to overflow, so it's not lost 
+- Allow finer control of the value for "snapping" Sliders (not only for Android) 
+- Fix locale-dependent number formatting messing up some numbers
 
 Resolved "doesn't work on Java 8", hopefully for future changes as well
 
-Change "event picks first choice" to a unique, so it can apply to shown events as well
-
-Added new event type "PickFirstAvailableChoice", to act as when/case equivalent
-
-chore: Update kotlin to 2.4.20 and upgrade libraries - By dangdinhbaohoang12
-
-Turn speed and frame rate for the Objective Judge Horizon benchmark - By Pr1nted
-
-By SomeTroglodyte:
-- Allow finer control of the value for "snapping" Sliders (not only for Android) 
-- Add science income without a research target to overflow, so it's not lost 
-- Fix locale-dependent number formatting messing up some numbers 
-- Reduce CI output and overhead a tiny bit 
-- chore: Clean up unnecessary opt-in for now-stable context parameters 
-
-avoid quadratic stat aggregation - By ssamt
+Update multiplayer game preview as players turns change, even if turn number is the same
 
 ## 4.22.7
 
