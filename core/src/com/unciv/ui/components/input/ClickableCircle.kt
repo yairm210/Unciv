@@ -1,5 +1,9 @@
 package com.unciv.ui.components.input
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -26,5 +30,15 @@ class ClickableCircle(size: Float) : Group() {
 
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
         return if (center.dst2(x, y) < maxDst2) this else null
+    }
+
+    override fun drawDebugBounds(shapes: ShapeRenderer?) {
+        if (!debug || shapes == null || stage == null) return
+        shapes.set(ShapeType.Line)
+        shapes.color = stage.debugColor
+        shapes.circle(x + width * 0.5f, y + height * 0.5f, width * 0.5f)
+        shapes.color = Color.GRAY
+        shapes.color.a = 0.33f
+        shapes.rect(x, y, width, height)
     }
 }
