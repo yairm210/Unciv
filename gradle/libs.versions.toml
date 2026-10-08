@@ -22,7 +22,7 @@ junit = "4.13.2"
 mockito = "5.20.0"
 
 #android
-ktxCore = "1.19.0"
+ktxCore = "1.16.0"
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
 
