@@ -10,9 +10,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
+import com.unciv.json.json
 import com.unciv.logic.IdChecker
 import com.unciv.logic.files.SAVE_FILES_FOLDER
+import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.multiplayerscreens.AddFriendScreen
 import com.unciv.utils.Concurrency.runOnGLThread
@@ -27,6 +31,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 open class AndroidLauncher : AndroidApplication() {
+
+    private companion object {
+        const val VIRTUAL_UNITS_PER_INCH = 220f
+    }
 
     private var game: AndroidGame? = null
 
@@ -48,6 +56,10 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.preferExternalStorage = true
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
+        if (settings.isFreshlyCreated) {
+            settings.screenSize = guessScreenSize()
+            FileHandle(filesDir.path).child(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name())
+        }
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = settings.androidHideSystemUi }
 
         // Setup orientation
@@ -76,6 +88,16 @@ open class AndroidLauncher : AndroidApplication() {
         game!!.setDeepLinkedGame(intent)
         game!!.addScreenObscuredListener()
         processPossibleFriendDeepLink(intent)
+    }
+
+    /** Pick the UI scale so the shorter screen side has roughly the same physical size per virtual unit on all devices (phones -> Small, foldables/tablets -> larger) */
+    private fun guessScreenSize(): ScreenSize {
+        val metrics = resources.displayMetrics
+        val shorterSideInches = minOf(metrics.widthPixels / metrics.xdpi, metrics.heightPixels / metrics.ydpi)
+        val targetVirtualHeight = shorterSideInches * VIRTUAL_UNITS_PER_INCH
+        return ScreenSize.entries
+            .filter { it <= ScreenSize.Large }
+            .minBy { kotlin.math.abs(it.virtualHeight - targetVirtualHeight) }
     }
 
     private fun insetsListener(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
