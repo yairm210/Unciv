@@ -33,6 +33,10 @@ class MapUnitView internal constructor(
     @Readonly fun canUpgradeTo(unitToUpgradeTo: BaseUnit, ignoreResources: Boolean = false): Boolean =
         unit.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = ignoreResources)
     @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
+    @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
+    @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
+    @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
+    @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
@@ -129,6 +133,10 @@ class MapUnitView internal constructor(
         val city = unit.currentTile.getCity() ?: return false
         city.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
         city.unitToPromotions[unit.baseUnit.name] = unit.promotions
+        return true
+    }
+    fun tryDisband(): Boolean {
+        unit.disband()
         return true
     }
     fun tryResetAction(): Boolean {

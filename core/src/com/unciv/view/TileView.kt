@@ -25,6 +25,11 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val city = tile.owningCity ?: return null
         return toForeignCityView(city)
     }
+    /** The city whose center is this tile, if any */
+    @Readonly fun getCity(): ForeignCityView? {
+        val city = tile.getCity() ?: return null
+        return toForeignCityView(city)
+    }
     @Readonly fun getWorkingCity(): ForeignCityView? {
         val city = tile.getWorkingCity() ?: return null
         return toForeignCityView(city)
