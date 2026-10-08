@@ -1,3 +1,44 @@
+## 4.22.8
+
+View implementation - CivilianUnitAutomation - see 
+
+View implementation - setCenterPosition - see 
+
+View implementation - UnitUpgradeMenu - see 
+
+View implementation - No reason for getPromotions to ever return unsorted - see 
+
+View implementation - View-ify unit promotions - see 
+
+View implementation - UnitRenamePopup - see 
+
+Resolved 
+
+Resolved 
+
+Resolved 
+
+Resolved 
+
+Resolved "doesn't work on Java 8", hopefully for future changes as well
+
+Change "event picks first choice" to a unique, so it can apply to shown events as well
+
+Added new event type "PickFirstAvailableChoice", to act as when/case equivalent
+
+chore: Update kotlin to 2.4.20 and upgrade libraries - By dangdinhbaohoang12
+
+Turn speed and frame rate for the Objective Judge Horizon benchmark - By Pr1nted
+
+By SomeTroglodyte:
+- Allow finer control of the value for "snapping" Sliders (not only for Android) 
+- Add science income without a research target to overflow, so it's not lost 
+- Fix locale-dependent number formatting messing up some numbers 
+- Reduce CI output and overhead a tiny bit 
+- chore: Clean up unnecessary opt-in for now-stable context parameters 
+
+avoid quadratic stat aggregation - By ssamt
+
 ## 4.22.7
 
 Sharper text on Android - By finalpatch
