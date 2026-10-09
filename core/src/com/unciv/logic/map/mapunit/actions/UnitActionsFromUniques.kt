@@ -12,7 +12,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
-import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
@@ -89,7 +88,6 @@ object UnitActionsFromUniques {
             type = UnitActionType.FoundCity,
             useFrequency = useFrequency,
             title = title,
-            uncivSound = UncivSound.Chimes,
             associatedUnique = unique,
             action = {
                 // check if we would be breaking a promise
