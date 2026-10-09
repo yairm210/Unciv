@@ -34,12 +34,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         VERY_POSITIVE(Color(0.1f, 1f, 0.1f, 1f), Int.MAX_VALUE);
         
         companion object {
-            fun getColor(modifierValue: Int): Color {
-                for (modifierColor in entries)
-                    if (modifierValue <= modifierColor.upperValueThreshold)
-                        return modifierColor.color
-                throw IllegalStateException()
-            }
+            fun getColor(modifierValue: Int) = entries
+                .first { modifierValue <= it.upperValueThreshold }
+                .color
         }
     }
     
@@ -227,8 +224,8 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             val diplomaticModifier = DiplomaticModifiers.safeValueOf(modifier.key)
                 ?: continue // This modifier is from the future, you cannot understand it yet
             var text = diplomaticModifier.text.tr() + " "
+            if (modifier.value > 0) text += "+"
             val roundedValue = modifier.value.roundToInt()
-            if (roundedValue > 0) text += "+"
             text += roundedValue
             val color = ModifierColor.getColor(roundedValue)
             diplomacyModifiersTable.add(text.toLabel(color)).row()
