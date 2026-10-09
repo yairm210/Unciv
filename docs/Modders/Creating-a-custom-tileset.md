@@ -10,7 +10,7 @@ Let's look at the example "Grassland+Jungle+Dyes+Trading post" to learn how the 
 2. Else if there is an image called "Grassland+Jungle+Dyes+Trading post" we will use it instead.
 3. Otherwise, we will check if there is an image called "Grassland+Jungle" (BaseTerrain+Terrainfeatures) and "Dyes+Trading post" (Resource+Improvement) and use the remainings of it. Let's say you made an image called "Grassland+Jungle" but none called "Dyes+Trading post". In the end, we will then use the images "Grassland+Jungle", "Dyes" and "Trading post".
 
-All these images can also use era-dependant variants if you want to change the appearance of, let's say, "Trading post" throughout the game. Just create images and add the suffix "-[era name]".
+All these images can also use era-dependent variants if you want to change the appearance of, let's say, "Trading post" throughout the game. Just create images and add the suffix "-[era name]".
 E.g. "Trading post-Classical era", "Trading post-Industrial era", etc.
 
 It is advised to use the layered approach (1 and 3) often because it comes with a few advantages. Mainly:
@@ -23,7 +23,7 @@ BaseTerrain, TerrainFeatures, Resource, Improvement.
 
 ## Tileset config
 
-This is where tileset configs shine. You can use these to alter the way Unicv renders tiles.
+This is where tileset configs shine. You can use these to alter the way Unciv renders tiles.
 
 To create a config for your tileset you just need to create a new .json file under jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
 

@@ -36,7 +36,7 @@ When you ask to 'edit' a file in yairm210/Unciv, these stages happen _automatica
 
 ## Help! There's a <span style="color:red">red "x"</span> next to my PR!
 
-Unciv automatically runs unit tests on every PR or push adding commits (inless you're new, in which case someone needs to start the workflows).
+Unciv automatically runs unit tests on every PR or push adding commits (unless you're new, in which case someone needs to start the workflows).
 These contain checks for the rules already described here - a failure means either you didn't follow all the rules (see [Pitfalls](#pitfalls)), or problems outside your control.
 
 To see what went wrong, open your PR, look for the "failing check" entry under "Some checks were not successful", and click the "..." menu and "View details" (or look for the red "x" near a commit ID and click that).

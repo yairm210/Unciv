@@ -1,4 +1,4 @@
-Units now recieve correct healing in friendly territory
+Units now receive correct healing in friendly territory
 
 Tile info table no longer reveals hidden units
 
