@@ -85,7 +85,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val sortedUnitActions = UiUnitActions.getUnitActions(unit).sortedByDescending { it.useFrequency }
         // Distribute sequentially into the buckets
         for (unitAction in sortedUnitActions) {
-            var actionPage = UiUnitActions.getActionDefaultPage(unit, unitAction.type)
+            var actionPage = UiUnitActions.getActionDefaultPage(unit, unitAction.uiType)
             while (actionPage < maxAllowedPages && freeSlotsOnPage(actionPage) <= 0)
                 actionPage++
             if (actionPage >= maxAllowedPages) break
