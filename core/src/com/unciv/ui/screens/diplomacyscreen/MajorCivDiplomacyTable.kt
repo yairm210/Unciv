@@ -27,11 +27,11 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
     private enum class ModifierColor(val color: Color, val upperValueThreshold: Int) {
-        VERY_NEGATIVE(Color(1f, 0.2f, 0.2f, 1f), -16),
-        NEGATIVE(Color(0.7f, 0f, 0f, 1f), -4),
-        INSIGNIFICANT(Color.LIGHT_GRAY, 3),
-        POSITIVE(Color(0f, 0.6f, 0f, 1f), 15),
-        VERY_POSITIVE(Color(0.1f, 1f, 0.1f, 1f), Int.MAX_VALUE);
+        VeryNegative(Color(1f, 0.2f, 0.2f, 1f), -16),
+        Negative(Color(0.7f, 0f, 0f, 1f), -4),
+        Insignificant(Color.LIGHT_GRAY, 3),
+        Positive(Color(0f, 0.6f, 0f, 1f), 15),
+        VeryPositive(Color(0.1f, 1f, 0.1f, 1f), Int.MAX_VALUE);
         
         companion object {
             fun getColor(modifierValue: Int) = entries
