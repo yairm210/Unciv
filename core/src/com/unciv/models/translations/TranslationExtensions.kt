@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.fonts.FontRulesetIcons
+import java.text.ParsePosition
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
@@ -30,10 +31,6 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 internal val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
-// Used to match continuous digits 0, 12, 1232 etc, also already comma-grouped ones like 1,232
-// (so re-translating an already-formatted number stays idempotent instead of splitting on the comma)
-@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-private val digitsRegex = Regex("""\d[\d,]*\d|\d""")
 
 /**
  *  This function does the actual translation work,
@@ -186,8 +183,14 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
 
     val translation = UncivGame.Current.translations.getText(
         this, language, TranslationActiveModsCache.activeMods
-    ).replace(digitsRegex) {
-        it.value.replace(",", "").toLong().tr(language)
+    ).replace(LocaleCode.getNumberRegexForLanguage(language)) {
+        val pos = ParsePosition(0)
+        val formatter = LocaleCode.getNumberFormatFromLanguage(language)
+        val numericString = it.value
+        formatter.parse(numericString, pos)
+            .takeIf { pos.index == numericString.length }
+            ?.let { number -> formatter.format(number) }
+            ?: numericString
     }
 
     val stat = Stat.safeValueOf(this)
