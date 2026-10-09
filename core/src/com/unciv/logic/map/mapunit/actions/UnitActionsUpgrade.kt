@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
@@ -7,7 +7,7 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 
 object UnitActionsUpgrade {
 

@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import kotlin.math.min
 
 @Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions

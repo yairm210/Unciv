@@ -21,8 +21,8 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import kotlin.math.ceil
 import com.unciv.view.GameView
 import yairm210.purity.annotations.Readonly

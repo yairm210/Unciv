@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import yairm210.purity.annotations.Readonly
 
 object UnitActionsReligion {

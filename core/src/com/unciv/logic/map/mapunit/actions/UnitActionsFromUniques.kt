@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.Constants
 import com.unciv.GUI
@@ -27,7 +27,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import yairm210.purity.annotations.Readonly
 
 @Suppress("UNUSED_PARAMETER") // These methods are used as references in UnitActions.actionTypeToFunctions and need identical signature

@@ -12,8 +12,8 @@ import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.pickerscreens.PromotionTree
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

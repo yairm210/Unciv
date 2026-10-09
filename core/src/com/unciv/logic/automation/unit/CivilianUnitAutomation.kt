@@ -7,9 +7,9 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.canUse
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.canUse
+import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly

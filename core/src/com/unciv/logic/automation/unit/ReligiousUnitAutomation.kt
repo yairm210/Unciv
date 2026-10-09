@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActions
 import yairm210.purity.annotations.Readonly
 
 object ReligiousUnitAutomation {

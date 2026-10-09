@@ -11,7 +11,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 

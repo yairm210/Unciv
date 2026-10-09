@@ -100,7 +100,7 @@ open class UnitAction(
 
 /** Specialized [UnitAction] for upgrades
  *
- *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeActions]
+ *  Transports [unitToUpgradeTo] from [creation][com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade.getUpgradeActions]
  *  to [UI][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable.update]
  */
 class UpgradeUnitAction(

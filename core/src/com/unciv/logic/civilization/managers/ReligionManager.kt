@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import yairm210.purity.annotations.Readonly
 import java.lang.Integer.min
 import kotlin.math.roundToInt
