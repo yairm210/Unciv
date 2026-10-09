@@ -534,7 +534,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
         val healingContext = cache.state.copy(tile = tile)
         // Avoid stacking the base heal with an already-applicable tile-conditional healing bonus, such as Supply's +15 HP in foreign land.
-        fun hasConditionalTileHeal = getMatchingUniques(
+        fun hasConditionalTileHeal () = getMatchingUniques(
             UniqueType.Heal, healingContext, checkCivInfoUniques = true
         ).any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalInTiles) }
 
