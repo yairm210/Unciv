@@ -29,7 +29,6 @@ object UiOnlyUnitActions {
         if (!unit.promotions.canBePromoted()) return null
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         return UiUnitAction(UiUnitActionType.Promote,
-            useFrequency = 150f, // We want to show the player that they can promote
             action = {
                 UncivGame.Current.pushScreen { PromotionPickerScreen(GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)) }
             }.takeIf { unit.hasMovement() && unit.attacksThisTurn == 0 }
@@ -38,7 +37,7 @@ object UiOnlyUnitActions {
 
     private fun getShowUnitDestinationAction(unit: MapUnit): UiUnitAction? {
         if (!unit.isMoving()) return null
-        return UiUnitAction(UiUnitActionType.ShowUnitDestination, 30f) {
+        return UiUnitAction(UiUnitActionType.ShowUnitDestination) {
             GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
         }
     }
@@ -59,7 +58,6 @@ object UiOnlyUnitActions {
         return UiUnitAction(
             uiType = UiUnitActionType.SwapUnits,
             isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
-            useFrequency = 60f,
             action = {
                 worldScreen.bottomUnitTable.selectedUnitIsSwapping =
                     !worldScreen.bottomUnitTable.selectedUnitIsSwapping
@@ -81,7 +79,7 @@ object UiOnlyUnitActions {
                 || (it.params[0] == "Road" && (unitCivBestRoad == RoadStatus.Road || unitCivBestRoad == RoadStatus.Railroad))
                 || (it.params[0] == "Railroad" && (unitCivBestRoad == RoadStatus.Railroad))
         } ?: return null
-        val useFrequency = getUseFrequency(unit, unique, 25f)
+        val useFrequency = getUseFrequency(unit, unique, UiUnitActionType.ConnectRoad.defaultUseFrequency)
 
         val worldScreen = GUI.getWorldScreen()
         return UiUnitAction(UiUnitActionType.ConnectRoad, useFrequency, // Press once for a multiturn command, it doesn't need to be used that frequently
@@ -113,7 +111,7 @@ object UiOnlyUnitActions {
             )
                 && unit.canBuildImprovement(it)
         }
-        val useFrequency = getUseFrequency(unit, unique, 85f)
+        val useFrequency = getUseFrequency(unit, unique, UiUnitActionType.ConstructImprovement.defaultUseFrequency)
 
         return UiUnitAction(UiUnitActionType.ConstructImprovement, useFrequency,
             isCurrentAction = tile.hasImprovementInProgress(),
@@ -132,6 +130,6 @@ object UiOnlyUnitActions {
      *  - [second][Pair.second] - [UiUnitActionType.HideAdditionalActions] (page back)
      */
     internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
-        UiUnitAction(UiUnitActionType.ShowAdditionalActions, 0f) { actionsTable.changePage(1, unit) } to
-            UiUnitAction(UiUnitActionType.HideAdditionalActions, 0f) { actionsTable.changePage(-1, unit) }
+        UiUnitAction(UiUnitActionType.ShowAdditionalActions) { actionsTable.changePage(1, unit) } to
+            UiUnitAction(UiUnitActionType.HideAdditionalActions) { actionsTable.changePage(-1, unit) }
 }

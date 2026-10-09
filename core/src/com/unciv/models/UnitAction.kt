@@ -13,13 +13,9 @@ import com.unciv.utils.hashOf
  */
 open class UnitAction(
     val type: UnitActionType,
-    /** How often this action is used, a higher value means more often and that it should be on an earlier page.
-     * 100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement.
-     * A Rare case is > 100 if a button is something like add in capital, promote or something,
-     * we need to inform the player that taking the action is an option. */
-    val useFrequency: Float,
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
+    /** The unique this action stems from, if any - the UI takes its `UnitActionPriority` modifiers from here */
     val associatedUnique: Unique? = null,
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
@@ -53,9 +49,9 @@ class UpgradeUnitAction(
     val unitToUpgradeTo: BaseUnit,
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>,
+    associatedUnique: Unique?,
     action: (() -> Unit)?,
-    useFrequency: Float = 120f,
-) : UnitAction(UnitActionType.Upgrade, useFrequency, title, action = action)
+) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = associatedUnique, action = action)
 
 /**
  * Unit Actions - generic enum with static, UI-independent properties

@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -22,16 +23,16 @@ import yairm210.purity.annotations.Readonly
  */
 class UiUnitAction(
     val uiType: UiUnitActionType,
-    val useFrequency: Float,
+    val useFrequency: Float = uiType.defaultUseFrequency,
     val title: String = uiType.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = uiType.uncivSound,
     val unitAction: UnitAction? = null,
     val action: (() -> Unit)? = null
 ) {
-    constructor(unitAction: UnitAction) : this(
-        UiUnitActionType.of(unitAction.type), unitAction.useFrequency, unitAction.title, unitAction.isCurrentAction,
-        unitAction = unitAction, action = unitAction.action
+    constructor(unit: MapUnit, unitAction: UnitAction) : this(
+        UiUnitActionType.of(unitAction.type), UiUnitActionType.of(unitAction.type).getUseFrequency(unit, unitAction),
+        unitAction.title, unitAction.isCurrentAction, unitAction = unitAction, action = unitAction.action
     )
 
     fun getIcon(size: Float = 20f): Actor {
@@ -87,7 +88,7 @@ class UiUnitAction(
 /** Entry point for the UI to get [UiUnitAction]s */
 object UiUnitActions {
     fun getUnitActions(unit: MapUnit): Sequence<UiUnitAction> =
-        UnitActions.getUnitActions(unit).map { UiUnitAction(it) } + UiOnlyUnitActions.getUnitActions(unit)
+        UnitActions.getUnitActions(unit).map { UiUnitAction(unit, it) } + UiOnlyUnitActions.getUnitActions(unit)
 
     /** Gets the preferred "page" to display a [UiUnitAction] of type [uiUnitActionType] on, possibly dynamic depending on the state or situation [unit] is in.
      *  Note the returned "page numbers" are treated as suggestions, buttons may get redistributed when screen space is scarce. */
@@ -122,84 +123,109 @@ enum class UiUnitActionType private constructor(
     val imageGetter: (() -> Actor)?,
     val isSkippingToNextUnit: Boolean,
     val uncivSound: UncivSound,
-    private val page: Int
+    private val page: Int,
+    val defaultUseFrequency: Float
 ) {
-    StopEscortFormation(UnitActionType.StopEscortFormation, portrait("StopEscort"), false, page = 1),
-    EscortFormation(UnitActionType.EscortFormation, portrait("Escort"), false, page = 1),
-    SwapUnits("Swap units", portrait("Swap"), false),
-    Automate(UnitActionType.Automate, portrait("Automate")) {
+    StopEscortFormation(UnitActionType.StopEscortFormation, portrait("StopEscort"), false, page = 1, useFrequency = 50f),
+    EscortFormation(UnitActionType.EscortFormation, portrait("Escort"), false, page = 1, useFrequency = 50f),
+    SwapUnits("Swap units", portrait("Swap"), false, useFrequency = 60f),
+    Automate(UnitActionType.Automate, portrait("Automate"), useFrequency = 25f) {
         override fun getPage(unit: MapUnit) =
             if (unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)) 0 else 1
     },
-    ConnectRoad("Connect road", portrait("RoadConnection"), false),
-    StopAutomation(UnitActionType.StopAutomation, portrait("Stop"), false),
-    StopMovement(UnitActionType.StopMovement, portrait("StopMove"), false),
-    ShowUnitDestination("Show unit destination", portrait("ShowUnitDestination"), false, page = 1),
-    Sleep(UnitActionType.Sleep, portrait("Sleep")) {
+    ConnectRoad("Connect road", portrait("RoadConnection"), false, useFrequency = 25f),
+    StopAutomation(UnitActionType.StopAutomation, portrait("Stop"), false, useFrequency = 10f),
+    StopMovement(UnitActionType.StopMovement, portrait("StopMove"), false, useFrequency = 20f),
+    ShowUnitDestination("Show unit destination", portrait("ShowUnitDestination"), false, page = 1, useFrequency = 30f),
+    Sleep(UnitActionType.Sleep, portrait("Sleep"), useFrequency = 29f) {
         // Sleep moves to second page if current action is SleepUntilHealed or if unit is wounded and it's not already the current action
         override fun getPage(unit: MapUnit) =
             if (unit.isSleepingUntilHealed() || unit.health < 100 && !(unit.isSleeping() && !unit.isActionUntilHealed())) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unit.isSleeping()) 21f else defaultUseFrequency
     },
-    SleepUntilHealed(UnitActionType.SleepUntilHealed, portrait("Sleep")) {
+    SleepUntilHealed(UnitActionType.SleepUntilHealed, portrait("Sleep"), useFrequency = 44f) {
         // SleepUntilHealed only moves to the second page if Sleep is the current action
         override fun getPage(unit: MapUnit) =
             if (unit.isSleeping() && !unit.isActionUntilHealed()) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unit.isSleepingUntilHealed()) 20f else defaultUseFrequency
     },
-    Fortify(UnitActionType.Fortify, portrait("Fortify"), uncivSound = UncivSound.Fortify) {
+    Fortify(UnitActionType.Fortify, portrait("Fortify"), uncivSound = UncivSound.Fortify, useFrequency = 30f) {
         // Fortify moves to second page if current action is FortifyUntilHealed or if unit is wounded and it's not already the current action
         override fun getPage(unit: MapUnit) =
             if (unit.isFortifyingUntilHealed() || unit.health < 100 && !(unit.isFortified() && !unit.isActionUntilHealed())) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
     },
-    FortifyUntilHealed(UnitActionType.FortifyUntilHealed, portrait("FortifyUntilHealed"), uncivSound = UncivSound.Fortify) {
+    FortifyUntilHealed(UnitActionType.FortifyUntilHealed, portrait("FortifyUntilHealed"), uncivSound = UncivSound.Fortify, useFrequency = 45f) {
         // FortifyUntilHealed only moves to the second page if Fortify is the current action
         override fun getPage(unit: MapUnit) =
             if (unit.isFortified() && !unit.isActionUntilHealed()) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
     },
-    Guard(UnitActionType.Guard, portrait("Guard"), uncivSound = UncivSound.Fortify),
-    Explore(UnitActionType.Explore, portrait("Explore")) {
+    Guard(UnitActionType.Guard, portrait("Guard"), uncivSound = UncivSound.Fortify, useFrequency = 0f),
+    Explore(UnitActionType.Explore, portrait("Explore"), useFrequency = 5f) {
         override fun getPage(unit: MapUnit) = if (unit.isCivilian()) 1 else 0
     },
-    StopExploration(UnitActionType.StopExploration, portrait("Stop"), false),
-    Promote("Promote", portrait("Promote"), false, UncivSound.Promote),
-    Upgrade(UnitActionType.Upgrade, portrait("Upgrade"), uncivSound = UncivSound.Upgrade),
-    Transform(UnitActionType.Transform, portrait("Transform"), uncivSound = UncivSound.Upgrade),
-    Pillage(UnitActionType.Pillage, portrait("Pillage"), false),
-    Paradrop(UnitActionType.Paradrop, portrait("Paradrop"), false),
-    AirSweep(UnitActionType.AirSweep, portrait("AirSweep"), false),
-    SetUp(UnitActionType.SetUp, portrait("SetUp"), false, UncivSound.Setup),
-    FoundCity(UnitActionType.FoundCity, portrait("FoundCity"), uncivSound = UncivSound.Chimes),
-    ConstructImprovement("Construct improvement", portrait("ConstructImprovement"), false),
-    Repair(UnitActionType.Repair, portrait("Repair"), uncivSound = UncivSound.Construction),
-    CreateImprovement(UnitActionType.CreateImprovement, null, false, UncivSound.Chimes),
-    HurryResearch(UnitActionType.HurryResearch, portrait("HurryResearch"), uncivSound = UncivSound.Chimes),
-    HurryPolicy(UnitActionType.HurryPolicy, portrait("HurryPolicy"), uncivSound = UncivSound.Chimes),
-    HurryWonder(UnitActionType.HurryWonder, portrait("HurryConstruction"), uncivSound = UncivSound.Chimes),
-    HurryBuilding(UnitActionType.HurryBuilding, portrait("HurryConstruction"), uncivSound = UncivSound.Chimes),
-    ConductTradeMission(UnitActionType.ConductTradeMission, portrait("ConductTradeMission"), uncivSound = UncivSound.Chimes),
-    FoundReligion(UnitActionType.FoundReligion, portrait("FoundReligion"), uncivSound = UncivSound.Choir),
-    TriggerUnique(UnitActionType.TriggerUnique, null, false, UncivSound.Chimes),
-    SpreadReligion(UnitActionType.SpreadReligion, null, uncivSound = UncivSound.Choir),
-    RemoveHeresy(UnitActionType.RemoveHeresy, portrait("RemoveHeresy"), uncivSound = UncivSound.Fire),
-    EnhanceReligion(UnitActionType.EnhanceReligion, portrait("EnhanceReligion"), uncivSound = UncivSound.Choir),
-    DisbandUnit(UnitActionType.DisbandUnit, portrait("DisbandUnit"), false, page = 1),
-    GiftUnit(UnitActionType.GiftUnit, portrait("Present"), uncivSound = UncivSound.Silent, page = 1),
-    Skip(UnitActionType.Skip, portrait("Skip"), uncivSound = UncivSound.Silent),
-    ShowAdditionalActions("Show more", portrait("ShowMore"), false),
-    HideAdditionalActions("Back", portrait("HideMore"), false, page = 1),
-    AddInCapital(UnitActionType.AddInCapital, portrait("AddInCapital"), uncivSound = UncivSound.Chimes),
+    StopExploration(UnitActionType.StopExploration, portrait("Stop"), false, useFrequency = 20f),
+    Promote("Promote", portrait("Promote"), false, UncivSound.Promote, useFrequency = 150f),
+    Upgrade(UnitActionType.Upgrade, portrait("Upgrade"), uncivSound = UncivSound.Upgrade, useFrequency = 120f),
+    Transform(UnitActionType.Transform, portrait("Transform"), uncivSound = UncivSound.Upgrade, useFrequency = 70f),
+    Pillage(UnitActionType.Pillage, portrait("Pillage"), false, useFrequency = 65f),
+    Paradrop(UnitActionType.Paradrop, portrait("Paradrop"), false, useFrequency = 60f),
+    AirSweep(UnitActionType.AirSweep, portrait("AirSweep"), false, useFrequency = 90f),
+    SetUp(UnitActionType.SetUp, portrait("SetUp"), false, UncivSound.Setup, useFrequency = 85f),
+    FoundCity(UnitActionType.FoundCity, portrait("FoundCity"), uncivSound = UncivSound.Chimes, useFrequency = 80f),
+    ConstructImprovement("Construct improvement", portrait("ConstructImprovement"), false, useFrequency = 85f),
+    Repair(UnitActionType.Repair, portrait("Repair"), uncivSound = UncivSound.Construction, useFrequency = 90f),
+    CreateImprovement(UnitActionType.CreateImprovement, null, false, UncivSound.Chimes, useFrequency = 85f) {
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
+            if (unitAction?.associatedUnique?.type == UniqueType.CreateWaterImprovements) 82f else defaultUseFrequency
+    },
+    HurryResearch(UnitActionType.HurryResearch, portrait("HurryResearch"), uncivSound = UncivSound.Chimes, useFrequency = 76f),
+    HurryPolicy(UnitActionType.HurryPolicy, portrait("HurryPolicy"), uncivSound = UncivSound.Chimes, useFrequency = 76f),
+    HurryWonder(UnitActionType.HurryWonder, portrait("HurryConstruction"), uncivSound = UncivSound.Chimes, useFrequency = 75f),
+    HurryBuilding(UnitActionType.HurryBuilding, portrait("HurryConstruction"), uncivSound = UncivSound.Chimes, useFrequency = 75f),
+    ConductTradeMission(UnitActionType.ConductTradeMission, portrait("ConductTradeMission"), uncivSound = UncivSound.Chimes, useFrequency = 70f),
+    FoundReligion(UnitActionType.FoundReligion, portrait("FoundReligion"), uncivSound = UncivSound.Choir, useFrequency = 80f),
+    TriggerUnique(UnitActionType.TriggerUnique, null, false, UncivSound.Chimes, useFrequency = 80f),
+    SpreadReligion(UnitActionType.SpreadReligion, null, uncivSound = UncivSound.Choir, useFrequency = 68f),
+    RemoveHeresy(UnitActionType.RemoveHeresy, portrait("RemoveHeresy"), uncivSound = UncivSound.Fire, useFrequency = 69f),
+    EnhanceReligion(UnitActionType.EnhanceReligion, portrait("EnhanceReligion"), uncivSound = UncivSound.Choir, useFrequency = 79f),
+    DisbandUnit(UnitActionType.DisbandUnit, portrait("DisbandUnit"), false, page = 1, useFrequency = 0f),
+    GiftUnit(UnitActionType.GiftUnit, portrait("Present"), uncivSound = UncivSound.Silent, page = 1, useFrequency = 5f) {
+        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
+            if (unitAction?.action == null) 1f else defaultUseFrequency
+    },
+    Skip(UnitActionType.Skip, portrait("Skip"), uncivSound = UncivSound.Silent, useFrequency = 0f),
+    ShowAdditionalActions("Show more", portrait("ShowMore"), false, useFrequency = 0f),
+    HideAdditionalActions("Back", portrait("HideMore"), false, page = 1, useFrequency = 0f),
+    AddInCapital(UnitActionType.AddInCapital, portrait("AddInCapital"), uncivSound = UncivSound.Chimes, useFrequency = 80f),
     ;
 
     /** For types backed by a logic [UnitActionType] */
-    constructor(type: UnitActionType, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, page: Int = 0)
-        : this(type, type.value, imageGetter, isSkippingToNextUnit, uncivSound, page)
+    constructor(type: UnitActionType, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, page: Int = 0, useFrequency: Float)
+        : this(type, type.value, imageGetter, isSkippingToNextUnit, uncivSound, page, useFrequency)
 
     /** For UI-only types */
-    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, page: Int = 0)
-        : this(null, value, imageGetter, isSkippingToNextUnit, uncivSound, page)
+    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, page: Int = 0, useFrequency: Float)
+        : this(null, value, imageGetter, isSkippingToNextUnit, uncivSound, page, useFrequency)
 
     /** Keyboard binding of the same name, if any - see the note in [KeyboardBinding] */
     val binding: KeyboardBinding =
         KeyboardBinding.entries.firstOrNull { it.name == name } ?: KeyboardBinding.None
+
+    /** The use frequency for this action type, before [UnitActionModifiers.getUseFrequency] applies the modifiers of the action's unique. */
+    @Readonly
+    open fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?): Float = defaultUseFrequency
+
+    /**
+     *  How often this action is used, a higher value means more often and that it should be on an earlier page.
+     *  100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement.
+     *  A Rare case is > 100 if a button is something like add in capital, promote or something,
+     *  we need to inform the player that taking the action is an option.
+     */
+    @Readonly
+    fun getUseFrequency(unit: MapUnit, unitAction: UnitAction?): Float =
+        UnitActionModifiers.getUseFrequency(unit, unitAction?.associatedUnique, getDefaultUseFrequency(unit, unitAction))
 
     /** The preferred page for this action type, for [unit] in its current state. */
     @Readonly

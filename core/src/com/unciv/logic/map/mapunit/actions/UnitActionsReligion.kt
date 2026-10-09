@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import yairm210.purity.annotations.Readonly
 
 object UnitActionsReligion {
@@ -25,10 +24,9 @@ object UnitActionsReligion {
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
-        val useFrequency = getUseFrequency(unit, unique, 80f)
 
         return sequenceOf(UnitAction(
-            UnitActionType.FoundReligion, useFrequency,
+            UnitActionType.FoundReligion,
 
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 UnitActionType.FoundReligion.value,
@@ -36,6 +34,7 @@ object UnitActionsReligion {
                 unit
             )
             else UnitActionType.FoundReligion.value,
+            associatedUnique = unique,
             action = {
                 unit.civ.religionManager.foundReligion(unit)
 
@@ -55,17 +54,17 @@ object UnitActionsReligion {
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
-        val useFrequency = getUseFrequency(unit, unique, 79f)
 
         val baseTitle = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]"
         return sequenceOf(UnitAction(
-            UnitActionType.EnhanceReligion, useFrequency,
+            UnitActionType.EnhanceReligion,
             title = if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
                 baseTitle,
                 unique,
                 unit
             )
             else baseTitle,
+            associatedUnique = unique,
             action = {
                 unit.civ.religionManager.useProphetForEnhancingReligion(unit)
                 if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
@@ -95,11 +94,11 @@ object UnitActionsReligion {
 
         val title = UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]",
             newStyleUnique, unit)
-        val useFrequency = getUseFrequency(unit, newStyleUnique, 68f)
 
         return sequenceOf(UnitAction(
-            UnitActionType.SpreadReligion, useFrequency,
+            UnitActionType.SpreadReligion,
             title = title,
+            associatedUnique = newStyleUnique,
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
                 unit.forEachMatchingUnique(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true) { unique ->
@@ -144,11 +143,11 @@ object UnitActionsReligion {
 
         val title =
             UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique, unit)
-        val useFrequency = getUseFrequency(unit, newStyleUnique, 69f)
 
         return sequenceOf(UnitAction(
-            UnitActionType.RemoveHeresy, useFrequency,
+            UnitActionType.RemoveHeresy,
             title = title,
+            associatedUnique = newStyleUnique,
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 if (city.religion.religionThisIsTheHolyCityOf != null) {

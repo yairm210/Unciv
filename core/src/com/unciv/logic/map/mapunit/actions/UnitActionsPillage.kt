@@ -22,7 +22,7 @@ object UnitActionsPillage {
             ?: return emptySequence()
         if (pillageAction.action == null || unit.civ.isAIOrAutoPlaying())
             return sequenceOf(pillageAction)
-        else return sequenceOf(UnitAction(UnitActionType.Pillage, 65f, pillageAction.title) {
+        else return sequenceOf(UnitAction(UnitActionType.Pillage, pillageAction.title) {
             val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
             ConfirmPopup(
                 GUI.getWorldScreen(),
@@ -40,7 +40,7 @@ object UnitActionsPillage {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
-            UnitActionType.Pillage, 65f,
+            UnitActionType.Pillage,
             title = "${UnitActionType.Pillage} [$improvementName]",
             action = {
                 val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!  // can this differ from improvementName due to later execution???

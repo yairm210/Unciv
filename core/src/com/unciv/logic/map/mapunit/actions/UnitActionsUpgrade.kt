@@ -7,7 +7,6 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 
 object UnitActionsUpgrade {
 
@@ -58,13 +57,13 @@ object UnitActionsUpgrade {
             val title = if (newResourceRequirementsString.isEmpty())
                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
             else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
-            val useFrequency = getUseFrequency(unit, upgradesTo.second, 120f)
 
             yield(UpgradeUnitAction(
                 title = title,
                 unitToUpgradeTo = upgradedUnit,
                 goldCostOfUpgrade = goldCostOfUpgrade,
                 newResourceRequirements = resourceRequirementsDelta,
+                associatedUnique = upgradesTo.second,
                 action = {
                     unit.upgrade.performUpgrade(upgradedUnit, isFree, goldCostOfUpgrade)
                 }.takeIf {
@@ -76,7 +75,6 @@ object UnitActionsUpgrade {
                             && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                         )
                 },
-                useFrequency = useFrequency,
             ))
         }
     }

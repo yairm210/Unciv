@@ -98,11 +98,11 @@ object UnitActions {
         // General actions
         addAutomateActions(unit)
         if (unit.isMoving())
-            yield(UnitAction(UnitActionType.StopMovement, 20f) { unit.action = null })
+            yield(UnitAction(UnitActionType.StopMovement) { unit.action = null })
         if (unit.isExploring())
-            yield(UnitAction(UnitActionType.StopExploration, 20f) { unit.action = null })
+            yield(UnitAction(UnitActionType.StopExploration) { unit.action = null })
         if (unit.isAutomated())
-            yield(UnitAction(UnitActionType.StopAutomation, 10f) {
+            yield(UnitAction(UnitActionType.StopAutomation) {
                 unit.action = null
                 unit.automated = false
             })
@@ -140,14 +140,12 @@ object UnitActions {
         if (!unit.isEscorting()) {
             yield(UnitAction(
                 type = UnitActionType.EscortFormation,
-                useFrequency = 50f,
                 action = {
                     unit.startEscorting()
                 }))
         } else {
             yield(UnitAction(
                 type = UnitActionType.StopEscortFormation,
-                useFrequency = 50f,
                 action = {
                     unit.stopEscorting()
                 }))
@@ -156,7 +154,6 @@ object UnitActions {
 
     private suspend fun SequenceScope<UnitAction>.addDisbandAction(unit: MapUnit) {
         yield(UnitAction(type = UnitActionType.DisbandUnit,
-            useFrequency = 0f, // Only can happen once per unit
             action = {
                 val worldScreen = GUI.getWorldScreen()
                 if (!worldScreen.hasOpenPopups()) {
@@ -178,7 +175,7 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addExplorationActions(unit: MapUnit) {
         if (unit.baseUnit.isAirUnit()) return
         if (unit.isExploring()) return
-        yield(UnitAction(UnitActionType.Explore, 5f) {
+        yield(UnitAction(UnitActionType.Explore) {
             unit.action = UnitActionType.Explore.value
             if (unit.hasMovement()) UnitAutomation.automatedExplore(unit)
         })
@@ -190,7 +187,6 @@ object UnitActions {
                 type = if (unit.isActionUntilHealed())
                     UnitActionType.FortifyUntilHealed else
                     UnitActionType.Fortify,
-                useFrequency = 10f,
                 isCurrentAction = true,
                 title = "${"Fortification".tr()} ${unit.getFortificationTurns() * 20}%"
             ))
@@ -201,14 +197,12 @@ object UnitActions {
 
         yield(UnitAction(UnitActionType.Fortify,
             action = { unit.fortify() }.takeIf { !unit.isFortified() || unit.isFortifyingUntilHealed() },
-            useFrequency = 30f
         ))
 
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.FortifyUntilHealed,
             action = { unit.fortifyUntilHealed() }
                 .takeIf { !unit.isFortifyingUntilHealed() && unit.canHealInCurrentTile() },
-            useFrequency = 45f
         ))
     }
 
@@ -217,13 +211,11 @@ object UnitActions {
         if (tile.hasImprovementInProgress() && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)) return
 
         yield(UnitAction(UnitActionType.Sleep,
-            useFrequency = if (!unit.isSleeping()) 29f else 21f,
             action = { unit.action = UnitActionType.Sleep.value }.takeIf { !unit.isSleeping() || unit.isSleepingUntilHealed() }
         ))
 
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
-            useFrequency = if (!unit.isSleepingUntilHealed()) 44f else 20f,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
                 .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
         ))
@@ -252,7 +244,7 @@ object UnitActions {
         if (unit.isTransported) return@sequence
 
         if (!unit.hasMovement()) {
-            yield(UnitAction(UnitActionType.GiftUnit, 1f, action = null))
+            yield(UnitAction(UnitActionType.GiftUnit, action = null))
             return@sequence
         }
 
@@ -279,14 +271,13 @@ object UnitActions {
                 unit.gift(recipient)
             GUI.setUpdateWorldOnNextRender()
         }
-        yield(UnitAction(UnitActionType.GiftUnit, 5f, action = giftAction))
+        yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {
         if (unit.isAutomated()) return
         yield(UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
-            useFrequency = 25f,
             action = {
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
@@ -298,7 +289,6 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addSkipAction(unit: MapUnit) {
         yield(UnitAction(
             type = UnitActionType.Skip,
-            useFrequency = 0f, // Last on first page (defaultPage=0)
             action = {
                 unit.due = !unit.due
                 // If it's on, skips to next unit due to worldScreen.switchToNextUnit() in activateAction
