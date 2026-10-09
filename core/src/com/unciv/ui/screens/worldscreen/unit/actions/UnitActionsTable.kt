@@ -8,8 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.actions.UnitActions
-import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.ui.components.extensions.brighten
@@ -72,22 +70,22 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
 
         numPages = 0
-        val pageActionBuckets = Array<ArrayDeque<UnitAction>>(maxAllowedPages) { ArrayDeque() }
+        val pageActionBuckets = Array<ArrayDeque<UiUnitAction>>(maxAllowedPages) { ArrayDeque() }
         
         @Readonly
         fun freeSlotsOnPage(page: Int) = buttonsPerPage -
             pageActionBuckets[page].size -
             (if (numPages > 1) 1 else 0) // room for the navigation buttons
 
-        val (nextPageAction, previousPageAction) = UnitActions.getPagingActions(unit, this)
+        val (nextPageAction, previousPageAction) = UiUnitActions.getPagingActions(unit, this)
         val nextPageButton = getUnitActionButton(unit, nextPageAction)
         val previousPageButton = getUnitActionButton(unit, previousPageAction)
         updateButtonsPerPage(nextPageButton)
 
-        val sortedUnitActions = UnitActions.getUnitActions(unit).sortedByDescending { it.useFrequency }
+        val sortedUnitActions = UiUnitActions.getUnitActions(unit).sortedByDescending { it.useFrequency }
         // Distribute sequentially into the buckets
         for (unitAction in sortedUnitActions) {
-            var actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
+            var actionPage = UiUnitActions.getActionDefaultPage(unit, unitAction.type)
             while (actionPage < maxAllowedPages && freeSlotsOnPage(actionPage) <= 0)
                 actionPage++
             if (actionPage >= maxAllowedPages) break
@@ -114,14 +112,15 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // actually show the buttons of the currentPage
         for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
-            if (unitAction is UpgradeUnitAction) {
+            val upgradeAction = unitAction.unitAction as? UpgradeUnitAction
+            if (upgradeAction != null) {
                 // This is bound even when the button is disabled, but Actor.activate in ActivationExtensions will block any activation for disabled actors...
                 // But the menu is built to be useful even when you can't upgrade - so **hack** it to get the handler through.
                 // Works because our disable() extension also changes style, and because the normal click is ignored due to unitAction.action being null.
                 button.isDisabled = false
                 button.touchable = Touchable.enabled
                 button.addContextMenu {
-                    UnitUpgradeMenu(worldScreen.stage, button, worldScreen.selectedGameView.getMapUnitView(unit), unitAction, enable = unitAction.action != null, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, worldScreen.selectedGameView.getMapUnitView(unit), upgradeAction, enable = unitAction.action != null, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }
@@ -169,7 +168,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         buttonsPerPage = (availableHeight / buttonHeight).toInt().coerceIn(minButtonsPerPage, maxButtonsPerPage)
     }
 
-    private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
+    private fun getUnitActionButton(unit: MapUnit, unitAction: UiUnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val binding = unitAction.type.binding
@@ -194,7 +193,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         return actionButton
     }
 
-    private fun activateAction(unitAction: UnitAction, unit: MapUnit) {
+    private fun activateAction(unitAction: UiUnitAction, unit: MapUnit) {
         unitAction.action!!.invoke()
         worldScreen.shouldUpdate = true
         // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
