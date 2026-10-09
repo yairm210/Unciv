@@ -600,7 +600,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 #### Information
 
--   [telecommunications](https://thenounproject.com/icon/telecommunications-3191260) by Wichai Wi for Telcommunications
+-   [telecommunications](https://thenounproject.com/icon/telecommunications-3191260) by Wichai Wi for Telecommunications
 -   [Tactics](https://thenounproject.com/icon/tactics-2290123) By Grafix Point for Mobile Tactics
 -   [Rocket](https://thenounproject.com/term/rocket/3999811) Kusdarti for Advanced Ballistics
 -   [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
