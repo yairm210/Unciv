@@ -56,7 +56,10 @@ object HeadTowardsEnemyCityAutomation {
     private const val maxDistanceFromCityToConsiderForLandingArea = 5
     private const val minDistanceFromCityToConsiderForLandingArea = 3
 
-    /** @returns whether the unit has taken this action */
+    /**
+     * @return whether the unit has taken this action
+     * @throws [NullPointerException] when [closestReachableEnemyCity] does not contain a [City]
+     */
     fun headTowardsEnemyCity(
         unit: MapUnit,
         closestReachableEnemyCity: Tile,
