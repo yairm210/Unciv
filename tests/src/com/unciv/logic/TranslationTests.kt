@@ -1,6 +1,7 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic
 
+import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
@@ -8,6 +9,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -26,16 +28,27 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.BaseTestRunner
+import com.unciv.testing.GitInfo
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.Log
+import java.io.Writer
+import java.security.MessageDigest
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.sqrt
+import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
 
 @RunWith(BaseTestRunner::class)
 class TranslationTests {
@@ -605,6 +618,7 @@ class TranslationTests {
     fun listTranslatedNames() {
         loadTranslations()
         val languages = translations.getLanguages()
+        setupRuleset()
         val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         val parcours = listOf(
             "leader names" to ruleset.nations.values.asSequence().map { it.leaderName },
@@ -668,5 +682,235 @@ class TranslationTests {
             "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
             0, failures
         )
+    }
+
+    /**
+     *  Tester helping ensure code changes do not influence translation output.
+     *
+     *  Can generate files to compare using a diff tool before/after.
+     *  Files are by default placed under tests/build, and are therefore delted by gradle clean.
+     *  The subfolder is named "TranslationTest." plus branch name (commit short if HEAD is detached) and contains a full git description marker for idnetification.
+     *
+     *  Do ***NOT*** leave active in CI: Will fail every time civilopedia contents or translations change.
+     *
+     *  ### Usage:
+     *  - Start a branch and do not rebase / merge master until done
+     *  - Choose parameters at the start of the function, most importantly `writeFiles` and `outFileName`
+     *  - Comment out `@Ignore` and run the test.
+     *  - Copy actual hashes (ready to go in console output) to expected hashes
+     *  - Implement your changes to translation code
+     *  - Rerun test
+     *  - When done, uncomment `@Ignore`
+     */
+    @Test
+    @Ignore("This is meant to check local work on the translation framework only")
+    @RedirectOutput(RedirectPolicy.Show)
+    fun translateAndHashCivilopedia() {
+        val computeHashes = true
+        val writeFiles = true
+        val branch = GitInfo.currentBranch?.replace("/", "_") ?: GitInfo.describe?.commitAbbrev ?: "unknown"
+        /** Path for text files relative to 'assets' */
+        val outPath = "../../tests/build/TranslationTest.$branch"
+        fun outFileName(language: String) = "$outPath/$language.txt"
+
+        val expectedHashes = mapOf(
+            "English" to "022da34bd2fd779fd9515ac356537a6a47507aec1602e0a89db578da3159b2bf",
+            "Bangla" to "c9e27adddb2b8e1cdb24db30234834c975f6cdf22ce733c7af5d1b6c7b7a1fd8",
+            "French" to "215bdbd3c1eb9540665b53d9de45e0b849654e8281bb6d4e9ee4204b95386cc3",
+            "Hungarian" to "c3d4d2c26bb74b9e263fb839f063d1a478b7f59d0db7c51244d583d3a980b0f3",
+            "Japanese" to "d785720f7ccc3924396ee113527c091096e506f0131d897cb318f7c9ac3385b6",
+            "Maltese" to "3ca88caee228aed32f986662c27812467b449a09003cf469ed52f8c57eb12310",
+            "Russian" to "8f3831e0def6cb60dbe2458a86ac15f09b7785bc544f58ce259e4953c9a2fe12",
+            "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
+            "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
+            "Vietnamese" to "4139fcdf0c8fa7d51911e358d7454af33683a8d908b6b9f4c7389d613cd54e53",
+            "generated" to "c0d8e8af790d9c327a71fa9b70cfdab8238bfdd0e94c19792590527a44dca11a",
+        )
+
+        setupUncivGame()
+        loadTranslations()
+        copyTranslationsToUncivGame()
+        setupRuleset()
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+
+        val (failures, duration, hint) = translateAndHashCivilopedia(
+            ruleset, computeHashes, expectedHashes, writeFiles, ::outFileName
+        )
+
+        fun describe() = GitInfo.describe?.run {
+            if (result.isNotBlank()) result.replace("/", "_")
+            else commitAbbrev + if (isDirty) "-dirty" else ""
+        } ?: "unknown"
+        Gdx.files.local("$outPath/Created by ${describe()}").writeBytes(byteArrayOf(), false)
+
+        println("Aggregate tr() duration: $duration\n")
+        if (failures > 0) println(hint.toString())
+        Assert.assertEquals(0, failures)
+    }
+
+    @Test
+    @Ignore("This is meant to check local work on the translation framework only")
+    @RedirectOutput(RedirectPolicy.Show)
+    fun measureTranslateCivilopedia() {
+        val computeHashes = false
+        val writeFiles = false
+        fun outFileName(language: String) = ""
+
+        val languagesToTest = mapOf(
+            "English" to "",
+            "Bangla" to "",
+            "French" to "",
+            "Hungarian" to "",
+            "Japanese" to "",
+            "Maltese" to "",
+            "Russian" to "",
+            "Swedish" to "",
+            "Simplified_Chinese" to "",
+            "Vietnamese" to "",
+            "generated" to "",
+        )
+
+        setupUncivGame()
+        loadTranslations()
+        copyTranslationsToUncivGame()
+        setupRuleset()
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        val measurements = mutableListOf<Duration>()
+
+        repeat(49) {
+            val (_, duration, _) = translateAndHashCivilopedia(
+                ruleset, computeHashes, languagesToTest, writeFiles, ::outFileName
+            )
+            measurements += duration
+        }
+        val noOutliers = measurements.drop(5).sorted().drop(1).dropLast(1) // 5 warmup, ignore best and worst
+        val asDbl = noOutliers.map { it.toDouble(DurationUnit.MILLISECONDS) }
+        val average = asDbl.average()
+        val stdDev = if (asDbl.size > 1) sqrt(asDbl.sumOf { (it - average) * (it - average) } / (asDbl.size - 1)) else 0.0
+        println("\nAverage aggregate tr() duration: ${average.milliseconds} ± ${stdDev.milliseconds}\n")
+    }
+
+    @Suppress("ConstPropertyName")
+    companion object {
+        const val alphabetPermutations = " 1a[]."
+        const val generatePermutationsLength = 6
+        const val alphabetRandom = "   \u00a0\u202f-+,.12345780abcdefghijklmnop<>[]{}"
+        const val generateRandomLength = 42
+        const val generateRandomCount = 10_000
+    }
+
+    private fun translateAndHashCivilopedia(
+        ruleset: Ruleset,
+        computeHashes: Boolean,
+        expectedHashes: Map<String, String>,
+        writeFiles: Boolean,
+        outFileName: (String) -> String
+    ): Triple<Int, Duration, StringBuilder> {
+        ///////////////////// Setup /////////////////////
+        var failures = 0
+        val hint = StringBuilder()
+        var duration = 0L.nanoseconds
+
+        fun openWriter(key: String): Writer? {
+            if (!writeFiles) return null
+            val file = Gdx.files.local(outFileName(key))
+            file.parent().mkdirs()
+            return file
+                .writer(false, Charsets.UTF_8.name())
+                .buffered(0x8000)
+        }
+
+        ///////////////////// Data to test /////////////////////
+        fun FormattedLine.simple() = buildString {
+            if (header > 0) append(" ".repeat(header - 1))
+            else append("\t".repeat(1 + indent))
+            append(text)
+        }
+        val civilopedia = sequence {
+            var lastClass = ""
+            for (item in ruleset.allICivilopediaText()) {
+                val className = item::class.simpleName ?: "anonymous"
+                if (className != lastClass) {
+                    lastClass = className
+                    yield(className)
+                }
+                item.getCivilopediaTextHeader()?.let { yield(it.simple()) }
+                for (line in item.getCivilopediaTextLines(ruleset))
+                    if (line.text.isNotBlank()) yield(line.simple())
+            }
+        }
+        suspend fun SequenceScope<String>.generateRandom() {
+            val chars = CharArray(generateRandomLength)
+            val rng = Random(42)
+            repeat(generateRandomCount) {
+                for (i in chars.indices)
+                    chars[i] = alphabetRandom[rng.nextInt(alphabetRandom.length)]
+                yield(String(chars))
+            }
+        }
+        suspend fun SequenceScope<String>.generatePermutations() {
+            var count = 1L                      // alphabet.length ^ len
+            for (len in 0..generatePermutationsLength) {
+                for (k in 0 until count) {
+                    val chars = CharArray(len)
+                    var x = k
+                    for (i in 0 until len) {
+                        chars[i] = alphabetPermutations[(x % alphabetPermutations.length).toInt()]
+                        x /= alphabetPermutations.length
+                    }
+                    yield(String(chars))
+                }
+                count *= alphabetPermutations.length
+            }
+        }
+        val generated = sequence {
+            generatePermutations()
+            generateRandom()
+        }
+
+        ///////////////////// Run /////////////////////
+        for ((key, expectedHash) in expectedHashes) {
+            val language = if (key == "generated") "English" else key
+            UncivGame.Current.settings.language = language
+            val data = if (key == "generated") generated else civilopedia
+            val outWriter = openWriter(key)
+            var lines = 0
+            var total = 0L
+            val md = if (computeHashes) MessageDigest.getInstance("SHA-256") else null
+
+            fun process(line: String, output: String) {
+                md?.update(output.toByteArray(Charsets.UTF_8))
+                md?.update(0.toByte())
+                lines++
+                total += output.length + 1
+                if (outWriter == null) return
+                outWriter.write(line)
+                outWriter.write(" → ")
+                outWriter.write(output.trimStart(' ', '\t'))
+                outWriter.write("\n")
+            }
+
+            for (line in data) {
+                val input = if (key == "generated") line else line.trimStart() // We indented the original text for readability
+                val startTime = TimeSource.Monotonic.markNow()
+                val output = try {
+                    input.tr()
+                } catch (ex: Throwable) {
+                    "${ex::class.simpleName}: ${ex.message}"
+                }
+                duration += startTime.elapsedNow()
+                process(line, output)
+            }
+            outWriter?.close()
+            if (md != null) {
+                val actualHash = md.digest().toHexString()
+                println("$key: $lines lines, $total chars: " + if (actualHash != expectedHash) "Failed" else "OK")
+                if (actualHash != expectedHash) failures++
+                hint.append("\t\t\t\"$key\" to \"$actualHash\",\n")
+            }
+        }
+
+        ///////////////////// Info output /////////////////////
+        return Triple(failures, duration, hint)
     }
 }
