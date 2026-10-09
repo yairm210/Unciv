@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
 class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
-    enum class ModifierColor(val color: Color, val upperValueThreshold: Int) {
+    private enum class ModifierColor(val color: Color, val upperValueThreshold: Int) {
         VERY_NEGATIVE(Color(1f, 0.2f, 0.2f, 1f), -16),
         NEGATIVE(Color(0.7f, 0f, 0f, 1f), -4),
         INSIGNIFICANT(Color.LIGHT_GRAY, 3),
