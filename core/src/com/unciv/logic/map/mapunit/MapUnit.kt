@@ -534,7 +534,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
         val healingContext = cache.state.copy(tile = tile)
         // Avoid stacking the base heal with an already-applicable tile-conditional healing bonus, such as Supply's +15 HP in foreign land.
-        val hasConditionalTileHeal = getMatchingUniques(
+        fun hasConditionalTileHeal = getMatchingUniques(
             UniqueType.Heal, healingContext, checkCivInfoUniques = true
         ).any { it.params[0].toInt() > 0 && it.hasModifier(UniqueType.ConditionalInTiles) }
 
@@ -545,7 +545,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // Units with "May heal outside of friendly territory" (incl. air units carried on ships) heal on non-friendly water like on neutral land
             tile.isWater && !isFriendlyTerritory && (baseUnit.isWaterUnit || isTransported || baseUnit.isAirUnit() || cache.canMoveOnWater)
                 && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, healingContext, checkCivInfoUniques = true)
-                && !hasConditionalTileHeal -> 10
+                && !hasConditionalTileHeal()-> 10
             tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
             tile.getOwner() == null -> 10 // Neutral territory
