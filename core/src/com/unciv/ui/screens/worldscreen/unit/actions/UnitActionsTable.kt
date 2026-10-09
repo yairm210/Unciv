@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
@@ -153,7 +152,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             if (page == currentPage) continue // these are already done
             for (unitAction in pageActionBuckets[page]) {
                 if (unitAction.action == null) continue
-                keyShortcuts.add(unitAction.type.binding) {
+                keyShortcuts.add(unitAction.uiType.binding) {
                     activateAction(unitAction, unit)
                 }
             }
@@ -171,13 +170,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unit: MapUnit, unitAction: UiUnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
-        val binding = unitAction.type.binding
+        val binding = unitAction.uiType.binding
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
         actionButton.labelCell.padTop(0f) // aligned with icon 
 
-        if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
+        if (unitAction.uiType == UiUnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.brighten(0.5f)
 
         actionButton.pack()
@@ -202,7 +201,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         worldScreen.mapHolder.removeUnitActionOverlay()
         if (!UncivGame.Current.settings.autoUnitCycle) return
         if (unit.isDestroyed || 
-            unitAction.type.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
+            unitAction.uiType.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
             worldScreen.switchToNextUnit()
         else worldScreen.bottomUnitTable.shouldUpdate = true
     }

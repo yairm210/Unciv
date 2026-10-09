@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UncivSound
-import com.unciv.models.UnitActionType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.*
@@ -137,7 +137,7 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: Tile
     private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTilePosition: HexCoord) {
         selectedUnit.automatedRoadConnectionDestination = targetTilePosition
         selectedUnit.automatedRoadConnectionPath = null
-        selectedUnit.action = UnitActionType.ConnectRoad.value
+        selectedUnit.action = Constants.connectRoadAction
         selectedUnit.automated = true
         UnitAutomation.automateUnitMoves(selectedUnit)
 

@@ -4,6 +4,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
+import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
@@ -104,12 +105,14 @@ class TranslationTests {
         KeyboardBinding.entries.mapTo(allKeys) { it.label }
 
         var failures = 0
-        for (action in UnitActionType.entries) {
-            if (action.value.isEmpty()) continue
-            val key = action.value.getInnerTemplate().getTemplateKey()
+        val actionValues = UnitActionType.entries.map { "UnitActionType.$it" to it.value } +
+            UiUnitActionType.entries.filter { it.type == null }.map { "UiUnitActionType.$it" to it.value }
+        for ((action, value) in actionValues) {
+            if (value.isEmpty()) continue
+            val key = value.getInnerTemplate().getTemplateKey()
             if (key in allKeys) continue
             failures++
-            println("""UnitActionType.$action (value "${action.value}") is missing its translation template.""")
+            println("""$action (value "$value") is missing its translation template.""")
         }
         Assert.assertEquals("This test will only pass when there is a template for all unit actions", 0, failures)
     }

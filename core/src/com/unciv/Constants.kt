@@ -105,6 +105,8 @@ object Constants {
 
     const val remove = "Remove "
     const val repair = "Repair"
+    /** [com.unciv.logic.map.mapunit.MapUnit.action] value while automatically connecting a road */
+    const val connectRoadAction = "Connect road"
 
     const val uniqueOrDelimiter = "\" OR \""
     const val stringSplitCharacter = '␟' // U+241 - Unit separator character. Used to join texts and split them with a char that is virtually guaranteed to not be used in normal text. 

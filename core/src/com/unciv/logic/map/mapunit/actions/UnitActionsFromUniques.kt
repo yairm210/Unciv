@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -26,7 +25,6 @@ import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import yairm210.purity.annotations.Readonly
 
@@ -372,35 +370,6 @@ object UnitActionsFromUniques {
         }
     }
 
-    internal fun getConnectRoadActions(unit: MapUnit, tile: Tile) = sequence {
-        if (!unit.hasUnique(UniqueType.BuildImprovements)) return@sequence
-        val unitCivBestRoad = unit.civ.tech.getBestRoadAvailable()
-        if (unitCivBestRoad == RoadStatus.None) return@sequence
-
-        val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.BuildImprovements)
-
-        // If a unit has terrainFilter "Land" or improvementFilter "All", then we may proceed.
-        // If a unit only had improvement filter "Road" or "Railroad", then we need to also check if that tech is unlocked
-        val unique = uniquesToCheck.firstOrNull { it.params[0] == "Land" || it.params[0] in Constants.all
-                || (it.params[0] == "Road" && (unitCivBestRoad == RoadStatus.Road || unitCivBestRoad == RoadStatus.Railroad))
-                || (it.params[0] == "Railroad" && (unitCivBestRoad == RoadStatus.Railroad))
-        }
-
-        if(unique == null) return@sequence
-        val useFrequency = getUseFrequency(unit, unique, 25f)
-
-        val worldScreen = GUI.getWorldScreen()
-        yield(UnitAction(UnitActionType.ConnectRoad, useFrequency, // Press once for a multiturn command, it doesn't need to be used that frequently
-               isCurrentAction = unit.isAutomatingRoadConnection(),
-               action = {
-                   worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
-                       !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
-                   worldScreen.shouldUpdate = true
-               }
-           )
-        )
-    }
-
     internal fun getTransformActions(unit: MapUnit, tile: Tile) = sequence {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
@@ -469,37 +438,6 @@ object UnitActionsFromUniques {
                 }
             ))
         }
-    }
-
-    internal fun getBuildingImprovementsActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        if (!unit.cache.hasUniqueToBuildImprovements) return emptySequence()
-        // Conditional uniques (e.g. <when above [0] [Stockpile]>) may no longer apply even though
-        // the cache flag was set true - use firstOrNull to avoid NoSuchElementException (#15114)
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
-            ?: return emptySequence()
-
-        val couldConstruct = unit.hasMovement()
-            && !tile.isCityCenter()
-            && unit.civ.gameInfo.ruleset.tileImprovements.values.any {
-            ImprovementPickerScreen.canReport(
-                tile.improvementFunctions.getImprovementBuildingProblems(
-                    it,
-                    unit.cache.state
-                ).toSet()
-            )
-                && unit.canBuildImprovement(it)
-        }
-        val useFrequency = getUseFrequency(unit, unique, 85f)
-
-        return sequenceOf(UnitAction(UnitActionType.ConstructImprovement, useFrequency,
-            isCurrentAction = tile.hasImprovementInProgress(),
-            action = {
-                GUI.pushScreen{ ImprovementPickerScreen(tile, unit) {
-                    if (GUI.getSettings().autoUnitCycle)
-                        GUI.getWorldScreen().switchToNextUnit()
-                } }
-            }.takeIf { couldConstruct }
-        ))
     }
 
     @Readonly
