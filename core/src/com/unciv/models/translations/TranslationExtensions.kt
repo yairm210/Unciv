@@ -75,6 +75,37 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
 
     // Translating partial sentences inside {}
     return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr(hideIcons) }
+
+@Readonly
+private fun findMatching(text: String, openPos: Int, open: Char, close: Char): Int {
+    var depth = 1
+    for (pos in openPos + 1 until text.length) {
+        val c = text[pos]
+        if (c == open) depth++
+        else if (c == close && --depth <= 0) return pos
+    }
+    return -1
+}
+
+@Readonly
+private fun String.parseKeyAndPlaceholders(
+    firstPos: Int = indexOf('['),
+    appendToKey: (String, Int, Int) -> Unit = { _, _, _ -> }
+): List<String> {
+    val placeholderContents = mutableListOf<String>()
+    var pos = 0
+    var openPos = firstPos
+    while (openPos >= 0) {
+        val closePos = findMatching(this, openPos, '[', ']')
+        if (closePos < 0) break
+        appendToKey(this, pos, openPos)
+        appendToKey("[]", 0, 2)
+        placeholderContents += substring(openPos + 1, closePos)
+        pos = closePos + 1
+        openPos = indexOf('[', pos)
+    }
+    appendToKey(this, pos, length)
+    return placeholderContents
 }
 
 @Readonly
@@ -216,35 +247,20 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  */
 @Pure
 fun String.getPlaceholderParameters(): List<String> {
-    if (!this.contains('[')) return emptyList()
-
     val stringToParse = this.removeConditionals()
-
-    val parameters = ArrayList<String>()
-    var depthOfBraces = 0
-    var startOfCurrentParameter = -1
-    stringToParse.indices.forEach { i ->
-        val currentChar = stringToParse[i]
-        if (currentChar == '[') {
-            if (depthOfBraces == 0) startOfCurrentParameter = i+1
-            depthOfBraces++
-        }
-        if (currentChar == ']' && depthOfBraces > 0) {
-            depthOfBraces--
-            if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
-        }
-    }
-    return parameters
+    val firstPos = stringToParse.indexOf('[')
+    if (firstPos < 0) return emptyList()
+    return stringToParse.parseKeyAndPlaceholders(firstPos)
 }
 
 @Pure
 fun String.getPlaceholderText(): String {
-    var stringToReturn = this.removeConditionals()
-    @LocalState val placeholderParameters = stringToReturn.getPlaceholderParameters()
-    placeholderParameters.forEach { placeholderParameter ->
-        stringToReturn = stringToReturn.replaceFirst("[$placeholderParameter]", "[]")
-    }
-    return stringToReturn
+    val stringToParse = this.removeConditionals()
+    val firstPos = stringToParse.indexOf('[')
+    if (firstPos < 0) return stringToParse
+    val sb = StringBuilder(length)
+    stringToParse.parseKeyAndPlaceholders(firstPos) { text, start, end -> sb.append(text, start, end) }
+    return sb.toString()
 }
 
 @Pure
