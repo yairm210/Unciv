@@ -79,23 +79,23 @@ object MultiplayerHelpers {
             /** Use average turn time data to estimate time until our turn */
             fun estimateTimeUntilOurTurn(): String? {
                 // ignore AIs and spectators
-                val alivePlayers = preview.civilizations.filter { it.isAlive && it.isPlayerCivilization() }
-                val alivePlayerIDs = alivePlayers.map { it.civID }
-                val fromIndex = alivePlayerIDs.indexOf(preview.currentPlayer)
-                val untilIndex = alivePlayerIDs.indexOf(playerCivName)
-                if (alivePlayers.size < 4 // no estimate for small games
+                val players = preview.civilizations.filter { it.isAlive && it.isPlayerCivilization() }
+                val playerCivIDs = players.map { it.civID }
+                val fromIndex = playerCivIDs.indexOf(preview.currentPlayer)
+                val untilIndex = playerCivIDs.indexOf(playerCivName)
+                if (players.size < 4 // no estimate for small games
                     || playerCivName == preview.currentPlayer // no estimate if it's our turn
                     || fromIndex == -1 // just in case - should not happen 
                     || untilIndex == -1 // ensure we are alive
-                    || alivePlayers.any { it.turnsPlayedAsHuman < 4 } // ensure sufficient data
+                    || players.any { it.turnsPlayedAsHuman < 4 } // ensure sufficient data
                 ) return null
                 // how many players left until our turn
-                val numCivsBetween = Math.floorMod(untilIndex - fromIndex, alivePlayers.size)
+                val numRemainingPlayers = Math.floorMod(untilIndex - fromIndex, players.size)
                 // list player civs between current player and ourselves, wrapping around if needed
-                val aliveCivsBetween = (alivePlayers.drop(fromIndex) + alivePlayers.take(untilIndex)).take(numCivsBetween)
-                val estimatedSecondsRemaining = aliveCivsBetween.sumOf { it.totalTurnTimeSeconds / it.turnsPlayedAsHuman }
+                val remainingPlayers = (players.drop(fromIndex) + players.take(untilIndex)).take(numRemainingPlayers)
+                val estimatedSecondsRemaining = remainingPlayers.sumOf { it.totalTurnTimeSeconds / it.turnsPlayedAsHuman }
                 val timeRemaining = Duration.ofSeconds(estimatedSecondsRemaining.toLong())
-                return "There are [$numCivsBetween] players and an estimated [${timeRemaining.formatShort()}] until our turn"
+                return "There are [$numRemainingPlayers] players and an estimated [${timeRemaining.formatShort()}] until our turn"
             }
 
             val timeUntilOurTurnText = estimateTimeUntilOurTurn()
