@@ -111,6 +111,7 @@ class GameSettings {
 
     //// Automation
     var autoAssignCityProduction = false
+    var hintCityProduction = false
     var autoBuildingRoads = true
     var automatedWorkersReplaceImprovements = true
     var stopAutomatedWorkersRemoveVegetation = false
