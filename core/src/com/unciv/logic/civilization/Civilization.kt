@@ -1323,6 +1323,9 @@ class CivilizationInfoPreview() {
     var playerMinutesBeforeForceResign = 60*24*3
     var totalTurnTimeSeconds = 0
     var turnsPlayedAsHuman = 0
+    val isAlive 
+        get() = turnsPlayedAsHuman > 0
+    
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1336,6 +1339,7 @@ class CivilizationInfoPreview() {
         playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
         totalTurnTimeSeconds = civilization.totalTurnTimeSeconds
         turnsPlayedAsHuman = civilization.turnsPlayedAsHuman
+        //isAlive = civilization.isAlive()
     }
 }
 
