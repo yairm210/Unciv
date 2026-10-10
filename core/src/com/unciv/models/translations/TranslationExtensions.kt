@@ -49,19 +49,21 @@ internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
  *                  - phrases between curly braces are translated individually
  *                  Additionally, they may contain conditionals between '<' and '>'
  *  @param      hideIcons disables auto-inserting icons for ruleset objects and serialized [com.unciv.models.stats.Stats]
- *  @param      hideStats disables auto-inserting icons for individual [com.unciv.models.stats.Stat] names
+ *  @param      hideStats disables auto-inserting icons for individual [com.unciv.models.stats.Stat] names, only if the string contains no [],{} or <> brackets.
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
 @Readonly
-fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
-    val language: String = UncivGame.Current.settings.language
+fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false) =
+    tr(UncivGame.Current.settings.language, hideIcons, hideStats)
 
+@Readonly
+fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
     // '<' and '>' checks for quick 'no' answer. Nested "<>" aren't caught here.
     val ltIndex = indexOf('<')
     if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
-        return translateConditionals(hideIcons, language)
+        return translateConditionals(language, hideIcons)
 
     // curly and square brackets can be nested inside of each other so find the leftmost curly/square
     // bracket then process that first
@@ -71,10 +73,11 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
 
     if (get(splitIndex) == '[')
         // Translate placeholders and placeholder-container separately then reassemble
-        return translatePlaceholders(language, hideIcons)
+        return translatePlaceholders(language, hideIcons, splitIndex)
 
     // Translating partial sentences inside {}
-    return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr(hideIcons) }
+    return translatePartial(language, hideIcons, splitIndex)
+}
 
 @Readonly
 private fun findMatching(text: String, openPos: Int, open: Char, close: Char): Int {
@@ -85,6 +88,23 @@ private fun findMatching(text: String, openPos: Int, open: Char, close: Char): I
         else if (c == close && --depth <= 0) return pos
     }
     return -1
+}
+
+@Readonly
+private fun String.translatePartial(language: String, hideIcons: Boolean, firstPos: Int): String {
+    @LocalState
+    val sb = StringBuilder(length + 16)
+    var pos = 0
+    var openPos = firstPos
+    while (openPos >= 0) {
+        val closePos = findMatching(this, openPos, '{', '}')
+        if (closePos < 0) break
+        sb.append(this, pos, openPos)
+        sb.append(substring(openPos + 1, closePos).tr(language, hideIcons))
+        pos = closePos + 1
+        openPos = indexOf('{', pos)
+    }
+    return sb.append(this, pos, length).toString()
 }
 
 @Readonly
@@ -109,7 +129,74 @@ private fun String.parseKeyAndPlaceholders(
 }
 
 @Readonly
-private fun String.translateConditionals(hideIcons: Boolean, language: String): String {
+private fun String.translatePlaceholders(language: String, hideIcons: Boolean, firstPos: Int): String {
+    /**
+     * So what's all this then?
+     * Well, not all languages are like English. So say I want to say "work on Library has completed in Akkad",
+     * but in a completely different language like Japanese or German,
+     * It could come out "Akkad hast die worken onner Library gerfinishen" or whatever,
+     * basically, the order of the words in the sentence is not guaranteed.
+     * So to translate this, I give a sentence like "work on [building] has completed in [city]"
+     * and the german can put those placeholders where he wants, so  "[city] hast die worken onner [building] gerfinishen"
+     * The string on which we call tr() will look like "work on [library] has completed in [Akkad]"
+     * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
+     */
+    // Collect the message without placeholder content, only "[]"
+    @LocalState
+    val key = StringBuilder(length)
+    // Collect the terms in the message, WITHOUT square brackets
+    val termsInMessage = parseKeyAndPlaceholders(firstPos) { sb, start, end -> key.append(sb, start, end) }
+    // For input "work on [building] has completed in [city]", `key` would now contain "work on [] has completed in []"
+
+    // That is now the key into the translation HashMap!
+    val translationEntry = UncivGame.Current.translations
+        .get(key.toString(), language, TranslationActiveModsCache.activeMods)
+
+    val translatedWithPlaceholders: String
+    val originalWithPlaceholders: String
+    if (translationEntry == null || !translationEntry.containsKey(language)) {
+        // Translation entry doesn't exist for this language, default to English
+        translatedWithPlaceholders = this
+        originalWithPlaceholders = this
+    } else {
+        translatedWithPlaceholders = translationEntry[language]!!
+        originalWithPlaceholders = translationEntry.entry
+    }
+
+    // Take the terms from the placeholder - same helper as above but discarding the parts outside the [] brackets
+    val termsInTranslationPlaceholder = originalWithPlaceholders.parseKeyAndPlaceholders()
+    // `termsInTranslationPlaceholder` are the "names" like [unit], not the content to translate, like [Warrior], and we use them to match
+    // corresponding terms in the translated string, to replace them with the actual message's placeholdercontent, translated.
+    // This is what makes reordered placeholders in a translation work.
+    if (termsInMessage.size != termsInTranslationPlaceholder.size)
+        throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
+    val substitutions = HashMap<String, String>()
+    for (i in termsInMessage.indices) {
+        val translated = termsInMessage[i].tr(language, hideIcons)
+        substitutions.putIfAbsent(termsInTranslationPlaceholder[i], translated)
+    }
+
+    val sb = StringBuilder(translatedWithPlaceholders.length + 16)
+    var pos = 0
+    var openPos = translatedWithPlaceholders.indexOf('[')
+    while (openPos >= 0) {
+        val closePos = findMatching(translatedWithPlaceholders, openPos, '[', ']')
+        if (closePos < 0) break
+        val replacement = substitutions[translatedWithPlaceholders.substring(openPos + 1, closePos)]
+        if (replacement != null) {
+            sb.append(translatedWithPlaceholders, pos, openPos)
+            sb.append(replacement)
+            pos = closePos + 1
+            openPos = translatedWithPlaceholders.indexOf('[', pos)
+        } else {
+            openPos = translatedWithPlaceholders.indexOf('[', openPos + 1)   // unknown name: leave as is, look inside
+        }
+    }
+    return sb.append(translatedWithPlaceholders, pos, translatedWithPlaceholders.length).toString()
+}
+
+@Readonly
+private fun String.translateConditionals(language: String, hideIcons: Boolean): String {
     /**
      * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
      * can contain multiple filters, such as <vs [{Military} {Water}] units>.
@@ -160,55 +247,6 @@ private fun String.translateConditionals(hideIcons: Boolean, language: String): 
         fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
     return fullyTranslatedString
 }
-
-@Readonly
-private fun String.translatePlaceholders(language: String, hideIcons: Boolean): String {
-    /**
-     * I'm SURE there's an easier way to do this but I can't think of it =\
-     * So what's all this then?
-     * Well, not all languages are like English. So say I want to say "work on Library has completed in Akkad",
-     * but in a completely different language like Japanese or German,
-     * It could come out "Akkad hast die worken onner Library gerfinishen" or whatever,
-     * basically, the order of the words in the sentence is not guaranteed.
-     * So to translate this, I give a sentence like "work on [building] has completed in [city]"
-     * and the german can put those placeholders where he wants, so  "[city] hast die worken onner [building] gerfinishen"
-     * The string on which we call tr() will look like "work on [library] has completed in [Akkad]"
-     * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
-     */
-
-    // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
-    val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
-    // That is now the key into the translation HashMap!
-    val translationEntry = UncivGame.Current.translations
-        .get(translationStringWithSquareBracketsOnly, language, TranslationActiveModsCache.activeMods)
-
-    var languageSpecificPlaceholder: String
-    val originalEntry: String
-    if (translationEntry == null || !translationEntry.containsKey(language)) {
-        // Translation placeholder doesn't exist for this language, default to English
-        languageSpecificPlaceholder = this
-        originalEntry = this
-    } else {
-        languageSpecificPlaceholder = translationEntry[language]!!
-        originalEntry = translationEntry.entry
-    }
-
-    // Take the terms in the message, WITHOUT square brackets
-    val termsInMessage = this.getPlaceholderParameters()
-    // Take the terms from the placeholder
-    val termsInTranslationPlaceholder = originalEntry.getPlaceholderParameters()
-    if (termsInMessage.size != termsInTranslationPlaceholder.size)
-        throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
-
-    for (i in termsInMessage.indices) {
-        languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
-            "[${termsInTranslationPlaceholder[i]}]", // re-add square brackets to placeholder terms
-            termsInMessage[i].tr(hideIcons)
-        )
-    }
-    return languageSpecificPlaceholder      // every component is already translated
-}
-
 
 /** No brackets of any kind, just a single word */
 @Readonly
