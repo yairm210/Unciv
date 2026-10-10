@@ -311,22 +311,47 @@ fun String.equalsPlaceholderText(str: String): Boolean {
 
 @Pure
 fun String.hasPlaceholderParameters(): Boolean {
-    if (!this.contains('[')) return false
-    return squareBraceRegex.containsMatchIn(this.removeConditionals())
+    if (!contains('[')) return false
+    val text = removeConditionals()
+    val openPos = text.indexOf('[')
+    // This will return true for "[a[b]", while getPlaceholderParameters returns an emptyList for it
+    // This un-balance was present in the Regex-based version, too. To "fix" use findMatching(text, openPos, '[', ']') >= 0
+    return openPos >= 0 && text.indexOf(']', openPos + 1) >= 0
 }
 
-/** Substitutes placeholders with [strings], respecting order of appearance. */
+/** Substitutes placeholders with [strings], respecting order of appearance.
+ *  - Note this does not support nested [] brackets, unlike the translation engine.
+ *    (to "fix", use [findMatching] for the `val closePos =` line)
+ *  - Note this does not recogize conditionals, given enough [strings], it might fill out placeholders inside those too.
+ */
 @Pure
 fun String.fillPlaceholders(vararg strings: String): String {
     @Immutable val keys = this.getPlaceholderParameters()
     if (keys.size > strings.size)
         throw IllegalArgumentException("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
-    var filledString = this.replace(squareBraceRegex, "[]")
-    keys.indices.forEach { i ->
-        filledString = filledString.replaceFirst("[]", "[${strings[i]}]")
+    @LocalState
+    val sb = StringBuilder(length + 16)
+    var index = 0
+    var pos = 0
+    var openPos = indexOf('[')
+    while (openPos >= 0) {
+        val closePos = indexOf(']', openPos + 1)       // first ']' - same as the regex [^]]*
+        if (closePos < 0) break
+        sb.append(this, pos, openPos)
+        if (index < strings.size) {
+            sb.append('[')
+            sb.append(strings[index])
+            sb.append(']')
+        } else {
+            sb.append("[]")
+        }
+        index++
+        pos = closePos + 1
+        openPos = indexOf('[', pos)
     }
-    return filledString
+    sb.append(this, pos, length)
+    return sb.toString()
 }
 
 @Pure
