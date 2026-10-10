@@ -19,7 +19,6 @@ import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.utils.Log
 import com.unciv.utils.getOrPut
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.BitSet
@@ -49,6 +48,13 @@ class UnitMovement(val unit: MapUnit) {
 
     @Cache private val pathfindingCache = PathfindingCache(unit)
     @Cache private val aStarPathing by lazy { PathingMap.createUnitPathingMap(unit) }
+    /**
+     * Owned, already-transported, type-compatible passengers snapshotted at the origin of [moveToTile].
+     * Eligibility keeps using this after the carrier leaves, so passengers still sitting on the origin
+     * are not dropped from the group or counted twice.
+     */
+    @Cache
+    private var carriedPayload: List<MapUnit>? = null
     @Cache private val aStarPathingWithoutZoneControl by lazy { PathingMap.createUnitPathingMap(unit, considerZoneOfControl = false) }
     @Cache private val aStarPathingWithoutEscort by lazy { PathingMap.createUnitPathingMap(unit, includeEscortUnit = false) }
     @Cache private val roadPathing by lazy { PathingMap.createRoadPathingMap(unit.civ, unit.currentTile) }
@@ -514,6 +520,8 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         if (unit.isPreparingParadrop()) { // paradropping units move differently
+            // Reject an over-capacity landing before removeFromTile, or a failed putInTile strands the carrier.
+            if (!canMoveTo(destination)) return
             val origin = unit.getTile()
             unit.action = null
             unit.removeFromTile()
@@ -536,105 +544,112 @@ class UnitMovement(val unit: MapUnit) {
             return
         }
 
-        val distanceToTiles = getDistanceToTiles(considerZoneOfControl)
-        val pathToDestination = distanceToTiles.getPathToTile(destination)
-        val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
-        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
-            ?: return  // no tiles can pass though/can move to
-        unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
-        val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
+        // Snapshot before leaving the origin. [MapUnit.canTransport] is destination-dependent and
+        // rejects a full carrier's existing passengers, so it must not decide who travels.
+        val previousPayload = carriedPayload
+        val payloadUnits = snapshotTransportedPassengers()
+        carriedPayload = payloadUnits
+        try {
+            val distanceToTiles = getDistanceToTiles(considerZoneOfControl)
+            val pathToDestination = distanceToTiles.getPathToTile(destination)
+            val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
+            val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
+                ?: return  // no tiles can pass though/can move to
+            unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+            val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (unit.isFortified() || unit.isGuarding() || unit.isSetUpForSiege() || unit.isSleeping())
-            unit.action = null // un-fortify/un-setup/un-sleep after moving
+            if (unit.isFortified() || unit.isGuarding() || unit.isSetUpForSiege() || unit.isSleeping())
+                unit.action = null // un-fortify/un-setup/un-sleep after moving
 
-        // If this unit is a carrier, keep record of its air payload whereabouts.
-        val origin = unit.getTile()
-        var needToFindNewRoute = false
-        // Cache this in case something goes wrong
+            // If this unit is a carrier, keep record of its air payload whereabouts.
+            val origin = unit.getTile()
+            var needToFindNewRoute = false
+            // Cache this in case something goes wrong
 
-        var lastReachedEnterableTile = unit.getTile()
-        var previousTile = unit.getTile()
-        var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
+            var lastReachedEnterableTile = unit.getTile()
+            var previousTile = unit.getTile()
+            var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
 
-        for (tile in pathToLastReachableTile) {
-            if (!unit.movement.canPassThrough(tile)) {
-                // AAAH something happened making our previous path invalid
-                // Maybe we spawned a unit using ancient ruins, or our old route went through
-                // fog of war, and we found an obstacle halfway?
-                // Anyway: PANIC!! We stop this route, and after leaving the game in a valid state,
-                // we try again.
-                needToFindNewRoute = true
-                break // If you ever remove this break, remove the `assumeCanPassThrough` param below
-            }
-
-            // This fixes a bug where tiles in the fog of war would always only cost 1 mp
-            if (!unit.civ.gameInfo.gameParameters.godMode)
-                passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
-
-            // In case something goes wrong, cache the last tile we were able to end on
-            // We can assume we can pass through this tile, as we would have broken earlier
-            if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
-                lastReachedEnterableTile = tile
-                unit.useMovementPoints(passingMovementSpent)
-                unit.removeFromTile()
-                unit.putInTile(tile) // Required for ruins,
-
-                if (escortUnit != null) {
-                    escortUnit.movement.moveToTile(tile)
-                    unit.startEscorting() // Need to re-apply this
+            for (tile in pathToLastReachableTile) {
+                if (!unit.movement.canPassThrough(tile)) {
+                    // AAAH something happened making our previous path invalid
+                    // Maybe we spawned a unit using ancient ruins, or our old route went through
+                    // fog of war, and we found an obstacle halfway?
+                    // Anyway: PANIC!! We stop this route, and after leaving the game in a valid state,
+                    // we try again.
+                    needToFindNewRoute = true
+                    break // If you ever remove this break, remove the `assumeCanPassThrough` param below
                 }
 
-                passingMovementSpent = 0f
+                // This fixes a bug where tiles in the fog of war would always only cost 1 mp
+                if (!unit.civ.gameInfo.gameParameters.godMode)
+                    passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
+
+                // In case something goes wrong, cache the last tile we were able to end on
+                // We can assume we can pass through this tile, as we would have broken earlier
+                if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
+                    lastReachedEnterableTile = tile
+                    unit.useMovementPoints(passingMovementSpent)
+                    unit.removeFromTile()
+                    unit.putInTile(tile) // Required for ruins,
+
+                    if (escortUnit != null) {
+                        escortUnit.movement.moveToTile(tile)
+                        unit.startEscorting() // Need to re-apply this
+                    }
+
+                    passingMovementSpent = 0f
+                }
+
+                previousTile = tile
+
+                // We can't continue, stop here.
+                if (unit.isDestroyed || unit.currentMovement - passingMovementSpent < Constants.minimumMovementEpsilon) {
+                    break
+                }
             }
 
-            previousTile = tile
+            val finalTileReached = lastReachedEnterableTile
 
-            // We can't continue, stop here.
-            if (unit.isDestroyed || unit.currentMovement - passingMovementSpent < Constants.minimumMovementEpsilon) {
-                break
+            // Silly floats which are almost zero
+            if (unit.currentMovement < Constants.minimumMovementEpsilon)
+                unit.currentMovement = 0f
+
+
+            // bring along the payloads snapshotted at the origin. Not re-selected with [MapUnit.canTransport]:
+            // that looks at the destination and drops passengers once the carrier is full.
+            for (payload in payloadUnits) {
+                payload.removeFromTile()
+                for (tile in pathToLastReachableTile) {
+                    payload.moveThroughTile(tile)
+                    if (tile == finalTileReached) break // this is the final tile the transport reached
+                }
+                payload.putInTile(finalTileReached)
+                payload.isTransported = true // restore the flag to not leave the payload in the city
+                payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
             }
-        }
 
-        val finalTileReached = lastReachedEnterableTile
+            // Unit maintenance changed
+            if (unit.canGarrison()
+                && (origin.isCityCenter() || finalTileReached.isCityCenter())
+                && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
+            ) unit.civ.updateStatsForNextTurn()
 
-        // Silly floats which are almost zero
-        if (unit.currentMovement < Constants.minimumMovementEpsilon)
-            unit.currentMovement = 0f
-
-
-        // The .toList() here is because we have a sequence that's running on the units in the tile,
-        // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
-        val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
-        // bring along the payloads
-        for (payload in payloadUnits) {
-            payload.removeFromTile()
-            for (tile in pathToLastReachableTile) {
-                payload.moveThroughTile(tile)
-                if (tile == finalTileReached) break // this is the final tile the transport reached
+            // Under rare cases (see #8044), we can be headed to a tile and *the entire path* is blocked by other units, so we can't "enter" that tile.
+            // If, in such conditions, the *destination tile* is unenterable, needToFindNewRoute will trigger, so we need to catch this situation to avoid infinite loop
+            if (needToFindNewRoute && unit.currentTile != origin) {
+                moveToTile(destination, considerZoneOfControl)
             }
-            payload.putInTile(finalTileReached)
-            payload.isTransported = true // restore the flag to not leave the payload in the city
-            payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
-        }
 
-        // Unit maintenance changed
-        if (unit.canGarrison()
-            && (origin.isCityCenter() || finalTileReached.isCityCenter())
-            && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
-        ) unit.civ.updateStatsForNextTurn()
-
-        // Under rare cases (see #8044), we can be headed to a tile and *the entire path* is blocked by other units, so we can't "enter" that tile.
-        // If, in such conditions, the *destination tile* is unenterable, needToFindNewRoute will trigger, so we need to catch this situation to avoid infinite loop
-        if (needToFindNewRoute && unit.currentTile != origin) {
-            moveToTile(destination, considerZoneOfControl)
+            if (unit.currentTile != origin) {
+                clearPathfindingCache()
+                unit.getOtherEscortUnit()?.movement?.clearPathfindingCache()
+            }
+            unit.updateUniques()
+        } finally {
+            carriedPayload = previousPayload
         }
-
-        if (unit.currentTile != origin) {
-            clearPathfindingCache()
-            unit.getOtherEscortUnit()?.movement?.clearPathfindingCache()
-        }
-        unit.updateUniques()
     }
 
     /**
@@ -757,7 +772,76 @@ class UnitMovement(val unit: MapUnit) {
 
         if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
 
+        if (carrierPayloadCannotEnter(tile, allowSwap)) return CannotMoveToReason.NoAirUnitTransport
+
         return null
+    }
+
+    /**
+     * Owned passengers already aboard. Not new boarding requests: [MapUnit.canTransport] would reject
+     * them once the carrier is full, and it also depends on whichever tile the carrier currently occupies.
+     */
+    @Readonly
+    private fun snapshotTransportedPassengers(): List<MapUnit> {
+        if (!unit.hasTile()) return emptyList()
+        return unit.getTile().getUnits()
+            .filter { it.isTransported && it.owner == unit.owner && unit.isTransportTypeOf(it) }
+            .toList()
+    }
+
+    /**
+     * A loaded carrier may only end its turn where the whole payload still fits in carrier slots.
+     * City air slots are a separate pool: untransported aircraft are not counted.
+     * Same-tile placement stays allowed so an already over-capacity carrier can be put back on its tile.
+     */
+    @Readonly
+    private fun carrierPayloadCannotEnter(tile: Tile, allowSwap: Boolean): Boolean {
+        if (unit.hasTile() && tile == unit.getTile()) return false
+
+        val payload = carriedPayload
+        if (payload == null) {
+            // Non-carriers never carry a payload. Checked before scanning the tile: canMoveTo is hot.
+            if (!unit.hasUnique(UniqueType.CarryAirUnits) && !unit.hasUnique(UniqueType.CarryExtraAirUnits))
+                return false
+            val livePayload = snapshotTransportedPassengers()
+            if (livePayload.isEmpty()) return false
+            return !carriedPayloadFits(tile, livePayload, allowSwap)
+        }
+        if (payload.isEmpty()) return false
+        return !carriedPayloadFits(tile, payload, allowSwap)
+    }
+
+    /** Military or civilian unit standing on [tile] that a swap would move away. */
+    @Readonly
+    private fun unitLeavingOnSwap(tile: Tile): MapUnit? {
+        val departing = if (unit.isCivilian()) tile.civilianUnit else tile.militaryUnit
+        if (departing == null || departing == unit) return null
+        if (departing.owner != unit.owner) return null
+        return departing
+    }
+
+    /**
+     * Prospective transported occupancy is destination transported aircraft plus [payload].
+     * Passengers already on the destination, and aircraft a swap will take away, are not counted twice.
+     * Each incoming aircraft is checked against that group and added only after it fits.
+     */
+    @Readonly
+    private fun carriedPayloadFits(tile: Tile, payload: List<MapUnit>, allowSwap: Boolean): Boolean {
+        @LocalState
+        val projected = ArrayList<MapUnit>(payload.size + tile.airUnits.size)
+        val departing = if (allowSwap) unitLeavingOnSwap(tile) else null
+        for (occupant in tile.airUnits) {
+            if (!occupant.isTransported) continue
+            if (occupant in payload) continue
+            if (departing != null && occupant.owner == departing.owner && departing.isTransportTypeOf(occupant))
+                continue
+            projected.add(occupant)
+        }
+        for (passenger in payload) {
+            if (unit.checkCarryCapacity(passenger, projected.asSequence()) <= 0) return false
+            projected.add(passenger)
+        }
+        return true
     }
 
     @Readonly
