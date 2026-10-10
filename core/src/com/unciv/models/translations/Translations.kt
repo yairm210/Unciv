@@ -146,9 +146,12 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
 
-    fun tryReadTranslationForCurrentLanguage() {
+    fun tryReadTranslationForCurrentLanguage() =
+        tryReadTranslationForSpecificLanguage(UncivGame.Current.settings.language)
+
+    fun tryReadTranslationForSpecificLanguage(language: String) {
         DiacriticSupport.reset()
-        tryReadTranslationForLanguage(UncivGame.Current.settings.language)
+        tryReadTranslationForLanguage(language)
         DiacriticSupport.freeTranslationData()
     }
 
