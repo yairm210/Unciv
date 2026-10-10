@@ -15,7 +15,7 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.ui.screens.pickerscreens.TechButton
 import yairm210.purity.annotations.Readonly
@@ -247,111 +247,105 @@ object TechnologyDescriptions {
     /**
      * Implementation of [ICivilopediaText.getCivilopediaTextLines]
      */
-    fun getCivilopediaTextLines(technology: Technology, ruleset: Ruleset): List<FormattedLine> = technology.run {
-        val lineList = ArrayList<FormattedLine>()
-
+    fun Technology.getTechnologyCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
         val eraColor = ruleset.eras[era()]?.getHexColor() ?: ""
-        lineList += FormattedLine(era(), header = 3, color = eraColor)
-        lineList += FormattedLine()
-        lineList += FormattedLine("{Cost}: $cost${Fonts.science}")
+        add(era(), header = 3, color = eraColor)
+        space()
+        add("{Cost}: $cost${Fonts.science}")
 
         if (prerequisites.isNotEmpty()) {
-            lineList += FormattedLine()
-            if (prerequisites.size == 1)
-                prerequisites.first().let { lineList += FormattedLine("Required tech: [$it]", link = "Technology/$it") }
-            else {
-                lineList += FormattedLine("Requires all of the following:")
+            space()
+            val single = prerequisites.singleOrNull()
+            if (single != null) {
+                add("Required tech: [$single]", link = "Technology/$single")
+            } else {
+                add("Requires all of the following:")
                 prerequisites.forEach {
-                    lineList += FormattedLine(it, link = "Technology/$it")
+                    add(it, link = "Technology/$it")
                 }
             }
         }
 
         val leadsTo = ruleset.technologies.values.filter { name in it.prerequisites }
         if (leadsTo.isNotEmpty()) {
-            lineList += FormattedLine()
-            if (leadsTo.size == 1)
-                leadsTo.first().let { lineList += FormattedLine("Leads to [${it.name}]", link = it.makeLink()) }
-            else {
-                lineList += FormattedLine("Leads to:")
-                leadsTo.forEach {
-                    lineList += FormattedLine(it.name, link = it.makeLink())
-                }
+            space()
+            val single = leadsTo.singleOrNull()
+            if (single != null) {
+                add("Leads to [${single.name}]", link = single.makeLink())
+            } else {
+                add("Leads to:")
+                addObjects(leadsTo)
             }
         }
 
-        uniquesToCivilopediaTextLines(lineList)
+        addUniques()
 
         val affectedImprovements = getAffectedImprovements(name, ruleset)
         if (affectedImprovements.any()) {
-            lineList += FormattedLine()
+            space()
             for (entry in affectedImprovements) {
-                lineList += FormattedLine(entry.getText(), link = entry.improvement.makeLink())
+                add(entry.getText(), link = entry.improvement.makeLink())
             }
         }
 
         val enabledUnits = getEnabledUnits(name, ruleset, null)
         if (enabledUnits.any()) {
-            lineList += FormattedLine()
-            lineList += FormattedLine("{Units enabled}:")
+            space()
+            add("{Units enabled}:")
             for (unit in enabledUnits)
-                lineList += FormattedLine(unit.name.tr(true) + " (" + unit.getShortDescription(uniqueExclusionFilter=technology::uniqueIsRequirementForThisTech) + ")", link = unit.makeLink())
+                // {} avoids double translation: getShortDescription is already translated
+                add(unit.name.tr(true) + " (" + unit.getShortDescription(uniqueExclusionFilter = ::uniqueIsRequirementForThisTech) + "){}", link = unit.makeLink())
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, null)
             .partition { it.isAnyWonder() }
 
         if (wonders.isNotEmpty()) {
-            lineList += FormattedLine()
-            lineList += FormattedLine("{Wonders enabled}:")
-            for (wonder in wonders)
-                lineList += FormattedLine(wonder.name.tr(true) + " (" + wonder.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech) + ")", link = wonder.makeLink())
+            space()
+            add("{Wonders enabled}:")
+            for (wonder in wonders) {
+                // {} avoids double translation: getShortDescription is already translated
+                val text = wonder.name.tr(true) + " (" + wonder.getShortDescription(uniqueInclusionFilter = ::uniqueIsNotRequirementForThisTech) + "){}"
+                add(text, link = wonder.makeLink())
+            }
         }
 
         if (regularBuildings.isNotEmpty()) {
-            lineList += FormattedLine()
-            lineList += FormattedLine("{Buildings enabled}:")
+            space()
+            add("{Buildings enabled}:")
             for (building in regularBuildings) {
-                val text = building.name.tr(true) + " (" + building.getShortDescription(uniqueInclusionFilter = technology::uniqueIsNotRequirementForThisTech) + ")"
-                lineList += FormattedLine(text, padding = 15f, link = building.makeLink())
+                val text = building.name.tr(true) + " (" + building.getShortDescription(uniqueInclusionFilter = ::uniqueIsNotRequirementForThisTech) + "){}"
+                add(text, padding = 15f, link = building.makeLink())
             }
         }
 
         val obsoletedObjects = getObsoletedObjects(name, ruleset, null).toList()
         if (obsoletedObjects.isNotEmpty()) {
-            lineList += FormattedLine()
-            obsoletedObjects.forEach {
-                lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
-            }
+            space()
+            for (obsoleted in obsoletedObjects)
+                add("[${obsoleted.name}] obsoleted", link = obsoleted.makeLink())
         }
 
         val revealedResources = ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
         if (revealedResources.any()) {
-            lineList += FormattedLine()
-            revealedResources.forEach {
-                lineList += FormattedLine("Reveals [${it.name}] on the map", link = it.makeLink())
-            }
+            space()
+            for (resource in revealedResources)
+                add("Reveals [${resource.name}] on the map", link = resource.makeLink())
         }
 
         val tileImprovements = ruleset.tileImprovements.values.asSequence().filter { it.techRequired == name }
         if (tileImprovements.any()) {
-            lineList += FormattedLine()
-            lineList += FormattedLine("{Tile improvements enabled}:")
-            tileImprovements.forEach {
-                lineList += FormattedLine(it.name, link = it.makeLink())
-            }
+            space()
+            add("{Tile improvements enabled}:")
+            addObjects(tileImprovements)
         }
 
         val seeAlsoObjects = getSeeAlsoObjects(ruleset)
         if (seeAlsoObjects.isNotEmpty()) {
-            lineList += FormattedLine()
-            lineList += FormattedLine("{See also}:")
-            seeAlsoObjects.forEach {
-                lineList += FormattedLine(it.name, link = it.makeLink())
-            }
+            space()
+            add("{See also}:")
+            addObjects(seeAlsoObjects)
         }
-
-        return lineList
     }
 
     //endregion

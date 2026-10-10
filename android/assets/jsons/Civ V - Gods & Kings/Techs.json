@@ -175,7 +175,7 @@
 				"name": "Engineering",
 				"row": 8,
 				"prerequisites": ["Mathematics","Construction"],
-				"uniques": ["Roads connect tiles across rivers","[+100]% weight to this choice for AI decisions"],
+				"uniques": ["Roads connect tiles across rivers <Civilopedia link [Terrain/River]>","[+100]% weight to this choice for AI decisions"],
 				"quote": "'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{

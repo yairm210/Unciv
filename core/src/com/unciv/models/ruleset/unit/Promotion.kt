@@ -6,9 +6,9 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.objectdescriptions.uniquesToDescription
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import yairm210.purity.annotations.Pure
 
@@ -67,99 +67,94 @@ class Promotion : RulesetObject() {
 
     override fun makeLink() = "Promotion/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        val textList = ArrayList<FormattedLine>()
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        addUniques(FormattedLineListBuilder.SeparatorType.None)
 
-        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
-
-        val filteredPrerequisites = prerequisites.mapNotNull {
-            ruleset.unitPromotions[it]
-        }
+        val filteredPrerequisites = prerequisites.mapNotNull { ruleset.unitPromotions[it] }
         if (filteredPrerequisites.isNotEmpty()) {
-            textList += FormattedLine()
-            if (filteredPrerequisites.size == 1) {
-                filteredPrerequisites[0].let {
-                    textList += FormattedLine("Requires [${it.name}]", link = it.makeLink())
-                }
+            space()
+            val single = filteredPrerequisites.singleOrNull()
+            if (single != null) {
+                add("Requires [${single.name}]", link = single.makeLink())
             } else {
-                textList += FormattedLine("Requires at least one of the following:")
-                filteredPrerequisites.forEach {
-                    textList += FormattedLine(it.name, link = it.makeLink())
-                }
+                add("Requires at least one of the following:")
+                addObjects(filteredPrerequisites)
+            }
+        }
+
+        val enables = ruleset.unitPromotions.values.filter { name in it.prerequisites }
+        if (enables.isNotEmpty()) {
+            space()
+            val single = enables.singleOrNull()
+            if (single != null) {
+                add("Leads to [${single.name}]", link = single.makeLink())
+            } else {
+                add("Leads to:")
+                addObjects(enables)
             }
         }
 
         if (unitTypes.isNotEmpty()) {
-            textList += FormattedLine()
-            // This separates the linkable (corresponding to a BaseUnit name) unitFilter entries
-            // from the others - `first` collects those for which the predicate is `true`.
-            val types = unitTypes.partition { it in ruleset.units }
-            if (unitTypes.size == 1) {
-                if (types.first.isNotEmpty())
-                    unitTypes.first().let {
-                        textList += FormattedLine("Available for [$it]", link = "Unit/$it")
-                    }
-                else
-                    unitTypes.first().let {
-                        textList += FormattedLine("Available for [$it]", link = "UnitType/$it")
-                    }
-
+            space()
+            // This separates the linkable (corresponding to a BaseUnit name, or else UnitType name) unitFilter entries but keeps unlinkable ones at the end
+            val availableFor = (
+                    unitTypes.asSequence().mapNotNull { ruleset.units[it] } +
+                    unitTypes.asSequence().mapNotNull { ruleset.unitTypes[it] } +
+                    unitTypes.asSequence().map { UnlinkedName(it) }
+                ).distinctBy { it.name }.toList()
+            val single = availableFor.singleOrNull()
+            if (single != null) {
+                add("Available for [${single.name}]", link = single.makeLink())
             } else {
-                textList += FormattedLine("Available for:")
-                types.first.forEach {
-                    textList += FormattedLine(it, indent = 1, link = "Unit/$it")
-                }
-                types.second.forEach {
-                    textList += FormattedLine(it, indent = 1, link = "UnitType/$it")
-                }
+                add("Available for:")
+                addObjects(availableFor, indent = 1)
             }
         }
 
-        val freeForUnits = ruleset.units.filter { it.value.promotions.contains(name) }.map { it.key }
+        val freeForUnits = ruleset.units.values.filter { it.promotions.contains(name) }
         if (freeForUnits.isNotEmpty()) {
-            textList += FormattedLine()
-            if (freeForUnits.size == 1) {
-                freeForUnits[0].let {
-                    textList += FormattedLine("Free for [$it]", link = "Unit/$it")
-                }
+            space()
+            val single = freeForUnits.singleOrNull()
+            if (single != null) {
+                add("Free for [${single.name}]", link = single.makeLink())
             } else {
-                textList += FormattedLine("Free for:")
-                freeForUnits.forEach {
-                    textList += FormattedLine(it, link = "Unit/$it")
-                }
+                add("Free for:")
+                addObjects(freeForUnits)
             }
         }
 
-        val grantors = ruleset.buildings.values.filter {
-            building -> building.getMatchingUniques(UniqueType.UnitStartingPromotions)
-            .any { it.params[2] == name }
-        } + ruleset.terrains.values.filter {
-            terrain -> terrain.getMatchingUniques(UniqueType.TerrainGrantsPromotion).any {
-                name == it.params[0]
+        val grantors = (
+            ruleset.buildings.values.asSequence().filter { building ->
+                building.getMatchingUniques(UniqueType.UnitStartingPromotions)
+                    .any { it.params[2] == name }
+            } + ruleset.terrains.values.asSequence().filter { terrain ->
+                terrain.getMatchingUniques(UniqueType.TerrainGrantsPromotion)
+                    .any { it.params[0] == name }
             }
-        }
+        ).toList()
         if (grantors.isNotEmpty()) {
-            textList += FormattedLine()
-            if (grantors.size == 1) {
-                grantors[0].let {
-                    textList += FormattedLine("Granted by [${it.name}]", link = it.makeLink())
-                }
+            space()
+            val single = grantors.singleOrNull()
+            if (single != null) {
+                add("Granted by [${single.name}]", link = single.makeLink())
             } else {
-                textList += FormattedLine("Granted by:")
-                grantors.forEach {
-                    textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
-                }
+                add("Granted by:")
+                addObjects(grantors, indent = 1)
             }
         }
-
-        return textList
     }
 
-    override fun getSubCategory(ruleset: Ruleset): String? = unitTypes.firstOrNull() ?: "Other"
+    override fun getSubCategory(ruleset: Ruleset): String = unitTypes.firstOrNull() ?: "Other"
     override fun getSortGroup(ruleset: Ruleset): Int {
         val unitTypeName = unitTypes.firstOrNull() ?: return 1000
         if (!ruleset.unitTypes.contains(unitTypeName)) return 1000
         return ruleset.unitTypes.keys.indexOf(unitTypeName)
+    }
+
+    /** For the ability to display invalid available-for entries, so a modder can see mistakes here too */
+    private class UnlinkedName(override var name: String) : RulesetObject() {
+        override fun getUniqueTarget() = UniqueTarget.MetaModifier // Irrelevant but required
+        override fun makeLink() = ""
     }
 
     companion object {
