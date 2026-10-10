@@ -56,7 +56,10 @@ object HeadTowardsEnemyCityAutomation {
     private const val maxDistanceFromCityToConsiderForLandingArea = 5
     private const val minDistanceFromCityToConsiderForLandingArea = 3
 
-    /** @returns whether the unit has taken this action */
+    /**
+     * @return whether the unit has taken this action
+     * @throws [NullPointerException] when [closestReachableEnemyCity] does not contain a [City]
+     */
     fun headTowardsEnemyCity(
         unit: MapUnit,
         closestReachableEnemyCity: Tile,
@@ -65,7 +68,8 @@ object HeadTowardsEnemyCityAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val unitRange = unit.getRange()
-        if (unitRange > 2) { // long-ranged unit, should never be in a bombardable position
+        val cityBombardRange = closestReachableEnemyCity.getCity()!!.getBombardRange()
+        if (unitRange > cityBombardRange) { // long-ranged unit, should never be in a bombardable position
             return headTowardsEnemyCityLongRange(closestReachableEnemyCity, unitDistanceToTiles, unitRange, unit)
         }
 
