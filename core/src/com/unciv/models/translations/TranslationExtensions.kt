@@ -37,9 +37,15 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 @Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
 internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
 
+/** Affects scanning in [String.translatePlaceholders], [String.getPlaceholderParameters] and [String.getPlaceholderText] */
 private const val supportNestingSquare = true
+/** Affects the replacement in [String.translatePlaceholders]: `false` can replace the result of previous substitutions, `true` is single-pass and cannot. */
+private const val supportNestingSquareReplacement = false
+/** Affects [String.translatePartial] */
 private const val supportNestingCurly = false
+/** TODO Affects [String.translateConditionals]*/
 private const val supportNestingPointy = false
+/** Affects [String.fillPlaceholders] */
 private const val supportNestingHelpers = false
 
 
@@ -187,23 +193,35 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
     // This is what makes reordered placeholders in a translation work.
     if (termsInMessage.size != termsInTranslationPlaceholder.size)
         throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
-    val substitutions = HashMap<String, String>()
-    for (i in termsInMessage.indices) {
-        val translated = termsInMessage[i].tr(language, hideIcons)
-        substitutions.putIfAbsent(termsInTranslationPlaceholder[i], translated)
-    }
 
-    val sb = StringBuilder(translatedWithPlaceholders.length + 16)
-    val tail = translatedWithPlaceholders.scanPairs('[', ']', supportNesting = supportNestingSquare) { gapStart, openPos, closePos ->
-        sb.append(translatedWithPlaceholders, gapStart, openPos)
-        val replacement = substitutions[translatedWithPlaceholders.substring(openPos + 1, closePos)]
-        if (replacement != null)
-            sb.append(replacement)
-        else
-            sb.append(translatedWithPlaceholders, openPos, closePos + 1)
+    if (supportNestingSquareReplacement) {
+        val substitutions = HashMap<String, String>()
+        for (i in termsInMessage.indices) {
+            val translated = termsInMessage[i].tr(language, hideIcons)
+            substitutions.putIfAbsent(termsInTranslationPlaceholder[i], translated)
+        }
+
+        val sb = StringBuilder(translatedWithPlaceholders.length + 16)
+        val tail = translatedWithPlaceholders.scanPairs('[', ']', supportNesting = true) { gapStart, openPos, closePos ->
+            sb.append(translatedWithPlaceholders, gapStart, openPos)
+            val replacement = substitutions[translatedWithPlaceholders.substring(openPos + 1, closePos)]
+            if (replacement != null)
+                sb.append(replacement)
+            else
+                sb.append(translatedWithPlaceholders, openPos, closePos + 1)
+        }
+        sb.append(translatedWithPlaceholders, tail, translatedWithPlaceholders.length)
+        return sb.toString()
+    } else {
+        var languageSpecificPlaceholder = translatedWithPlaceholders
+        for (i in termsInMessage.indices) {
+            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
+                "[${termsInTranslationPlaceholder[i]}]", // re-add square brackets to placeholder terms
+                termsInMessage[i].tr(hideIcons)
+            )
+        }
+        return languageSpecificPlaceholder
     }
-    sb.append(translatedWithPlaceholders, tail, translatedWithPlaceholders.length)
-    return sb.toString()
 }
 
 @Readonly
