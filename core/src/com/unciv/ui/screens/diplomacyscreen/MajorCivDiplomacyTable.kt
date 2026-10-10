@@ -26,6 +26,20 @@ import kotlin.math.roundToInt
 class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
+    private enum class ModifierColor(val color: Color, val upperValueThreshold: Int) {
+        VeryNegative(Color(1f, 0.2f, 0.2f, 1f), -16),
+        Negative(Color(0.7f, 0f, 0f, 1f), -4),
+        Insignificant(Color.LIGHT_GRAY, 3),
+        Positive(Color(0f, 0.6f, 0f, 1f), 15),
+        VeryPositive(Color(0.1f, 1f, 0.1f, 1f), Int.MAX_VALUE);
+        
+        companion object {
+            fun getColor(modifierValue: Int) = entries
+                .first { modifierValue <= it.upperValueThreshold }
+                .color
+        }
+    }
+    
     fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
@@ -200,6 +214,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val diplomacyModifiersTable = Table()
+        diplomacyModifiersTable.defaults().spaceBottom(4f)
         for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
             // Angry about attacked CS and destroyed CS do not stack
             if (modifier.key == DiplomaticModifiers.AttackedProtectedMinor.name
@@ -210,8 +225,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 ?: continue // This modifier is from the future, you cannot understand it yet
             var text = diplomaticModifier.text.tr() + " "
             if (modifier.value > 0) text += "+"
-            text += modifier.value.roundToInt()
-            val color = if (modifier.value < 0) Color.RED else Color.GREEN
+            val roundedValue = modifier.value.roundToInt()
+            text += roundedValue
+            val color = ModifierColor.getColor(roundedValue)
             diplomacyModifiersTable.add(text.toLabel(color)).row()
         }
         return diplomacyModifiersTable
