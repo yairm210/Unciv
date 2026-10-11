@@ -74,9 +74,12 @@ class BattleDamageTest {
             MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile
         )
 
-        assertEquals(2, attackModifiers.size)
-        assertEquals(listOf("Alpha", "Zeta"), attackModifiers.keys.map {
-            if ("Alpha" in it) "Alpha" else "Zeta"
+        assertEquals(listOf("Alpha", "Zeta"), attackModifiers.keys.map { key ->
+            when {
+                "Alpha" in key -> "Alpha"
+                "Zeta" in key -> "Zeta"
+                else -> key
+            }
         })
     }
 
