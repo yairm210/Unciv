@@ -17,7 +17,7 @@ import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 
 /**
- *  A popup menu showing info about an Unit upgrade, with buttons to upgrade "this" unit or _all_
+ *  A popup menu showing info about a unit upgrade, with buttons to upgrade "this" unit or _all_
  *  similar units.
  *
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
