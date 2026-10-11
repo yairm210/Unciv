@@ -54,6 +54,33 @@ class BattleDamageTest {
     }
 
     @Test
+    fun `should keep promotion modifiers in ruleset order`() {
+        // Promotion names are chosen so HashSet iteration reverses the ruleset insertion order.
+        val alphaPromotion = testGame.createUnitPromotion("[+10]% Strength <when attacking>")
+        testGame.ruleset.unitPromotions.remove(alphaPromotion.name)
+        alphaPromotion.name = "Alpha"
+        testGame.ruleset.unitPromotions[alphaPromotion.name] = alphaPromotion
+
+        val zetaPromotion = testGame.createUnitPromotion("[+20]% Strength <when attacking>")
+        testGame.ruleset.unitPromotions.remove(zetaPromotion.name)
+        zetaPromotion.name = "Zeta"
+        testGame.ruleset.unitPromotions[zetaPromotion.name] = zetaPromotion
+
+        defaultAttackerUnit.promotions.promotions.add(alphaPromotion.name)
+        defaultAttackerUnit.promotions.promotions.add(zetaPromotion.name)
+        defaultAttackerUnit.updateUniques()
+
+        val attackModifiers = BattleDamage.getAttackModifiers(
+            MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile
+        )
+
+        assertEquals(2, attackModifiers.size)
+        assertEquals(listOf("Alpha", "Zeta"), attackModifiers.keys.map {
+            if ("Alpha" in it) "Alpha" else "Zeta"
+        })
+    }
+
+    @Test
     fun `should retrieve modifiers from buldings`() {
         // given
         val building = testGame.createBuilding("[+15]% Strength <for [Military] units>")
