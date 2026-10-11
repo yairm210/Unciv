@@ -89,23 +89,9 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
-        addCheckbox("Disable newer rendering", settings::disableNewerRendering)
+        addCheckbox("Enable alternative rendering", settings::alternativeRendering)
 
-        val maxTextureUnitsText = 
-            try {
-                val maxTextureUnits = TextureArraySpriteBatch().maxTextureUnits
-                "Max texture units: $maxTextureUnits"
-            } catch (e: Exception) { "Error creating TextureArraySpriteBatch" }
-        
-        val maxTextureUnitsLabel = WrappableLabel(
-            maxTextureUnitsText,
-            optionsPopup.tabs.prefWidth, Color.WHITE, 14
-        )
-        maxTextureUnitsLabel.wrap = true
-        add(maxTextureUnitsLabel).colspan(2).padTop(10f).row()
-        
-
-        val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
+        val disableNewerRenderingDescription = "On some devices this rendering method is faster"
         val disableNewerRenderingLabel = WrappableLabel(
             disableNewerRenderingDescription,
             optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
