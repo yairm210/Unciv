@@ -756,27 +756,27 @@ class TranslationTests {
             "base [x] <when [y]>", "Phase X When Y",
             "base {a b} <when {c}>", "base A+B when C",
             "base\u00A0<a>\u00A0", "Base A",
+            "a  b   <x>", "a  b X",
+            "a   b   <x>", "a   b X",
+            " base <a>", " base A",
             // Edge cases processed by Conditionals branch but not following the rules
             "a < b", "a < b",
             "a > b", "a > b",
             "a > b <", "a > b <",
             "[a] < [b]", "A < B",
             "<[a b]", "<A+B",
+            "<[a  b]", "<a  b",
+            "x   <[a]", "x   <A",
+            "base <a> <b> tail", "base tail A B",
             "Foo <a> bar", "Foo+Bar A",
             "Foo <a>bar", "Foo+Bar A",
-            "Foo<a> bar", "Foo+Bar A",
+            "Foo<a> bar", "FooBar A",
+            "Foo<a>bar", "FooBar A",
             // TODO Currently "wrong" results
             "{{a}", "{a",                       // first { pairs with the first }, the inner "{a" isn't looked up as is, but neither does the regex find a match
             "{a {b} c}", "a {b c}",             // nested {} not supported, only inner "a {b" found, no key lookup or further replace
             "[][[]", "[",                       // textual replace of "[]"
             "[]][[]", "][",
-            "<[a  b]", "<[a  b]",               // master bug: whitespace inside the term so it looks for "[a ]" and finds nothing
-            "x   <[a]", "x   <[a]",             // master bug: leading triple space shifts positions in master so it looks for "[[]" and replaces nothing
-            "a  b   <x>", "A+B X",              // master bug: Collapses pre-Conditional double blanks
-            "a   b   <x>", "a  b X",            // master bug: Collapses pre-Conditional double blanks, but not recursively
-            " base <a>", "Base A",              // master quirk: leading whitespace is eaten on the conditionals path of tr() but not the other paths
-            "base <a> <b> tail", "base  tail A B", // master quirk: It sees a triple space then reduces one double space - should be "base tail A B"
-            "Foo<a>bar", "FooBar A",            // master quirk: Eating whitespace around Conditionals then re-appending them with exactly one space would be nicer
         )
     }
 
@@ -820,7 +820,7 @@ class TranslationTests {
             "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
             "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
             "Vietnamese" to "4139fcdf0c8fa7d51911e358d7454af33683a8d908b6b9f4c7389d613cd54e53",
-            "generated" to "c0d8e8af790d9c327a71fa9b70cfdab8238bfdd0e94c19792590527a44dca11a",
+            "generated" to "96ead1ff5d094f84dd7be1cafde621638a278725b5cc130a16937c2eb8ef4cc1",
         )
 
         setupUncivGame()
