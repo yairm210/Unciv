@@ -35,7 +35,7 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  * Note: At the time of writing, this had only two use patterns: replace("") and extracting group 1. Any different new use would need reconsideration.
  */
 @Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
-internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
+private val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
 
 /** Affects scanning in [String.translatePlaceholders], [String.getPlaceholderParameters] and [String.getPlaceholderText] */
 private const val supportNestingSquare = true

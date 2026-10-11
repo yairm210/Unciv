@@ -287,7 +287,7 @@ object TranslationFileWriter {
     }
 
     @Pure private fun String.toHashKey() =
-        replace(pointyBraceRegex, "")
+        removeConditionals()
         .replace(squareBraceRegex, "[]")
     @Pure private fun String.unEscapeNewLines() =
         replace("\\n", "\n")
