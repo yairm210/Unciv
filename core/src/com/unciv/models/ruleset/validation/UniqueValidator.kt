@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.expressions.Expressions
+import com.unciv.models.translations.validateConditionals
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
@@ -133,6 +134,10 @@ class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Bo
         }
 
         rulesetErrors += getUniqueTypeSpecificErrors(prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
+
+        val conditionalSyntaxProblem = unique.text.validateConditionals()
+        if (conditionalSyntaxProblem != null)
+            rulesetErrors.add("$prefix contains $conditionalSyntaxProblem and may break translations.", RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
 
         val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
         if (conditionals.size > 1){
@@ -431,9 +436,10 @@ class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Bo
         reportRulesetSpecificErrors: Boolean
     ): RulesetErrorList {
         // Malformed conditional is always bad
-        if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
+        val conditionalSyntaxProblem = unique.text.validateConditionals()
+        if (conditionalSyntaxProblem != null)
             return RulesetErrorList.of(
-                "$prefix contains mismatched conditional braces!",
+                "$prefix contains $conditionalSyntaxProblem!",
                 RulesetErrorSeverity.Warning, ruleset, uniqueContainer, unique
             )
 

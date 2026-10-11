@@ -11,8 +11,11 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.MAX_CONDITIONAL_NESTING
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
@@ -777,6 +780,43 @@ class TranslationTests {
             "{a {b} c}", "a {b c}",             // nested {} not supported, only inner "a {b" found, no key lookup or further replace
             "[][[]", "[",                       // textual replace of "[]"
             "[]][[]", "][",
+        )
+    }
+
+    @Test
+    fun rulesetValidationCatchesMalformedConditionals() {
+        val validator = UniqueValidator(Ruleset(), false)
+
+        fun check(input: Pair<String, List<String>>): List<String> {
+            val filters = input.second.toMutableList()
+            val errors = validator.checkUnique(Unique(input.first), null).mapTo(mutableListOf()) { it.text }
+            if (filters.isEmpty()) return errors
+            // Remove matched errors
+            val iter = errors.iterator()
+            for (error in iter) {
+                val filter = filters.firstOrNull { it in error } ?: continue
+                filters.remove(filter)
+                iter.remove()
+            }
+            errors.addAll(filters) // return unmatched filters too
+            return errors
+        }
+
+        // "expected" is alwas an empty list so we can output lists of _unexpected_ validation errors
+        runTestParcours("Validate Uniques with malformed conditionals", ::check,
+            "[+1] Sight <when at war>" to emptyList<String>(), emptyList<String>(), // control: perfectly fine
+            "[+1] Sight <a>" to listOf("unknown type"), emptyList<String>(), // control: error not reported by validateConditionals
+            "[+1] Sight > 9 <when at war>" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <for [Civilian] units<hidden from users>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect emptyList when conditional nesting is supported
+            "[+1] Sight <when at war>>" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <when at war><" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <a<a<a>>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect "unknown type" when conditional nesting is supported
+            "[+1] Sight <a> <b> <c>" to listOf("unknown type", "unknown type", "unknown type"), emptyList<String>(), // control: errors not reported by validateConditionals
+            "[+1] Sight <a> <b> <c>!" to listOf("text between or after conditionals"), emptyList<String>(),
+            "[+1] Sight <a>, <b>, <c>" to listOf("text between or after conditionals"), emptyList<String>(),
+
+            //nested(MAX_CONDITIONAL_NESTING + 1) to listOf("excessive nesting of conditionals"), emptyList<String>(),
+            //fun nested(levels: Int) = "[+1] Sight " + "<a".repeat(levels) + ">".repeat(levels)
         )
     }
 

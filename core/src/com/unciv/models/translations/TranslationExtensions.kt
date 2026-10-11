@@ -292,6 +292,25 @@ fun String.removeConditionals(): String {
     return if (result.length == length) this else result.trimEnd()
 }
 
+/** For use in [UniqueValidator][com.unciv.models.ruleset.validation.UniqueValidator]
+ *
+ *  Note: Whether nested modifiers validate depends on whether removeConditionals supports nesting.
+ *  @return null if conditionals are well-formed, else a description of the first problem found.
+ */
+@Readonly
+fun String.validateConditionals() = validateConditionals(0)
+@VisibleForTesting
+const val MAX_CONDITIONAL_NESTING = 666
+@Readonly
+private fun String.validateConditionals(recursionDepth: Int): String? {
+    if ('<' !in this) return null
+    val base = removeConditionals()
+    if ('<' in base || '>' in base) return "mismatched conditional braces"
+    if (!trimStart().startsWith(base.trimStart())) return "text between or after conditionals"
+    if (recursionDepth >= MAX_CONDITIONAL_NESTING) return "excessive nesting of conditionals"
+    return getModifiers().firstNotNullOfOrNull { it.text.validateConditionals(recursionDepth + 1) }
+}
+
 /** Formats number according to current language
  *
  *  Note: The inverse operation is UncivGame.Current.settings.getCurrentNumberFormat().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
