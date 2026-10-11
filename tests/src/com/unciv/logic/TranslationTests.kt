@@ -22,6 +22,7 @@ import com.unciv.models.translations.Translations.Companion.conditionalPlacement
 import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
 import com.unciv.models.translations.curlyBraceRegex
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
@@ -31,6 +32,7 @@ import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.GitInfo
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
+import com.unciv.testing.runTestParcours
 import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
@@ -354,25 +356,19 @@ class TranslationTests {
 
     @Test
     fun translationParameterExtractionForNestedBracesWorks() {
-        Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]".getPlaceholderParameters())
-
-        // Closing braces without a matching opening brace - 'level 0' - are ignored
-        Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]]".getPlaceholderParameters())
-
-        // Opening braces without a matching closing brace mean that the term is never 'closed'
-        // so there are no parameters
-        Assert.assertEquals(listOf<String>(),
-            "The city of [[New [York]".getPlaceholderParameters())
-
-        // Supernesting
         val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
-        Assert.assertEquals(listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
-                superNestedString.getPlaceholderParameters())
-        Assert.assertEquals(listOf("my [best friend]", "[America]'s greatest [Dad]"),
-        superNestedString.getPlaceholderParameters()[0]
-            .getPlaceholderParameters())
+        runTestParcours("", { input: String -> input.getPlaceholderParameters() },
+            "The city of [New [York]]", listOf("New [York]"),
+            // Closing braces without a matching opening brace - 'level 0' - are ignored
+            "The city of [New [York]]]", listOf("New [York]"),
+            // Opening braces without a matching closing brace mean that the term is never 'closed' so there are no parameters
+            "The city of [[New [York]", emptyList<String>(),
+            // Supernesting
+            superNestedString, listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
+            superNestedString.getPlaceholderParameters()[0], listOf("my [best friend]", "[America]'s greatest [Dad]"),
+            // Don't find placehoders in conditionals
+            "Foo [a] <when [b]>", listOf("a")
+        )
 
         setupUncivGame()
 
@@ -394,6 +390,23 @@ class TranslationTests {
         // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals("The sibling of mine own closest ally and indeed the greatest Father in The old British colonies",
             superNestedString.tr())
+    }
+
+    @Test
+    fun fillPlaceHoldersWorks() {
+        //setupUncivGame()
+        Assert.assertEquals(
+            "Gain [x] and [y]",
+            "Gain [a] and [b]".fillPlaceholders("x", "y")
+        )
+        Assert.assertEquals(
+            "[x]]",    // TODO Bug in master, should be "[x]"
+            "[a [b]]".fillPlaceholders("x")
+        )
+        Assert.assertThrows(
+            IllegalArgumentException::class.java,
+            { "Gain [a] and [b] or [c]?".fillPlaceholders("x", "y") }
+        )
     }
 
     @Test
@@ -681,6 +694,89 @@ class TranslationTests {
         Assert.assertEquals(
             "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
             0, failures
+        )
+    }
+
+    @Test
+    fun testBracketNestingAndUnmatchedBrackets() {
+        setupUncivGame()
+        addTranslation("a", "A")
+        addTranslation("b", "B")
+        addTranslation("c", "C")
+        addTranslation("x", "X")
+        addTranslation("y", "Y")
+        addTranslation("z", "Z")
+        addTranslation("base", "Base")
+        addTranslation("base [arg]", "Phase [arg]")
+        addTranslation("when [arg]", "When [arg]")
+        addTranslation("a [arg]", "á [arg]")
+        addTranslation("b [arg]", "µ [arg]")
+        addTranslation("a b", "A+B")
+        addTranslation("{a", "{à")
+        addTranslation("a {b", "à {B")
+        addTranslation("a ", "A+1")
+        addTranslation("a  ", "A+2")
+        addTranslation("Foobar", "FooBar")
+        addTranslation("Foo bar", "Foo+Bar")
+        addTranslation(shouldCapitalizeKey, "false")
+
+        runTestParcours(
+            "Translate inputs with [], {} or <> brackets:", { input: String -> input.tr() },
+            // Normal placeholders
+            "[a]", "A",
+            "x [a] y [b] z", "x A y B z",
+            "[a][b]", "AB",
+            "[]", "",                          // empty placeholder
+            "[a [b]]", "á B",                  // [] in []
+            "[a [b [c]]]", "á µ C",
+            "[a {b}]", "a B",                  // one {} level inside []
+            // Unbalanced [] should stay literal
+            "a [b", "a [b",
+            "a b]", "a b]",
+            "[a]]", "A]",                      // stray closer after a pair is ignored
+            "[[a]", "[[a]",                    // opener never closes: no terms
+            "[a][b", "A[b",                    // first pair translated, dangling opener literal
+            // Curly {}
+            "{a}", "A",
+            "x {a b} y", "x A+B y",
+            "{a}{b}", "AB",
+            "{a [b]}", "á B",
+            "{a}}", "A}",
+            "a {b", "a {b",
+            "a b}", "a b}",
+            "{a} [b]", "A [b]",                // leftmost type wins; the other type is untouched
+            "[a] {b}", "A {b}",
+            "{a} and [b] {c}", "A and [b] C",
+            "[a] and {b} [c]", "A and {b} C",
+            // Conditionals
+            "base <a>", "Base A",
+            "base <a> <b>", "Base A B",
+            "base <a><b>", "Base A B",         // lenient about the separator
+            "base  <a>  ", "Base A",           // removeConditionals trims and collapses
+            "base [x] <when [y]>", "Phase X When Y",
+            "base {a b} <when {c}>", "base A+B when C",
+            "base\u00A0<a>\u00A0", "Base A",
+            // Edge cases processed by Conditionals branch but not following the rules
+            "a < b", "a < b",
+            "a > b", "a > b",
+            "a > b <", "a > b <",
+            "[a] < [b]", "A < B",
+            "<[a b]", "<A+B",
+            "Foo <a> bar", "Foo+Bar A",
+            "Foo <a>bar", "Foo+Bar A",
+            "Foo<a> bar", "Foo+Bar A",
+            // TODO Currently "wrong" results
+            "{{a}", "{a",                       // first { pairs with the first }, the inner "{a" isn't looked up as is, but neither does the regex find a match
+            "{a {b} c}", "a {b c}",             // nested {} not supported, only inner "a {b" found, no key lookup or further replace
+            "[][[]", "[",                       // textual replace of "[]"
+            "[]][[]", "][",
+            "<[a  b]", "<[a  b]",               // master bug: whitespace inside the term so it looks for "[a ]" and finds nothing
+            "x   <[a]", "x   <[a]",             // master bug: leading triple space shifts positions in master so it looks for "[[]" and replaces nothing
+            "a  b   <x>", "A+B X",              // master bug: Collapses pre-Conditional double blanks
+            "a   b   <x>", "a  b X",            // master bug: Collapses pre-Conditional double blanks, but not recursively
+            " base <a>", "Base A",              // master quirk: leading whitespace is eaten on the conditionals path of tr() but not the other paths
+            "base <a> <b> tail", "base  tail A B", // master quirk: It sees a triple space then reduces one double space - should be "base tail A B"
+            "Foo<a>bar", "FooBar A",            // master quirk: Eating whitespace around Conditionals then re-appending them with exactly one space would be nicer
         )
     }
 

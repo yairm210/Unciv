@@ -260,7 +260,7 @@ fun String.hasPlaceholderParameters(): Boolean {
 fun String.fillPlaceholders(vararg strings: String): String {
     @Immutable val keys = this.getPlaceholderParameters()
     if (keys.size > strings.size)
-        throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
+        throw IllegalArgumentException("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
     var filledString = this.replace(squareBraceRegex, "[]")
     keys.indices.forEach { i ->
