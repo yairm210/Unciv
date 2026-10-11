@@ -8,8 +8,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
-import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -85,7 +83,7 @@ class GameSettings {
 
     //// Performance
     var continuousRendering = false
-    var disableNewerRendering = false
+    var alternativeRendering = false
 
     //// Experimental
     var unitMovementButtonAnimation = false

@@ -6,17 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.Counter
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 
 /**
- *  A popup menu showing info about an Unit upgrade, with buttons to upgrade "this" unit or _all_
+ *  A popup menu showing info about a unit upgrade, with buttons to upgrade "this" unit or _all_
  *  similar units.
  *
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
@@ -105,12 +106,12 @@ class UnitUpgradeMenu(
     }
 
     private fun doUpgrade() {
-        SoundPlayer.play(unitAction.uncivSound)
+        SoundPlayer.play(UiUnitActionType.Upgrade.uncivSound)
         unitAction.action!!()
     }
 
     private fun doAllUpgrade() {
-        SoundPlayer.playRepeated(unitAction.uncivSound)
+        SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound)
         for (unit in allUpgradableUnits) {
             val otherAction = UnitActionsUpgrade.getUpgradeActions(unit.getUnit())
                 .firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo &&

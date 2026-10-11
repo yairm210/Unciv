@@ -1,14 +1,9 @@
 package com.unciv.models
 
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.images.ImageGetter
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.hashOf
 
 
@@ -18,67 +13,13 @@ import com.unciv.utils.hashOf
  */
 open class UnitAction(
     val type: UnitActionType,
-    /** How often this action is used, a higher value means more often and that it should be on an earlier page.
-     * 100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement.
-     * A Rare case is > 100 if a button is something like add in capital, promote or something,
-     * we need to inform the player that taking the action is an option. */
-    val useFrequency: Float,
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
-    val uncivSound: UncivSound = type.uncivSound,
+    /** The unique this action stems from, if any - the UI takes its `UnitActionPriority` modifiers from here */
     val associatedUnique: Unique? = null,
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
-    fun getIcon(size: Float = 20f): Actor {
-        if (type.imageGetter != null)
-            return type.imageGetter.invoke()
-        return when (type) {
-            UnitActionType.CreateImprovement -> {
-                ImageGetter.getImprovementPortrait(title.getPlaceholderParameters()[0], size)
-            }
-            UnitActionType.SpreadReligion -> {
-                val religionName = title.getPlaceholderParameters()[0]
-                ImageGetter.getReligionPortrait(
-                    if (ImageGetter.religionIconExists(religionName)) religionName
-                    else "Pantheon", size
-                )
-            }
-            UnitActionType.TriggerUnique -> {
-                when (associatedUnique?.type) {
-                    UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> ImageGetter.getUnitActionPortrait("StartGoldenAge", size)
-                    UniqueType.GainFreeBuildings, UniqueType.RemoveBuilding, UniqueType.OneTimeSellBuilding, UniqueType.OneTimeFreeUnit, UniqueType.FreeSpecificBuildings -> ImageGetter.getConstructionPortrait(associatedUnique.params[0], size)
-                    UniqueType.OneTimeAmountFreeUnits -> ImageGetter.getConstructionPortrait(associatedUnique.params[1], size)
-                    UniqueType.OneTimeFreePolicy, UniqueType.OneTimeAmountFreePolicies, UniqueType.OneTimeAdoptPolicyOrBelief, UniqueType.OneTimeRemovePolicy, UniqueType.OneTimeRemovePolicyRefund -> ImageGetter.getUnitActionPortrait("HurryPolicy", size)
-                    UniqueType.OneTimeRevealEntireMap, UniqueType.OneTimeRevealSpecificMapTiles, UniqueType.OneTimeRevealCrudeMap -> ImageGetter.getUnitActionPortrait("Explore", size)
-                    UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], size)
-                    UniqueType.OneTimeChangeTerrain -> ImageGetter.getUnitActionPortrait("Transform", size)
-                    UniqueType.OneTimeAddResource -> ImageGetter.getResourcePortrait(associatedUnique.params[0], size)
-                    UniqueType.OneTimeRemoveResourcesFromTile, UniqueType.OneTimeRemoveImprovementsFromTile -> ImageGetter.getUnitActionPortrait("Pillage", size)
-                    UniqueType.OneTimeGainPopulation, UniqueType.OneTimeGainPopulationRandomCity -> ImageGetter.getStatIcon("Population", size)
-                    UniqueType.OneTimeGainStat -> ImageGetter.getStatIcon(associatedUnique.params[1], size)
-                    UniqueType.OneTimeGainStatRange -> ImageGetter.getStatIcon(associatedUnique.params[2], size)
-                    UniqueType.OneTimeUnitHeal -> ImageGetter.getPromotionPortrait("Heal Instantly", size)
-                    UniqueType.OneTimeUnitGainXP, UniqueType.OneTimeSpiesLevelUp -> ImageGetter.getUnitActionPortrait("Promote", size)
-                    UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> ImageGetter.getUnitActionPortrait("Upgrade", size)
-                    UniqueType.UnitsGainPromotion, UniqueType.OneTimeUnitGainPromotion, UniqueType.OneTimeUnitRemovePromotion, UniqueType.OneTimeUnitGainStatus, UniqueType.OneTimeUnitLoseStatus -> ImageGetter.getPromotionPortrait(associatedUnique.params[1], size)
-                    UniqueType.OneTimeFreeBelief, UniqueType.OneTimeGainPantheon, UniqueType.OneTimeGainProphet -> ImageGetter.getUnitActionPortrait("EnhanceReligion", size)
-                    UniqueType.OneTimeUnitDamage -> ImageGetter.getUnitActionPortrait("Pillage", size)
-                    UniqueType.FreeStatBuildings -> ImageGetter.getUnitActionPortrait("HurryConstruction", size)
-                    UniqueType.TriggerEvent -> ImageGetter.getUniquePortrait(associatedUnique.params[0], size)
-                    UniqueType.OneTimeUnitGainMovement -> ImageGetter.getUnitActionPortrait("MoveTo", size)
-                    UniqueType.OneTimeUnitLoseMovement -> ImageGetter.getUnitActionPortrait("StopMove", size)
-                    UniqueType.OneTimeUnitDestroyed -> ImageGetter.getUnitActionPortrait("DisbandUnit", size)
-                    UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech -> ImageGetter.getUnitActionPortrait("HurryResearch", size)
-                    UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], size)
-                    UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], size)
-                    else -> ImageGetter.getUnitActionPortrait("Star", size)
-                }
-            }
-            else -> ImageGetter.getUnitActionPortrait("Star", size)
-        }
-    }
-
     //TODO remove once sure they're unused
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -100,7 +41,7 @@ open class UnitAction(
 
 /** Specialized [UnitAction] for upgrades
  *
- *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeActions]
+ *  Transports [unitToUpgradeTo] from [creation][com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade.getUpgradeActions]
  *  to [UI][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable.update]
  */
 class UpgradeUnitAction(
@@ -108,129 +49,58 @@ class UpgradeUnitAction(
     val unitToUpgradeTo: BaseUnit,
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>,
+    associatedUnique: Unique?,
     action: (() -> Unit)?,
-    useFrequency: Float = 120f,
-) : UnitAction(UnitActionType.Upgrade, useFrequency, title, action = action)
+) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = associatedUnique, action = action)
 
 /**
- * Unit Actions - generic enum with static properties
+ * Unit Actions - generic enum with static, UI-independent properties
+ * (icon, sound, key binding and page preference are in the UI layer, see `UiUnitActionType`)
  *
  * Note for Creators of new UnitActions:
  * - If your action uses a dynamic label overriding `UnitActionType.value`,
  *   then make sure `value` is the required translation template (if it requires multiple templates, leave it empty or use any example template).
  * - If you use `tr()` language, make sure you use **at most one** pair of `{}` curly braces.
+ * - Add a matching entry to `UiUnitActionType`.
  *
  * Reason: `TranslationTests.allUnitActionsHaveTemplate` will check the existence of a matching template.
  *
- * @param value         _default_ label to display, can be overridden in UnitAction instantiation. In that case, this must be the translation template or empty.
- * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
- * @param binding       keyboard binding - omitting it will look up the KeyboardBinding of the same name (recommended)
- * @param isSkippingToNextUnit if "Auto Unit Cycle" setting and this bit are on, this action will skip to the next unit
- * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
+ * @param value _default_ label to display, can be overridden in UnitAction instantiation. In that case, this must be the translation template or empty.
 */
-enum class UnitActionType(
-    val value: String,
-    val imageGetter: (()-> Actor)?,
-    binding: KeyboardBinding? = null,
-    val isSkippingToNextUnit: Boolean = true,
-    val uncivSound: UncivSound = UncivSound.Click,
-    /** UI "page" preference, 0-based - Dynamic overrides to this are in `UnitActions.actionTypeToPageGetter` */
-    val defaultPage: Int
-) {
-    StopEscortFormation("Stop Escort formation",
-        { ImageGetter.getUnitActionPortrait("StopEscort") }, false, defaultPage = 1),
-    EscortFormation("Escort formation",
-        { ImageGetter.getUnitActionPortrait("Escort") }, false, defaultPage = 1),
-    SwapUnits("Swap units",
-        { ImageGetter.getUnitActionPortrait("Swap") }, false, defaultPage = 0),
-    Automate("Automate",
-        { ImageGetter.getUnitActionPortrait("Automate") }),
-    ConnectRoad("Connect road",
-        { ImageGetter.getUnitActionPortrait("RoadConnection") }, false),
-    StopAutomation("Stop automation",
-        { ImageGetter.getUnitActionPortrait("Stop") }, false),
-    StopMovement("Stop movement",
-        { ImageGetter.getUnitActionPortrait("StopMove") }, false),
-    ShowUnitDestination("Show unit destination",
-        { ImageGetter.getUnitActionPortrait("ShowUnitDestination")}, false, defaultPage = 1),
-    Sleep("Sleep",
-        { ImageGetter.getUnitActionPortrait("Sleep") }),
-    SleepUntilHealed("Sleep until healed",
-        { ImageGetter.getUnitActionPortrait("Sleep") }),
-    Fortify("Fortify",
-        { ImageGetter.getUnitActionPortrait("Fortify") }, UncivSound.Fortify),
-    FortifyUntilHealed("Fortify until healed",
-        { ImageGetter.getUnitActionPortrait("FortifyUntilHealed") }, UncivSound.Fortify),
-    Guard("Guard",
-        { ImageGetter.getUnitActionPortrait("Guard") }, UncivSound.Fortify, defaultPage = 0),
-    Explore("Explore",
-        { ImageGetter.getUnitActionPortrait("Explore") }),
-    StopExploration("Stop exploration",
-        { ImageGetter.getUnitActionPortrait("Stop") }, false),
-    Promote("Promote",
-        { ImageGetter.getUnitActionPortrait("Promote") }, false, UncivSound.Promote),
-    Upgrade("Upgrade to [unitType] ([goldCost] gold)",
-        { ImageGetter.getUnitActionPortrait("Upgrade") }, UncivSound.Upgrade),
-    Transform("Transform",
-        { ImageGetter.getUnitActionPortrait("Transform") }, UncivSound.Upgrade),
-    Pillage("Pillage",
-        { ImageGetter.getUnitActionPortrait("Pillage") }, false),
-    Paradrop("Paradrop",
-        { ImageGetter.getUnitActionPortrait("Paradrop") }, false),
-    AirSweep("Air Sweep",
-        { ImageGetter.getUnitActionPortrait("AirSweep") }, false),
-    SetUp("Set up",
-        { ImageGetter.getUnitActionPortrait("SetUp") }, false, UncivSound.Setup),
-    FoundCity("Found city",
-        { ImageGetter.getUnitActionPortrait("FoundCity") }, UncivSound.Silent),
-    ConstructImprovement("Construct improvement",
-        { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, false),
-    Repair(Constants.repair,
-        { ImageGetter.getUnitActionPortrait("Repair") }, UncivSound.Construction),
-    CreateImprovement("Create",
-        null, false, UncivSound.Chimes),
-    HurryResearch("{Hurry Research} (${Fonts.death})",
-        { ImageGetter.getUnitActionPortrait("HurryResearch") }, UncivSound.Chimes),
-    HurryPolicy("{Hurry Policy} (${Fonts.death})",
-        { ImageGetter.getUnitActionPortrait("HurryPolicy") }, UncivSound.Chimes),
-    HurryWonder("{Hurry Wonder} (${Fonts.death})",
-        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
-    HurryBuilding("{Hurry Construction} (${Fonts.death})",
-        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
-    ConductTradeMission("{Conduct Trade Mission} (${Fonts.death})",
-        { ImageGetter.getUnitActionPortrait("ConductTradeMission") }, UncivSound.Chimes),
-    FoundReligion("Found a Religion",
-        { ImageGetter.getUnitActionPortrait("FoundReligion") }, UncivSound.Choir),
-    TriggerUnique("Trigger unique",
-        null, false, UncivSound.Chimes),
-    SpreadReligion("Spread [religionName]",
-        null, UncivSound.Choir),
-    RemoveHeresy("Remove Heresy",
-        { ImageGetter.getUnitActionPortrait("RemoveHeresy") }, UncivSound.Fire),
-    EnhanceReligion("Enhance a Religion",
-        { ImageGetter.getUnitActionPortrait("EnhanceReligion") }, UncivSound.Choir),
-    DisbandUnit("Disband unit",
-        { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false, defaultPage = 1),
-    GiftUnit("Gift unit",
-        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent, defaultPage = 1),
-    Skip("Skip turn",
-        { ImageGetter.getUnitActionPortrait("Skip") }, UncivSound.Silent, defaultPage = 0),
-    ShowAdditionalActions("Show more",
-        { ImageGetter.getUnitActionPortrait("ShowMore") }, false),
-    HideAdditionalActions("Back",
-        { ImageGetter.getUnitActionPortrait("HideMore") }, false, defaultPage = 1),
-    AddInCapital( "Add in capital",
-        { ImageGetter.getUnitActionPortrait("AddInCapital")}, UncivSound.Chimes),
-    ;
-
-    // Allow shorter initializations
-    constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click, defaultPage: Int = 0)
-            : this(value, imageGetter, null, true, uncivSound, defaultPage)
-    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click, defaultPage: Int = 0)
-            : this(value, imageGetter, null, isSkippingToNextUnit, uncivSound, defaultPage)
-
-    val binding: KeyboardBinding =
-            binding ?:
-            KeyboardBinding.entries.firstOrNull { it.name == name } ?:
-            KeyboardBinding.None
+enum class UnitActionType(val value: String) {
+    StopEscortFormation("Stop Escort formation"),
+    EscortFormation("Escort formation"),
+    Automate("Automate"),
+    StopAutomation("Stop automation"),
+    StopMovement("Stop movement"),
+    Sleep("Sleep"),
+    SleepUntilHealed("Sleep until healed"),
+    Fortify("Fortify"),
+    FortifyUntilHealed("Fortify until healed"),
+    Guard("Guard"),
+    Explore("Explore"),
+    StopExploration("Stop exploration"),
+    Upgrade("Upgrade to [unitType] ([goldCost] gold)"),
+    Transform("Transform"),
+    Pillage("Pillage"),
+    Paradrop("Paradrop"),
+    AirSweep("Air Sweep"),
+    SetUp("Set up"),
+    FoundCity("Found city"),
+    Repair(Constants.repair),
+    CreateImprovement("Create"),
+    HurryResearch("{Hurry Research} (${Fonts.death})"),
+    HurryPolicy("{Hurry Policy} (${Fonts.death})"),
+    HurryWonder("{Hurry Wonder} (${Fonts.death})"),
+    HurryBuilding("{Hurry Construction} (${Fonts.death})"),
+    ConductTradeMission("{Conduct Trade Mission} (${Fonts.death})"),
+    FoundReligion("Found a Religion"),
+    TriggerUnique("Trigger unique"),
+    SpreadReligion("Spread [religionName]"),
+    RemoveHeresy("Remove Heresy"),
+    EnhanceReligion("Enhance a Religion"),
+    DisbandUnit("Disband unit"),
+    GiftUnit("Gift unit"),
+    Skip("Skip turn"),
+    AddInCapital("Add in capital"),
 }

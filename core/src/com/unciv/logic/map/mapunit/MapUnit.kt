@@ -298,7 +298,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly fun isAutomated() = automated
 
-    @Readonly fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
+    @Readonly fun isAutomatingRoadConnection() = action == Constants.connectRoadAction
     @Readonly fun isExploring() = action == UnitActionType.Explore.value
     @Readonly fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     @Readonly fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value

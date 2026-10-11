@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

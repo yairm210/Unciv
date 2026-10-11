@@ -22,9 +22,9 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     companion object {
         /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
          *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays,
-         *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.disableNewerRendering]. */
+         *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.alternativeRendering]. */
         fun getBatch(size: Int = 1000): Batch {
-            if (UncivGame.Current.settings.disableNewerRendering) return SpriteBatch(size)
+            if (UncivGame.Current.settings.alternativeRendering) return SpriteBatch(size)
             return try {
                 FontLodBiasBatch(size)
             } catch (ignored: Exception) {
