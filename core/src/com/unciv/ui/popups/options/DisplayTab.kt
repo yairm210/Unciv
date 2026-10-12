@@ -3,6 +3,8 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
@@ -89,7 +91,17 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
-        addCheckbox("Enable alternative rendering", settings::alternativeRendering)
+        addCheckbox("Enable alternative rendering", settings::alternativeRendering){
+            reloadWorldAndOptions()
+        }
+        
+        val fpsLabel = ("FPS: "+Gdx.graphics.framesPerSecond).toLabel()
+        fpsLabel.actions.add(Actions.forever(Actions.run { 
+            fpsLabel.setText("FPS: "+Gdx.graphics.framesPerSecond)
+        }))
+        add(fpsLabel).colspan(2).padTop(10f).row()
+        
+        
 
         val disableNewerRenderingDescription = "On some devices this rendering method is faster"
         val disableNewerRenderingLabel = WrappableLabel(
