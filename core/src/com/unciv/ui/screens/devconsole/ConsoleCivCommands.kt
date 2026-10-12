@@ -65,7 +65,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             }
         },
 
-        "addtech" to ConsoleAction("civ addtechnology <civName> <techName>") { console, params ->
+        "addtechnology" to ConsoleAction("civ addtechnology <civName> <techName>") { console, params ->
             val civ = console.getCivByName(params[0])
             val tech = console.findCliInput<Technology>(params[1])
                 ?: throw ConsoleErrorException("Unrecognized technology")
@@ -77,7 +77,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             }
         },
 
-        "removetech" to ConsoleAction("civ removetechnology <civName> <techName>") { console, params ->
+        "removetechnology" to ConsoleAction("civ removetechnology <civName> <techName>") { console, params ->
             val civ = console.getCivByName(params[0])
             val tech = console.findCliInput<Technology>(params[1])
                 ?: throw ConsoleErrorException("Unrecognized technology")
