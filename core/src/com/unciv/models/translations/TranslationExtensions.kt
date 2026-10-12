@@ -177,13 +177,13 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
 
     val translatedWithPlaceholders: String
     val originalWithPlaceholders: String
-    if (translationEntry == null || !translationEntry.containsKey(language)) {
-        // Translation entry doesn't exist for this language, default to English
+    val languageEntry = translationEntry?.get(language)
+    if (languageEntry != null) {
+        translatedWithPlaceholders = languageEntry
+        originalWithPlaceholders = translationEntry.entry
+    } else {
         translatedWithPlaceholders = this
         originalWithPlaceholders = this
-    } else {
-        translatedWithPlaceholders = translationEntry[language]!!
-        originalWithPlaceholders = translationEntry.entry
     }
 
     // Take the terms from the placeholder - same helper as above but discarding the parts outside the [] brackets
@@ -291,10 +291,9 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
     val stat = Stat.safeValueOf(this)
     if (!hideStatIcons && stat != null) return stat.character + translation
 
-    if (!hideIcons && FontRulesetIcons.rulesetObjectNameToChar.containsKey(this))
-        return FontRulesetIcons.rulesetObjectNameToChar[this]!! + translation
-
-    return translation
+    if (hideIcons) return translation
+    val iconChar = FontRulesetIcons.rulesetObjectNameToChar[this]
+    return if (iconChar == null) translation else iconChar + translation
 }
 
 
