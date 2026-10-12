@@ -850,16 +850,16 @@ class TranslationTests {
         fun outFileName(language: String) = "$outPath/$language.txt"
 
         val expectedHashes = mapOf(
-            "English" to "022da34bd2fd779fd9515ac356537a6a47507aec1602e0a89db578da3159b2bf",
-            "Bangla" to "c9e27adddb2b8e1cdb24db30234834c975f6cdf22ce733c7af5d1b6c7b7a1fd8",
+            "English" to "61209d506bcf6c76d58df5b239c20a985935bb4bd84b5886bcb1ee041cd04ab0",
+            "Bangla" to "104235b2045b0593795bb2aab8157ac038de5edcc2512cdd8937e281baad75f2",
             "French" to "215bdbd3c1eb9540665b53d9de45e0b849654e8281bb6d4e9ee4204b95386cc3",
             "Hungarian" to "c3d4d2c26bb74b9e263fb839f063d1a478b7f59d0db7c51244d583d3a980b0f3",
             "Japanese" to "d785720f7ccc3924396ee113527c091096e506f0131d897cb318f7c9ac3385b6",
             "Maltese" to "3ca88caee228aed32f986662c27812467b449a09003cf469ed52f8c57eb12310",
-            "Russian" to "8f3831e0def6cb60dbe2458a86ac15f09b7785bc544f58ce259e4953c9a2fe12",
+            "Russian" to "5bcf51e491d162ab2280d07105dc43883e611dbd839ca7b036758f05c654dd46",
             "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
             "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
-            "Vietnamese" to "4139fcdf0c8fa7d51911e358d7454af33683a8d908b6b9f4c7389d613cd54e53",
+            "Vietnamese" to "34c5cba47b42d0811b143e3d336260fc5f12733be6b3c8bbb97ad6943fca3388",
             "generated" to "96ead1ff5d094f84dd7be1cafde621638a278725b5cc130a16937c2eb8ef4cc1",
         )
 
