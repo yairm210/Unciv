@@ -807,7 +807,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
+        val otherUniqueSources = promotions.getPromotions(sorted = true).flatMap { it.uniqueObjects } +
             statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
 
