@@ -247,7 +247,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
     }
 
     private fun getAutocomplete(): Pair<Int,String>? {
-        val params = textField.text.splitToCliInput()
+        val rawParams = textField.text.splitToCliInput()
+        val params = if (rawParams.size == 1 && rawParams[0].toString() in commandRoot.subcommands.keys) rawParams + CliInput("") else rawParams
         val autoCompleteString = commandRoot.autocomplete(this, params)
             ?: return null
         val replaceLength = params.lastOrNull()?.originalLength() ?: 0
