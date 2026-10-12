@@ -276,16 +276,17 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
         return if (hideStatIcons) stats.toStringWithoutIcons() else stats.toString()
     }
 
-    val formatter = TranslationCache.numberFormatter
-    val translation = UncivGame.Current.translations.getText(
-        this, language, TranslationCache.activeMods
-    ).replace(TranslationCache.numberRegex) {
-        val pos = ParsePosition(0)
-        val numericString = it.value
-        formatter.parse(numericString, pos)
-            .takeIf { pos.index == numericString.length }
-            ?.let { number -> formatter.format(number) }
-            ?: numericString
+    val translationBeforeNumberScan = UncivGame.Current.translations.getText(this, language, TranslationCache.activeMods)
+    val translation = if (translationBeforeNumberScan.none { it.isDigit() }) translationBeforeNumberScan else {
+        val formatter = TranslationCache.numberFormatter
+        translationBeforeNumberScan.replace(TranslationCache.numberRegex) {
+            val pos = ParsePosition(0)
+            val numericString = it.value
+            formatter.parse(numericString, pos)
+                .takeIf { pos.index == numericString.length }
+                ?.let { number -> formatter.format(number) }
+                ?: numericString
+        }
     }
 
     val stat = Stat.safeValueOf(this)
