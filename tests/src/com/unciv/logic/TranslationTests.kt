@@ -890,7 +890,6 @@ class TranslationTests {
     fun measureTranslateCivilopedia() {
         val computeHashes = false
         val writeFiles = false
-        fun outFileName(language: String) = ""
 
         val languagesToTest = mapOf(
             "English" to "",
@@ -915,8 +914,8 @@ class TranslationTests {
 
         repeat(49) {
             val (_, duration, _) = translateAndHashCivilopedia(
-                ruleset, computeHashes, languagesToTest, writeFiles, ::outFileName
-            )
+                ruleset, computeHashes, languagesToTest, writeFiles
+            ) { _ -> "" }
             measurements += duration
         }
         val noOutliers = measurements.drop(5).sorted().drop(1).dropLast(1) // 5 warmup, ignore best and worst
