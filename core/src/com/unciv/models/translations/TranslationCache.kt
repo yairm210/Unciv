@@ -4,6 +4,11 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.utils.hashOf
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.Locale
+import java.util.regex.Pattern
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Caches [active mods][activeMods] and repeatedly used values that are only dependent on [language]:
@@ -13,6 +18,11 @@ import java.text.DecimalFormat
  */
 object TranslationCache {
     private var cachedHash = Int.MIN_VALUE
+
+    /** A Java [Locale] matching the current [language]
+     *  @see LocaleCode.getLocale */
+    var locale: Locale = Locale.getDefault()
+        private set
 
     /** @see Translations.placeConditionalsAfterUnique */
     internal var conditionalsAfterUnique = true
@@ -30,24 +40,13 @@ object TranslationCache {
     internal var sortPriorities: Map<String, Int> = mapOf()
         private set
 
-    /** @see LocaleCode.getNumberRegexForLanguage */
+    /** @return a [DecimalFormat] for the current [language], cloned to make your copy thread-safe */
+    @Readonly
+    fun getNumberFormatter() = numberFormatter.clone() as DecimalFormat
+    private var numberFormatter = DecimalFormat()
+
+    /** A Regex able to find numbers that were formatted in the current language _or_ plain positive ASCII digit numbers */
     internal var numberRegex = Regex("""\d+""")
-        private set
-
-    /** @see LocaleCode.getNumberFormatFromLanguage */
-    internal var numberFormatter = DecimalFormat()
-        private set
-
-    /** Mods active in the current game, or set by MainMenuScreen via [translationActiveMods][Translations.translationActiveMods] */
-    internal var activeMods: HashSet<String> = hashSetOf()
-        get() {
-            val hash = getCurrentHash()
-            if (hash != cachedHash) {
-                cachedHash = hash
-                field = getCurrentSet()
-            }
-            return field
-        }
         private set
 
     /** Returns the language from settings and maintains dependent cached values */
@@ -57,6 +56,23 @@ object TranslationCache {
             if (setting != field) {
                 updateLanguage(setting)
                 field = setting
+            }
+            return field
+        }
+        private set
+
+    /** Checks the given [language] matches the cached one */
+    fun check(language: String) {
+        check(this.language == language) { "TranslationCache out of sync" }
+    }
+
+    /** Mods active in the current game, or set by MainMenuScreen via [translationActiveMods][Translations.translationActiveMods] */
+    internal var activeMods: HashSet<String> = hashSetOf()
+        get() {
+            val hash = getCurrentHash()
+            if (hash != cachedHash) {
+                cachedHash = hash
+                field = getCurrentSet()
             }
             return field
         }
@@ -91,6 +107,8 @@ object TranslationCache {
     }
 
     private fun updateLanguage(language: String) {
+        locale = LocaleCode.getLocale(language)
+
         val conditionalOrdering: String
         with (UncivGame.Current.translations) {
             conditionalOrdering = getConditionalOrder(language)
@@ -107,7 +125,64 @@ object TranslationCache {
             .withIndex()
             .associate { (index, key) -> key to index }
 
-        numberRegex = LocaleCode.getNumberRegexForLanguage(language)
-        numberFormatter = LocaleCode.getNumberFormatFromLanguage(language)
+        val formatter = getNumberFormat()
+        numberRegex = getNumberRegex(formatter)
+        numberFormatter = formatter
+    }
+
+    private fun getNumberFormat(): DecimalFormat {
+        return NumberFormat.getInstance(locale) as? DecimalFormat
+            // This should never happen, at least not in stock Java 21:
+            ?: getFallbackDecimalFormat()
+    }
+
+    @Readonly
+    private fun getFallbackDecimalFormat() =
+        DecimalFormat("#,##0.###", DecimalFormatSymbols.getInstance(locale))
+
+    /** Uncached, bypassing the cached language, for unit tests */
+    @Readonly
+    internal fun getNumberFormatForLanguage(language: String): DecimalFormat {
+        return NumberFormat.getInstance(LocaleCode.getLocale(language)) as? DecimalFormat
+            ?: getFallbackDecimalFormat()
+    }
+
+    private fun StringBuilder.optional(str: String) = when {
+        str.isEmpty() -> Unit
+        str.length == 1 -> {
+            append('\\')
+            append(str)
+            append('?')
+        }
+        else -> {
+            append("(?:")
+            append(Pattern.quote(str))
+            append(")?")
+        }
+    }
+
+    private fun getNumberRegex(formatter: DecimalFormat): Regex {
+        val symbols = formatter.decimalFormatSymbols
+        val pattern = buildString {
+            append("\\b")
+            optional(formatter.negativePrefix)
+            append("\\p{Nd}+")
+            if (formatter.isGroupingUsed) {
+                append("(?:\\")
+                append(symbols.groupingSeparator)
+                append("\\p{Nd}{")
+                append(formatter.groupingSize)
+                append("})*")
+            }
+            /* Activate the following to allow post-processing numbers with fractions (would change number of decimal places, therefore disabled)
+            append("(?:\\")
+            append(symbols.decimalSeparator)
+            append("\\p{Nd}+")
+            append(")?")
+            */
+            optional(formatter.negativeSuffix)
+            append("\\b")
+        }
+        return Regex(pattern)
     }
 }

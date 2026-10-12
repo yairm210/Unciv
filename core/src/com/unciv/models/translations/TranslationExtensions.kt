@@ -278,7 +278,7 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
 
     val translationBeforeNumberScan = UncivGame.Current.translations.getText(this, language, TranslationCache.activeMods)
     val translation = if (translationBeforeNumberScan.none { it.isDigit() }) translationBeforeNumberScan else {
-        val formatter = TranslationCache.numberFormatter
+        val formatter = TranslationCache.getNumberFormatter()
         translationBeforeNumberScan.replace(TranslationCache.numberRegex) {
             val pos = ParsePosition(0)
             val numericString = it.value
@@ -406,22 +406,23 @@ private fun String.validateConditionals(recursionDepth: Int): String? {
 
 /** Formats number according to current language
  *
- *  Note: The inverse operation is UncivGame.Current.settings.getCurrentNumberFormat().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
+ *  Note: The inverse operation is TranslationCache.getNumberFormatter().parse(string), handled in the [UncivTextField.Numeric][com.unciv.ui.components.widgets.UncivTextField.Numeric] widget.
  *
  *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
  */
 @Readonly
 fun Number.tr(): String {
-    return TranslationCache.numberFormatter.format(this)
+    return TranslationCache.getNumberFormatter().format(this)
 }
 
 /** Formats number according to a specific [language]
  *
- *  Note: The inverse operation is `LocaleCode.getNumberFormatFromLanguage(language).parse(string)`.
+ *  Note: The inverse operation is `TranslationCache.getNumberFormatForLanguage(language).parse(string)`.
  *
  *  @return locale-dependent String representation of receiver, may contain formatting like thousands separators
  */
 @Readonly
+@VisibleForTesting
 fun Number.tr(language: String): String {
-    return LocaleCode.getNumberFormatFromLanguage(language).format(this)
+    return TranslationCache.getNumberFormatForLanguage(language).format(this)
 }
