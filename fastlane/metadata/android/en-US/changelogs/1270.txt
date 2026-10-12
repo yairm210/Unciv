@@ -1,37 +1,11 @@
-
-
-Add FPS meter in options next to rendering method checkbox
-
-chore: "an unit" -> "a unit"
-
-Change texturearrayspritebatch rendering to be opt-in, after many comments from users that newer rendering is slower / causes black flashes :(
-
-Action UI-logic separation step 5 - Move "use frequency" from logic to UI
-
-Action UI-logic separation step 4 - Move all UI parameters to UiUnitAction - sounds, keybindings, "skip to next unit"
-
-Action UI-logic separation step 3 - Separate UI-only "unit actions" - that activate other parts of the UI - to "UiOnlyUnitActions. "
-
-Action UI-logic separation step 2 - Separate UI and Unit enums for action types - this will be clearer later, not all "ui actions" are actually unit actions, some are just UI popups
-
-Action UI-logic separation step 1 - Create UiUnitAction/UiUnitActions class that UI will call
-
-chore: Move unit actions from ui to logic - some ui stuff remains to be removed on step 2
+Made new rendering opt-in, added FPS measure for comparison
 
 Add "autosize" experimental button + text
 
 By SomeTroglodyte:
 - UI: Make menu button and city stats collapse arrow easier to hit 
-- Recover the rebase-lost changes to translateIndividualWord from 15725 
-- chore: Raise ktxCore to 1.17.0 and comment risks 
-- chore: Refactor Translations.kt separating out classes from extensions 
 
 By unciv-loof:
-- Add missing template string 
 - Use actual bombard range to classify long range units 
 
 fix: restore promotion modifier order in battle preview - By SomSamantray
-
-By BobbyCobby:
-- Fix typo in telecommunications icon credit 
-- Fix typos 
