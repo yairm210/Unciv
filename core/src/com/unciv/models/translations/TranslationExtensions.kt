@@ -35,7 +35,7 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  * Note: At the time of writing, this had only two use patterns: replace("") and extracting group 1. Any different new use would need reconsideration.
  */
 @Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
-private val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
+internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
 
 /** Affects scanning in [String.translatePlaceholders], [String.getPlaceholderParameters] and [String.getPlaceholderText] */
 private const val supportNestingSquare = true
@@ -67,7 +67,7 @@ private const val supportNestingHelpers = false
  */
 @Readonly
 fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false) =
-    tr(UncivGame.Current.settings.language, hideIcons, hideStats)
+    tr(TranslationCache.language, hideIcons, hideStats)
 
 @Readonly
 fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
@@ -173,7 +173,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
 
     // That is now the key into the translation HashMap!
     val translationEntry = UncivGame.Current.translations
-        .get(key.toString(), language, TranslationActiveModsCache.activeMods)
+        .get(key.toString(), language, TranslationCache.activeMods)
 
     val translatedWithPlaceholders: String
     val originalWithPlaceholders: String
@@ -239,30 +239,21 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean): 
      * together into the final fully translated string.
      */
 
-    // Get all special parameters stored in the translation files
-    val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
-    val conditionalsAfterUnique = UncivGame.Current.translations.placeConditionalsAfterUnique(language)
-    val shouldCapitalize = UncivGame.Current.translations.shouldCapitalize(language)
-    val spaceEquivalent = UncivGame.Current.translations.getSpaceEquivalent(language)
+    val conditionalsAfterUnique = TranslationCache.conditionalsAfterUnique
+    val shouldCapitalize = TranslationCache.shouldCapitalize
+    val spaceEquivalent = TranslationCache.spaceEquivalent
+    val sortPriorities = TranslationCache.sortPriorities
 
-    // Somewhere, we asked the translators to reorder all possible conditionals in a way that
-    // makes sense in their language. We get this ordering, and map their placeholderText to their ordinal.
-    val sortPriorities: Map<String, Int> = pointyBraceRegex
-        .findAll(conditionalOrdering)
-        .map { it.groupValues[1].getPlaceholderText() }
-        .withIndex()
-        .associate { (index, key) -> key to index }
-
-    // Now sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
+    // Sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
     // Remember this sort operator is stable - entries with identical priority keep their original ordering,
     // so if the conditional order definition is empty, all conditionals keep their place.
     fun sortPriority(unique: Unique) = sortPriorities.getOrDefault(unique.placeholderText, Int.MAX_VALUE)
     val translatedConditionals = this.getModifiersSequence()
         .sortedBy(::sortPriority)
-        .map { it.text.tr(hideIcons) }
+        .map { it.text.tr(language, hideIcons) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    val translatedBaseUnique = this.removeConditionals().tr(hideIcons)
+    val translatedBaseUnique = this.removeConditionals().tr(language, hideIcons)
     val translatedComponents = sequence {
         if (conditionalsAfterUnique) yield(translatedBaseUnique)
         yieldAll(translatedConditionals)
@@ -285,11 +276,11 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
         return if (hideStatIcons) stats.toStringWithoutIcons() else stats.toString()
     }
 
+    val formatter = TranslationCache.numberFormatter
     val translation = UncivGame.Current.translations.getText(
-        this, language, TranslationActiveModsCache.activeMods
-    ).replace(LocaleCode.getNumberRegexForLanguage(language)) {
+        this, language, TranslationCache.activeMods
+    ).replace(TranslationCache.numberRegex) {
         val pos = ParsePosition(0)
-        val formatter = LocaleCode.getNumberFormatFromLanguage(language)
         val numericString = it.value
         formatter.parse(numericString, pos)
             .takeIf { pos.index == numericString.length }
@@ -421,7 +412,7 @@ private fun String.validateConditionals(recursionDepth: Int): String? {
  */
 @Readonly
 fun Number.tr(): String {
-    return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
+    return TranslationCache.numberFormatter.format(this)
 }
 
 /** Formats number according to a specific [language]

@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.MAX_CONDITIONAL_NESTING
+import com.unciv.models.translations.TranslationCache
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
@@ -587,10 +588,12 @@ class TranslationTests {
     fun testTranslateConditionals() {
         fun setReordered() {
             addTranslation(conditionalOrderingKey, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+            TranslationCache.invalidateLanguage()
         }
         fun setBeforeAndCapitalized() {
             addTranslation(conditionalPlacementKey, "before")
             addTranslation(shouldCapitalizeKey, "true")
+            TranslationCache.invalidateLanguage()
         }
         data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
         val testData = listOf(
@@ -1007,6 +1010,7 @@ class TranslationTests {
         for ((key, expectedHash) in expectedHashes) {
             val language = if (key == "generated") "English" else key
             UncivGame.Current.settings.language = language
+            TranslationCache.invalidateLanguage()
             val data = if (key == "generated") generated else civilopedia
             val outWriter = openWriter(key)
             var lines = 0

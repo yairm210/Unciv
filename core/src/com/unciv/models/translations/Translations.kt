@@ -93,6 +93,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
      *  Vanilla translations go into `this` instance, mod translations into [modsWithTranslations].
      */
     private fun tryReadTranslationForLanguage(language: String, noDiacritics: Boolean = false) {
+        TranslationCache.invalidateLanguage()
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"

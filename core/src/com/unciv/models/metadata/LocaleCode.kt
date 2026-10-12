@@ -132,6 +132,7 @@ enum class LocaleCode(
         @Cache
         private val languageToNumberRegex = mutableMapOf<String, Regex>()
 
+        // TODO DecimalFormat is not thread-safe, therefore if tr() ever runs on background thread (Civilopedia search?), we should look into returning clones or not cache at all
         @Readonly
         fun getNumberFormatFromLanguage(language: String): DecimalFormat =
             languageToNumberFormat.getOrPut(language) {
