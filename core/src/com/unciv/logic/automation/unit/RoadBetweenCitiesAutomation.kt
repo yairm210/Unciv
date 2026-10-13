@@ -135,7 +135,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val basePriority = rankRoadCapitalPriority(roadToCapitalStatus)
         val roadPlans: MutableList<RoadPlan> = mutableListOf()
-        for (closeCity in city.neighboringCities.filter { it.civ == civInfo && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 8 }) {
+        for (closeCity in city.getNeighboringCities(8).filter { it.civ == civInfo }) {
             // Try to find if the other city has planned to build a road to this city
             if (roadsToBuildByCitiesCache.containsKey(closeCity)) {
                 // There should only ever be one or zero possible connections from their city to this city
