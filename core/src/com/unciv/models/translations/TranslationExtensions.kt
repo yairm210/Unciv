@@ -1,12 +1,12 @@
 package com.unciv.models.translations
 
 import com.unciv.UncivGame
-import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import java.text.ParsePosition
+import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
@@ -74,7 +74,7 @@ fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean =
     // '<' and '>' checks for quick 'no' answer. Nested "<>" aren't caught here.
     val ltIndex = indexOf('<')
     if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
-        return translateConditionals(language, hideIcons)
+        return translateConditionals(language, hideIcons, ltIndex)
 
     // curly and square brackets can be nested inside of each other so find the leftmost curly/square
     // bracket then process that first
@@ -225,7 +225,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
 }
 
 @Readonly
-private fun String.translateConditionals(language: String, hideIcons: Boolean): String {
+private fun String.translateConditionals(language: String, hideIcons: Boolean, firstPos: Int): String {
     /**
      * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
      * can contain multiple filters, such as <vs [{Military} {Water}] units>.
@@ -239,33 +239,71 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean): 
      * together into the final fully translated string.
      */
 
+    val locale = TranslationCache.locale
     val conditionalsAfterUnique = TranslationCache.conditionalsAfterUnique
     val shouldCapitalize = TranslationCache.shouldCapitalize
     val spaceEquivalent = TranslationCache.spaceEquivalent
     val sortPriorities = TranslationCache.sortPriorities
 
+    // Parse the text into base and modifiers
+    val conditionalContents = mutableListOf<String>()
+    val base = StringBuilder(length - 8)
+    // Trim as the regex did - all after a conditional
+    fun appendTrimming(input: String, start: Int, end: Int) {
+        if (start >= end || start >= input.length) return
+        var start = start
+        if (start > 0)
+            while (start < end && input[start] == ' ') start++
+        base.append(input, start, end)
+    }
+    val tail = scanPairs('<', '>', firstPos, supportNestingPointy) { gapStart, openPos, closePos ->
+        appendTrimming(this, gapStart, openPos)
+        conditionalContents += substring(openPos + 1, closePos)
+    }
+    appendTrimming(this, tail, length)
+    // Do a trimEnd without allocating a new CharSequence
+    val trimPos = base.indexOfLast { !it.isWhitespace() } + 1
+    if (trimPos < length) base.deleteRange(trimPos, base.length)
+
     // Sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
     // Remember this sort operator is stable - entries with identical priority keep their original ordering,
     // so if the conditional order definition is empty, all conditionals keep their place.
-    fun sortPriority(unique: Unique) = sortPriorities.getOrDefault(unique.placeholderText, Int.MAX_VALUE)
-    val translatedConditionals = this.getModifiersSequence()
+    fun sortPriority(modifierText: String) = sortPriorities.getOrDefault(modifierText.getPlaceholderText(), Int.MAX_VALUE)
+    @Suppress("purity") // mapTo into our own local state
+    val translatedConditionals = conditionalContents
         .sortedBy(::sortPriority)
-        .map { it.text.tr(language, hideIcons) }
+        .mapTo(ArrayList(conditionalContents.size)) { it.tr(language, hideIcons) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    val translatedBaseUnique = this.removeConditionals().tr(language, hideIcons)
-    val translatedComponents = sequence {
-        if (conditionalsAfterUnique) yield(translatedBaseUnique)
-        yieldAll(translatedConditionals)
-        if (!conditionalsAfterUnique)
-            if (shouldCapitalize) yield(translatedBaseUnique.replaceFirstChar { it.lowercase() })
-            else yield(translatedBaseUnique)
+    val translatedBaseUnique = base.toString().tr(language, hideIcons)
+    @LocalState val sb = StringBuilder(length + 16) // Would be more readable with `buildString`, but: @Purity
+    fun appendChangingFirstChar(text: String, transform: Char.(Locale) -> String) {
+        if (text.isEmpty()) return
+        if (!shouldCapitalize) {
+            sb.append(text)
+            return
+        }
+        sb.append(text.first().transform(locale))
+        sb.append(text, 1, text.length)
     }
 
-    var fullyTranslatedString = translatedComponents.joinToString(spaceEquivalent)
-    if (shouldCapitalize)
-        fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
-    return fullyTranslatedString
+    if (conditionalsAfterUnique)
+        appendChangingFirstChar(translatedBaseUnique, Char::uppercase)
+    var capitalizeOnce = !conditionalsAfterUnique // Also happens to be the case where no separating spaceEquivalent is needed
+    for (translatedConditional in translatedConditionals) {
+        if (capitalizeOnce) {
+            appendChangingFirstChar(translatedConditional, Char::uppercase)
+            capitalizeOnce = false
+        } else {
+            sb.append(spaceEquivalent)
+            sb.append(translatedConditional)
+        }
+    }
+    if (!conditionalsAfterUnique) {
+        sb.append(spaceEquivalent)
+        appendChangingFirstChar(translatedBaseUnique, Char::lowercase)
+    }
+    return sb.toString()
 }
 
 /** No brackets of any kind, just a single word */
