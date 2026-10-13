@@ -224,6 +224,13 @@ class MapParametersTable(
         }
     }
 
+    /** For [MapGeneratedMainType.randomGenerated]: sets [mapParameters].type to a valid value
+     *  respecting the currently enabled map type checkboxes, since no checkbox is ticked on activation. */
+    fun activateRandomMapType() {
+        if (!::mapTypesOptionsValues.isInitialized) return
+        mapParameters.type = if (mapTypesOptionsValues.isEmpty()) MapType.allValues.random() else mapTypesOptionsValues.random()
+    }
+
     private fun addWorldSizeTable() {
         val rng = GameContext().stateBasedRandom("MapParametersTable.addWorldSizeTable", System.currentTimeMillis().toInt())
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
