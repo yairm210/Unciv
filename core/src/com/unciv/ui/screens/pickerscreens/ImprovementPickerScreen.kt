@@ -222,6 +222,7 @@ class ImprovementPickerScreen(
             improvementButton.addListener(object : ClickListener() {
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     setDescription(improvement, Color.LIGHT_GRAY)
+                    rightSideButton.disable()
                 }
             })
         } else {

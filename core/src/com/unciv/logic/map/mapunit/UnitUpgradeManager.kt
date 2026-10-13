@@ -4,7 +4,7 @@ import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 

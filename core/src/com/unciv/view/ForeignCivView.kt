@@ -13,6 +13,7 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
     val civName: String get() = civ.civName
     val civID: String get() = civ.civID
     val gold: Int get() = civ.gold
+    val isCityState: Boolean get() = civ.isCityState
     val ruleset = civ.gameInfo.ruleset
 
     // Navigation

@@ -22,10 +22,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.text.ParsePosition
-import java.util.Locale
 import kotlinx.coroutines.delay
 
 /**
@@ -204,8 +201,7 @@ open class UncivTextField(
             isParseIntegerOnly = integerOnly
             isGroupingUsed = false
         }
-        private val decimalFormatSymbols = (formatter as? DecimalFormat)?.decimalFormatSymbols
-            ?: DecimalFormatSymbols.getInstance(Locale.ROOT)
+        private val decimalFormatSymbols = formatter.decimalFormatSymbols
         private val thousandsChar = decimalFormatSymbols.groupingSeparator
         private val minusChar = decimalFormatSymbols.minusSign
         private val symbols = buildString {

@@ -31,7 +31,7 @@ class Simulation(
     private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv() }.map { it.civID }
     private val numMajorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv()  }.size
     private var startTime: Long = 0
-    var steps = ArrayList<SimulationStep>()
+    private var talliedGames = 0
     var numWins = mutableMapOf<String, MutableInt>()
     private var summaryStatsPop = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
     private var summaryStatsProd = HashMap<String, HashMap<Int, HashMap<Stat, MutableInt>>>() // [civ][turn][stat]=value
@@ -148,7 +148,32 @@ class Simulation(
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun add(step: SimulationStep, threadId: Int = 1) {
-        steps.add(step)
+        talliedGames++
+        totalTurns += step.turns
+        if (step.winner != null) {
+            numWins[step.winner!!]!!.inc()
+            winRateByVictory[step.winner!!]!![step.victoryType]!!.inc()
+            winTurnByVictory[step.winner!!]!![step.victoryType]!!.add(step.turns)
+        }
+        for (civ in majorCivs) {
+            for (turn in statTurns) {
+                summaryStatSet(summaryStatsPop, civ, turn, step.turnStatsPop)
+                summaryStatSet(summaryStatsProd, civ, turn, step.turnStatsProd)
+                summaryStatSet(summaryStatsCities, civ, turn, step.turnStatsCities)
+                if (step.turnStatsPop[civ]!![turn]!!.value != -1 && step.turnStatsCities[civ]!![turn]!!.value != -1) {
+                    if (step.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
+                        summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(step.turnStatsPop[civ]!![turn]!!.value/step.turnStatsCities[civ]!![turn]!!.value)
+                    summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
+                }
+            }
+            val turn = -1 // end of game
+            summaryStatSet(summaryStatsPop, civ, turn, step.turnStatsPop)
+            summaryStatSet(summaryStatsProd, civ, turn, step.turnStatsProd)
+            summaryStatSet(summaryStatsCities, civ, turn, step.turnStatsCities)
+            if (step.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
+                summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(step.turnStatsPop[civ]!![turn]!!.value/step.turnStatsCities[civ]!![turn]!!.value)
+            summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output
@@ -159,7 +184,9 @@ class Simulation(
 
     @Synchronized
     fun print(){
-        getStats()
+        totalDuration = (System.currentTimeMillis() - startTime).milliseconds
+        avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
+        avgDuration = totalDuration / max(talliedGames, 1)
         println(text())
     }
     
@@ -172,56 +199,6 @@ class Simulation(
         }
     }
 
-    private fun getStats() {
-        // win Rate
-        numWins.values.forEach { it.value = 0 }
-        winRateByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
-        winTurnByVictory.flatMap { it.value.values }.forEach { it.value = 0 }
-        // reset to 0
-        summaryStatsPop.flatMap { it.value.values }.forEach {
-            it.values.forEach { it.value = 0 }
-        }
-        summaryStatsProd.flatMap { it.value.values }.forEach {
-            it.values.forEach { it.value = 0 }
-        }
-        summaryStatsCities.flatMap { it.value.values }.forEach {
-            it.values.forEach { it.value = 0 }
-        }
-        summaryStatsAvgPop.flatMap { it.value.values }.forEach {
-            it.values.forEach { it.value = 0 }
-        }
-        steps.forEach {
-            if (it.winner != null) {
-                numWins[it.winner!!]!!.inc()
-                winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
-                winTurnByVictory[it.winner!!]!![it.victoryType]!!.add(it.turns)
-            }
-            for (civ in majorCivs) {
-                for (turn in statTurns) {
-                    summaryStatSet(summaryStatsPop, civ, turn, it.turnStatsPop)
-                    summaryStatSet(summaryStatsProd, civ, turn, it.turnStatsProd)
-                    summaryStatSet(summaryStatsCities, civ, turn, it.turnStatsCities)
-                    if (it.turnStatsPop[civ]!![turn]!!.value != -1 && it.turnStatsCities[civ]!![turn]!!.value != -1) {
-                        if (it.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
-                            summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
-                        summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
-                    }
-                }
-                val turn = -1 // end of game
-                summaryStatSet(summaryStatsPop, civ, turn, it.turnStatsPop)
-                summaryStatSet(summaryStatsProd, civ, turn, it.turnStatsProd)
-                summaryStatSet(summaryStatsCities, civ, turn, it.turnStatsCities)
-                if (it.turnStatsCities[civ]!![turn]!!.value != 0) // if no cities, avgpop=0
-                    summaryStatsAvgPop[civ]!![turn]!![Stat.SUM]!!.add(it.turnStatsPop[civ]!![turn]!!.value/it.turnStatsCities[civ]!![turn]!!.value)
-                summaryStatsAvgPop[civ]!![turn]!![Stat.NUM]!!.inc()
-            }
-        }
-        totalTurns = steps.sumOf { it.turns }
-        totalDuration = (System.currentTimeMillis() - startTime).milliseconds
-        avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
-        avgDuration = totalDuration / steps.size
-    }
-    
     // Helper text formatter
     private fun summaryStatsText(summaryStats: HashMap<Stat, MutableInt>,
                                  turn: Int, statStr: String): String {
@@ -232,7 +209,7 @@ class Simulation(
     /** Win rate and p-value for the group as a whole */
     private fun groupText(groupName: String, groupCivs: List<String>): String {
         if (groupCivs.isEmpty()) return ""
-        val numSteps = max(steps.size, 1)
+        val numSteps = max(talliedGames, 1)
         val groupWins = groupCivs.sumOf { numWins[it]!!.value }
         val expWinRate = groupCivs.size.toFloat() / numMajorCivs
         val winRate = String.format("%.1f", groupWins * 100f / numSteps)
@@ -260,7 +237,7 @@ class Simulation(
         }
         for (civ in majorCivs) {
 
-            val numSteps = max(steps.size, 1)
+            val numSteps = max(talliedGames, 1)
             val expWinRate = 1f / numMajorCivs
             if (numWins[civ]!!.value == 0) continue
             val winRate = String.format("%.1f", numWins[civ]!!.value * 100f / numSteps)

@@ -41,9 +41,9 @@ internal class VictoryScreenCivGroup(
         civEntry.civ,
         ": ",
         // Don't show a `0` for defeated civs.
-        // Note: pass the raw number, not `.tr()`-formatted - the label's own tr() call
-        // will format it with thousands separators. Pre-formatting here would embed a
-        // comma that gets misparsed as a second number by that later tr() call.
+        // Note: tr()'s number recognition is now locale-dependent and can recognize a pre-translated number, re-translating it.
+        // Passing a raw string would mostly work but fail in Locales where the negative prefix is NOT an ASCII "-".
+        // That failure, however, would not see the locale's minus as part of the number and re-translate the positive part, relatively harmless.
         if (civEntry.civ.isDefeated()) "" else civEntry.value.toString(),
         currentPlayer,
         defeatedPlayerStyle

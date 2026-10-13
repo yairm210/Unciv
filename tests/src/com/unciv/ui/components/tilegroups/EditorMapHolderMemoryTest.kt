@@ -38,7 +38,7 @@ class EditorMapHolderMemoryTest {
     }
 
     @Test
-    @RedirectOutput(RedirectPolicy.Show)
+    //@RedirectOutput(RedirectPolicy.Show)
     fun tileGroupMemoryFor100x100Map() {
         testGame.makeRectangularMap(100, 100)
         val tileMap = testGame.tileMap

@@ -1,3 +1,59 @@
+## 4.22.10
+
+Resolved  - allow removing all forms of starting locations in map editor
+
+Resolved  - disable "pick improvement" when selecting an unpickable improvement
+
+Resolved  - Make multiplayer check worker work with specific game ids again
+
+Views: Added "invoke unit action by type" to mapunitview :)
+
+Make "requires confirmation" (+ required data) *unit action logic*, and have the actual popup part of *ui code*. This removes more GUI imports in unit actions, AND ALSO makes "popup approved actions" work the same as direct actions, including "go to next unit", "remove unit overlay" etc.
+
+No need for manual 'set update on next render' when this is already done for all actions in UnitActionsTable.activateAction()
+
+chore: "Disband" is no longer a UnitAction
+
+Resolved  - Removed deprecated unexploredTileColor
+
+More detailed color coding of diplomacy modifiers - By unciv-loof
+
+By SomeTroglodyte:
+- chore: Translation baseline - tests, minor fix 
+- Allow using Unique Builder for console activatetrigger 
+- Fix a few console quirks 
+
+## 4.22.9
+
+Made new rendering opt-in, added FPS measure for comparison
+
+Add "autosize" experimental button + text
+
+By SomeTroglodyte:
+- UI: Make menu button and city stats collapse arrow easier to hit 
+
+By unciv-loof:
+- Use actual bombard range to classify long range units 
+
+fix: restore promotion modifier order in battle preview - By SomSamantray
+
+## 4.22.8
+
+Liberated city states make peace with anyone they were at war with pre-liberation
+
+When loading a game that causes Out Of Memory, show error message instead of crashing
+
+Added "Only the first available choice is offered" event unique, for switch/case style options
+
+By SomeTroglodyte:
+- Add science income without a research target to overflow, so it's not lost 
+- Allow finer control of the value for "snapping" Sliders (not only for Android) 
+- Fix locale-dependent number formatting messing up some numbers
+
+Resolved "doesn't work on Java 8", hopefully for future changes as well
+
+Update multiplayer game preview as players turns change, even if turn number is the same
+
 ## 4.22.7
 
 Sharper text on Android - By finalpatch
@@ -3371,13 +3427,13 @@ Fixed uniques of marble - By woo1127
 
 ## 4.10.21
 
-Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependent building filter activating *when initializing ruleset*
 
 Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
 Fixed rare crash on city-state diplomatic relationship update
 
-Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+Fix loop when improvement is unbuildable and removes feature  - By SeventhM
 
 ## 4.10.20
 

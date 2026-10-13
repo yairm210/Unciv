@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -11,11 +12,13 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -204,27 +207,27 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
 
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
         private val menuButtonWrapper = Container(menuButton)
+        private val menuButtonHitArea = ClickableCircle(Constants.headingFontSize * 2.25f)
 
         init {
             left()
             pad(10f)
 
-            menuButton.color = Color.WHITE
-            menuButton.onActivation(binding = KeyboardBinding.Menu) { WorldScreenMenuPopup(worldScreen) }
-            menuButton.onRightClick { WorldScreenMenuPopup(worldScreen, true) }
+            menuButton.touchable = Touchable.disabled
+            menuButtonWrapper.size(Constants.headingFontSize * 1.5f)
+            menuButtonWrapper.center()
+            menuButtonHitArea.onActivation(binding = KeyboardBinding.Menu) { WorldScreenMenuPopup(worldScreen) }
+            menuButtonHitArea.onRightClick { WorldScreenMenuPopup(worldScreen, true) }
 
             val onNationClick = {
                 worldScreen.openCivilopedia(worldScreen.selectedCiv.nation.makeLink())
             }
-
             selectedCivLabel.setFontSize(Constants.headingFontSize)
             selectedCivLabel.onClick(onNationClick)
             selectedCivIcon.onClick(onNationClick)
 
-            menuButtonWrapper.size(Constants.headingFontSize * 1.5f)
-            menuButtonWrapper.center()
             add(menuButtonWrapper)
-
+            addActor(menuButtonHitArea) // Will be positioned over menuButtonWrapper in [update]
             selectedCivIconCell = add(selectedCivIcon).padLeft(Constants.defaultFontSize / 1.5f)
             add(selectedCivLabel).padTop(10f - Fonts.getDescenderHeight(Constants.headingFontSize))
                 .padLeft(Constants.defaultFontSize / 2.0f)
@@ -241,6 +244,8 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             selectedCivLabel.setText(newCiv.tr(hideIcons = true))
             invalidate()
             pack()
+            menuButtonHitArea.center(menuButtonWrapper)
+            menuButtonHitArea.moveBy(menuButtonWrapper.x, menuButtonWrapper.y)
         }
     }
 

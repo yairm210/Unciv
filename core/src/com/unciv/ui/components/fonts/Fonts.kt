@@ -32,6 +32,7 @@ import kotlin.math.ceil
  *  @see extractPixmapFromTextureRegion
  *  @see FontRulesetIcons
  */
+@Suppress("ConstPropertyName")
 object Fonts {
 
     /** All text is originally rendered in one size, and then scaled to fit the size of the text we need now.
@@ -160,6 +161,7 @@ object Fonts {
     const val greatScientist = '⚛'      // U+269B 'atom'
     const val death = '☠'               // U+2620 'skull and crossbones'
     const val automate = '⛏'            // U+26CF 'pick'
+    const val pencil = '✏'              // U+270F 'pencil'
 
     //region Symbols that can be optionally added to the font from atlas textures
     // (a mod can override these, otherwise the font supplies the glyph)
@@ -173,6 +175,12 @@ object Fonts {
     const val rightArrow = '→'          // U+2192, e.g. Battle table or event-based tutorials
     //endregion
 
+    /** Map of unicode codepoints to texture paths.
+     *
+     *  These will be injected into the font, if the texture is available.
+     *  That also makes these characters moddable - same as the textures when used directly.
+     *  A missing texture gives the selected font then the system font precedence.
+     */
     val allSymbols = mapOf(
         turn to "EmojiIcons/Turn",
         strength to "StatIcons/Strength",
@@ -200,6 +208,7 @@ object Fonts {
         sortUpArrow to "EmojiIcons/SortedAscending",
         sortDownArrow to "EmojiIcons/SortedDescending",
         rightArrow to "EmojiIcons/RightArrow",
+        pencil to "OtherIcons/Pencil",
         *MayaCalendar.allSymbols
     )
     //endregion

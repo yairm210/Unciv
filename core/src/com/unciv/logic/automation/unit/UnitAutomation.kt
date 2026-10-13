@@ -21,9 +21,10 @@ import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import kotlin.math.ceil
+import com.unciv.view.GameView
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -41,7 +42,7 @@ object UnitAutomation {
 
 
         if (unit.isCivilian()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
+            CivilianUnitAutomation.automateCivilianUnit(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), getDangerousTiles(unit))
             return
         }
 
@@ -57,7 +58,7 @@ object UnitAutomation {
                     unit.hasUnique(UniqueType.FoundPuppetCity) ||
                     unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
             && !unit.civ.isAtWar()){
-            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
+            CivilianUnitAutomation.automateCivilianUnit(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), getDangerousTiles(unit))
             return
         }
 

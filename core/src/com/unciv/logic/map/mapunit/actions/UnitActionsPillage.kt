@@ -1,47 +1,32 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
-import com.unciv.GUI
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.popups.ConfirmPopup
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val pillageAction = getPillageAction(unit, tile)
-            ?: return emptySequence()
-        if (pillageAction.action == null || unit.civ.isAIOrAutoPlaying())
-            return sequenceOf(pillageAction)
-        else return sequenceOf(UnitAction(UnitActionType.Pillage, 65f, pillageAction.title) {
-            val pillageText = "Are you sure you want to pillage this [${tile.getImprovementToPillageName()!!}]?"
-            ConfirmPopup(
-                GUI.getWorldScreen(),
-                pillageText,
-                "Pillage",
-                true
-            ) {
-                (pillageAction.action)()
-                GUI.setUpdateWorldOnNextRender()
-            }.open()
-        })
-    }
+    internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> =
+        sequenceOf(getPillageAction(unit, tile)).filterNotNull()
 
     internal fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
-            UnitActionType.Pillage, 65f,
+            UnitActionType.Pillage,
             title = "${UnitActionType.Pillage} [$improvementName]",
+            confirmation = UnitActionConfirmation(
+                "Are you sure you want to pillage this [$improvementName]?", "Pillage"),
             action = {
                 val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!  // can this differ from improvementName due to later execution???
                 val pillagingImprovement = unit.currentTile.canPillageTileImprovement()

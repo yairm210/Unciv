@@ -3,6 +3,8 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
@@ -10,6 +12,7 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.brighten
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
@@ -20,6 +23,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
+import kotlin.math.abs
 
 internal class DisplayTab(
     optionsPopup: OptionsPopup
@@ -87,23 +91,19 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
-        addCheckbox("Disable newer rendering", settings::disableNewerRendering)
-
-        val maxTextureUnitsText = 
-            try {
-                val maxTextureUnits = TextureArraySpriteBatch().maxTextureUnits
-                "Max texture units: $maxTextureUnits"
-            } catch (e: Exception) { "Error creating TextureArraySpriteBatch" }
+        addCheckbox("Enable alternative rendering", settings::alternativeRendering){
+            reloadWorldAndOptions()
+        }
         
-        val maxTextureUnitsLabel = WrappableLabel(
-            maxTextureUnitsText,
-            optionsPopup.tabs.prefWidth, Color.WHITE, 14
-        )
-        maxTextureUnitsLabel.wrap = true
-        add(maxTextureUnitsLabel).colspan(2).padTop(10f).row()
+        val fpsLabel = ("FPS: "+Gdx.graphics.framesPerSecond).toLabel()
+        fpsLabel.actions.add(Actions.forever(Actions.run { 
+            fpsLabel.setText("FPS: "+Gdx.graphics.framesPerSecond)
+        }))
+        add(fpsLabel).colspan(2).padTop(10f).row()
+        
         
 
-        val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
+        val disableNewerRenderingDescription = "On some devices this rendering method is faster"
         val disableNewerRenderingLabel = WrappableLabel(
             disableNewerRenderingDescription,
             optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
@@ -115,6 +115,7 @@ internal class DisplayTab(
 
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
         addCheckbox("Animate Unit actions menu", settings::unitActionsTableAnimation)
+        addAutoSizeButton()
 
         super.lateInitialize()
     }
@@ -138,7 +139,10 @@ internal class DisplayTab(
         addSlider("Size of Unitset art in Civilopedia", settings::pediaUnitArtSize, 0f, 360f) {
             GUI.setUpdateWorldOnNextRender() // TODO: I doubt that helps, the setting has only influence on CivilopediaScreen
         }.actor.apply {
-            setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
+            setSnapToValues(threshold = 60f,
+                0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f,
+                editLabel = "{Size of Unitset art in Civilopedia}:"
+            )
         }
     }
 
@@ -159,6 +163,32 @@ internal class DisplayTab(
         addSelectBox("UI Scale", settings::screenSize, ScreenSize.entries) { _, _ ->
             reloadWorldAndOptions()
         }
+    }
+
+    private fun addAutoSizeButton() {
+        val autoSizeButton = "Autosize".toTextButton()
+        autoSizeButton.onClick {
+            val newSize = guessScreenSize()
+            if (newSize == settings.screenSize) return@onClick
+            settings.screenSize = newSize
+            reloadWorldAndOptions()
+        }
+        add(autoSizeButton).center().row()
+
+        val mode = Gdx.graphics.displayMode
+        val widthInches = mode.width / Gdx.graphics.ppiX
+        val heightInches = mode.height / Gdx.graphics.ppiY
+        add("{Screen size}: %.1f\" x %.1f\"".format(widthInches, heightInches).toLabel()).colspan(2).row()
+    }
+
+    /** Picks the [ScreenSize] giving roughly the same number of virtual units per physical inch of the shorter screen side everywhere */
+    private fun guessScreenSize(): ScreenSize {
+        val mode = Gdx.graphics.displayMode
+        val shorterSideInches = minOf(mode.width / Gdx.graphics.ppiX, mode.height / Gdx.graphics.ppiY)
+        // On desktop you use a mouse pointer, on phones you use your fat fingers
+        val unitsPerInch = if (Gdx.app.type != Application.ApplicationType.Desktop) 220f else 100f
+        val targetVirtualHeight = shorterSideInches * unitsPerInch
+        return ScreenSize.entries.minBy { abs(it.virtualHeight - targetVirtualHeight) }
     }
 
     private fun addScreenOrientationSelectBox() {

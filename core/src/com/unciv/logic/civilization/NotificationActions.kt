@@ -152,7 +152,7 @@ class MapUnitAction(
         else null
         if (unit != null) {
             val unitLocation = unit.currentTile.position.toHexCoord()
-            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = unit)
+            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView())
         }
         else {
             worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = id == Constants.NO_ID)
@@ -191,7 +191,7 @@ class PromoteUnitAction(
             val tile = worldScreen.gameInfo.tileMap[location]
             tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
         } ?: return
-        worldScreen.game.pushScreen { PromotionPickerScreen(unit) }
+        worldScreen.game.pushScreen { PromotionPickerScreen(worldScreen.selectedGameView.getMapUnitView(unit)) }
     }
 }
 
