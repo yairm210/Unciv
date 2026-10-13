@@ -10,7 +10,6 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import yairm210.purity.annotations.Readonly
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -246,7 +245,6 @@ object UnitActions {
                 unit.destroy()  // City states don't get GPs
             else
                 unit.gift(recipient)
-            GUI.setUpdateWorldOnNextRender()
         }
         yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
     }
