@@ -190,7 +190,7 @@ enum class UiUnitActionType private constructor(
     SpreadReligion(UnitActionType.SpreadReligion, null, uncivSound = UncivSound.Choir, useFrequency = 68f),
     RemoveHeresy(UnitActionType.RemoveHeresy, portrait("RemoveHeresy"), uncivSound = UncivSound.Fire, useFrequency = 69f),
     EnhanceReligion(UnitActionType.EnhanceReligion, portrait("EnhanceReligion"), uncivSound = UncivSound.Choir, useFrequency = 79f),
-    DisbandUnit(UnitActionType.DisbandUnit, portrait("DisbandUnit"), false, page = 1, useFrequency = 0f),
+    DisbandUnit("Disband unit", portrait("DisbandUnit"), false, page = 1, useFrequency = 0f),
     GiftUnit(UnitActionType.GiftUnit, portrait("Present"), uncivSound = UncivSound.Silent, page = 1, useFrequency = 5f) {
         override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
             if (unitAction?.action == null) 1f else defaultUseFrequency

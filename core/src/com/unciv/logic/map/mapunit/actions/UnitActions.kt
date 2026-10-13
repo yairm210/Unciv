@@ -10,8 +10,6 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.hasOpenPopups
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -118,7 +116,6 @@ object UnitActions {
         addSkipAction(unit)
 
         addEscortAction(unit)
-        addDisbandAction(unit)
     }
 
     private suspend fun SequenceScope<UnitAction>.addEscortAction(unit: MapUnit) {
@@ -150,26 +147,6 @@ object UnitActions {
                     unit.stopEscorting()
                 }))
         }
-    }
-
-    private suspend fun SequenceScope<UnitAction>.addDisbandAction(unit: MapUnit) {
-        yield(UnitAction(type = UnitActionType.DisbandUnit,
-            action = {
-                val worldScreen = GUI.getWorldScreen()
-                if (!worldScreen.hasOpenPopups()) {
-                    val disbandText = if (unit.currentTile.getOwner() == unit.civ)
-                        "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
-                    else "Do you really want to disband this unit?".tr()
-                    ConfirmPopup(worldScreen, disbandText, "Disband unit") {
-                        unit.disband()
-                        unit.civ.updateStatsForNextTurn() // less upkeep!
-                        GUI.setUpdateWorldOnNextRender()
-                        if (GUI.getSettings().autoUnitCycle)
-                            worldScreen.switchToNextUnit()
-                    }.open()
-                }
-            }.takeIf { unit.hasMovement() }
-        ))
     }
 
     private suspend fun SequenceScope<UnitAction>.addExplorationActions(unit: MapUnit) {

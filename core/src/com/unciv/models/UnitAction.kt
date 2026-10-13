@@ -99,7 +99,6 @@ enum class UnitActionType(val value: String) {
     SpreadReligion("Spread [religionName]"),
     RemoveHeresy("Remove Heresy"),
     EnhanceReligion("Enhance a Religion"),
-    DisbandUnit("Disband unit"),
     GiftUnit("Gift unit"),
     Skip("Skip turn"),
     AddInCapital("Add in capital"),

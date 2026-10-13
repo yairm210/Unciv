@@ -8,6 +8,9 @@ import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
@@ -22,8 +25,29 @@ object UiOnlyUnitActions {
         getConnectRoadAction(unit),
         getPromoteAction(unit),
         getShowUnitDestinationAction(unit),
-        getSwapAction(unit)
+        getSwapAction(unit),
+        getDisbandAction(unit)
     ).filterNotNull()
+
+    private fun getDisbandAction(unit: MapUnit): UiUnitAction {
+        return UiUnitAction(UiUnitActionType.DisbandUnit,
+            action = {
+                val worldScreen = GUI.getWorldScreen()
+                if (!worldScreen.hasOpenPopups()) {
+                    val disbandText = if (unit.currentTile.getOwner() == unit.civ)
+                        "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
+                    else "Do you really want to disband this unit?".tr()
+                    ConfirmPopup(worldScreen, disbandText, "Disband unit") {
+                        unit.disband()
+                        unit.civ.updateStatsForNextTurn() // less upkeep!
+                        GUI.setUpdateWorldOnNextRender()
+                        if (GUI.getSettings().autoUnitCycle)
+                            worldScreen.switchToNextUnit()
+                    }.open()
+                }
+            }.takeIf { unit.hasMovement() }
+        )
+    }
 
     private fun getPromoteAction(unit: MapUnit): UiUnitAction? {
         if (!unit.promotions.canBePromoted()) return null
