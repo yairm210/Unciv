@@ -8,7 +8,6 @@ import com.unciv.ui.components.fonts.FontRulesetIcons
 import java.text.ParsePosition
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
-import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -43,7 +42,7 @@ private const val supportNestingSquare = true
 private const val supportNestingSquareReplacement = false
 /** Affects [String.translatePartial] */
 private const val supportNestingCurly = false
-/** TODO Affects [String.translateConditionals]*/
+/** Affects [String.translateConditionals], [String.removeConditionals], [String.getModifiers] */
 private const val supportNestingPointy = false
 /** Affects [String.fillPlaceholders] */
 private const val supportNestingHelpers = false
@@ -102,52 +101,67 @@ private fun findMatching(text: String, openPos: Int, open: Char, close: Char): I
     return -1
 }
 
-/** Reports successive [open]/[close] pairs as (gapStart, openPos, closePos); unmatched openers end the scan.
- *  @return start of the unprocessed tail */
+/** Scans for [open]/[close] pairs
+ * - Reports pairs as [emitInside]`(startPos, endPos)`.
+ * - Reports string portions outside pairs as [emitOutside]`(startPos, endPos)`.
+ * - Both 'emit' lambdas are passed this function's `this` as receiver.
+ *   Pay attention if the call is inside a String extension but `parsePairs` is called on a different sting -
+ *   `this` in the lambdas will refer to that other string, not the caller's receiver.
+ * - Order is preserved - when a pair is found, the preceding outside tail is reported before the inside.
+ * - With [supportNesting] off, an [open] is always matched with the next [close].
+ * - With [supportNesting] ON, depth is tracked so an [open] is matched with the same-depth [close],
+ *   and the string reported to [emitInside] can in turn contain [open]/[close] pairs.
+ * - Unmatched openers end the scan (though it would be easy to report those as "inside", but that would need unit test adjustment).
+ */
 @Readonly
-private inline fun String.scanPairs(
+private inline fun String.parsePairs(
     open: Char, close: Char,
     firstPos: Int = indexOf(open),
     supportNesting: Boolean,
-    onPair: (gapStart: Int, openPos: Int, closePos: Int) -> Unit
-): Int {
+    emitInside: String.(start: Int, end: Int) -> Unit,
+    emitOutside: String.(start: Int, end: Int) -> Unit
+) {
     var pos = 0
     var openPos = firstPos
     while (openPos >= 0) {
         val closePos = if (supportNesting) findMatching(this, openPos, open, close) else indexOf(close, openPos + 1)
         if (closePos < 0) break
-        onPair(pos, openPos, closePos)
+        emitOutside(pos, openPos)
+        emitInside(openPos + 1, closePos)
         pos = closePos + 1
         openPos = indexOf(open, pos)
     }
-    return pos
+    emitOutside(pos, length)
 }
 
-@Readonly
-private inline fun String.parseKeyAndPlaceholders(
-    firstPos: Int = indexOf('['),
-    supportNesting: Boolean,
-    appendToKey: (String, Int, Int) -> Unit = { _, _, _ -> }
-): List<String> {
-    val placeholderContents = mutableListOf<String>()
-    val tail = scanPairs('[', ']', firstPos, supportNesting) { gapStart, openPos, closePos ->
-        appendToKey(this, gapStart, openPos)
-        appendToKey("[]", 0, 2)
-        placeholderContents += substring(openPos + 1, closePos)
-    }
-    appendToKey(this, tail, length)
-    return placeholderContents
+/** Helper for [removeConditionals] and the related the conditionals scan in [translateConditionals]
+ *
+ *  Manages trimming the "outside conditionals" part the same way the regex did
+ */
+private fun StringBuilder.appendTrimming(input: String, start: Int, end: Int) {
+    if (start >= end || start >= input.length) return
+    var start = start
+    if (start > 0)
+        while (start < end && input[start] == ' ') start++
+    append(input, start, end)
+}
+
+/** Do a `trimEnd` directly on [StringBuilder] memory
+ *
+ * (otherwise `sb.trimEnd()` would use the one on [CharSequence] which allocates and returns a copy) */
+private fun StringBuilder.trimEnd() {
+    val trimPos = indexOfLast { !it.isWhitespace() } + 1
+    if (trimPos < length) deleteRange(trimPos, length)
 }
 
 @Readonly
 private fun String.translatePartial(language: String, hideIcons: Boolean, firstPos: Int): String {
     @LocalState
     val sb = StringBuilder(length + 16)
-    val tail = scanPairs('{', '}', firstPos, supportNestingCurly) { gapStart, openPos, closePos ->
-        sb.append(this, gapStart, openPos)
-        sb.append(substring(openPos + 1, closePos).tr(language, hideIcons))
-    }
-    sb.append(this, tail, length)
+    parsePairs('{', '}', firstPos, supportNestingCurly,
+        emitInside = { start, end -> sb.append( substring(start, end).tr(language, hideIcons) ) },
+        emitOutside = { start, end -> sb.append(this, start, end) }
+    )
     return sb.toString()
 }
 
@@ -165,10 +179,16 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
      * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
      */
     // Collect the message without placeholder content, only "[]"
-    @LocalState
-    val key = StringBuilder(length)
+    @LocalState val key = StringBuilder(length)
     // Collect the terms in the message, WITHOUT square brackets
-    val termsInMessage = parseKeyAndPlaceholders(firstPos, supportNestingSquare) { sb, start, end -> key.append(sb, start, end) }
+    @LocalState val termsInMessage = mutableListOf<String>()
+    parsePairs('[', ']', firstPos, supportNestingSquare,
+        emitInside = { start, end ->
+            termsInMessage += substring(start, end)
+            key.append("[]")
+        },
+        emitOutside = { start, end -> key.append(this, start, end) }
+    )
     // For input "work on [building] has completed in [city]", `key` would now contain "work on [] has completed in []"
 
     // That is now the key into the translation HashMap!
@@ -187,7 +207,11 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
     }
 
     // Take the terms from the placeholder - same helper as above but discarding the parts outside the [] brackets
-    val termsInTranslationPlaceholder = originalWithPlaceholders.parseKeyAndPlaceholders(supportNesting = supportNestingSquare)
+    @LocalState val termsInTranslationPlaceholder = mutableListOf<String>()
+    originalWithPlaceholders.parsePairs('[', ']', supportNesting = supportNestingSquare,
+        emitInside = { start, end -> termsInTranslationPlaceholder += substring(start, end) },
+        emitOutside = { _, _ -> }
+    )
     // `termsInTranslationPlaceholder` are the "names" like [unit], not the content to translate, like [Warrior], and we use them to match
     // corresponding terms in the translated string, to replace them with the actual message's placeholdercontent, translated.
     // This is what makes reordered placeholders in a translation work.
@@ -202,17 +226,20 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
         }
 
         val sb = StringBuilder(translatedWithPlaceholders.length + 16)
-        val tail = translatedWithPlaceholders.scanPairs('[', ']', supportNesting = true) { gapStart, openPos, closePos ->
-            sb.append(translatedWithPlaceholders, gapStart, openPos)
-            val replacement = substitutions[translatedWithPlaceholders.substring(openPos + 1, closePos)]
-            if (replacement != null)
-                sb.append(replacement)
-            else
-                sb.append(translatedWithPlaceholders, openPos, closePos + 1)
-        }
-        sb.append(translatedWithPlaceholders, tail, translatedWithPlaceholders.length)
+        translatedWithPlaceholders.parsePairs('[', ']', supportNesting = true,
+            emitInside = { start, end ->
+                val replacement = substitutions[substring(start, end)]
+                if (replacement != null)
+                    sb.append(replacement)
+                else
+                    sb.append(this, start, end)
+            },
+            emitOutside = { start, end -> sb.append(this, start, end) }
+        )
         return sb.toString()
     } else {
+        // TODO Legacy implementation, has the weakness that a later replacement can hit the result of an earlier replacement in weird cases.
+        //      Remove this else and the `supportNestingSquareReplacement` when nesting support is turned on and changes ot unit tests are checked.
         var languageSpecificPlaceholder = translatedWithPlaceholders
         for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
@@ -247,23 +274,12 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean, f
 
     // Parse the text into base and modifiers
     val conditionalContents = mutableListOf<String>()
-    val base = StringBuilder(length - 8)
-    // Trim as the regex did - all after a conditional
-    fun appendTrimming(input: String, start: Int, end: Int) {
-        if (start >= end || start >= input.length) return
-        var start = start
-        if (start > 0)
-            while (start < end && input[start] == ' ') start++
-        base.append(input, start, end)
-    }
-    val tail = scanPairs('<', '>', firstPos, supportNestingPointy) { gapStart, openPos, closePos ->
-        appendTrimming(this, gapStart, openPos)
-        conditionalContents += substring(openPos + 1, closePos)
-    }
-    appendTrimming(this, tail, length)
-    // Do a trimEnd without allocating a new CharSequence
-    val trimPos = base.indexOfLast { !it.isWhitespace() } + 1
-    if (trimPos < length) base.deleteRange(trimPos, base.length)
+    val base = StringBuilder(length)
+    parsePairs('<', '>', firstPos, supportNestingPointy,
+        emitInside = { start, end -> conditionalContents += substring(start, end) },
+        emitOutside = { start, end -> base.appendTrimming(this, start, end) }
+    )
+    base.trimEnd()
 
     // Sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
     // Remember this sort operator is stable - entries with identical priority keep their original ordering,
@@ -346,7 +362,13 @@ fun String.getPlaceholderParameters(): List<String> {
     val stringToParse = this.removeConditionals()
     val firstPos = stringToParse.indexOf('[')
     if (firstPos < 0) return emptyList()
-    return stringToParse.parseKeyAndPlaceholders(firstPos, supportNestingSquare)
+
+    @LocalState val parameters = mutableListOf<String>()
+    stringToParse.parsePairs('[', ']', firstPos, supportNestingSquare,
+        emitInside = { start, end -> parameters += substring(start, end) },
+        emitOutside = { _, _ ->  }
+    )
+    return parameters
 }
 
 @Pure
@@ -354,9 +376,13 @@ fun String.getPlaceholderText(): String {
     val stringToParse = this.removeConditionals()
     val firstPos = stringToParse.indexOf('[')
     if (firstPos < 0) return stringToParse
-    val sb = StringBuilder(length)
-    stringToParse.parseKeyAndPlaceholders(firstPos, supportNestingSquare) { text, start, end -> sb.append(text, start, end) }
-    return sb.toString()
+
+    @LocalState val key = StringBuilder(length)
+    stringToParse.parsePairs('[', ']', firstPos, supportNestingSquare,
+        emitInside = { _, _ -> key.append("[]") },
+        emitOutside = { start, end -> key.append(this, start, end) }
+    )
+    return key.toString()
 }
 
 @Pure
@@ -384,15 +410,9 @@ fun String.hasPlaceholderParameters(): Boolean {
  */
 @Pure
 fun String.fillPlaceholders(vararg strings: String): String {
-    @Immutable val keys = getPlaceholderParameters()
-    if (keys.size > strings.size)
-        throw IllegalArgumentException("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
-
-    @LocalState
-    val sb = StringBuilder(length + 16)
+    @LocalState val sb = StringBuilder(length + 16)
     var index = 0
-    val tail = scanPairs('[', ']', supportNesting = supportNestingHelpers) { gapStart, openPos, _ ->
-        sb.append(this, gapStart, openPos)
+    fun substituteNext() {
         if (index < strings.size) {
             sb.append('[')
             sb.append(strings[index])
@@ -402,25 +422,36 @@ fun String.fillPlaceholders(vararg strings: String): String {
         }
         index++
     }
-    sb.append(this, tail, length)
+    parsePairs('[', ']', supportNesting = supportNestingHelpers,
+        emitInside = { _, _ -> substituteNext() },
+        emitOutside = { start, end -> sb.append(this, start, end) }
+    )
+    if (index > strings.size)
+        throw IllegalArgumentException("String $this has a different number of placeholders ($index) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
     return sb.toString()
 }
 
-@Pure
-private fun String.getModifiersSequence(): Sequence<Unique> {
-    if (!this.contains('<')) return emptySequence()
-    @Immutable val matchResults = pointyBraceRegex.findAll(this)
-    return matchResults.map { Unique(it.groups[1]!!.value) }
-}
-
 @Readonly
-fun String.getModifiers() = getModifiersSequence().toList()
+fun String.getModifiers(): List<Unique> {
+    @LocalState val result = mutableListOf<Unique>()
+    parsePairs('<', '>', supportNesting = supportNestingPointy,
+        emitInside = { start, end -> result.add(Unique(substring(start, end))) },
+        emitOutside = { _, _ -> }
+    )
+    return result
+}
 
 @Pure
 fun String.removeConditionals(): String {
-    if (!this.contains('<')) return this // no need to regex search
-    val result = replace(pointyBraceRegex, "")
-    return if (result.length == length) this else result.trimEnd()
+    val firstPos = indexOf('<')
+    if (firstPos < 0) return this
+    @LocalState val sb = StringBuilder(length)
+    parsePairs('<', '>', supportNesting = supportNestingPointy,
+        emitInside = { _, _ -> },
+        emitOutside = { start, end -> sb.appendTrimming(this, start, end) }
+    )
+    sb.trimEnd()
+    return sb.toString()
 }
 
 /** For use in [UniqueValidator][com.unciv.models.ruleset.validation.UniqueValidator]
