@@ -33,7 +33,6 @@ This is an example of such a config file that will be explain below:
 {
     "useColorAsBaseTerrain": "false",
     "useSummaryImages": "true",
-    "unexploredTileColor": {"r":1,"g":1,"b":1,"a":1},
     "fogOfWarColor": {"r":1,"g":0,"b":0,"a":1},
     "fallbackTileSet": null,
     "tileScale":0.9,
@@ -63,12 +62,6 @@ If true, summary images are used for specific groups of images instead of using 
 | Image group | Summary image |
 | ----------- | ------------- |
 | Natural wonders | "NaturalWonder" |
-
-### unexploredTileColor
-
-A color defined with normalized RGBA values. Default value: "{"r":0.24705882, "g":0.24705882, "b":0.24705882, "a":1}" (DarkGray)
-
-Defines the color of the unexplored tiles.
 
 ### fogOfWarColor
 
