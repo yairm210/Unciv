@@ -59,6 +59,23 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val ruleset = civInfo.gameInfo.ruleset
 
         val state = civInfo.state
+
+        for (building in ruleset.buildings.values) {
+            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
+                uniqueBuildings.add(building)
+            }
+        }
+
+        for (improvement in ruleset.tileImprovements.values)
+            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
+                uniqueImprovements.add(improvement)
+
+        for (unit in ruleset.units.values) {
+            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
+                uniqueUnits.add(unit)
+            }
+        }
+
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
                 .associateWith { it.requiredResources(state) }
@@ -78,22 +95,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
             if (lastEraForUnit != null)
                 lastEraResourceUsedForUnit[resource] = lastEraForUnit
-        }
-
-        for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
-                uniqueBuildings.add(building)
-            }
-        }
-
-        for (improvement in ruleset.tileImprovements.values)
-            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
-                uniqueImprovements.add(improvement)
-
-        for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
-                uniqueUnits.add(unit)
-            }
         }
     }
 
