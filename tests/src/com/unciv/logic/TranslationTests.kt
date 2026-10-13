@@ -859,7 +859,7 @@ class TranslationTests {
             "Hungarian" to "c3d4d2c26bb74b9e263fb839f063d1a478b7f59d0db7c51244d583d3a980b0f3",
             "Japanese" to "d785720f7ccc3924396ee113527c091096e506f0131d897cb318f7c9ac3385b6",
             "Maltese" to "3ca88caee228aed32f986662c27812467b449a09003cf469ed52f8c57eb12310",
-            "Russian" to "5bcf51e491d162ab2280d07105dc43883e611dbd839ca7b036758f05c654dd46",
+            "Russian" to "d4ac55e23bb20405a246ef2d026dca49cf62fc2a8c06b287bb0e945d66977dd8",
             "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
             "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
             "Vietnamese" to "34c5cba47b42d0811b143e3d336260fc5f12733be6b3c8bbb97ad6943fca3388",
