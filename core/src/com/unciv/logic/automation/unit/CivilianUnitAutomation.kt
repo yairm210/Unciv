@@ -85,7 +85,7 @@ object CivilianUnitAutomation {
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
         if (unit.hasUnique(UniqueType.AddInCapital))
-            return SpecificUnitAutomation.automateAddInCapital(mapUnit)
+            return SpecificUnitAutomation.automateAddInCapital(unit)
 
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two

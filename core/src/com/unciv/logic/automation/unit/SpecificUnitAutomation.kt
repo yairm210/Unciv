@@ -15,6 +15,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import com.unciv.view.GameView
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -342,15 +343,14 @@ object SpecificUnitAutomation {
         }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
 
-    fun automateAddInCapital(unit: MapUnit) {
-        if (unit.civ.getCapital() == null) return // safeguard
-        val capitalTile = unit.civ.getCapital()!!.getCenterTile()
-        if (unit.movement.canReach(capitalTile))
-            unit.movement.headTowards(capitalTile)
-        if (unit.movement.canUnitSwapTo(capitalTile))
-            unit.movement.swapMoveToTile(capitalTile)
+    fun automateAddInCapital(unit: MapUnitView) {
+        val capitalTile = unit.civ().cities().firstOrNull { it.isCapital() }?.centerTile() ?: return // safeguard
+        if (unit.canReach(capitalTile))
+            unit.tryHeadTowards(capitalTile)
+        if (unit.canSwapTo(capitalTile))
+            unit.trySwapMoveToTile(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
+            unit.tryInvokeUnitAction(UnitActionType.AddInCapital)
         }
     }
 
