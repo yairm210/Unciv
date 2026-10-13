@@ -1,6 +1,7 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic
 
+import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
@@ -8,9 +9,13 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.MAX_CONDITIONAL_NESTING
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
@@ -20,22 +25,35 @@ import com.unciv.models.translations.Translations.Companion.conditionalPlacement
 import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
 import com.unciv.models.translations.curlyBraceRegex
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.BaseTestRunner
+import com.unciv.testing.GitInfo
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
+import com.unciv.testing.runTestParcours
 import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.Log
+import java.io.Writer
+import java.security.MessageDigest
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.sqrt
+import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
 
 @RunWith(BaseTestRunner::class)
 class TranslationTests {
@@ -341,25 +359,19 @@ class TranslationTests {
 
     @Test
     fun translationParameterExtractionForNestedBracesWorks() {
-        Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]".getPlaceholderParameters())
-
-        // Closing braces without a matching opening brace - 'level 0' - are ignored
-        Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]]".getPlaceholderParameters())
-
-        // Opening braces without a matching closing brace mean that the term is never 'closed'
-        // so there are no parameters
-        Assert.assertEquals(listOf<String>(),
-            "The city of [[New [York]".getPlaceholderParameters())
-
-        // Supernesting
         val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
-        Assert.assertEquals(listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
-                superNestedString.getPlaceholderParameters())
-        Assert.assertEquals(listOf("my [best friend]", "[America]'s greatest [Dad]"),
-        superNestedString.getPlaceholderParameters()[0]
-            .getPlaceholderParameters())
+        runTestParcours("", { input: String -> input.getPlaceholderParameters() },
+            "The city of [New [York]]", listOf("New [York]"),
+            // Closing braces without a matching opening brace - 'level 0' - are ignored
+            "The city of [New [York]]]", listOf("New [York]"),
+            // Opening braces without a matching closing brace mean that the term is never 'closed' so there are no parameters
+            "The city of [[New [York]", emptyList<String>(),
+            // Supernesting
+            superNestedString, listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
+            superNestedString.getPlaceholderParameters()[0], listOf("my [best friend]", "[America]'s greatest [Dad]"),
+            // Don't find placehoders in conditionals
+            "Foo [a] <when [b]>", listOf("a")
+        )
 
         setupUncivGame()
 
@@ -381,6 +393,23 @@ class TranslationTests {
         // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals("The sibling of mine own closest ally and indeed the greatest Father in The old British colonies",
             superNestedString.tr())
+    }
+
+    @Test
+    fun fillPlaceHoldersWorks() {
+        //setupUncivGame()
+        Assert.assertEquals(
+            "Gain [x] and [y]",
+            "Gain [a] and [b]".fillPlaceholders("x", "y")
+        )
+        Assert.assertEquals(
+            "[x]]",    // TODO Bug in master, should be "[x]"
+            "[a [b]]".fillPlaceholders("x")
+        )
+        Assert.assertThrows(
+            IllegalArgumentException::class.java,
+            { "Gain [a] and [b] or [c]?".fillPlaceholders("x", "y") }
+        )
     }
 
     @Test
@@ -605,6 +634,7 @@ class TranslationTests {
     fun listTranslatedNames() {
         loadTranslations()
         val languages = translations.getLanguages()
+        setupRuleset()
         val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         val parcours = listOf(
             "leader names" to ruleset.nations.values.asSequence().map { it.leaderName },
@@ -668,5 +698,354 @@ class TranslationTests {
             "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
             0, failures
         )
+    }
+
+    @Test
+    fun testBracketNestingAndUnmatchedBrackets() {
+        setupUncivGame()
+        addTranslation("a", "A")
+        addTranslation("b", "B")
+        addTranslation("c", "C")
+        addTranslation("x", "X")
+        addTranslation("y", "Y")
+        addTranslation("z", "Z")
+        addTranslation("base", "Base")
+        addTranslation("base [arg]", "Phase [arg]")
+        addTranslation("when [arg]", "When [arg]")
+        addTranslation("a [arg]", "á [arg]")
+        addTranslation("b [arg]", "µ [arg]")
+        addTranslation("a b", "A+B")
+        addTranslation("{a", "{à")
+        addTranslation("a {b", "à {B")
+        addTranslation("a ", "A+1")
+        addTranslation("a  ", "A+2")
+        addTranslation("Foobar", "FooBar")
+        addTranslation("Foo bar", "Foo+Bar")
+        addTranslation(shouldCapitalizeKey, "false")
+
+        runTestParcours(
+            "Translate inputs with [], {} or <> brackets:", { input: String -> input.tr() },
+            // Normal placeholders
+            "[a]", "A",
+            "x [a] y [b] z", "x A y B z",
+            "[a][b]", "AB",
+            "[]", "",                          // empty placeholder
+            "[a [b]]", "á B",                  // [] in []
+            "[a [b [c]]]", "á µ C",
+            "[a {b}]", "a B",                  // one {} level inside []
+            // Unbalanced [] should stay literal
+            "a [b", "a [b",
+            "a b]", "a b]",
+            "[a]]", "A]",                      // stray closer after a pair is ignored
+            "[[a]", "[[a]",                    // opener never closes: no terms
+            "[a][b", "A[b",                    // first pair translated, dangling opener literal
+            // Curly {}
+            "{a}", "A",
+            "x {a b} y", "x A+B y",
+            "{a}{b}", "AB",
+            "{a [b]}", "á B",
+            "{a}}", "A}",
+            "a {b", "a {b",
+            "a b}", "a b}",
+            "{a} [b]", "A [b]",                // leftmost type wins; the other type is untouched
+            "[a] {b}", "A {b}",
+            "{a} and [b] {c}", "A and [b] C",
+            "[a] and {b} [c]", "A and {b} C",
+            // Conditionals
+            "base <a>", "Base A",
+            "base <a> <b>", "Base A B",
+            "base <a><b>", "Base A B",         // lenient about the separator
+            "base  <a>  ", "Base A",           // removeConditionals trims and collapses
+            "base [x] <when [y]>", "Phase X When Y",
+            "base {a b} <when {c}>", "base A+B when C",
+            "base\u00A0<a>\u00A0", "Base A",
+            "a  b   <x>", "a  b X",
+            "a   b   <x>", "a   b X",
+            " base <a>", " base A",
+            // Edge cases processed by Conditionals branch but not following the rules
+            "a < b", "a < b",
+            "a > b", "a > b",
+            "a > b <", "a > b <",
+            "[a] < [b]", "A < B",
+            "<[a b]", "<A+B",
+            "<[a  b]", "<a  b",
+            "x   <[a]", "x   <A",
+            "base <a> <b> tail", "base tail A B",
+            "Foo <a> bar", "Foo+Bar A",
+            "Foo <a>bar", "Foo+Bar A",
+            "Foo<a> bar", "FooBar A",
+            "Foo<a>bar", "FooBar A",
+            // TODO Currently "wrong" results
+            "{{a}", "{a",                       // first { pairs with the first }, the inner "{a" isn't looked up as is, but neither does the regex find a match
+            "{a {b} c}", "a {b c}",             // nested {} not supported, only inner "a {b" found, no key lookup or further replace
+            "[][[]", "[",                       // textual replace of "[]"
+            "[]][[]", "][",
+        )
+    }
+
+    @Test
+    fun rulesetValidationCatchesMalformedConditionals() {
+        val validator = UniqueValidator(Ruleset(), false)
+
+        fun check(input: Pair<String, List<String>>): List<String> {
+            val filters = input.second.toMutableList()
+            val errors = validator.checkUnique(Unique(input.first), null).mapTo(mutableListOf()) { it.text }
+            if (filters.isEmpty()) return errors
+            // Remove matched errors
+            val iter = errors.iterator()
+            for (error in iter) {
+                val filter = filters.firstOrNull { it in error } ?: continue
+                filters.remove(filter)
+                iter.remove()
+            }
+            errors.addAll(filters) // return unmatched filters too
+            return errors
+        }
+
+        // "expected" is alwas an empty list so we can output lists of _unexpected_ validation errors
+        runTestParcours("Validate Uniques with malformed conditionals", ::check,
+            "[+1] Sight <when at war>" to emptyList<String>(), emptyList<String>(), // control: perfectly fine
+            "[+1] Sight <a>" to listOf("unknown type"), emptyList<String>(), // control: error not reported by validateConditionals
+            "[+1] Sight > 9 <when at war>" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <for [Civilian] units<hidden from users>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect emptyList when conditional nesting is supported
+            "[+1] Sight <when at war>>" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <when at war><" to listOf("mismatched conditional braces"), emptyList<String>(),
+            "[+1] Sight <a<a<a>>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect "unknown type" when conditional nesting is supported
+            "[+1] Sight <a> <b> <c>" to listOf("unknown type", "unknown type", "unknown type"), emptyList<String>(), // control: errors not reported by validateConditionals
+            "[+1] Sight <a> <b> <c>!" to listOf("text between or after conditionals"), emptyList<String>(),
+            "[+1] Sight <a>, <b>, <c>" to listOf("text between or after conditionals"), emptyList<String>(),
+
+            //nested(MAX_CONDITIONAL_NESTING + 1) to listOf("excessive nesting of conditionals"), emptyList<String>(),
+            //fun nested(levels: Int) = "[+1] Sight " + "<a".repeat(levels) + ">".repeat(levels)
+        )
+    }
+
+    /**
+     *  Tester helping ensure code changes do not influence translation output.
+     *
+     *  Can generate files to compare using a diff tool before/after.
+     *  Files are by default placed under tests/build, and are therefore delted by gradle clean.
+     *  The subfolder is named "TranslationTest." plus branch name (commit short if HEAD is detached) and contains a full git description marker for idnetification.
+     *
+     *  Do ***NOT*** leave active in CI: Will fail every time civilopedia contents or translations change.
+     *
+     *  ### Usage:
+     *  - Start a branch and do not rebase / merge master until done
+     *  - Choose parameters at the start of the function, most importantly `writeFiles` and `outFileName`
+     *  - Comment out `@Ignore` and run the test.
+     *  - Copy actual hashes (ready to go in console output) to expected hashes
+     *  - Implement your changes to translation code
+     *  - Rerun test
+     *  - When done, uncomment `@Ignore`
+     */
+    @Test
+    @Ignore("This is meant to check local work on the translation framework only")
+    @RedirectOutput(RedirectPolicy.Show)
+    fun translateAndHashCivilopedia() {
+        val computeHashes = true
+        val writeFiles = true
+        val branch = GitInfo.currentBranch?.replace("/", "_") ?: GitInfo.describe?.commitAbbrev ?: "unknown"
+        /** Path for text files relative to 'assets' */
+        val outPath = "../../tests/build/TranslationTest.$branch"
+        fun outFileName(language: String) = "$outPath/$language.txt"
+
+        val expectedHashes = mapOf(
+            "English" to "61209d506bcf6c76d58df5b239c20a985935bb4bd84b5886bcb1ee041cd04ab0",
+            "Bangla" to "104235b2045b0593795bb2aab8157ac038de5edcc2512cdd8937e281baad75f2",
+            "French" to "215bdbd3c1eb9540665b53d9de45e0b849654e8281bb6d4e9ee4204b95386cc3",
+            "Hungarian" to "c3d4d2c26bb74b9e263fb839f063d1a478b7f59d0db7c51244d583d3a980b0f3",
+            "Japanese" to "d785720f7ccc3924396ee113527c091096e506f0131d897cb318f7c9ac3385b6",
+            "Maltese" to "3ca88caee228aed32f986662c27812467b449a09003cf469ed52f8c57eb12310",
+            "Russian" to "5bcf51e491d162ab2280d07105dc43883e611dbd839ca7b036758f05c654dd46",
+            "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
+            "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
+            "Vietnamese" to "34c5cba47b42d0811b143e3d336260fc5f12733be6b3c8bbb97ad6943fca3388",
+            "generated" to "96ead1ff5d094f84dd7be1cafde621638a278725b5cc130a16937c2eb8ef4cc1",
+        )
+
+        setupUncivGame()
+        loadTranslations()
+        copyTranslationsToUncivGame()
+        setupRuleset()
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+
+        val (failures, duration, hint) = translateAndHashCivilopedia(
+            ruleset, computeHashes, expectedHashes, writeFiles, ::outFileName
+        )
+
+        fun describe() = GitInfo.describe?.run {
+            if (result.isNotBlank()) result.replace("/", "_")
+            else commitAbbrev + if (isDirty) "-dirty" else ""
+        } ?: "unknown"
+        Gdx.files.local("$outPath/Created by ${describe()}").writeBytes(byteArrayOf(), false)
+
+        println("Aggregate tr() duration: $duration\n")
+        if (failures > 0) println(hint.toString())
+        Assert.assertEquals(0, failures)
+    }
+
+    @Test
+    @Ignore("This is meant to check local work on the translation framework only")
+    @RedirectOutput(RedirectPolicy.Show)
+    fun measureTranslateCivilopedia() {
+        val computeHashes = false
+        val writeFiles = false
+
+        val languagesToTest = mapOf(
+            "English" to "",
+            "Bangla" to "",
+            "French" to "",
+            "Hungarian" to "",
+            "Japanese" to "",
+            "Maltese" to "",
+            "Russian" to "",
+            "Swedish" to "",
+            "Simplified_Chinese" to "",
+            "Vietnamese" to "",
+            "generated" to "",
+        )
+
+        setupUncivGame()
+        loadTranslations()
+        copyTranslationsToUncivGame()
+        setupRuleset()
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        val measurements = mutableListOf<Duration>()
+
+        repeat(49) {
+            val (_, duration, _) = translateAndHashCivilopedia(
+                ruleset, computeHashes, languagesToTest, writeFiles
+            ) { _ -> "" }
+            measurements += duration
+        }
+        val noOutliers = measurements.drop(5).sorted().drop(1).dropLast(1) // 5 warmup, ignore best and worst
+        val asDbl = noOutliers.map { it.toDouble(DurationUnit.MILLISECONDS) }
+        val average = asDbl.average()
+        val stdDev = if (asDbl.size > 1) sqrt(asDbl.sumOf { (it - average) * (it - average) } / (asDbl.size - 1)) else 0.0
+        println("\nAverage aggregate tr() duration: ${average.milliseconds} ± ${stdDev.milliseconds}\n")
+    }
+
+    @Suppress("ConstPropertyName")
+    companion object {
+        const val alphabetPermutations = " 1a[]."
+        const val generatePermutationsLength = 6
+        const val alphabetRandom = "   \u00a0\u202f-+,.12345780abcdefghijklmnop<>[]{}"
+        const val generateRandomLength = 42
+        const val generateRandomCount = 10_000
+    }
+
+    private fun translateAndHashCivilopedia(
+        ruleset: Ruleset,
+        computeHashes: Boolean,
+        expectedHashes: Map<String, String>,
+        writeFiles: Boolean,
+        outFileName: (String) -> String
+    ): Triple<Int, Duration, StringBuilder> {
+        ///////////////////// Setup /////////////////////
+        var failures = 0
+        val hint = StringBuilder()
+        var duration = 0L.nanoseconds
+
+        fun openWriter(key: String): Writer? {
+            if (!writeFiles) return null
+            val file = Gdx.files.local(outFileName(key))
+            file.parent().mkdirs()
+            return file
+                .writer(false, Charsets.UTF_8.name())
+                .buffered(0x8000)
+        }
+
+        ///////////////////// Data to test /////////////////////
+        fun FormattedLine.simple() = buildString {
+            if (header > 0) append(" ".repeat(header - 1))
+            else append("\t".repeat(1 + indent))
+            append(text)
+        }
+        val civilopedia = sequence {
+            var lastClass = ""
+            for (item in ruleset.allICivilopediaText()) {
+                val className = item::class.simpleName ?: "anonymous"
+                if (className != lastClass) {
+                    lastClass = className
+                    yield(className)
+                }
+                item.getCivilopediaTextHeader()?.let { yield(it.simple()) }
+                for (line in item.getCivilopediaTextLines(ruleset))
+                    if (line.text.isNotBlank()) yield(line.simple())
+            }
+        }
+        suspend fun SequenceScope<String>.generateRandom() {
+            val chars = CharArray(generateRandomLength)
+            val rng = Random(42)
+            repeat(generateRandomCount) {
+                for (i in chars.indices)
+                    chars[i] = alphabetRandom[rng.nextInt(alphabetRandom.length)]
+                yield(String(chars))
+            }
+        }
+        suspend fun SequenceScope<String>.generatePermutations() {
+            var count = 1L                      // alphabet.length ^ len
+            for (len in 0..generatePermutationsLength) {
+                for (k in 0 until count) {
+                    val chars = CharArray(len)
+                    var x = k
+                    for (i in 0 until len) {
+                        chars[i] = alphabetPermutations[(x % alphabetPermutations.length).toInt()]
+                        x /= alphabetPermutations.length
+                    }
+                    yield(String(chars))
+                }
+                count *= alphabetPermutations.length
+            }
+        }
+        val generated = sequence {
+            generatePermutations()
+            generateRandom()
+        }
+
+        ///////////////////// Run /////////////////////
+        for ((key, expectedHash) in expectedHashes) {
+            val language = if (key == "generated") "English" else key
+            UncivGame.Current.settings.language = language
+            val data = if (key == "generated") generated else civilopedia
+            val outWriter = openWriter(key)
+            var lines = 0
+            var total = 0L
+            val md = if (computeHashes) MessageDigest.getInstance("SHA-256") else null
+
+            fun process(line: String, output: String) {
+                md?.update(output.toByteArray(Charsets.UTF_8))
+                md?.update(0.toByte())
+                lines++
+                total += output.length + 1
+                if (outWriter == null) return
+                outWriter.write(line)
+                outWriter.write(" → ")
+                outWriter.write(output.trimStart(' ', '\t'))
+                outWriter.write("\n")
+            }
+
+            for (line in data) {
+                val input = if (key == "generated") line else line.trimStart() // We indented the original text for readability
+                val startTime = TimeSource.Monotonic.markNow()
+                val output = try {
+                    input.tr()
+                } catch (ex: Throwable) {
+                    "${ex::class.simpleName}: ${ex.message}"
+                }
+                duration += startTime.elapsedNow()
+                process(line, output)
+            }
+            outWriter?.close()
+            if (md != null) {
+                val actualHash = md.digest().toHexString()
+                println("$key: $lines lines, $total chars: " + if (actualHash != expectedHash) "Failed" else "OK")
+                if (actualHash != expectedHash) failures++
+                hint.append("\t\t\t\"$key\" to \"$actualHash\",\n")
+            }
+        }
+
+        ///////////////////// Info output /////////////////////
+        return Triple(failures, duration, hint)
     }
 }

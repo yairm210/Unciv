@@ -17,19 +17,25 @@ import yairm210.purity.annotations.Readonly
 // Please note: The extra \] and \} are NOT removable, despite what Android Studio might recommend -
 //   they are necessary for Android Java 6 phones to parse the regex properly!
 
-// Expect a literal [ followed by a captured () group and a literal ].
-// The group may contain any number of any character except ] - pattern [^]]
+/** Expect a literal [ followed by a captured () group and a literal ].
+ * The group may contain any number of any character except ] - pattern [^]] */
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val squareBraceRegex = Regex("""\[([^]]*)\]""")
 
-// Analogous as above: Expect a {} pair with any chars but } in between and capture that
+// Analogous as above:
+/** Expect a literal { followed by a captured () group and a literal }.
+ * The group may contain any number of any character except } - pattern [^}] */
 @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 @VisibleForTesting
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
-// Analogous as above: Expect a <> pair with any chars but > in between and capture that
-@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-internal val pointyBraceRegex = Regex("""\<([^>]*)\>""")
+// Similar to above
+/** Expect a <> pair with any chars but > in between and capture that.
+ * Includes any trailing blanks in the match, for removeConditionals, and only for cases trimEnd() doesn't cover - those are misformed with text after or between the conditionals.
+ * Note: At the time of writing, this had only two use patterns: replace("") and extracting group 1. Any different new use would need reconsideration.
+ */
+@Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
+internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
 
 
 /**
@@ -260,7 +266,7 @@ fun String.hasPlaceholderParameters(): Boolean {
 fun String.fillPlaceholders(vararg strings: String): String {
     @Immutable val keys = this.getPlaceholderParameters()
     if (keys.size > strings.size)
-        throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
+        throw IllegalArgumentException("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
     var filledString = this.replace(squareBraceRegex, "[]")
     keys.indices.forEach { i ->
@@ -282,16 +288,27 @@ fun String.getModifiers() = getModifiersSequence().toList()
 @Pure
 fun String.removeConditionals(): String {
     if (!this.contains('<')) return this // no need to regex search
-    return this
-        .replace(pointyBraceRegex, "")
-        // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
-        // and no translations start or end with a space.
-        // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
-        // This is a reasonable but not fully correct assumption to make.
-        // By doing it like this, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.
-        // If we ever start getting translations for these, we'll work something out then.
-        .replace("  ", " ")
-        .trim()
+    val result = replace(pointyBraceRegex, "")
+    return if (result.length == length) this else result.trimEnd()
+}
+
+/** For use in [UniqueValidator][com.unciv.models.ruleset.validation.UniqueValidator]
+ *
+ *  Note: Whether nested modifiers validate depends on whether removeConditionals supports nesting.
+ *  @return null if conditionals are well-formed, else a description of the first problem found.
+ */
+@Readonly
+fun String.validateConditionals() = validateConditionals(0)
+@VisibleForTesting
+const val MAX_CONDITIONAL_NESTING = 666
+@Readonly
+private fun String.validateConditionals(recursionDepth: Int): String? {
+    if ('<' !in this) return null
+    val base = removeConditionals()
+    if ('<' in base || '>' in base) return "mismatched conditional braces"
+    if (!trimStart().startsWith(base.trimStart())) return "text between or after conditionals"
+    if (recursionDepth >= MAX_CONDITIONAL_NESTING) return "excessive nesting of conditionals"
+    return getModifiers().firstNotNullOfOrNull { it.text.validateConditionals(recursionDepth + 1) }
 }
 
 /** Formats number according to current language
