@@ -10,7 +10,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
+
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -164,8 +164,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
             Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse("https://unciv.app/${game.second}")
+                putExtra("targetUrl", "https://unciv.app/${game.second}")
             }
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                     FLAG_UPDATE_CURRENT
