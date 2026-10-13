@@ -20,6 +20,11 @@ import com.unciv.models.translations.getPlaceholderText
 internal class ConsoleTriggerAction(
     topLevelCommand: String
 ) : ConsoleAction(getFormat(topLevelCommand), getAction(topLevelCommand)) {
+    override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
+        console.showUniqueBuilderButton()
+        return super.autocomplete(console, params)
+    }
+
     companion object {
         private fun getFormat(topLevelCommand: String): String {
             val capitalized = topLevelCommand.replaceFirstChar { c -> c.uppercase() }
@@ -90,7 +95,7 @@ internal class ConsoleTriggerAction(
                 it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly && "deprecated" in it.text
             }
             if (!onlyDeprecated)
-                throw ConsoleErrorException(errors.getErrorText(true))
+                throw ConsoleUniqueErrorException(errors.getErrorText(true))
 
             // Yes: Replace console text field with the deprecation annotation's recommendation
             var replaceWith = unique.type?.getDeprecationAnnotation()?.replaceWith?.expression
@@ -111,13 +116,13 @@ internal class ConsoleTriggerAction(
                 .filter { CliInput(it.placeholderText, param.method) == filterText }
                 .take(4).toList()
             if (uniqueTypes.isEmpty())
-                throw ConsoleErrorException("`$param` not found in UniqueTypes")
+                throw ConsoleUniqueErrorException("`$param` not found in UniqueTypes")
             if (uniqueTypes.size > 1)
-                throw ConsoleErrorException("`$param` has ambiguous UniqueType: ${uniqueTypes.joinToString(limit = 3) { it.text }}?")
+                throw ConsoleUniqueErrorException("`$param` has ambiguous UniqueType: ${uniqueTypes.joinToString(limit = 3) { it.text }}?")
             val uniqueType = uniqueTypes.first()
             if (uniqueType.canAcceptUniqueTarget(targetType))
                 return uniqueType
-            throw ConsoleErrorException("`$param` is not a Triggerable")
+            throw ConsoleUniqueErrorException("`$param` is not a Triggerable")
         }
 
         private class ConsoleRulesetObject(private val targetType: UniqueTarget) : RulesetObject() {

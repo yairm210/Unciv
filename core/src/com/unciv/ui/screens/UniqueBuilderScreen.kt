@@ -18,28 +18,36 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.LanguageTable
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 
-/** A [PickerScreen] to select a language, used once on the initial run after a fresh install.
- *  After that, [OptionsPopup] provides the functionality.
- *  Reusable code is in [LanguageTable] and [addLanguageTables].
+/** A [PickerScreen] to build valid Uniques, accessible from [ModCheckTab][com.unciv.ui.popups.options.ModCheckTab].
  */
-class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
+class UniqueBuilderScreen(
+    ruleset: Ruleset,
+    selectTarget: UniqueTarget? = null,
+    initialText: String = "",
+    onUniqueChosen: ((String) -> Unit)? = null
+) : PickerScreen() {
 
-    private val mainUniqueTable = UniqueTable(true, ruleset, stage) { updateCurrentUniqueText() }
+    private val mainUniqueTable = UniqueTable(true, ruleset, stage, selectTarget, initialText) { updateCurrentUniqueText() }
     private val modifierTables = mutableListOf<UniqueTable>()
     private var currentUniqueText = ""
 
     init {
         setDefaultCloseAction()
         rightSideButton.isVisible = false
-        rightSideButton.setText("Copy to clipboard")
-        rightSideButton.onClick { Gdx.app.clipboard.contents = currentUniqueText }
+        rightSideButton.setText(if (onUniqueChosen == null) "Copy to clipboard" else "OK")
+        rightSideButton.onClick {
+            if (onUniqueChosen == null) {
+                Gdx.app.clipboard.contents = currentUniqueText
+            } else {
+                onUniqueChosen(currentUniqueText)
+                game.popScreen()
+            }
+        }
         topTable.defaults().pad(5f)
 
         mainUniqueTable.initialize()
@@ -60,24 +68,26 @@ class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
 
     private fun updateCurrentUniqueText() {
         currentUniqueText = mainUniqueTable.uniqueTextField.text +
-                modifierTables.joinToString("") { " <"+it.uniqueTextField.text+">" }
+                modifierTables.joinToString("") { " <" + it.uniqueTextField.text + ">" }
         descriptionLabel.setText(currentUniqueText)
         rightSideButton.isVisible = true
         rightSideButton.enable()
     }
 }
 
-class UniqueTable(
+private class UniqueTable(
     isMainUnique: Boolean,
     val ruleset: Ruleset,
     stage: Stage,
+    selectTarget: UniqueTarget? = null,
+    private val initialText: String = "",
     val onUniqueChange: () -> Unit
 ) :Table() {
     // in order of presentation
     private val uniqueTargetsSelectBox: SelectBox<UniqueTarget>
     private val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
     private val uniqueSearchTextField = TextField("", BaseScreen.skin).apply { messageText = "Search" }
-    internal val uniqueTextField = TextField("Unique", BaseScreen.skin)
+    val uniqueTextField = TextField("Unique", BaseScreen.skin)
     private val documentationLabel = WrappableLabel("", stage.width * 0.9f)
     private val documentationCell: Cell<Actor?>
     private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
@@ -97,7 +107,7 @@ class UniqueTable(
         val uniqueTargetSelectBoxTable = Table().apply { defaults().pad(5f) }
         uniqueTargetsSelectBox = SelectBox<UniqueTarget>(BaseScreen.skin)
         uniqueTargetsSelectBox.setItems(uniqueTargets)
-        uniqueTargetsSelectBox.selected = UniqueTarget.Global
+        uniqueTargetsSelectBox.selected = selectTarget ?: UniqueTarget.Global
         uniqueTargetSelectBoxTable.add(uniqueTargetsSelectBox)
 
         uniqueTargetSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f).row()
@@ -114,6 +124,7 @@ class UniqueTable(
             onUniqueSelected()
         }
         // Unique search
+        uniqueSearchTextField.text = initialText
         uniqueSearchTextField.onChange {
             setUniqueSelectBoxItems()
         }
@@ -211,5 +222,8 @@ class UniqueTable(
      * because it needs to update the final unique text */
     fun initialize() {
         onUniqueTargetChange()
+        if (initialText.isEmpty()) return
+        val type = UniqueType.entries.firstOrNull { it.text.startsWith(initialText) } ?: return
+        uniqueSelectBox.selected = type
     }
 }
