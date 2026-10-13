@@ -73,7 +73,7 @@ internal class ConsoleTriggerAction(
             var uniqueText = paramStack.removeFirstOrNull()?.toMethod(CliInput.Method.Quoted)
                 ?: throw ConsoleErrorException("Parameter triggeredUnique missing")
             val uniqueType = getUniqueType(uniqueText, targetType)
-            if (paramStack.isNotEmpty() && uniqueText.equals(uniqueType.text)) {
+            if (paramStack.isNotEmpty() && !uniqueText.equals(uniqueType.text)) {
                 // Simplification: You either specify a fully formatted Unique as one parameter or the default text and a full set of replacements
                 val params = paramStack.map { it.originalUnquoted() }.toTypedArray()
                 uniqueText = CliInput(uniqueType.placeholderText.fillPlaceholders(*params), CliInput.Method.Quoted)

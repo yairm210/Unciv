@@ -23,12 +23,32 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.devconsole.CliInput.Companion.splitToCliInput
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import org.jetbrains.annotations.VisibleForTesting
 
 
 class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.DevConsole) {
     companion object {
         private const val maxHistorySize = 42
+
+        @VisibleForTesting
+        data class ConsoleCommandTestingDescriptor(val nodes: List<String>, val format: String)
+        /** For crude unit tests, I don't want to open up all the internal interfaces, so give the test something else to work with */
+        @VisibleForTesting
+        fun enumerateCommands(): Sequence<ConsoleCommandTestingDescriptor> = sequence {
+            enumerateCommands(0, ConsoleCommandRoot(), emptyList())
+        }
+        private suspend fun SequenceScope<ConsoleCommandTestingDescriptor>.enumerateCommands(level: Int, node: ConsoleCommand, nodes: List<String>) {
+            if (node is ConsoleAction) {
+                yield(ConsoleCommandTestingDescriptor(nodes, node.format))
+            } else if (node is ConsoleCommandNode) {
+                for ((name, subnode) in node.subcommands) {
+                    val subnodes = nodes + name
+                    enumerateCommands(level + 1, subnode, subnodes)
+                }
+            }
+        }
     }
+
     private val history by screen.game.settings::consoleCommandHistory
     private var keepOpen by screen.game.settings::keepConsoleOpen
 
@@ -227,7 +247,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
     }
 
     private fun getAutocomplete(): Pair<Int,String>? {
-        val params = textField.text.splitToCliInput()
+        val rawParams = textField.text.splitToCliInput()
+        val params = if (rawParams.size == 1 && rawParams[0].toString() in commandRoot.subcommands.keys) rawParams + CliInput("") else rawParams
         val autoCompleteString = commandRoot.autocomplete(this, params)
             ?: return null
         val replaceLength = params.lastOrNull()?.originalLength() ?: 0
