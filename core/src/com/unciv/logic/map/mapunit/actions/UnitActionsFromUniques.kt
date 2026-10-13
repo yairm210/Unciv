@@ -1,7 +1,6 @@
 package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
@@ -13,6 +12,7 @@ import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -24,7 +24,6 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.popups.ConfirmPopup
 import yairm210.purity.annotations.Readonly
 
 @Suppress("UNUSED_PARAMETER") // These methods are used as references in UnitActions.actionTypeToFunctions and need identical signature
@@ -65,7 +64,6 @@ object UnitActionsFromUniques {
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
-            GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
             // If unit has FoundPuppetCity make it into a puppet city.
             if (unique.type == UniqueType.FoundPuppetCity) {
                 city.isPuppet = true
@@ -83,26 +81,19 @@ object UnitActionsFromUniques {
             )
             else UnitActionType.FoundCity.value
 
+        // check if we would be breaking a promise
+        val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
+        val confirmation = if (leadersPromisedNotToSettleNear == null) null
+            else UnitActionConfirmation(
+                "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?",
+                "Break promise")
+
         return UnitAction(
             type = UnitActionType.FoundCity,
             title = title,
             associatedUnique = unique,
-            action = {
-                // check if we would be breaking a promise
-                val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
-                if (leadersPromisedNotToSettleNear == null)
-                    foundAction()
-                else {
-                    // ask if we would be breaking a promise
-                    val text = "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?"
-                    ConfirmPopup(
-                        GUI.getWorldScreen(),
-                        text,
-                        "Break promise",
-                        action = foundAction
-                    ).open(force = true)
-                }
-            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) }
+            action = foundAction.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) },
+            confirmation = confirmation
         )
     }
 

@@ -7,10 +7,8 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.tr
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
@@ -30,21 +28,14 @@ object UiOnlyUnitActions {
     ).filterNotNull()
 
     private fun getDisbandAction(unit: MapUnit): UiUnitAction {
+        val question = if (unit.currentTile.getOwner() == unit.civ)
+            "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?"
+        else "Do you really want to disband this unit?"
         return UiUnitAction(UiUnitActionType.DisbandUnit,
+            confirmation = UnitActionConfirmation(question, "Disband unit"),
             action = {
-                val worldScreen = GUI.getWorldScreen()
-                if (!worldScreen.hasOpenPopups()) {
-                    val disbandText = if (unit.currentTile.getOwner() == unit.civ)
-                        "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
-                    else "Do you really want to disband this unit?".tr()
-                    ConfirmPopup(worldScreen, disbandText, "Disband unit") {
-                        unit.disband()
-                        unit.civ.updateStatsForNextTurn() // less upkeep!
-                        GUI.setUpdateWorldOnNextRender()
-                        if (GUI.getSettings().autoUnitCycle)
-                            worldScreen.switchToNextUnit()
-                    }.open()
-                }
+                unit.disband()
+                unit.civ.updateStatsForNextTurn() // less upkeep!
             }.takeIf { unit.hasMovement() }
         )
     }

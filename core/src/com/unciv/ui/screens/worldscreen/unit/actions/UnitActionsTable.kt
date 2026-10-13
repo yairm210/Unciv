@@ -15,6 +15,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import yairm210.purity.annotations.Readonly
@@ -193,6 +194,17 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun activateAction(unitAction: UiUnitAction, unit: MapUnit) {
+        val confirmation = unitAction.confirmation
+        if (confirmation == null) {
+            invokeAction(unitAction, unit)
+            return
+        }
+        ConfirmPopup(worldScreen, confirmation.question, confirmation.confirmText) {
+            invokeAction(unitAction, unit)
+        }.open()
+    }
+
+    private fun invokeAction(unitAction: UiUnitAction, unit: MapUnit) {
         unitAction.action!!.invoke()
         worldScreen.shouldUpdate = true
         // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit

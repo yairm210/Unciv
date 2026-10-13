@@ -6,6 +6,7 @@ import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.getPlaceholderParameters
@@ -19,6 +20,7 @@ import yairm210.purity.annotations.Readonly
  *  Either wraps a logic [UnitAction] (see the secondary constructor), or is UI-only (see [UiOnlyUnitActions]).
  *
  *  @property unitAction The logic action this was created from, if any
+ *  @property confirmation if not null, the UI asks the player before invoking [action]
  *  @property action null if the action is currently disabled
  */
 class UiUnitAction(
@@ -28,11 +30,13 @@ class UiUnitAction(
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = uiType.uncivSound,
     val unitAction: UnitAction? = null,
+    val confirmation: UnitActionConfirmation? = null,
     val action: (() -> Unit)? = null
 ) {
     constructor(unit: MapUnit, unitAction: UnitAction) : this(
         UiUnitActionType.of(unitAction.type), UiUnitActionType.of(unitAction.type).getUseFrequency(unit, unitAction),
-        unitAction.title, unitAction.isCurrentAction, unitAction = unitAction, action = unitAction.action
+        unitAction.title, unitAction.isCurrentAction, unitAction = unitAction,
+        confirmation = unitAction.confirmation, action = unitAction.action
     )
 
     fun getIcon(size: Float = 20f): Actor {

@@ -7,6 +7,15 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.hashOf
 
 
+/** Asks the player to confirm before a unit action is executed. Handled by the UI, direct invocation (e.g. automation) skips it.
+ *  @param question The text shown in the popup
+ *  @param confirmText The text for the confirm button
+ */
+class UnitActionConfirmation(
+    val question: String,
+    val confirmText: String
+)
+
 /** Unit Actions - class - carries dynamic data and actual execution.
  * Static properties are in [UnitActionType].
  * Note this is for the buttons offering actions, not the ongoing action stored with a [MapUnit][com.unciv.logic.map.mapunit.MapUnit]
@@ -17,6 +26,8 @@ open class UnitAction(
     val isCurrentAction: Boolean = false,
     /** The unique this action stems from, if any - the UI takes its `UnitActionPriority` modifiers from here */
     val associatedUnique: Unique? = null,
+    /** If not null, the UI asks for confirmation before invoking [action] */
+    val confirmation: UnitActionConfirmation? = null,
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
