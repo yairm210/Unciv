@@ -17,11 +17,11 @@ class SpyView(private val spy: Spy,
     // Data retrieval
     val name: String get() = spy.name
     @Readonly fun getEffectiveRank(): Int = spy.getEffectiveRank()
-    @Readonly fun canMoveTo(foreignCityView: ForeignCityView): Boolean = spy.canMoveTo(foreignCityView.getCity())
+    @Readonly fun canMoveTo(foreignCityView: ForeignCityView): Boolean = spy.canMoveTo(foreignCityView.unwrap())
 
     // Actions
     fun tryMoveTo(foreignCityView: ForeignCityView?): Boolean {
-        spy.moveTo(foreignCityView?.getCity())
+        spy.moveTo(foreignCityView?.unwrap())
         return true
     }
 }

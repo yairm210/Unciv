@@ -1,27 +1,18 @@
 ## 4.22.10
 
-Resolved  - allow removing all forms of starting locations in map editor
+Allow removing all forms of starting locations in map editor
 
-Resolved  - disable "pick improvement" when selecting an unpickable improvement
+Disable "pick improvement" when selecting an unpickable improvement
 
-Resolved  - Make multiplayer check worker work with specific game ids again
+Make multiplayer check worker work with specific game ids again
 
-Views: Added "invoke unit action by type" to mapunitview :)
-
-Make "requires confirmation" (+ required data) *unit action logic*, and have the actual popup part of *ui code*. This removes more GUI imports in unit actions, AND ALSO makes "popup approved actions" work the same as direct actions, including "go to next unit", "remove unit overlay" etc.
-
-No need for manual 'set update on next render' when this is already done for all actions in UnitActionsTable.activateAction()
-
-chore: "Disband" is no longer a UnitAction
-
-Resolved  - Removed deprecated unexploredTileColor
+"Popup confirm" unit actions correctly move to next unit, refresh UI, etc
 
 More detailed color coding of diplomacy modifiers - By unciv-loof
 
-By SomeTroglodyte:
-- chore: Translation baseline - tests, minor fix 
-- Allow using Unique Builder for console activatetrigger 
+By SomeTroglodyte: 
 - Fix a few console quirks 
+- Allow using Unique Builder for console activatetrigger 
 
 ## 4.22.9
 
