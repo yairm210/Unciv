@@ -254,7 +254,6 @@ class GameSettings {
 
     /** A NumberFormat for the chosen [language] - mutable and can be configured in [block] right away */
     fun getAndModifyCurrentNumberFormat(block: (DecimalFormat.() -> Unit)?): DecimalFormat {
-        TranslationCache.check(language)
         val formatter = TranslationCache.getNumberFormatter()
         if (block != null) formatter.block()
         return formatter

@@ -272,11 +272,12 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean, f
      * together into the final fully translated string.
      */
 
-    val locale = TranslationCache.locale
-    val conditionalsAfterUnique = TranslationCache.conditionalsAfterUnique
-    val shouldCapitalize = TranslationCache.shouldCapitalize
-    val spaceEquivalent = TranslationCache.spaceEquivalent
-    val sortPriorities = TranslationCache.sortPriorities
+    val langData = TranslationCache.getLangData()
+    val locale = langData.locale
+    val conditionalsAfterUnique = langData.conditionalsAfterUnique
+    val shouldCapitalize = langData.shouldCapitalize
+    val spaceEquivalent = langData.spaceEquivalent
+    val sortPriorities = langData.sortPriorities
 
     // Parse the text into base and modifiers
     val conditionalContents = mutableListOf<String>()
@@ -338,14 +339,10 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
 
     val translationBeforeNumberScan = UncivGame.Current.translations.getText(this, language, TranslationCache.activeMods)
     val translation = if (translationBeforeNumberScan.none { it.isDigit() }) translationBeforeNumberScan else {
-        val formatter = TranslationCache.getNumberFormatter()
-        translationBeforeNumberScan.replace(TranslationCache.numberRegex) {
-            val pos = ParsePosition(0)
+        val langData = TranslationCache.getLangData()
+        translationBeforeNumberScan.replace(langData.numberRegex) {
             val numericString = it.value
-            formatter.parse(numericString, pos)
-                .takeIf { pos.index == numericString.length }
-                ?.let { number -> formatter.format(number) }
-                ?: numericString
+            langData.reformat(numericString) ?: numericString
         }
     }
 
@@ -535,7 +532,7 @@ private fun String.validateConditionals(recursionDepth: Int): String? {
  */
 @Readonly
 fun Number.tr(): String {
-    return TranslationCache.getNumberFormatter().format(this)
+    return TranslationCache.getLangData().format(this)
 }
 
 /** Formats number according to a specific [language]
