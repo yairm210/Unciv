@@ -12,29 +12,35 @@ import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
-// We don't need to allocate different memory for these every time we .tr() - or recompile them.
-// Please note: The extra \] and \} are NOT removable, despite what Android Studio might recommend -
-//   they are necessary for Android Java 6 phones to parse the regex properly!
+/** If you really need one of these for a different purpose - think again, they don't support nesting - and if you're sure, copy them elsewhere */
+@Suppress("unused")
+private object ObsoleteRegexes {
+    // We don't need to allocate different memory for these every time we .tr() - or recompile them.
+    // Please note: The extra \] and \} are NOT removable, despite what Android Studio might recommend -
+    //   they are necessary for Android Java 6 phones to parse the regex properly!
 
-/** Expect a literal [ followed by a captured () group and a literal ].
- * The group may contain any number of any character except ] - pattern [^]] */
-@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-val squareBraceRegex = Regex("""\[([^]]*)\]""")
+    /** Expect a literal [ followed by a captured () group and a literal ].
+     * The group may contain any number of any character except ] - pattern [^]] */
+    @Deprecated("Use getPlaceholderText, getPlaceholderParameters, hasPlaceholderParameters or fillPlaceholders instead")
+    @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
+    val squareBraceRegex = Regex("""\[([^]]*)\]""")
 
-// Analogous as above:
-/** Expect a literal { followed by a captured () group and a literal }.
- * The group may contain any number of any character except } - pattern [^}] */
-@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
-@VisibleForTesting
-val curlyBraceRegex = Regex("""\{([^}]*)\}""")
+    // Analogous as above:
+    /** Expect a literal { followed by a captured () group and a literal }.
+     * The group may contain any number of any character except } - pattern [^}] */
+    @Deprecated("Use getPartsInsideCurlies instead")
+    @Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
+    val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
-// Similar to above
-/** Expect a <> pair with any chars but > in between and capture that.
- * Includes any trailing blanks in the match, for removeConditionals, and only for cases trimEnd() doesn't cover - those are misformed with text after or between the conditionals.
- * Note: At the time of writing, this had only two use patterns: replace("") and extracting group 1. Any different new use would need reconsideration.
- */
-@Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
-internal val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
+    // Similar to above
+    /** Expect a <> pair with any chars but > in between and capture that.
+     * Includes any trailing blanks in the match, for removeConditionals, and only for cases trimEnd() doesn't cover - those are misformed with text after or between the conditionals.
+     * Note: At the time of writing, this had only two use patterns: replace("") and extracting group 1. Any different new use would need reconsideration.
+     */
+    @Deprecated("Use getModifiers, getModifierTexts, removeConditionals instead")
+    @Suppress("RegExpRedundantEscape") // Some Android versions may need <> escaped
+    val pointyBraceRegex = Regex("""\<([^>]*)\> *""")
+}
 
 /** Affects scanning in [String.translatePlaceholders], [String.getPlaceholderParameters] and [String.getPlaceholderText] */
 private const val supportNestingSquare = true
@@ -446,6 +452,26 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return sb.toString()
 }
 
+/** @return Parts inside `{}` for TranslationFileWriter */
+@VisibleForTesting
+fun String.getPartsInsideCurlies(): List<String> {
+    @LocalState val result = mutableListOf<String>()
+    parsePairs('{', '}', supportNesting = supportNestingCurly,
+        emitInside = { start, end -> result.add(substring(start, end)) },
+        emitOutside = { _, _ -> }
+    )
+    return result
+}
+
+/** @return Modifier texts as Sequence */
+@VisibleForTesting
+fun String.getModifierTexts() = sequence {
+    parsePairs('<', '>', supportNesting = supportNestingPointy,
+        emitInside = { start, end -> yield(substring(start, end)) },
+        emitOutside = { _, _ -> }
+    )
+}
+
 /**
  *  @return Modifiers (parts between `<` and `>`) in `this` translated to [Unique]s.
  *  @see removeConditionals
@@ -453,6 +479,7 @@ fun String.fillPlaceholders(vararg strings: String): String {
  */
 @Readonly
 fun String.getModifiers(): List<Unique> {
+    // Could be mapped from getModifierTexts, but let's save one SequenceBuilder and one Sequence allocation
     @LocalState val result = mutableListOf<Unique>()
     parsePairs('<', '>', supportNesting = supportNestingPointy,
         emitInside = { start, end -> result.add(Unique(substring(start, end))) },

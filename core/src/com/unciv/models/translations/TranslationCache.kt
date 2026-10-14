@@ -119,11 +119,11 @@ object TranslationCache {
 
         // Somewhere, we asked the translators to reorder all possible conditionals in a way that
         // makes sense in their language. We get this ordering, and map their placeholderText to their ordinal.
-        sortPriorities = pointyBraceRegex
-            .findAll(conditionalOrdering)
-            .map { it.groupValues[1].getPlaceholderText() }
-            .withIndex()
-            .associate { (index, key) -> key to index }
+        sortPriorities = buildMap {
+            conditionalOrdering.getModifierTexts().forEachIndexed { index, text ->
+                put(text.getPlaceholderText(), index)
+            }
+        }
 
         val formatter = getNumberFormat()
         numberRegex = getNumberRegex(formatter)

@@ -25,12 +25,11 @@ import com.unciv.models.translations.Translations.Companion.conditionalOrderingK
 import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
 import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
-import com.unciv.models.translations.curlyBraceRegex
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getModifiers
+import com.unciv.models.translations.getPartsInsideCurlies
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.GitInfo
@@ -111,8 +110,8 @@ class TranslationTests {
 
     @Test
     fun allUnitActionsHaveTemplate() {
-        fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
-        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues?.get(1) else null) ?: this
+        fun String.getTemplateKey() = getPlaceholderText()
+        fun String.getInnerTemplate() = getPartsInsideCurlies().firstOrNull() ?: this
 
         val allKeys = TranslationFileReader.readTemplates { lines ->
             lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
@@ -156,8 +155,7 @@ class TranslationTests {
 
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
-            val placeholders = squareBraceRegex.findAll(translationEntry)
-                    .map { it.value }.toList()
+            val placeholders = translationEntry.getPlaceholderParameters()
             for (language in languages) {
                 val output = translations.getText(key, language)
                 if (output == key) continue // the language doesn't have the required translation, so we got back the key
@@ -184,13 +182,11 @@ class TranslationTests {
 
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
-            val placeholders = squareBraceRegex.findAll(translationEntry)
-                .map { it.value }.toSet()
+            val placeholders = translationEntry.getPlaceholderParameters().toSet()
             for (language in languages) {
                 val output = translations.getText(key, language)
                 if (output == key) continue // the language doesn't have the required translation, so we got back the key
-                val translatedPlaceholders = squareBraceRegex.findAll(output)
-                    .map { it.value }.toSet()
+                val translatedPlaceholders = output.getPlaceholderParameters().toSet()
                 val extras = translatedPlaceholders - placeholders
                 for (placeholder in extras) {
                     allTranslationsHaveNoExtraPlaceholders = false
@@ -212,7 +208,7 @@ class TranslationTests {
         for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
             val translationEntry = translation.entry
-            val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
+            val keyFromEntry = translationEntry.getPlaceholderText()
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
                 println("Entry $translationEntry found under bad key $key")
@@ -232,7 +228,7 @@ class TranslationTests {
         TranslationFileReader.readTemplates { templateLines ->
             for ((index, template) in templateLines.withIndex()) {
                 if (template.isEmpty() || template.startsWith('#')) continue
-                val key = template.replace(squareBraceRegex, "[]")
+                val key = template.getPlaceholderText()
                 if (key in keyToEntryMap) {
                     failures++
                     val (otherEntry, otherLine) = keyToEntryMap[key]!!
@@ -252,8 +248,7 @@ class TranslationTests {
         TranslationFileReader.readTemplates { templateLines ->
             for (template in templateLines) {
                 if (template.isEmpty() || template.startsWith('#')) continue
-                val placeholders = squareBraceRegex.findAll(template)
-                    .map { it.value }.toList()
+                val placeholders = template.getPlaceholderParameters()
 
                 for (placeholder in placeholders)
                     if (placeholders.count { it == placeholder } > 1) {
@@ -274,8 +269,7 @@ class TranslationTests {
         var noTwoPlaceholdersAreTheSame = true
 
         for (translationEntry in translations.values) {
-            val placeholders = squareBraceRegex.findAll(translationEntry.entry)
-                    .map { it.value }.toList()
+            val placeholders = translationEntry.entry.getPlaceholderParameters()
 
             for (placeholder in placeholders)
                 if (placeholders.count { it == placeholder } > 1) {
