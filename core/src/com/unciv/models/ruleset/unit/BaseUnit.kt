@@ -276,7 +276,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
-                civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
+                civ.civConstructions.countConstructedObjects(this@BaseUnit, city) >= it.params[0].toInt()
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 

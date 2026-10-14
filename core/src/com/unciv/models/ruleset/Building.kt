@@ -347,7 +347,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
 
                 UniqueType.MaxNumberBuildable ->
-                    if (civ.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
+                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 // To be replaced with `Only available <after [Apollo Project] has been build>`
