@@ -809,9 +809,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun setGlobalTransients() {
-        difficultyObject = ruleset.difficulties[difficulty]!!
+        difficultyObject = ruleset.difficulties[difficulty]
+            ?: throw UncivShowableException("Invalid game: [Difficulty] '[$difficulty]' is not defined in the ruleset")
 
-        speed = ruleset.speeds[gameParameters.speed]!!
+        speed = ruleset.speeds[gameParameters.speed]
+            ?: throw UncivShowableException("Invalid game: [Speed] '[$speed]' is not defined in the ruleset")
 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
