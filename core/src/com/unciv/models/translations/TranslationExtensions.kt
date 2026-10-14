@@ -356,6 +356,8 @@ private fun String.translateIndividualWord(language: String, hideIcons: Boolean,
  * Finds the parameters in a string while IGNORING the lower-leveled braces.
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
+ * Meant for Unique parsing, and will therefore remove conditionals first.
+ * @see getPlaceholderText
  */
 @Pure
 fun String.getPlaceholderParameters(): List<String> {
@@ -371,6 +373,12 @@ fun String.getPlaceholderParameters(): List<String> {
     return parameters
 }
 
+/**
+ * Gets a translation key or [Unique.placeholderText] for the input.
+ * All parameters delimited inside `[]` get replaced by `[]`, supporting nesting.
+ * Removes conditionals first.
+ * @see getPlaceholderParameters
+ */
 @Pure
 fun String.getPlaceholderText(): String {
     val stringToParse = this.removeConditionals()
@@ -385,6 +393,9 @@ fun String.getPlaceholderText(): String {
     return key.toString()
 }
 
+/**
+ *  Compares `this` string's [getPlaceholderText] with [str].[getPlaceholderText] with an optimization.
+ */
 @Pure
 fun String.equalsPlaceholderText(str: String): Boolean {
     if (isEmpty()) return str.isEmpty()
@@ -393,13 +404,17 @@ fun String.equalsPlaceholderText(str: String): Boolean {
     return this.getPlaceholderText() == str
 }
 
+/**
+ *  Quickly tests whether `this` contains placeholder parameters
+ *  @see getPlaceholderParameters
+ */
 @Pure
 fun String.hasPlaceholderParameters(): Boolean {
     if (!contains('[')) return false
     val text = removeConditionals()
     val openPos = text.indexOf('[')
-    // This will return true for "[a[b]", while getPlaceholderParameters returns an emptyList for it
-    // This un-balance was present in the Regex-based version, too. To "fix" use findMatching(text, openPos, '[', ']') >= 0
+    // TODO This will return true for "[a[b]", while getPlaceholderParameters returns an emptyList for it
+    //      This un-balance was present in the Regex-based version, too. To "fix" use findMatching(text, openPos, '[', ']') >= 0
     return openPos >= 0 && text.indexOf(']', openPos + 1) >= 0
 }
 
@@ -431,6 +446,11 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return sb.toString()
 }
 
+/**
+ *  @return Modifiers (parts between `<` and `>`) in `this` translated to [Unique]s.
+ *  @see removeConditionals
+ *  @see supportNestingPointy
+ */
 @Readonly
 fun String.getModifiers(): List<Unique> {
     @LocalState val result = mutableListOf<Unique>()
@@ -441,6 +461,13 @@ fun String.getModifiers(): List<Unique> {
     return result
 }
 
+/**
+ *  Returns `this` with Modifiers (parts between `<` and `>`) removed, right-trimmed (any Unicode whitespace).
+ *  Any Spaces to the right of a modifier are removed during scanning
+ *  (affects output only if the rule to place conditionals only at the end wasn't followed)
+ *  @see getModifiers
+ *  @see supportNestingPointy
+ */
 @Pure
 fun String.removeConditionals(): String {
     val firstPos = indexOf('<')
