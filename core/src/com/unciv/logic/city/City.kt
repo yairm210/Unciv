@@ -130,7 +130,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var unitToPromotions = HashMap<String, UnitPromotions>()
 
     /** Neighboring explored cities, within [maxDistance] tiles */
-    fun getNeighboringCities(maxDistance: Int = 12): List<City> =
+    @Readonly fun getNeighboringCities(maxDistance: Int = 12): List<City> =
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= maxDistance }.toList()
 
     private var cityAIFocus: String = CityFocus.NoFocus.name
