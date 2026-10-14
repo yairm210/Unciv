@@ -71,8 +71,8 @@ object TranslationCache {
         get() {
             val hash = getCurrentHash()
             if (hash != cachedHash) {
-                cachedHash = hash
                 field = getCurrentSet()
+                cachedHash = hash
             }
             return field
         }
@@ -133,25 +133,25 @@ object TranslationCache {
     private fun getNumberFormat(): DecimalFormat {
         return NumberFormat.getInstance(locale) as? DecimalFormat
             // This should never happen, at least not in stock Java 21:
-            ?: getFallbackDecimalFormat()
+            ?: getFallbackDecimalFormat(locale)
     }
 
     @Readonly
-    private fun getFallbackDecimalFormat() =
+    private fun getFallbackDecimalFormat(locale: Locale) =
         DecimalFormat("#,##0.###", DecimalFormatSymbols.getInstance(locale))
 
     /** Uncached, bypassing the cached language, for unit tests */
     @Readonly
     internal fun getNumberFormatForLanguage(language: String): DecimalFormat {
-        return NumberFormat.getInstance(LocaleCode.getLocale(language)) as? DecimalFormat
-            ?: getFallbackDecimalFormat()
+        val locale = LocaleCode.getLocale(language)
+        return NumberFormat.getInstance(locale) as? DecimalFormat
+            ?: getFallbackDecimalFormat(locale)
     }
 
     private fun StringBuilder.optional(str: String) = when {
         str.isEmpty() -> Unit
         str.length == 1 -> {
-            append('\\')
-            append(str)
+            append(Pattern.quote(str))
             append('?')
         }
         else -> {
@@ -163,25 +163,28 @@ object TranslationCache {
 
     private fun getNumberRegex(formatter: DecimalFormat): Regex {
         val symbols = formatter.decimalFormatSymbols
+        val zero = symbols.zeroDigit
+        val digit = if (zero == '0') "[0-9]" else "[0-9$zero-${zero + 9}]"   // ASCII plus the locale's own digits, NOT \p{Nd}, because that would re-format e.g. "２"
         val pattern = buildString {
-            append("\\b")
+            // Since we might include a "-", a "\b" won't do, so do a look-behind for "not a (ascii) letter or digit", and the look-ahead for a (unicode) digit mitigates the extra cost.
+            append("(?=$digit)(?<![A-Za-z0-9_])")
             optional(formatter.negativePrefix)
-            append("\\p{Nd}+")
+            append("$digit+")
             if (formatter.isGroupingUsed) {
                 append("(?:\\")
                 append(symbols.groupingSeparator)
-                append("\\p{Nd}{")
+                append("$digit{")
                 append(formatter.groupingSize)
                 append("})*")
             }
             /* Activate the following to allow post-processing numbers with fractions (would change number of decimal places, therefore disabled)
             append("(?:\\")
             append(symbols.decimalSeparator)
-            append("\\p{Nd}+")
+            append("$digit+")
             append(")?")
             */
             optional(formatter.negativeSuffix)
-            append("\\b")
+            append("""(?![A-Za-z0-9_])""") // Not followed by (ascii) letter or digit, more portable than "\b"
         }
         return Regex(pattern)
     }
