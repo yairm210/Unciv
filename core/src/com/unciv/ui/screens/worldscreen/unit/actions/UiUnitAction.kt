@@ -183,6 +183,7 @@ enum class UiUnitActionType private constructor(
     CreateImprovement(UnitActionType.CreateImprovement, null, false, UncivSound.Chimes, useFrequency = 85f) {
         override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
             if (unitAction?.associatedUnique?.type == UniqueType.CreateWaterImprovements) 82f else defaultUseFrequency
+        override val binding = KeyboardBinding.Create
     },
     HurryResearch(UnitActionType.HurryResearch, portrait("HurryResearch"), uncivSound = UncivSound.Chimes, useFrequency = 76f),
     HurryPolicy(UnitActionType.HurryPolicy, portrait("HurryPolicy"), uncivSound = UncivSound.Chimes, useFrequency = 76f),
@@ -214,7 +215,7 @@ enum class UiUnitActionType private constructor(
         : this(null, value, imageGetter, isSkippingToNextUnit, uncivSound, page, useFrequency)
 
     /** Keyboard binding of the same name, if any - see the note in [KeyboardBinding] */
-    val binding: KeyboardBinding =
+    open val binding: KeyboardBinding =
         KeyboardBinding.entries.firstOrNull { it.name == name } ?: KeyboardBinding.None
 
     /** The use frequency for this action type, before [UnitActionModifiers.getUseFrequency] applies the modifiers of the action's unique. */
