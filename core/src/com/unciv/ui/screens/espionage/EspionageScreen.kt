@@ -2,6 +2,7 @@ package com.unciv.ui.screens.espionage
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -18,6 +19,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.addCapitalIndicator
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -31,7 +33,7 @@ import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import yairm210.purity.annotations.Pure
 import kotlin.collections.iterator
@@ -40,7 +42,7 @@ import kotlin.collections.iterator
 private typealias Location = City?
 
 /** Screen used for moving spies between cities */
-class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
+class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : BaseScreen() {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table()
@@ -56,8 +58,12 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
     private val spyActionButtons = hashMapOf<SpyLocationActionButton, Location>()
     private val moveSpyButtons = hashMapOf<Spy, TextButton>()
 
+    private val closeButton: Group
+
     /** Readability shortcut */
     private val manager get() = civInfo.espionageManager
+
+    private val isPortrait: Boolean // To detect when a resize needs re-layout
 
     init {
         spySelectionTable.defaults().space(10f)
@@ -70,16 +76,16 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
         middlePanes.minSplitAmount = 0.25f
         middlePanes.maxSplitAmount = 0.75f
         middlePanes.splitAmount = getPrefSplitAmount()
-        topTable.add(middlePanes).grow()
+        middlePanes.setFillParent(true)
+        stage.addActor(middlePanes)
 
-        closeButton.isVisible = true
-        closeButton.onActivation {
+        closeButton = getCloseButton {
             civInfo.cache.updateViewableTiles()
             game.popScreen()
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-        rightSideButton.isVisible = false
-
+        positionCloseButton()
+        stage.addActor(closeButton)
         globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia("Tutorial/Espionage") }
     }
 
@@ -88,6 +94,18 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
         val freeSpace = stage.width - handleWidth - spySelectionTable.prefWidth - locationSelectionTable.prefWidth
         val x = spySelectionTable.prefWidth + freeSpace.coerceAtLeast(handleWidth) / 2
         return (x / stage.width).coerceIn(0.3f, 0.7f)
+    }
+
+    private fun positionCloseButton() {
+        closeButton.setPosition(stage.width - 10f, stage.height - 10f, Align.topRight)
+    }
+
+    // Not using `RecreateOnResize` because this one is fine with resizes, exept we want to flip SplitPane arrangement for portrait
+    override fun resize(width: Int, height: Int) {
+        super.resize(width, height)
+        positionCloseButton()
+        if (isPortrait() == isPortrait) return
+        game.replaceCurrentScreen { EspionageScreen(civInfo, worldScreen) }
     }
 
     //region Update
