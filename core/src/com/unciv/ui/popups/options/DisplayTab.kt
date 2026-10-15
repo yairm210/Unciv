@@ -23,7 +23,6 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
-import kotlin.math.abs
 
 internal class DisplayTab(
     optionsPopup: OptionsPopup
@@ -115,7 +114,6 @@ internal class DisplayTab(
 
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
         addCheckbox("Animate Unit actions menu", settings::unitActionsTableAnimation)
-        addAutoSizeButton()
 
         super.lateInitialize()
     }
@@ -163,32 +161,6 @@ internal class DisplayTab(
         addSelectBox("UI Scale", settings::screenSize, ScreenSize.entries) { _, _ ->
             reloadWorldAndOptions()
         }
-    }
-
-    private fun addAutoSizeButton() {
-        val autoSizeButton = "Autosize".toTextButton()
-        autoSizeButton.onClick {
-            val newSize = guessScreenSize()
-            if (newSize == settings.screenSize) return@onClick
-            settings.screenSize = newSize
-            reloadWorldAndOptions()
-        }
-        add(autoSizeButton).center().row()
-
-        val mode = Gdx.graphics.displayMode
-        val widthInches = mode.width / Gdx.graphics.ppiX
-        val heightInches = mode.height / Gdx.graphics.ppiY
-        add("{Screen size}: %.1f\" x %.1f\"".format(widthInches, heightInches).toLabel()).colspan(2).row()
-    }
-
-    /** Picks the [ScreenSize] giving roughly the same number of virtual units per physical inch of the shorter screen side everywhere */
-    private fun guessScreenSize(): ScreenSize {
-        val mode = Gdx.graphics.displayMode
-        val shorterSideInches = minOf(mode.width / Gdx.graphics.ppiX, mode.height / Gdx.graphics.ppiY)
-        // On desktop you use a mouse pointer, on phones you use your fat fingers
-        val unitsPerInch = if (Gdx.app.type != Application.ApplicationType.Desktop) 220f else 100f
-        val targetVirtualHeight = shorterSideInches * unitsPerInch
-        return ScreenSize.entries.minBy { abs(it.virtualHeight - targetVirtualHeight) }
     }
 
     private fun addScreenOrientationSelectBox() {
