@@ -20,6 +20,7 @@ import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.addCapitalIndicator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -58,6 +59,7 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
     private val spyActionButtons = hashMapOf<SpyLocationActionButton, Location>()
     private val moveSpyButtons = hashMapOf<Spy, TextButton>()
 
+    private val locationLabels = mutableMapOf<String?, Actor>()
     private val closeButton: Group
 
     /** Readability shortcut */
@@ -75,7 +77,14 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
 
         middlePanes.minSplitAmount = 0.25f
         middlePanes.maxSplitAmount = 0.75f
-        middlePanes.splitAmount = getPrefSplitAmount()
+        isPortrait = if (isPortrait()) {
+            middlePanes.splitAmount = 0.33f
+            middlePanes.isVertical = true
+            true
+        } else {
+            middlePanes.splitAmount = getPrefSplitAmount()
+            false
+        }
         middlePanes.setFillParent(true)
         stage.addActor(middlePanes)
 
@@ -151,7 +160,13 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
         val spyLocation = spy.getCityOrNull()
         spySelectionTable.add(spyLocation.getIcon()).padRight(5f)
         // "Location" column
-        spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
+        val key = spy.getCityOrNull()?.id
+        val label = spy.getLocationName().toLabel(hideIcons = true)
+        spySelectionTable.add(label).left()
+        label.onActivation {
+            val actor = locationLabels[key]
+            if (actor != null) locationScrollPane.scrollTo(actor, true)
+        }
         // "Action" column
         val actionString = if (spy.action.showTurns)
             "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
@@ -176,6 +191,7 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
     private fun updateLocationList() {
         locationSelectionTable.clear()
         spyActionButtons.clear()
+        locationLabels.clear()
         initLocationHeader()
 
         @Suppress("DEPRECATION") // The replacement doesn't allow chaining filters
@@ -201,7 +217,9 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
 
     private fun addLocationToSelectionTable(location: Location) {
         locationSelectionTable.add(location.getIcon()).padLeft(20f).padRight(10f)
+        val key = location?.id
         val label = location.getLocationName().toLabel(hideIcons = true)
+        locationLabels[key] = label
         if (location != null) {
             label.onClick {
                 worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
