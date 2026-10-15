@@ -207,7 +207,9 @@ Policies with their branches and Technoligies have more complex removal rules.
 
 - Removing Policy Branches removes their member Policies as well.
 - Overriding a Policy Branch will remove existing member Policies.
-- Removing all techs from a TechColumn will also remove that column (adding techs later will merge columns by their `columnNumber`).
+- Removing all techs from a TechColumn will also remove that column.
+- Adding techs will merge columns by their `columnNumber`.
+- After tech removal and merge is done, TechColumns are resorted and renumbered so `columnNumber` is monotonous, contiguous ands starts at 0.
 
 Removing religions will clean those from the preferred religions of nations.
 

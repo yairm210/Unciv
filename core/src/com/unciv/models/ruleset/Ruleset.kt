@@ -221,16 +221,6 @@ class Ruleset {
     }
 
     fun add(ruleset: Ruleset) {
-        // Helper for the "ToRemove" lists of ModOptions
-        fun <T: INamed> MutableMap<String, T>.selectiveRemove(
-            removals: Set<String>,
-            filter: T.(String) -> Boolean = { it in Constants.all || name == it }
-        ) = removals.flatMap { item ->
-                filter { it.value.filter(item) }.keys
-            }.toSet().forEach {
-                remove(it)
-            }
-
         beliefs.selectiveRemove(ruleset.modOptions.beliefsToRemove) { matchesFilter(it) }
         beliefs.putAll(ruleset.beliefs)
         buildings.selectiveRemove(ruleset.modOptions.buildingsToRemove) { matchesFilter(it) }
@@ -243,39 +233,7 @@ class Ruleset {
         globalUniques = GlobalUniques.combine(globalUniques, ruleset.globalUniques)
         nations.selectiveRemove(ruleset.modOptions.nationsToRemove) { matchesFilter(it) }
         nations.putAll(ruleset.nations)
-
-        /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
-         *  but are still considered "available" */
-        fun removePolicyBranch(policyBranch: PolicyBranch) {
-            policyBranches.remove(policyBranch.name)
-            for (policy in policyBranch.policies)
-                policies.remove(policy.name)
-        }
-
-        ruleset.modOptions.policyBranchesToRemove
-            .flatMap { policyBranchToRemove ->
-                policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
-            }.toSet().forEach {
-                removePolicyBranch(it)
-            }
-
-        val overriddenPolicyBranches = policyBranches
-            .filter { it.key in ruleset.policyBranches }.map { it.value }
-        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
-        policyBranches.putAll(ruleset.policyBranches)
-
-        // Remove the policies
-        policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
-
-        // Remove the policies if they exist in the policy branches too
-        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
-            for (branch in policyBranches.values) {
-                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
-            }
-        }
-
-        policies.putAll(ruleset.policies)
-
+        mergePolicies(ruleset)
         quests.selectiveRemove(ruleset.modOptions.questsToRemove)
         quests.putAll(ruleset.quests)
 
@@ -289,28 +247,7 @@ class Ruleset {
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.selectiveRemove(ruleset.modOptions.specialistsToRemove)
         specialists.putAll(ruleset.specialists)
-
-        // Remove techs with some special TechColumn handling
-        fun TechColumn.mergeWith(other: TechColumn) {
-            check(other.columnNumber == columnNumber)
-            techs.addAll(other.techs.filterNot { it in techs })
-            techCost = other.techCost
-            buildingCost = other.buildingCost
-            wonderCost = other.wonderCost
-        }
-        technologies.selectiveRemove(ruleset.modOptions.techsToRemove) { matchesFilter(it) }
-        val techColumnIterator = techColumns.iterator()
-        for (techColumn in techColumnIterator) {
-            techColumn.techs.removeAll { it.name !in technologies }
-            if (techColumn.techs.isEmpty()) techColumnIterator.remove()
-        }
-        technologies.putAll(ruleset.technologies)
-        for (techColumn in ruleset.techColumns) {
-            val existing = techColumns.firstOrNull { it.columnNumber == techColumn.columnNumber }
-            if (existing == null) techColumns.add(techColumn)
-            else existing.mergeWith(techColumn)
-        }
-
+        mergeTechnologies(ruleset)
         terrains.selectiveRemove(ruleset.modOptions.terrainsToRemove) { matchesFilter(it) }
         terrains.putAll(ruleset.terrains)
         tileImprovements.selectiveRemove(ruleset.modOptions.improvementsToRemove) { matchesFilter(it) }
@@ -343,6 +280,88 @@ class Ruleset {
         modOptions.constants.merge(ruleset.modOptions.constants)
 
         mods += ruleset.mods
+    }
+
+    /** Helper for the "ToRemove" lists of ModOptions */
+    private fun <T: INamed> MutableMap<String, T>.selectiveRemove(
+        removals: Set<String>,
+        filter: T.(String) -> Boolean = { it in Constants.all || name == it }
+    ) {
+        if (removals.isEmpty()) return
+        removals.flatMap { item ->
+            filter { it.value.filter(item) }.keys
+        }.toSet().forEach {
+            remove(it)
+        }
+    }
+
+    private fun mergePolicies(ruleset: Ruleset) {
+        if (ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty() && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty())
+            return
+
+        /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
+         *  but are still considered "available" */
+        fun removePolicyBranch(policyBranch: PolicyBranch) {
+            policyBranches.remove(policyBranch.name)
+            for (policy in policyBranch.policies)
+                policies.remove(policy.name)
+        }
+
+        ruleset.modOptions.policyBranchesToRemove
+            .flatMap { policyBranchToRemove ->
+                policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
+            }.toSet().forEach {
+                removePolicyBranch(it)
+            }
+
+        val overriddenPolicyBranches = policyBranches
+            .filter { it.key in ruleset.policyBranches }.map { it.value }
+        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
+        policyBranches.putAll(ruleset.policyBranches)
+
+        // Remove the policies
+        policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
+
+        // Remove the policies if they exist in the policy branches too
+        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
+            for (branch in policyBranches.values) {
+                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+            }
+        }
+
+        policies.putAll(ruleset.policies)
+    }
+
+    private fun mergeTechnologies(ruleset: Ruleset) {
+        if (ruleset.modOptions.techsToRemove.isEmpty() && ruleset.technologies.isEmpty()) return
+
+        // Remove techs with some special TechColumn handling
+        fun TechColumn.mergeWith(other: TechColumn) {
+            check(other.columnNumber == columnNumber)
+            techs.addAll(other.techs.filterNot { it in techs })
+            techCost = other.techCost
+            buildingCost = other.buildingCost
+            wonderCost = other.wonderCost
+        }
+        // Removals
+        technologies.selectiveRemove(ruleset.modOptions.techsToRemove) { matchesFilter(it) }
+        // Remove techs from techColumns and remove columns with no techs left
+        val techColumnIterator = techColumns.iterator()
+        for (techColumn in techColumnIterator) {
+            techColumn.techs.removeAll { it.name !in technologies }
+            if (techColumn.techs.isEmpty()) techColumnIterator.remove()
+        }
+        // New techs
+        technologies.putAll(ruleset.technologies)
+        // Merge techColumns by columnNumber
+        for (techColumn in ruleset.techColumns) {
+            val existing = techColumns.firstOrNull { it.columnNumber == techColumn.columnNumber }
+            if (existing == null) techColumns.add(techColumn)
+            else existing.mergeWith(techColumn)
+        }
+        // Reorder and make columnNumber contiguous (TechPickerScreen could shift techs to wrong columns otherwise)
+        for ((index, techColumn) in techColumns.sortedBy { it.columnNumber }.withIndex())
+            techColumn.columnNumber = index
     }
 
     fun clear() {
