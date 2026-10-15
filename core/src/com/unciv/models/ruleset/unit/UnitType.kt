@@ -35,6 +35,7 @@ class UnitType() : RulesetObject() {
     @Readonly
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
+            name -> true
             "Land" -> isLandUnit()
             "Water" -> isWaterUnit()
             "Air" -> isAirUnit()
