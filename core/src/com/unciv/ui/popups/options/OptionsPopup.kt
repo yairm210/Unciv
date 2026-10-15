@@ -56,7 +56,7 @@ class OptionsPopup(
         // That's not really bad, the tabs are long enough so some will always need scrolling even on the largest UI size setting.
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, tabMaxHeight, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
+            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = OptionsPopupPages.entries.size
         )
         add(tabs).pad(0f).grow().row()
 

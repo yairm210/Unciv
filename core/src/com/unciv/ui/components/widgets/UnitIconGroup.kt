@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.NonTransformGroup
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.ui.components.extensions.addToCenter
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -79,10 +79,10 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
 }
 
 /** Displays the unit's icon and action */
-class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
+class UnitIconGroup(val unitView: ForeignMapUnitView, val size: Float) : NonTransformGroup() {
     var actionGroup: Group? = null
 
-    private val flagIcon = ImageGetter.getUnitIcon(unit.baseUnit, unit.civ.nation.getInnerColor())
+    private val flagIcon = ImageGetter.getUnitIcon(unitView.getBaseUnit(), unitView.civ().getInnerColor())
     private var flagBg: FlagBackground = FlagBackground(getBackgroundDrawableForUnit(), size)
     private var flagSelection: Image = getBackgroundSelectionForUnit()
     private var flagMask: Image? = getBackgroundMaskForUnit()
@@ -99,8 +99,8 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
         flagSelection.align = Align.center
         flagSelection.setSize(sizeSelectionX, sizeSelectionY)
 
-        flagBg.innerColor = unit.civ.nation.getOuterColor()
-        flagBg.outerColor = unit.civ.nation.getInnerColor()
+        flagBg.innerColor = unitView.civ().getOuterColor()
+        flagBg.outerColor = unitView.civ().getInnerColor()
         flagBg.outlineColor = flagBg.innerColor
         flagBg.drawableInner = getBackgroundInnerDrawableForUnit()
 
@@ -108,7 +108,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
             flagMask!!.setSize(size * 0.88f, size * 0.88f * flagMask!!.height / flagMask!!.width)
         }
 
-        val flagIconSizeMultiplier: Float = if (unit.isCivilian()) 0.5f else 0.65f
+        val flagIconSizeMultiplier: Float = if (unitView.isCivilian()) 0.5f else 0.65f
         flagIcon.setSize(size * flagIconSizeMultiplier)
 
         addToCenter(flagSelection)
@@ -126,8 +126,8 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
             addActor(actionGroup)
         }
 
-        if (unit.health < 100) { // add health bar
-            val hp = ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size * 0.78f)
+        if (unitView.unitHealth < 100) { // add health bar
+            val hp = ImageGetter.getHealthBar(unitView.unitHealth.toFloat(), 100f, size * 0.78f)
             addActor(hp)
             hp.centerX(this)
         }
@@ -135,20 +135,20 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
 
     private fun getBackgroundDrawableForUnit(): TextureRegionDrawable {
         return when {
-            unit.isEmbarked() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagEmbark")
-            unit.isFortified() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
-            unit.isGuarding() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
-            unit.isCivilian() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagCivilian")
+            unitView.isEmbarked() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagEmbark")
+            unitView.isFortified() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
+            unitView.isGuarding() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
+            unitView.isCivilian() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagCivilian")
             else -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlag")
         }
     }
 
     private fun getBackgroundInnerDrawableForUnit(): TextureRegionDrawable? {
         return when {
-            unit.isEmbarked() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagEmbarkInner")
-            unit.isFortified() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
-            unit.isGuarding() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
-            unit.isCivilian() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagCivilianInner")
+            unitView.isEmbarked() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagEmbarkInner")
+            unitView.isFortified() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
+            unitView.isGuarding() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
+            unitView.isCivilian() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagCivilianInner")
             else -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagInner")
         }
     }
@@ -156,10 +156,10 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
     private fun getBackgroundMaskForUnit(): Image? {
 
         val filename = when {
-            unit.isEmbarked() -> "UnitFlagIcons/UnitFlagMaskEmbark"
-            unit.isFortified() -> "UnitFlagIcons/UnitFlagMaskFortify"
-            unit.isGuarding() -> "UnitFlagIcons/UnitFlagMaskFortify"
-            unit.isCivilian() -> "UnitFlagIcons/UnitFlagMaskCivilian"
+            unitView.isEmbarked() -> "UnitFlagIcons/UnitFlagMaskEmbark"
+            unitView.isFortified() -> "UnitFlagIcons/UnitFlagMaskFortify"
+            unitView.isGuarding() -> "UnitFlagIcons/UnitFlagMaskFortify"
+            unitView.isCivilian() -> "UnitFlagIcons/UnitFlagMaskCivilian"
             else -> "UnitFlagIcons/UnitFlagMask"
         }
 
@@ -170,19 +170,20 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
 
     private fun getBackgroundSelectionForUnit(): Image {
         return when {
-            unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionEmbark")
-            unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
-            unit.isGuarding() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
-            unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionCivilian")
+            unitView.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionEmbark")
+            unitView.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
+            unitView.isGuarding() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
+            unitView.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionCivilian")
             else -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelection")
         }
     }
 
     private fun getActionImage(): Image? {
+        val unit = unitView.tryGetMapUnitView() ?: return null
         return when {
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
-            unit.getTile().improvementInProgress != null && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) ->
-                ImageGetter.getImage("ImprovementIcons/${unit.getTile().improvementInProgress}")
+            unit.canBuildCurrentImprovement() ->
+                ImageGetter.getImage("ImprovementIcons/${unit.getImprovementInProgress()}")
             unit.isEscorting() -> ImageGetter.getImage("UnitActionIcons/Escort")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
@@ -204,7 +205,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
         color.a = opacity
 
         //If unit is idle, leave actionGroup at 50% opacity when selected
-        if (unit.isIdle()) {
+        if (unitView.isIdle()) {
             actionGroup?.color?.a = opacity * 0.5f
         } else { //Else set to 100% opacity when selected
             actionGroup?.color?.a = opacity
@@ -212,8 +213,8 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
 
         // Unit base icon is faded out only if out of moves
         // Foreign unit icons are never faded!
-        val shouldBeFaded = (unit.owner == GUI.getSelectedPlayer().civID
-                && !unit.hasMovement() && GUI.getSettings().unitIconOpacity == 1f)
+        val shouldBeFaded = (unitView.civ().civID == GUI.getSelectedPlayer().civID
+                && !unitView.hasMovement() && GUI.getSettings().unitIconOpacity == 1f)
         val alpha = if (shouldBeFaded) opacity * 0.5f else opacity
         flagIcon.color.a = alpha
         flagBg.color.a = alpha

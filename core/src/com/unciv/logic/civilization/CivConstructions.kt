@@ -52,9 +52,9 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     fun clone(): CivConstructions {
         val toReturn = CivConstructions()
         toReturn.civInfo = civInfo
-        toReturn.freeBuildings.putAll(freeBuildings)
-        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
-        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
+        toReturn.freeBuildings.putAll(freeBuildings.mapValues { it.value.toHashSet() })
+        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided.mapValues { it.value.toHashSet() })
+        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided.mapValues { it.value.toHashSet() })
         toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice)  // add copies
         toReturn.builtItemsWithIncreasingCost.add(builtItemsWithIncreasingCost)
         return toReturn
@@ -187,18 +187,21 @@ class CivConstructions : IsPartOfGameInfoSerialization {
      *  * "Spaceship part" units added to "spaceship" in capital
      *  * Built buildings or those in a construction queue
      *  * Units on the map or being constructed
+     *
+     *  @param ignoreQueueOf If given, that city's own construction queue is not counted,
+     *  so an already-enqueued entry doesn't count against itself when its availability is re-checked.
      */
     @Readonly
-    fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
+    fun countConstructedObjects(objectToCount: INonPerpetualConstruction, ignoreQueueOf: City? = null): Int {
         val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
 
         return amountInSpaceShip + when (objectToCount) {
             is Building -> civInfo.cities.count {
                 it.cityConstructions.containsBuildingOrEquivalent(objectToCount.name)
-                || it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name)
+                || (it != ignoreQueueOf && it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name))
             }
             is BaseUnit -> civInfo.units.getCivUnits().count { it.name == objectToCount.name } +
-                civInfo.cities.count { it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name) }
+                civInfo.cities.count { it != ignoreQueueOf && it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name) }
             else -> 0
         }
     }

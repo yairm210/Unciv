@@ -409,6 +409,9 @@ Allowed values:
     - Example: `Only available <when number of [Researched [Agriculture] Technologies] is more than [0]>`
     - Counts researched matching technologies for the relevant Civilization
     - Repeatable technologies, like Future Tech, are only counted once
+-   `Known [civFilter] Civilizations` - The number of other civilizations the relevant Civilization has met
+    - Example: `Only available <when number of [Known [City-States] Civilizations] is more than [0]>`
+    - Counts only civilizations that are still alive, and never the civilization itself
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Worked [tileFilter] Tiles in this city`

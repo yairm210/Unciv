@@ -72,7 +72,14 @@ interface IHasUniques : INamed {
     @Readonly
     fun hasTagUnique(uniqueTag: String) =
         uniqueMap.hasTagUnique(uniqueTag)
-    
+
+    /** Helper used for Civilopedia when finding cross-references, e.g. for see-also lists
+     *  @return `true` if any unique parameter is equal to [name]
+     */
+    @Readonly
+    fun hasUniquesMentioning(name: String) =
+        uniqueObjects.any { unique -> unique.params.any { it == name } }
+
     @Readonly
     fun techsRequiredByUniques(): Sequence<String> {
         val availabilityUniques = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + 
@@ -103,7 +110,7 @@ interface IHasUniques : INamed {
 
     @Readonly
     fun techColumn(ruleset: Ruleset): TechColumn? =
-            requiredTechnologies(ruleset).map { it?.column }.filterNotNull().maxByOrNull { it.columnNumber }
+        requiredTechnologies(ruleset).mapNotNull { it?.column }.maxByOrNull { it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
 
     @Readonly
@@ -137,6 +144,12 @@ interface IHasUniques : INamed {
         return weight
     }
 
+    /** Do this object's [UniqueType.OnlyAvailable] and [UniqueType.Unavailable] uniques all pass for [gameContext]? */
+    @Readonly
+    fun isAvailable(gameContext: GameContext) =
+        getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).none { !it.conditionalsApply(gameContext) } &&
+        getMatchingUniques(UniqueType.Unavailable, gameContext).none()
+
     /**
      *  Is this ruleset object unavailable as determined by settings chosen at game start?
      *
@@ -146,18 +159,6 @@ interface IHasUniques : INamed {
      */
     @Readonly
     fun isUnavailableBySettings(gameInfo: GameInfo): Boolean {
-        val gameBasedConditionals = setOf(
-            UniqueType.ConditionalVictoryDisabled,
-            UniqueType.ConditionalVictoryEnabled,
-            UniqueType.ConditionalSpeed,
-            UniqueType.ConditionalDifficulty,
-            UniqueType.ConditionalDifficultyOrHigher,
-            UniqueType.ConditionalDifficultyOrLower,
-            UniqueType.ConditionalReligionEnabled,
-            UniqueType.ConditionalReligionDisabled,
-            UniqueType.ConditionalEspionageEnabled,
-            UniqueType.ConditionalEspionageDisabled,
-        )
         val gameContext = GameContext(gameInfo = gameInfo)
 
         if (getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
@@ -234,5 +235,20 @@ interface IHasUniques : INamed {
             if (unique.hasModifier(disabler)) return !hasFeature
         }
         return false
+    }
+    
+    companion object {
+        val gameBasedConditionals = setOf(
+            UniqueType.ConditionalVictoryDisabled,
+            UniqueType.ConditionalVictoryEnabled,
+            UniqueType.ConditionalSpeed,
+            UniqueType.ConditionalDifficulty,
+            UniqueType.ConditionalDifficultyOrHigher,
+            UniqueType.ConditionalDifficultyOrLower,
+            UniqueType.ConditionalReligionEnabled,
+            UniqueType.ConditionalReligionDisabled,
+            UniqueType.ConditionalEspionageEnabled,
+            UniqueType.ConditionalEspionageDisabled,
+        )
     }
 }

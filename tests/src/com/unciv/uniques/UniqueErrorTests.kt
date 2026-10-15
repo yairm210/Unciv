@@ -94,12 +94,12 @@ class UniqueErrorTests {
 
         // Without a unit, this is an error
         val uniqueNoSourceObject = Unique(uniqueText)
-        val errorListNoSourceObject = UniqueValidator(ruleset).checkUnique(uniqueNoSourceObject, false, null)
+        val errorListNoSourceObject = UniqueValidator(ruleset).checkUnique(uniqueNoSourceObject, null)
         assert(errorListNoSourceObject.getFinalSeverity() == RulesetErrorSeverity.Warning)
 
         // When applied on a unit or promotion etc, this is fine
         val uniqueWithSourceObject = Unique(uniqueText, sourceObjectType = UniqueTarget.Promotion)
-        val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, false, null)
+        val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, null)
         assert(errorListCorrectUniqueContainer.getFinalSeverity() == RulesetErrorSeverity.OK)
     }
 
@@ -178,7 +178,7 @@ class UniqueErrorTests {
     private fun validateUnique(uniqueText: String) = run {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
-        UniqueValidator(ruleset).checkUnique(Unique(uniqueText), false, null)
+        UniqueValidator(ruleset).checkUnique(Unique(uniqueText), null)
     }
 
     private fun assertOnlyCivWideStatsError(uniqueText: String, statName: String) {

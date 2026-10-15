@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextLinesImpl
+import com.unciv.ui.objectdescriptions.NationDescriptions.getNationCivilopediaTextLines
 import yairm210.purity.annotations.Readonly
 
 class Nation : RulesetObject() {
@@ -107,7 +107,7 @@ class Nation : RulesetObject() {
         isBarbarian -> "Other"
         else -> "Civilizations"
     }
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = getCivilopediaTextLinesImpl(ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getNationCivilopediaTextLines(ruleset)
     // endregion
 
     // region API
@@ -165,7 +165,7 @@ class Nation : RulesetObject() {
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter) ||
+            matchesSingleFilter(it) ||
                 state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })

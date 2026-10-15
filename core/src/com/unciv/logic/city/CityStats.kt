@@ -21,7 +21,6 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
-@InternalState
 class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
@@ -103,11 +102,13 @@ class CityStats(val city: City) {
         val capitalForTradeRoutePurposes = city.civ.getCapital()!!
         if (city != capitalForTradeRoutePurposes && city.isConnectedToCapital()) {
             stats.gold = capitalForTradeRoutePurposes.population.population * 0.15f + city.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromTradeRoute))
+            city.forEachMatchingUnique(UniqueType.StatsFromTradeRoute) { unique ->
                 stats.add(unique.stats)
+            }
             val percentageStats = Stats()
-            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromTradeRoutes))
+            city.forEachMatchingUnique(UniqueType.StatPercentFromTradeRoutes) { unique ->
                 percentageStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            }
             for ((stat) in stats) {
                 stats[stat] *= percentageStats[stat].toPercent()
             }
@@ -203,32 +204,35 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromUniquesBySource(): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         val cityStateStatsMultipliers = city.civ.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
 
         fun addUniqueStats(unique: Unique) {
-            @LocalState val stats = unique.stats.clone()
+            val stats = unique.stats.clone()
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
                     stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
             sourceToStats.addStats(stats, unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
-        for (unique in city.getMatchingUniques(UniqueType.StatsPerCity))
+        city.forEachMatchingUnique(UniqueType.StatsPerCity) { unique ->
             if (city.matchesFilter(unique.params[1]))
                 addUniqueStats(unique)
+        }
 
         // "[stats] per [amount] population [cityFilter]"
-        for (unique in city.getMatchingUniques(UniqueType.StatsPerPopulation))
+        city.forEachMatchingUnique(UniqueType.StatsPerPopulation) { unique ->
             if (city.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (city.population.population / unique.params[1].toInt()).toFloat()
                 sourceToStats.addStats(unique.stats.times(amountOfEffects), unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
             }
+        }
 
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
+        city.forEachMatchingUnique(UniqueType.StatsFromCitiesOnSpecificTiles) { unique ->
             if (city.getCenterTile().matchesTerrainFilter(unique.params[1], city.civ))
                 addUniqueStats(unique)
+        }
 
 
 
@@ -243,7 +247,7 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique: Unique, stat: Stat, amount: Float) {
             val stats = Stats()
@@ -280,18 +284,20 @@ class CityStats(val city: City) {
         }
 
 
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentFromReligionFollowers))
+        city.forEachMatchingUnique(UniqueType.StatPercentFromReligionFollowers) { unique ->
             addUniqueStats(unique, Stat.valueOf(unique.params[1]),
                 min(
                     unique.params[0].toFloat() * city.religion.getFollowersOfMajorityReligion(),
                     unique.params[2].toFloat()
                 ))
+        }
 
         if (currentConstruction is Building
             && city.civ.getCapital()?.cityConstructions?.isBuilt(currentConstruction.name) == true
         ) {
-            for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
+            city.forEachMatchingUnique(UniqueType.PercentProductionBuildingsInCapital) { unique ->
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
+            }
         }
 
         return sourceToStats
@@ -393,16 +399,18 @@ class CityStats(val city: City) {
             unhappinessFromCity -= 2f
 
         var uniqueUnhappinessModifier = 0f
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromCitiesPercentage))
+        civInfo.forEachMatchingUnique(UniqueType.UnhappinessFromCitiesPercentage) { unique ->
             uniqueUnhappinessModifier += unique.params[0].toFloat()
+        }
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier * uniqueUnhappinessModifier.toPercent()
 
         var unhappinessFromCitizens = city.population.population.toFloat()
 
-        for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+        city.forEachMatchingUnique(UniqueType.UnhappinessFromPopulationTypePercentageChange) { unique ->
             if (city.matchesFilter(unique.params[2]))
                 unhappinessFromCitizens += (unique.params[0].toFloat() / 100f) * city.population.getPopulationFilterAmount(unique.params[1])
+        }
 
         if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
@@ -457,7 +465,7 @@ class CityStats(val city: City) {
     
     @Readonly
     private fun getStatPercentBonusList(currentConstruction: IConstruction): StatTreeNode = timeThis("CityStats.getStatPercentBonusList") {
-        val newStatsBonusTree = StatTreeNode()
+        @LocalState val newStatsBonusTree = StatTreeNode()
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
@@ -644,17 +652,14 @@ class CityStats(val city: City) {
     private fun calcFoodEaten(): Float {
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
         var foodEaten = city.population.population.toFloat() * 2 - foodEatenBySpecialists
-        
-        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
-            if (city.matchesFilter(unique.params[1]))
-                foodEatenBySpecialists *= unique.params[0].toPercent()
 
         foodEaten += foodEatenBySpecialists
-        
-        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionByPopulation)) {
-            if (!city.matchesFilter(unique.params[2])) continue
-            val foodEatenByPopulationFilter = 2f * city.population.getPopulationFilterAmount(unique.params[1])
-            foodEaten -= foodEatenByPopulationFilter * (1f - unique.params[0].toPercent())
+
+        city.forEachMatchingUnique(UniqueType.FoodConsumptionByPopulation) { unique ->
+            if (city.matchesFilter(unique.params[2])) {
+                val foodEatenByPopulationFilter = 2f * city.population.getPopulationFilterAmount(unique.params[1])
+                foodEaten -= foodEatenByPopulationFilter * (1f - unique.params[0].toPercent())
+            }
         }
         
         return foodEaten

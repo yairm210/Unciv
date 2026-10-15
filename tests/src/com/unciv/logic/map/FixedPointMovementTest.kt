@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.map.pathingmap.FixedPointMovement
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestCase
 import com.unciv.testing.runTestParcours

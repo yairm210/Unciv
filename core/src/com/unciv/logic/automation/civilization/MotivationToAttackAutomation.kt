@@ -111,7 +111,7 @@ object MotivationToAttackAutomation {
         // If their cities don't have any nearby cities that are also targets to us and it doesn't include their capital
         // Then there cities are likely isolated and a good target.
         if (targetCiv.getCapital(true) !in targetCities
-                && targetCities.all { theirCity -> !theirCity.neighboringCities.any { it !in targetCities } }) {
+                && targetCities.all { theirCity -> !theirCity.getNeighboringCities().any { it !in targetCities } }) {
             modifiers.add(Pair("Isolated city", 10f * personality.scaledFocus(PersonalityValue.Aggressive)))
         }
 

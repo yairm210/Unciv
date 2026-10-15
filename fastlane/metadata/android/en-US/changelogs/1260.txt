@@ -1,0 +1,15 @@
+Prevent mod archives from overwriting saves and settings - By Angais
+
+Improve desktop font rendering with mipmaps and preserve glyph contrast - By finalpatch (new contributor!)
+
+When changing rulesets, clamp number of city states available to match new ruleset
+
+Show stat icons in civilopedia when displaying stats
+
+Fix altas generation fuzziness errors
+
+Hide unit table "summary" for civs with no units (e.g. Spectator)
+
+Unify "extra ranged attack" logic - extra attacks no longer trigger regular attack effects (XP, on-kill uniques, on-damage uniques) separately from existing triggers
+
+Solved crash when city screen update happens parallel to screen change

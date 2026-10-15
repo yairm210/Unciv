@@ -211,10 +211,10 @@ object ReligionAutomation {
         var score = 0f // Roughly equivalent to the sum of stats gained across all cities
 
         for (city in civInfo.cities) {
-            for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+            city.getCenterTile().forEachTileInDistance(city.getWorkRange()) { tile ->
                 val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
-                
+
                 score += tileScore * when {
                     city.isWorked(tile) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable

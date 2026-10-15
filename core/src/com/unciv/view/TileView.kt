@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
@@ -19,10 +20,14 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
                spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode) {
 
     // Navigation
-    @Readonly fun getTile(): Tile = tile
     @Readonly fun getCivView(): CivView? = tileMapView.gameView?.civView
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
+        return toForeignCityView(city)
+    }
+    /** The city whose center is this tile, if any */
+    @Readonly fun getCity(): ForeignCityView? {
+        val city = tile.getCity() ?: return null
         return toForeignCityView(city)
     }
     @Readonly fun getWorkingCity(): ForeignCityView? {
@@ -37,11 +42,12 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun getOwner(): ForeignCivView? {
         val owner = tile.getOwner() ?: return null
         if (viewer == null) return null
-        return ForeignCivView(owner, viewer, spectatorMode)
+        val gameView = tileMapView.gameView ?: return null
+        return gameView.getForeignCivView(owner)
     }
     @Readonly private fun isVisible(unit: MapUnit): Boolean {
         if (viewer == null) return false
-        return unit.isVisibleTo(viewer)
+        return DebugUtils.VISIBLE_MAP || unit.isVisibleTo(viewer)
     }
     @Readonly private fun toForeignMapUnitView(unit: MapUnit): ForeignMapUnitView =
         tileMapView.gameView!!.getForeignMapUnitView(unit)
@@ -64,6 +70,21 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { toForeignMapUnitView(it) }
             .toList()
     }
+    @Readonly fun getCombatant(): CombatantView? {
+        if (viewer == null) return null
+        if (!isExplored()) return null
+        val gameView = tileMapView.gameView ?: return null
+        if (tile.isCityCenter())
+            return gameView.getForeignCityView(tile.getCity()!!).asCombatant()
+
+        val militaryUnit = tile.militaryUnit
+        if (militaryUnit != null && isVisible(militaryUnit))
+            return toForeignMapUnitView(militaryUnit).asCombatant()
+        val civilianUnit = tile.civilianUnit
+        if (civilianUnit != null && isVisible(civilianUnit))
+            return toForeignMapUnitView(civilianUnit).asCombatant()
+        return null
+    }
 
     // Data retrieval
     @Readonly fun position() = tile.position
@@ -72,10 +93,22 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
      * That means that *in order to allow clicking on an unexplored tile* we currently need to accept tileviews of unexplored tiles
      * */
     @Readonly fun isExplored() = viewer == null || tile.isExplored(viewer)
+    /** Actively observed by [viewer] (no fog of war) */
+    @Readonly fun isVisible(): Boolean = viewer == null || tile.isVisible(viewer)
+    /** `true` when this tile should be shown regardless of exploration/tech: there's no real [viewer] (e.g. civilopedia/map editor previews),
+     * debug mode has the whole map revealed, or [getCivView] is watching a defeated game play out.
+     * TODO: Replace all usages with altering the view function called, to reveal data where relevant */
+    @Readonly fun isForceVisible(): Boolean = viewer == null || DebugUtils.VISIBLE_MAP || getCivView()?.isMapRevealed() == true
     @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
+    // Maybe we can move this to hexmath, will require extra input of map width/radius
+    @Readonly fun getNeighborClockPosition(neighbor: TileView): Int = tile.tileMap.getNeighborTileClockPosition(tile, neighbor.unwrap())
+    // This is an odd one - ideally the API should expose terrains, not...this, this is a specific performance boost 
+    //. that's not really relevant for the API
+    // We should see if we can avoid this entirely
+    @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
     @Readonly fun getVisibleTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
@@ -121,6 +154,13 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
         val city = cityView?.unwrap() ?: tile.getCity()
         return tile.stats.getTileStats(city, viewingCiv?.unwrap())
+    }
+    @Readonly fun getTileStatsBreakdown(
+        viewingCiv: CivView?,
+        cityView: CityView? = null,
+    ): List<Pair<String, Stats>> {
+        val city = cityView?.unwrap() ?: tile.getCity()
+        return tile.stats.getTileStatsBreakdown(city, viewingCiv?.unwrap())
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 

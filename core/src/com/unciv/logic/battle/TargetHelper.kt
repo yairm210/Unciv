@@ -38,9 +38,10 @@ object TargetHelper {
                     continue
             }
 
+            // Nukes ignore line of sight when checking range, and don't require a visible enemy on the target tile
             val tilesInAttackRange =
                 if (unit.baseUnit.isMelee()) reachableTile.neighbors
-                else if (unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
+                else if (unit.baseUnit.isAirUnit() || unit.isNuclearWeapon() || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
@@ -49,6 +50,14 @@ object TargetHelper {
                     // Since military units can technically enter tiles with enemy civilians,
                     // some try to move to to the tile and then attack the unit it contains, which is silly
                     tile == reachableTile -> continue
+
+                    unit.isNuclearWeapon() -> {
+                        if (Nuke.mayUseNuke(MapUnitCombatant(unit), tile))
+                            attackableTiles += AttackableTile(
+                                reachableTile, tile, movementLeft,
+                                Battle.getMapCombatantOfTile(tile)
+                            )
+                    }
 
                     tile in tilesWithEnemies -> attackableTiles += AttackableTile(
                         reachableTile,
@@ -144,10 +153,9 @@ object TargetHelper {
 
         // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
         // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
-        if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
-            return combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
-        }
-        
+        if (!tile.isCityCenter())
+            return tileCombatant.isVisibleTo(combatant.getCivInfo())
+
         return true
     }
 

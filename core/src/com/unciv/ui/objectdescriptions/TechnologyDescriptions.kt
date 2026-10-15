@@ -18,6 +18,7 @@ import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.ui.screens.pickerscreens.TechButton
+import yairm210.purity.annotations.Readonly
 
 
 object TechnologyDescriptions {
@@ -89,16 +90,25 @@ object TechnologyDescriptions {
 
     /**
      *  Gets icons to display on a [TechButton] - all should be also described in [getDescription]
+     *
+     *  @param iconsIndex Optional precomputed [TechIconsIndex] (see [buildTechIconsIndex]) - when building
+     *  icons for every tech in the ruleset at once (as [com.unciv.ui.screens.pickerscreens.TechPickerScreen] does),
+     *  pass one in instead of letting each call re-scan the whole ruleset - see #15641.
      */
-    fun getTechEnabledIcons(tech: Technology, viewingCiv: Civilization, techIconSize: Float) = sequence {
+    @Readonly
+    fun getTechEnabledIcons(tech: Technology, viewingCiv: Civilization, techIconSize: Float, iconsIndex: TechIconsIndex? = null) = sequence {
         val ruleset = viewingCiv.gameInfo.ruleset
         val techName = tech.name
 
-        for (unit in getEnabledUnits(techName, ruleset, viewingCiv)) {
+        val enabledUnits = if (iconsIndex != null) iconsIndex.enabledUnitsByTech[techName].orEmpty().asSequence()
+            else getEnabledUnits(techName, ruleset, viewingCiv)
+        for (unit in enabledUnits) {
             yield(ImageGetter.getConstructionPortrait(unit.name, techIconSize))
         }
 
-        for (building in getEnabledBuildings(techName, ruleset, viewingCiv)) {
+        val enabledBuildings = if (iconsIndex != null) iconsIndex.enabledBuildingsByTech[techName].orEmpty().asSequence()
+            else getEnabledBuildings(techName, ruleset, viewingCiv)
+        for (building in enabledBuildings) {
             // We don't need to show the unavailable marker for techs that are already researched
             // since this is mostly a feature to choose which technologies to research.
             if (building.isWonder && !viewingCiv.tech.isResearched(techName)) {
@@ -119,26 +129,29 @@ object TechnologyDescriptions {
             }
         }
 
-        yieldAll(
-            getObsoletedObjects(techName, ruleset, viewingCiv)
-                .mapNotNull { it.getObsoletedIcon(techIconSize) }
-        )
+        val obsoletedObjects = if (iconsIndex != null) iconsIndex.obsoletedObjectsByTech[techName].orEmpty().asSequence()
+            else getObsoletedObjects(techName, ruleset, viewingCiv)
+        yieldAll(obsoletedObjects.mapNotNull { it.getObsoletedIcon(techIconSize) })
 
-        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName }) {
+        val revealedResources = if (iconsIndex != null) iconsIndex.resourcesByRevealedTech[techName].orEmpty().asSequence()
+            else ruleset.tileResources.values.asSequence().filter { it.revealedBy == techName }
+        for (resource in revealedResources) {
             yield(ImageGetter.getResourcePortrait(resource.name, techIconSize))
         }
 
-        for (improvement in ruleset.tileImprovements.values.asSequence()
-            .filter { it.techRequired == techName }
-            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
-        ) {
+        val requiredTechImprovements = if (iconsIndex != null) iconsIndex.improvementsByTechRequired[techName].orEmpty().asSequence()
+            else ruleset.tileImprovements.values.asSequence()
+                .filter { it.techRequired == techName }
+                .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
+        for (improvement in requiredTechImprovements) {
             yield(ImageGetter.getImprovementPortrait(improvement.name, techIconSize))
         }
 
-        for (improvement in ruleset.tileImprovements.values.asSequence()
-            .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
-            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
-        ) {
+        val uniqueParamImprovements = if (iconsIndex != null) iconsIndex.improvementsByUniqueTechParam[techName].orEmpty().asSequence()
+            else ruleset.tileImprovements.values.asSequence()
+                .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
+                .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
+        for (improvement in uniqueParamImprovements) {
             yield(ImageGetter.getUniquePortrait(improvement.name, techIconSize))
         }
 
@@ -154,6 +167,82 @@ object TechnologyDescriptions {
             )
         }
     }
+
+    /**
+     *  Precomputes, in one pass over the ruleset, which units/buildings/resources/improvements
+     *  are unlocked or obsoleted by each tech - grouped by tech name for O(1) lookup in [getTechEnabledIcons].
+     *
+     *  Without this, opening [com.unciv.ui.screens.pickerscreens.TechPickerScreen] re-scanned the entire
+     *  ruleset (units, buildings, resources, improvements) once per tech - O(techs * rulesetObjects) total,
+     *  which was the dominant cost of constructing that screen and a contributor to a black-screen flash
+     *  on Android when it ran synchronously on the GL thread (#15641).
+     */
+    @Readonly @Suppress("purity") // only mutates the locally-built index maps/lists it returns
+    fun buildTechIconsIndex(ruleset: Ruleset, viewingCiv: Civilization): TechIconsIndex {
+        val filteredBuildings = getFilteredBuildings(ruleset, viewingCiv) { true }.toList()
+        val enabledBuildingsByTech = HashMap<String, MutableList<Building>>()
+        for (building in filteredBuildings)
+            for (tech in building.requiredTechs())
+                enabledBuildingsByTech.getOrPut(tech) { mutableListOf() }.add(building)
+
+        val filteredUnits = ruleset.units.values.asSequence()
+            .filter {
+                (it.uniqueTo != null && viewingCiv.matchesFilter(it.uniqueTo!!) ||
+                        it.uniqueTo == null && viewingCiv.getEquivalentUnit(it) == it)
+                        && !it.isHiddenFromCivilopedia(ruleset)
+            }.toList()
+        val enabledUnitsByTech = HashMap<String, MutableList<BaseUnit>>()
+        for (unit in filteredUnits)
+            for (tech in unit.requiredTechs())
+                enabledUnitsByTech.getOrPut(tech) { mutableListOf() }.add(unit)
+
+        val filteredImprovements = ruleset.tileImprovements.values.asSequence()
+            .filter { it.uniqueTo == null || viewingCiv.matchesFilter(it.uniqueTo!!) }
+            .toList()
+
+        val obsoletedObjectsByTech = HashMap<String, MutableList<RulesetStatsObject>>()
+        val obsoletionCandidates: Sequence<RulesetStatsObject> =
+            filteredBuildings.asSequence() + ruleset.tileResources.values.asSequence() + filteredImprovements.asSequence()
+        for (obj in obsoletionCandidates)
+            for (unique in obj.getMatchingUniques(UniqueType.ObsoleteWith))
+                obsoletedObjectsByTech.getOrPut(unique.params[0]) { mutableListOf() }.add(obj)
+
+        val resourcesByRevealedTech = HashMap<String, MutableList<TileResource>>()
+        for (resource in ruleset.tileResources.values) {
+            val revealedBy = resource.revealedBy ?: continue
+            resourcesByRevealedTech.getOrPut(revealedBy) { mutableListOf() }.add(resource)
+        }
+
+        val improvementsByTechRequired = HashMap<String, MutableList<TileImprovement>>()
+        for (improvement in filteredImprovements) {
+            val techRequired = improvement.techRequired ?: continue
+            improvementsByTechRequired.getOrPut(techRequired) { mutableListOf() }.add(improvement)
+        }
+
+        val improvementsByUniqueTechParam = HashMap<String, LinkedHashSet<TileImprovement>>()
+        for (improvement in filteredImprovements)
+            for (unique in improvement.uniqueObjects)
+                for (param in unique.allParams)
+                    improvementsByUniqueTechParam.getOrPut(param) { LinkedHashSet() }.add(improvement)
+
+        return TechIconsIndex(
+            enabledUnitsByTech,
+            enabledBuildingsByTech,
+            obsoletedObjectsByTech,
+            resourcesByRevealedTech,
+            improvementsByTechRequired,
+            improvementsByUniqueTechParam.mapValues { it.value.toList() }
+        )
+    }
+
+    class TechIconsIndex internal constructor(
+        val enabledUnitsByTech: Map<String, List<BaseUnit>>,
+        val enabledBuildingsByTech: Map<String, List<Building>>,
+        val obsoletedObjectsByTech: Map<String, List<RulesetStatsObject>>,
+        val resourcesByRevealedTech: Map<String, List<TileResource>>,
+        val improvementsByTechRequired: Map<String, List<TileImprovement>>,
+        val improvementsByUniqueTechParam: Map<String, List<TileImprovement>>
+    )
 
     /**
      * Implementation of [ICivilopediaText.getCivilopediaTextLines]
@@ -273,6 +362,7 @@ object TechnologyDescriptions {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    @Readonly
     private fun getEnabledBuildings(techName: String, ruleset: Ruleset, civInfo: Civilization?) =
             getFilteredBuildings(ruleset, civInfo) { it.requiredTechs().contains(techName) }
 
@@ -281,6 +371,7 @@ object TechnologyDescriptions {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    @Readonly
     private fun getObsoletedObjects(techName: String, ruleset: Ruleset, civInfo: Civilization?): Sequence<RulesetStatsObject> =
             (
                     getFilteredBuildings(ruleset, civInfo) { true }
@@ -293,6 +384,7 @@ object TechnologyDescriptions {
             }
 
     /** Readability - for the 'obsoleted' in [getTechEnabledIcons] */
+    @Readonly @Suppress("purity") // only mutates the freshly-created icon it returns
     private fun RulesetStatsObject.getObsoletedIcon(techIconSize: Float) =
         when (this) {
             is Building -> ImageGetter.getConstructionPortrait(name, techIconSize)
@@ -306,6 +398,7 @@ object TechnologyDescriptions {
         }
 
     /** Common filtering for both [getEnabledBuildings] and [getObsoletedObjects], difference via predicate parameter */
+    @Readonly
     private fun getFilteredBuildings(
         ruleset: Ruleset,
         civInfo: Civilization?,
@@ -325,6 +418,7 @@ object TechnologyDescriptions {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
+    @Readonly
     private fun getEnabledUnits(techName: String, ruleset: Ruleset, civInfo: Civilization?): Sequence<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter {

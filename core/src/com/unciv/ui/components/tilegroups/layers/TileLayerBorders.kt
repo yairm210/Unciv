@@ -38,10 +38,9 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val tileView = tileGroup.tileView
         val tileOwner = tileView.getOwner()
-        val tileOwnerCiv = tileOwner?.getCiv()
 
         // If owner changed - clear previous borders
-        if (previousTileOwner?.getCiv() !== tileOwnerCiv)
+        if (previousTileOwner != tileOwner)
             reset()
 
         previousTileOwner = tileOwner
@@ -62,18 +61,18 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             var borderSegmentShouldBeLeftConcave = false
             var borderSegmentShouldBeRightConcave = false
 
-            val neighborOwnerCiv = neighbor.getOwner()?.getCiv()
-            if (neighborOwnerCiv === tileOwnerCiv && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
+            val neighborOwner = neighbor.getOwner()
+            if (neighborOwner == tileOwner && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
                 shouldRemoveBorderSegment = true
             }
-            else if (neighborOwnerCiv !== tileOwnerCiv) {
+            else if (neighborOwner != tileOwner) {
                 val leftSharedNeighbor = tileMapView.getLeftSharedNeighbor(tileView, neighbor)
                 val rightSharedNeighbor = tileMapView.getRightSharedNeighbor(tileView, neighbor)
 
                 // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
                 // This is because we do not draw borders against non-existing tiles either.
-                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
-                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
+                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() == tileOwner
+                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() == tileOwner
 
                 if (!borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
                     shouldAddBorderSegment = true

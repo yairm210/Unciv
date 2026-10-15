@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.unique.expressions.Parser.EmptyExpression
 import com.unciv.models.ruleset.unique.expressions.Parser.InvalidConstant
 import com.unciv.models.ruleset.unique.expressions.Parser.UnknownIdentifier
 import com.unciv.models.ruleset.unique.expressions.Parser.UnmatchedBraces
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -75,12 +74,12 @@ internal object Tokenizer {
     @Readonly
     fun String.tokenize() = sequence<Pair<Int, String>> {
         /** If set, indicates we're in the middle of an identifier */
-        @LocalState var firstIdentifierPosition = -1
+        var firstIdentifierPosition = -1
         /** If set, indicates we're in the middle of a number */
-        @LocalState var firstNumberPosition = -1
+        var firstNumberPosition = -1
         /** If set, indicates we're in the middle of a countable */
-        @LocalState var openingBracePosition = -1
-        @LocalState var braceNestingLevel = 0
+        var openingBracePosition = -1
+        var braceNestingLevel = 0
 
         suspend fun SequenceScope<Pair<Int, String>>.emitIdentifier(pos: Int) {
             assert(firstNumberPosition < 0)

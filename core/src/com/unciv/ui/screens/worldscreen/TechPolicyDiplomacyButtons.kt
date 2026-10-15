@@ -62,7 +62,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         fogOfWarButton.label.setFontSize(30)
         fogOfWarButton.labelCell.pad(10f)
         fogOfWarButton.pack()
-        fogOfWarButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
+        fogOfWarButtonHolder.onActivation(UncivSound.Paper) {
             worldScreen.fogOfWar = !worldScreen.fogOfWar
             worldScreen.shouldUpdate = true
         }

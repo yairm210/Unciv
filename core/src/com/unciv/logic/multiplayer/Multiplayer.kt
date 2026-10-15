@@ -309,6 +309,7 @@ class Multiplayer {
     @Readonly
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+                || preview1.turns == preview2.turns && preview1.currentPlayer != preview2.currentPlayer
     }
 
     companion object {

@@ -241,7 +241,7 @@
     "name": "Idle Units",
     "category": "Units",
     "steps": [
-      "Clicking 'Next unit' moves to the next idle unit in the queue (as listed in Overview -> Units). After issuing an order to an unit, if 'Auto Unit Cycle' in Options -> Gameplay is enabled, you will automatically select the next idle unit.",
+      "Clicking 'Next unit' moves to the next idle unit in the queue (as listed in Overview -> Units). After issuing an order to a unit, if 'Auto Unit Cycle' in Options -> Gameplay is enabled, you will automatically select the next idle unit.",
         "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again, or command the unit to 'Skip turn'.",
         "If you want to disable the 'Next unit' feature entirely, you can toggle it in Options -> Gameplay -> Check for idle units.",
         "If you'd rather 'Next unit' cycle the units and not mark them as Done, you can change it in the Options -> Gameplay menu.",
@@ -678,16 +678,16 @@
             {"text":"You can Right-click or long press a city button on the World screen. The result is the same as tapping it twice - once to select and move the button, again to trigger a reaction: show the City Screen (if the city is yours to inspect), or offer the foreign city info popup."},
             {},
             {"text":"Upgrade multiple units of the same type","header":5,"color":"#fa0"},
-            {"text":"On the World screen, select an unit that can be upgraded, then right-click or long press the \"Upgrade\" button to open a popup menu allowing to upgrade all units of this type at once."},
-            {"text":"In the Units overview, the same upgrade menu is available by clicking the unit icon in the \"Upgrade\" column. When an unit is upgradeable, the icon is lit if conditions are met (enough gold and/or resources), otherwise it is dimmed."},
+            {"text":"On the World screen, select a unit that can be upgraded, then right-click or long press the \"Upgrade\" button to open a popup menu allowing to upgrade all units of this type at once."},
+            {"text":"In the Units overview, the same upgrade menu is available by clicking the unit icon in the \"Upgrade\" column. When a unit is upgradeable, the icon is lit if conditions are met (enough gold and/or resources), otherwise it is dimmed."},
             {},
             {},
             {"text":"City Screen","header":3},
             {},
             {"text":"Additional controls for the construction queue","header":5,"color":"#fa0"},
             {"text":"Right-click or long press a construction item to open a popup menu with additional controls, allowing to manage production of the same item in all cities, by issuing the commands from the same City Screen."},
-            {"text":"The \"Disable\" option moves an item to a separated \"Disabled\" tab, preventing its automatic queueing by the \"Auto-assign city production\" option. To move a disabled item back to its initial place, enter again the popup menu, and choose \"Enable\"."},
-            {"text":"Disabled items are set globally and persistent: they are not reset in a new game, or by restarting Unciv."},
+            {"text":"The \"Disable\" option (in a single city or all cities) moves an item to a separated \"Disabled\" tab, to prevent its automatic queueing by the \"Auto-assign city production\" option or to remove irrelevant objects from the production planning. To move a disabled item back to its initial place, re-enter its popup menu, and choose \"Enable\"."},
+            {"text":"Disabled items are set for the current game only and are carried over when founding a new city."},
             {},
             {"text":"Show Great Person Points breakdown","header":5,"color":"#fa0"},
             {"text":"In the right sidepanel, click a Great People row to display the details of Great Person Points (GPP) accumulated each turn by the current city, for this type of Great People."},
@@ -764,6 +764,18 @@
             {"text": "Founding Cities\nThe Settler is a unit that can found a new city. You can build a Settler unit in a city with at least 2 population, and then move them to a good location to found a new city. This will usually be your main way of acquiring more cities."},
             {},
             {"text": "Food conversion to Production\nDuring the construction of a Settler, the city will not grow. Instead, the 1st, 2nd, 4th, and from there on every 4th, excess Food (Growth) is converted into Production, with the rest of the excess Food being lost."}
+        ]
+    },
+    {
+        "name": "Default Promotions",
+        "category": "Units",
+        "civilopediaText": [
+            {"text": "Allow the player to apply a set of promotions when a unit is built."},
+            {"text": "To make a promotion the default, check 'Default promotions for [Warrior]' then click 'Pick promotions'."},
+            {"text":  "To disable default promotions for a unit, uncheck 'Use default promotions' under the buy button for the unit."},
+            {},
+            {"text":  "Default promotion only applies to the same units that you selected. It only applies per cities. It can't be used In puppeted cities or cities that you don't own."},
+            {"text":  "If the city doesn't have enough XP it will not apply all the promotions. And default promotions doesn't affect the civ AI in anyway."}
         ]
     }
 ]

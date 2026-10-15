@@ -4,19 +4,20 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UpgradeUnitAction
+import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
+import com.unciv.view.CivView
+import com.unciv.view.MapUnitView
 
 /**
- *  A popup menu showing info about an Unit upgrade, with buttons to upgrade "this" unit or _all_
+ *  A popup menu showing info about a unit upgrade, with buttons to upgrade "this" unit or _all_
  *  similar units.
  *
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
@@ -36,7 +37,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 class UnitUpgradeMenu(
     stage: Stage,
     positionNextTo: Actor,
-    private val unit: MapUnit,
+    private val unit: MapUnitView,
     private val unitAction: UpgradeUnitAction,
     private val enable: Boolean,
     private val callbackAfterAnimation: Boolean = false,
@@ -45,14 +46,14 @@ class UnitUpgradeMenu(
 
     private val unitToUpgradeTo by lazy { unitAction.unitToUpgradeTo }
 
-    private val allUpgradableUnits: Sequence<MapUnit> by lazy {
-        unit.civ.units.getCivUnits()
+    private val allUpgradableUnits: List<MapUnitView> by lazy {
+        unit.civ().getUnits()
             .filter {
-                it.baseUnit.name == unit.baseUnit.name
+                it.getBaseUnit().name == unit.getBaseUnit().name
                     && it.hasMovement()
-                    && it.currentTile.getOwner() == unit.civ
+                    && it.isInOwnTerritory()
                     && !it.isEmbarked()
-                    && it.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = true)
+                    && it.canUpgradeTo(unitToUpgradeTo, ignoreResources = true)
             }
     }
 
@@ -65,7 +66,7 @@ class UnitUpgradeMenu(
     }
 
     override fun createScrollableContent() =
-        BaseUnitDescriptions.getUpgradeInfoTable(unitAction.title, unit.baseUnit, unitToUpgradeTo)
+        BaseUnitDescriptions.getUpgradeInfoTable(unitAction.title, unit.getBaseUnit(), unitToUpgradeTo)
 
     override fun createFixedContent() = Table().apply {
         val singleButton = getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade)
@@ -82,8 +83,8 @@ class UnitUpgradeMenu(
         val allResources = unitAction.newResourceRequirements * allCount
         val upgradeAllText = "Upgrade all [$allCount] [${unit.name}] ([$allCost] gold)"
         val upgradeAllButton = getButton(upgradeAllText, KeyboardBinding.UpgradeAll, ::doAllUpgrade)
-        val insufficientGold = unit.civ.gold < allCost
-        val insufficientResources = getInsufficientResourcesMessage(allResources, unit.civ)
+        val insufficientGold = unit.civ().gold < allCost
+        val insufficientResources = getInsufficientResourcesMessage(allResources, unit.civ())
         upgradeAllButton.isDisabled = insufficientGold || insufficientResources.isNotEmpty()
         add(upgradeAllButton).padTop(7f).growX().row()
         if (insufficientResources.isEmpty()) return@apply
@@ -91,7 +92,7 @@ class UnitUpgradeMenu(
         add(label).center()
     }
 
-    private fun getInsufficientResourcesMessage(requiredResources: Counter<String>, civ: Civilization): String {
+    private fun getInsufficientResourcesMessage(requiredResources: Counter<String>, civ: CivView): String {
         if (requiredResources.isEmpty()) return ""
         val available = civ.getCivResourcesByName()
         val sb = StringBuilder()
@@ -105,14 +106,14 @@ class UnitUpgradeMenu(
     }
 
     private fun doUpgrade() {
-        SoundPlayer.play(unitAction.uncivSound)
+        SoundPlayer.play(UiUnitActionType.Upgrade.uncivSound)
         unitAction.action!!()
     }
 
     private fun doAllUpgrade() {
-        SoundPlayer.playRepeated(unitAction.uncivSound)
+        SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit)
+            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit.getUnit())
                 .firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo &&
                     it.action != null }
             otherAction?.action?.invoke()

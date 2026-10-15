@@ -54,7 +54,6 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
             tileView,
-            cityView.viewingCiv(),
             hideUnits = cityScreen.isSpying,
             spyCity = if (cityScreen.isSpying) cityView else null
         ), iconDisplay = IconDisplay.None) {
@@ -89,7 +88,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 unlockButton.onClick {
                     cityView.tryUnlockTile(tileView)
                     update(tileView)
-                    cityScreen.update()
+                    cityScreen.updateAsync()
                 }
                 if (!cityScreen.canChangeState) unlockButton.disable()
                 innerTable.add(unlockButton).padTop(5f).row()
@@ -98,7 +97,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 lockButton.onClick {
                     cityView.tryLockTile(tileView)
                     update(tileView)
-                    cityScreen.update()
+                    cityScreen.updateAsync()
                 }
                 if (!cityScreen.canChangeState) lockButton.disable()
                 innerTable.add(lockButton).padTop(5f).row()
@@ -108,9 +107,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         if (tileView.isCityCenter()) {
             val otherCityView = tileView.owningCity()?.tryGetCityView()
             if (otherCityView != null && otherCityView != cityView)
-                innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(otherCityView)
-                ) })
+                innerTable.add("Move to city".toTextButton().onClick {
+                    cityScreen.game.replaceCurrentScreen { CityScreen(otherCityView) }
+                })
         }
 
         innerTable.pack()
@@ -156,7 +155,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                     break
             }
             SoundPlayer.play(Stat.Gold.purchaseSound)
-            cityScreen.game.replaceCurrentScreen(CityScreen(cityView)) // update doesn't redo the tiles
+            cityScreen.game.replaceCurrentScreen { CityScreen(cityView) } // update doesn't redo the tiles
         }
     }
 }

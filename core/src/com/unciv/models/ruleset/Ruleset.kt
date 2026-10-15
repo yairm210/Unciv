@@ -87,7 +87,7 @@ enum class RulesetFile(
         }
     }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
-    VictoryTypes("VictoryTypes.json", getINamed = { victories.values.asSequence() }),
+    VictoryTypes("VictoryTypes.json", { victories.values.asSequence() }),
     CityStateTypes("CityStateTypes.json", getUniques =
         { cityStateTypes.values.asSequence().flatMap {
             it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() + it.uniqueObjects
@@ -201,6 +201,10 @@ class Ruleset {
     fun getGameResource(resourceName: String): GameResource? = Stat.safeValueOf(resourceName)
         ?: SubStat.safeValueOf(resourceName)
         ?: tileResources[resourceName]
+
+    /** The victories offered as checkboxes in the new game options, and enabled by the "all victories" default. */
+    @Readonly fun selectableVictories(): List<Victory> =
+        victories.values.filter { !it.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
 
     private inline fun <reified T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
@@ -580,21 +584,18 @@ class Ruleset {
                         uniques = ArrayList(cityStateType.uniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })

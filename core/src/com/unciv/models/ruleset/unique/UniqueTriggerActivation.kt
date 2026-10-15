@@ -29,7 +29,7 @@ import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import java.util.EnumSet
@@ -134,6 +134,7 @@ object UniqueTriggerActivation {
                 val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
+                if (choices.isEmpty()) return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
                     val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
@@ -969,8 +970,10 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
                     }
-                    civInfo.gameInfo.tileMap.values.asSequence()
-                        .forEach { it.setExplored(civInfo, true) }
+                    val tiles = civInfo.gameInfo.tileMap.values
+                    tiles.forEach { it.setExplored(civInfo, true) }
+                    if (!civInfo.isBarbarian)
+                        civInfo.cache.discoverNaturalWonders(tiles)
                     true
                 }
             }
@@ -1029,9 +1032,9 @@ object UniqueTriggerActivation {
                     ?: return null
 
                 return {
-                    revealCenter.getTilesInDistance(radius)
-                        .filter { tileBasedRandom.nextFloat() < chance }
-                        .forEach { it.setExplored(civInfo, true) }
+                    revealCenter.forEachTileInDistance(radius, { tileBasedRandom.nextFloat() < chance }) {
+                        it.setExplored(civInfo, true)
+                    }
                     civInfo.cache.updateViewableTiles()
                     if (notification != null)
                         civInfo.addNotification(
