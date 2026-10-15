@@ -809,11 +809,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun setGlobalTransients() {
+        fun Difficulty.estimateDifficulty() = buildingCostModifier + policyCostModifier + researchCostModifier + unhappinessModifier -
+            aiBuildingCostModifier - aiUnitCostModifier - aiUnhappinessModifier
         difficultyObject = ruleset.difficulties[difficulty]
-            ?: throw UncivShowableException("Invalid game: [Difficulty] '[$difficulty]' is not defined in the ruleset")
-
+            ?: ruleset.difficulties.values.maxByOrNull { it.estimateDifficulty() }
+            ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Difficulty]")
         speed = ruleset.speeds[gameParameters.speed]
-            ?: throw UncivShowableException("Invalid game: [Speed] '[$speed]' is not defined in the ruleset")
+            ?: ruleset.speeds.values.maxByOrNull { it.modifier }
+            ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Speed]")
 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
