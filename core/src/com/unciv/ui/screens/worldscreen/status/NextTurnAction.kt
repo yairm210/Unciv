@@ -9,7 +9,7 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.espionage.EspionageScreen
 import com.unciv.ui.screens.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
@@ -84,7 +84,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
                 worldScreen.gameInfo.isEspionageEnabled() && worldScreen.selectedGameView.civView.shouldShowMoveSpies()
         override fun action(worldScreen: WorldScreen) {
-            worldScreen.game.pushScreen { EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
+            worldScreen.game.pushScreen { EspionageScreen(worldScreen.selectedCiv, worldScreen) }
             worldScreen.selectedGameView.civView.tryDismissMoveSpies()
         }
     },

@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.overviewscreen
+package com.unciv.ui.screens.espionage
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -34,12 +34,13 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import yairm210.purity.annotations.Pure
+import kotlin.collections.iterator
 
-/** On this screen, possible locations of spies are a [City] or the Spy Hideout which we represent as `null` */
+/** On this screen, possible locations of spies are a [com.unciv.logic.city.City] or the Spy Hideout which we represent as `null` */
 private typealias Location = City?
 
 /** Screen used for moving spies between cities */
-class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
+class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table()
@@ -344,7 +345,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 && location.civ.isMajorCiv()
                 && location.civ.knows(civInfo) // ensures the !! below won't crash
                 && location.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-                ConfirmPopup(this@EspionageOverviewScreen,
+                ConfirmPopup(
+                    this@EspionageScreen,
                     // The promise isn't broken when you move the spy - only when they catch you stealing a tech
                     "This may result in breaking your promise to [${location.civ.civName}]",
                     "Move",
@@ -374,7 +376,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         override fun clickHandler() {
             val spy = selectedSpy!!
             if (!isCurrentAction) {
-                ConfirmPopup(this@EspionageOverviewScreen,
+                ConfirmPopup(
+                    this@EspionageScreen,
                     "Do you want to stage a coup in [${location!!.civ.civName}] with a " +
                         "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
                         "chance of success?",

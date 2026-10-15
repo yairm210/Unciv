@@ -19,7 +19,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.espionage.EspionageScreen
 import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
 import com.unciv.view.SpyView
@@ -185,9 +185,9 @@ class MoveSpyOverlayButtonData(val spyView: SpyView, val cityView: ForeignCityVi
         spyActionButton.onActivation(UncivSound.Silent) {
             if (cityView != null) {
                 spyView.tryMoveTo(cityView)
-                worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
+                worldScreen.game.pushScreen{ EspionageScreen(worldScreen.selectedCiv, worldScreen) }
             } else {
-                worldScreen.game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
+                worldScreen.game.pushScreen{ EspionageScreen(worldScreen.selectedCiv, worldScreen) }
                 worldScreen.bottomUnitTable.selectSpy(null)
             }
             worldMapHolder.removeUnitActionOverlay()
