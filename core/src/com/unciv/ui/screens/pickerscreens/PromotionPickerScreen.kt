@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
@@ -22,20 +21,21 @@ import com.unciv.ui.components.input.*
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.view.MapUnitView
 import kotlin.math.abs
 
 class PromotionPickerScreen private constructor(
-    val unit: MapUnit,
+    val unit: MapUnitView,
     private val closeOnPick: Boolean,
     private val originalName: String?,
     private val onChange: (() -> Unit)?
 ) : PickerScreen(), RecreateOnResize {
     /** Show promotions organized by depencencies, allow picking new ones, allow unit rename
-     *  @param unit The MapUnit to work with
+     *  @param unit The unit to work with
      *  @param closeOnPick Should picking a new promotion close the screen?
      *  @param onChange Optional callback called when a promotion is picked or during close if the name was changed
      */
-    constructor(unit: MapUnit, closeOnPick: Boolean = true, onChange: (() -> Unit)? = null)
+    constructor(unit: MapUnitView, closeOnPick: Boolean = true, onChange: (() -> Unit)? = null)
         : this(unit, closeOnPick, unit.instanceName, onChange)
 
     // Style stuff
@@ -55,7 +55,7 @@ class PromotionPickerScreen private constructor(
     // [acceptPromotion] will [recreate] the screen, so these are constant for this picker's lifetime
     private val canChangeState = GUI.isAllowedChangeState()
     private val canPromoteNow = canChangeState &&
-            unit.promotions.canBePromoted() &&
+            unit.canBePromoted() &&
             unit.hasMovement() && unit.attacksThisTurn == 0
 
     // Logic
@@ -90,7 +90,7 @@ class PromotionPickerScreen private constructor(
             val renameButton = "Choose name for [${unit.name}]".toTextButton()
             renameButton.onClick {
                 UnitRenamePopup(this, unit) {
-                    game.replaceCurrentScreen(recreate())
+                    game.replaceCurrentScreen{ recreate() }
                 }
             }
             topTable.add(renameButton).pad(5f).row()
@@ -109,7 +109,7 @@ class PromotionPickerScreen private constructor(
         displayTutorial(TutorialTrigger.Experience)
     }
 
-    override fun getCivilopediaRuleset() = unit.civ.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = unit.civ().ruleset
 
     private fun acceptPromotion(button: PromotionButton?) {
         // if user managed to click disabled button, still do nothing
@@ -119,12 +119,12 @@ class PromotionPickerScreen private constructor(
         SoundPlayer.playRepeated(UncivSound.Promote, path.size.coerceAtMost(2))
 
         for (promotion in path)
-            unit.promotions.addPromotion(promotion.name)
+            unit.tryAddPromotion(promotion.name)
 
         onChange?.invoke()
 
-        if (!closeOnPick || unit.promotions.canBePromoted())
-            game.replaceCurrentScreen(recreate(false))
+        if (!closeOnPick || unit.canBePromoted())
+            game.replaceCurrentScreen{ recreate(false) }
         else
             game.popScreen()
     }
@@ -193,7 +193,7 @@ class PromotionPickerScreen private constructor(
         topTable.add(promotionsTable).row()
         saveUnitPromotionForCity()
         
-        if (unit.statusMap.isNotEmpty()) addStatuses()
+        if (unit.getStatusMap().isNotEmpty()) addStatuses()
         addConnectingLines(emptySet())
     }
 
@@ -203,22 +203,16 @@ class PromotionPickerScreen private constructor(
          then player should not be able to save promotion in enermy tiles/puppet citys 
          even their own because you can't build any unit there.
         */ 
-        val currentCity = unit.currentTile.getCity() ?: return
-        if (currentCity.civ != unit.civ) return
-        if (currentCity.isPuppet) return
-        val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.name}]".toCheckBox(saveUnitPromotion) {saveUnitPromotion = it}
+        if (!unit.canSaveDefaultPromotions()) return
+        val checkBoxSaveUnitPromotion = "Default promotions for [${unit.getBaseUnit().name}]".toCheckBox(saveUnitPromotion) {saveUnitPromotion = it}
         topTable.add(checkBoxSaveUnitPromotion).left().padTop(10f)
     }
     
     // going to re-use this bit of code 2 time so turn it into a funtion
     private fun checkSaveUnitPromotion() {
         if (!saveUnitPromotion)  return
-        val unitCurrentCity = unit.currentTile.getCity()
-        if (unitCurrentCity != null) {
-            // If you are clicked the save baseUnit promotion, you want the next baseUnit to have the same promotion.
-            unitCurrentCity.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
-            unitCurrentCity.unitToPromotions[unit.baseUnit.name] = unit.promotions
-        }
+        // If you are clicked the save baseUnit promotion, you want the next baseUnit to have the same promotion.
+        unit.trySaveDefaultPromotions()
     }
     
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
@@ -256,10 +250,10 @@ class PromotionPickerScreen private constructor(
     
     private fun addStatuses() {
         val statusTable = Table().apply { defaults().pad(5f) }
-        for (status in unit.statusMap.values.sortedBy { it.turnsLeft }) {
+        for (status in unit.getStatusMap().values.sortedBy { it.turnsLeft }) {
             val statusButton = "{${status.name}}: ${status.turnsLeft}${Fonts.turn}".toTextButton()
             val description = "{${status.name}}: ${status.turnsLeft}${Fonts.turn}\n".tr() +
-                    unit.civ.gameInfo.ruleset.unitPromotions[status.name]?.getDescription(emptySet())
+                    unit.civ().ruleset.unitPromotions[status.name]?.getDescription(emptySet())
             statusButton.onClick { descriptionLabel.setText(description) }
             statusTable.add(statusButton).left().row()
         }

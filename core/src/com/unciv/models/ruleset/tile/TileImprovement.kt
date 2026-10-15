@@ -185,7 +185,7 @@ class TileImprovement : RulesetStatsObject() {
     @Readonly
     fun getStockpiledResourceRequirements(gameContext: GameContext): Counter<String> {
         val counter = Counter<String>()
-        for (unique in getMatchingUniques(UniqueType.CostsResources, gameContext)) {
+        forEachMatchingUnique(UniqueType.CostsResources, gameContext) { unique ->
             var amount = unique.params[0].toInt()
             if (unique.isModifiedByGameSpeed()) amount = (amount * gameContext.gameInfo!!.speed.modifier).toInt()
             counter.add(unique.params[1], amount)

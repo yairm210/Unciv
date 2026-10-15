@@ -669,6 +669,7 @@ class AlertPopup(
         val render = RenderEvent(event, worldScreen, unit) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
+        getScrollPane()?.fadeScrollBars = false
         return true
     }
 

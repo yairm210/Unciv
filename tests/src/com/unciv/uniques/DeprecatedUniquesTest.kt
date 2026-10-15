@@ -108,36 +108,11 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A unique matching DeprecatedUniqueType should produce at least one ErrorOptionsOnly error, got: ${errors.map { it.errorSeverityToReport }}",
             errors.any { it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly }
-        )
-    }
-
-    // -------------------------------------------------------------------------------------
-    // Test 4 — Validator: half-deprecated unique (WARNING in UniqueType) reports WarningOptionsOnly
-    // -------------------------------------------------------------------------------------
-
-    @Test
-    fun halfDeprecatedUniqueReportsWarningInValidator() {
-        // FoodConsumptionBySpecialists has DeprecationLevel.WARNING and stays in UniqueType.
-        // Its text: "[relativeAmount]% Food consumption by specialists [cityFilter]"
-        val unique = Unique("[+50]% Food consumption by specialists [in all cities]")
-
-        RulesetCache.loadRulesets(noMods = true)
-        val ruleset = RulesetCache.getVanillaRuleset()
-
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
-
-        assertTrue(
-            "A half-deprecated unique (DeprecationLevel.WARNING) should produce a WarningOptionsOnly warning, got: ${errors.map { it.errorSeverityToReport }}",
-            errors.any { it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly }
-        )
-        assertTrue(
-            "A half-deprecated unique must NOT produce an ErrorOptionsOnly error (it still works)",
-            errors.none { it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly }
         )
     }
 

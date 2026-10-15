@@ -6,7 +6,8 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 
@@ -24,9 +25,9 @@ class Belief() : RulesetObject() {
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter, state) ||
-                state != null && hasTagUnique(filter, state) ||
-                state == null && hasTagUnique(filter)
+            matchesSingleFilter(it, state) ||
+                state != null && hasTagUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
         else matchesSingleFilter(filter, state) ||
             state != null && hasTagUnique(filter, state) ||
@@ -53,29 +54,30 @@ class Belief() : RulesetObject() {
     }
 
     // This special overload is called from Religion overview and Religion picker
-    fun getCivilopediaTextLines(withHeader: Boolean): List<FormattedLine> {
-        val textList = ArrayList<FormattedLine>()
+    fun getCivilopediaTextLines(withHeader: Boolean) = buildCivilopediaText {
         if (withHeader) {
-            textList += FormattedLine(name, size = Constants.headingFontSize, centered = true, link = makeLink())
-            textList += FormattedLine()
+            add(name, size = Constants.headingFontSize, centered = true, link = makeLink())
+            space()
         }
         if (type != BeliefType.None)
-            textList += FormattedLine("{Type}: {$type}", color = type.color, centered = withHeader)
-        uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
-        return textList
+            add("{Type}: {$type}", color = type.color, centered = withHeader)
+        addUniques(FormattedLineListBuilder.SeparatorType.None)
     }
 
     companion object {
-        // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         @Readonly
-        private fun getBeliefsMatching(name: String, ruleset: Ruleset) =
+        fun getBeliefsMatching(name: String, ruleset: Ruleset) =
             ruleset.beliefs.values.asSequence()
             .filterNot { it.isHiddenFromCivilopedia(ruleset) }
-            .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } } }
+            .filter { it.hasUniquesMentioning(name) }
 
         /** Get CivilopediaText lines for all Beliefs referencing a given name in an unique parameter,
          *  With optional spacing and "See Also:" header.
+         *
+         *  The gradual builder pattern conversion will need to replace this with [getBeliefsMatching], appending to any other see-also objects,
+         *  then format the list themselves. In a later stage, that formatting will get a helper in the builder.
          */
+        @Deprecated("TODO - see Kdoc")
         fun getCivilopediaTextMatching(
             name: String,
             ruleset: Ruleset,
@@ -89,19 +91,19 @@ class Belief() : RulesetObject() {
 
         fun getCivilopediaBeliefsEntry(ruleset: Ruleset) = Belief().apply {
             name = "Beliefs"
-            val lines = ArrayList<FormattedLine>()
-            lines += FormattedLine("There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.")
-            lines += FormattedLine("Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.")
-            civilopediaText = lines
+            civilopediaText = buildCivilopediaText {
+                add("There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.")
+                add("Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.")
+            }
         }
 
         fun getCivilopediaReligionEntry(ruleset: Ruleset) = Belief().apply {
             name = "Religions"
-            val lines = ArrayList<FormattedLine>()
-            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
-                lines += FormattedLine(it, icon = "Belief/$it")
+            civilopediaText = buildCivilopediaText {
+                ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
+                    add(it, icon = "Belief/$it")
+                }
             }
-            civilopediaText = lines
         }
     }
 }

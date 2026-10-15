@@ -1,11 +1,13 @@
-En snabb och liten nytolkning av världens mest kända civilisationsbyggarspel – helt gratis, utan reklam och fri för alltid!
+En nytolkning med öppen källkod av världens mest kända civilisationsbyggarspel – snabbt, litet, utan reklam och gratis för alltid!
 
-Bygg din civilisation, forska fram tekniker, utvidga dina städer och besegra dina fiender!
+Bygg din civilisation, forska fram teknologier, utvidga dina städer och besegra dina fiender!
 
-Har du önskemål eller hittat ett fel? Skriv gärna på https://github.com/yairm210/Unciv/issues – inget är för litet!
+Önskemål? Fel? Vill du hjälpa till med utvecklingen? Att göra-listan finns på https://github.com/yairm210/Unciv/issues
 
-För frågor, synpunkter eller bara trevligt umgänge kan du gå med i vår gemenskap på https://discord.gg/bjrB4Xw. Vill du hjälpa till med översättningen finns anvisningar på https://yairm210.github.io/Unciv/Other/Translating/.
+Frågor? Synpunkter? Gå med i vår gemenskap på Discord: https://discord.gg/bjrB4Xw ;)
 
-Kan du Java eller Kotlin får du gärna bidra till utvecklingen på https://github.com/yairm210/Unciv. Världen väntar! Kan du bygga en civilisation som står emot tidens prövningar?
+Vill du hjälpa till att översätta spelet till ditt språk? Se https://yairm210.github.io/Unciv/Translating/Translating/
 
-Behörigheten ”fullständig nätverksåtkomst” krävs för hämtningar som användaren startar och för flerspelarläget. Övriga behörigheter används för aviseringar om drag i flerspelarläget. Nätverksåtkomst används för att importera och hämta moddar, hämta musik samt ladda upp och hämta flerspelarspel. Utöver detta initierar Unciv inga internetanslutningar.
+Världen väntar! Kan du bygga upp din civilisation till ett rike som står emot tidens prövningar?
+
+Behörigheten ”fullständig nätverksåtkomst” krävs för hämtningar som användaren startar och för flerspelarläget. Alla andra angivna behörigheter läggs till automatiskt av det API som används för aviseringar om drag i flerspelarläget. Nätverksåtkomst används för att visa listan över moddar, hämta moddar och musik samt ladda upp och hämta flerspelarspel. Unciv initierar ingen annan internetkommunikation.

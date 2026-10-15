@@ -10,7 +10,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapPathing
-import com.unciv.logic.map.PathingMap
+import com.unciv.logic.map.pathingmap.PathingMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -45,7 +45,6 @@ import java.util.BitSet
  *
  * getPathBetweenTiles uses {@link com.unciv.logic.map.BFS} for single-turn pathing to a target.
  */
-@InternalState
 class UnitMovement(val unit: MapUnit) {
 
     @Cache private val pathfindingCache = PathfindingCache(unit)
@@ -425,6 +424,7 @@ class UnitMovement(val unit: MapUnit) {
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
      * allowed position. Does not teleport transported units on their own, these are teleported when
      * the transporting unit is moved.
+     * Does not capture enemy civilians; this is not an attack.
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
@@ -437,11 +437,23 @@ class UnitMovement(val unit: MapUnit) {
         if (canPassThrough(unit.getTile())
             && !isCityCenterCannotEnter(unit.getTile()))
             return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
+
+        // Forced displacement is not an attack. [canMoveTo] treats an enemy civilian as enterable so
+        // ordinary movement can capture them, but accepting that tile here would capture them as a
+        // side effect of borders, trades, or diplomacy, and can leave the victim's old owner
+        // automating an instance that now belongs to Barbarians. Another civ's unit can only be
+        // passed through, so a destination must be empty or already hold a unit of ours.
+        fun isDisplacementDestination(tile: Tile): Boolean {
+            if (!canMoveTo(tile)) return false
+            val currentCivInTile = tile.getFirstUnit()?.civ
+            return currentCivInTile == null || currentCivInTile == unit.civ
+        }
+
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
                 // can the unit be placed safely there? Is tile either unowned or friendly?
-                .filter { canMoveTo(it) && it.getOwner()?.isAtWarWith(unit.civ) != true }
+                .filter { isDisplacementDestination(it) && it.getOwner()?.isAtWarWith(unit.civ) != true }
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
@@ -450,7 +462,7 @@ class UnitMovement(val unit: MapUnit) {
         val origin = unit.getTile()
         if (allowedTile == null)
             allowedTile = unit.civ.cities.flatMap { it.getTiles() }
-                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull{ canMoveTo(it) }
+                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull { isDisplacementDestination(it) }
 
         if (allowedTile != null) {
             unit.removeFromTile() // we "teleport" them away
@@ -906,12 +918,11 @@ class UnitMovement(val unit: MapUnit) {
         while (tilesToCheck.isNotEmpty()) {
             val newTilesToCheck = ArrayList<Tile>()
             for (currentTileToCheck in tilesToCheck) {
-                val reachableTiles = currentTileToCheck.getTilesInDistance(unit.getRange())
-                    .filter { unit.movement.canMoveTo(it) }
-                for (reachableTile in reachableTiles) {
-                    if (tilesReached.containsKey(reachableTile)) continue
-                    tilesReached[reachableTile] = currentTileToCheck
-                    newTilesToCheck.add(reachableTile)
+                currentTileToCheck.forEachTileInDistance(unit.getRange(), { unit.movement.canMoveTo(it) }) { reachableTile ->
+                    if (!tilesReached.containsKey(reachableTile)) {
+                        tilesReached[reachableTile] = currentTileToCheck
+                        newTilesToCheck.add(reachableTile)
+                    }
                 }
             }
             tilesToCheck = newTilesToCheck
@@ -1004,7 +1015,7 @@ class PathfindingCache(private val unit: MapUnit) {
 
 /** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
-    fun getPathToTile(tile: Tile): List<Tile> {
+    @Readonly fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {
             Log.debug("PathsToTilesWithinTurn#getPathToTile does not contain $tile: $this")
             throw Exception("Can't reach $tile")

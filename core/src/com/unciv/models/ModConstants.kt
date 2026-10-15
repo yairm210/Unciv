@@ -85,14 +85,12 @@ class ModConstants {
 
     // MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
     var ancientRuinCountMultiplier = 0.025f
-    // MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureintensity, latitude and perlin noise.
-    var spawnIceBelowTemperature = -0.8f
     // MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
     var maxLakeSize = 10
     // RiverGenerator: river frequency and length bounds
     var riverCountMultiplier = 0.01f
     var minRiverLength = 5
-    var maxRiverLength = 666  // Do not set to less than the maximal map radius
+    var maxRiverLength = 666  // Do not set to less than the maximal map radius. Set to 0 to disable river generation.
 
     // Factors in formula for Maximum Number of foundable Religions
     var religionLimitBase = 1

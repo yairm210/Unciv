@@ -3,18 +3,18 @@
 #noinspection AndroidGradlePluginVersion
 agp = "9.2.0"
 
-kotlin = "2.4.10"
-coroutines = "1.10.2"
+kotlin = "2.4.20"
+coroutines = "1.11.0"
 
 gdx = "1.14.2"
 discord = "v2.0.1"
 
-jna = "5.17.0"
-ktor = "3.2.3"
+ktor = "3.5.2"
+jna = "5.19.1"
 logback = "1.5.21"
 clikt = "5.0.3"
 
-purity = "1.7.1"
+purity = "1.10.4"
 detekt = "1.23.8"
 
 # tests
@@ -22,9 +22,14 @@ junit = "4.13.2"
 mockito = "5.20.0"
 
 #android
-ktxCore = "1.16.0"
+#Be careful raising this. May raise minSdk, compileSdk or targetJvm dependencies. Do no only run unit tests, build an apk as well. Problems will mention androidx.core.
+#This is the latest one compatible with minSdk 21, 1.18+ will require minSdk 23+.
+ktxCore = "1.17.0"
+#Be careful raising this. May raise minSdk, compileSdk or targetJvm dependencies. Do no only run unit tests, build an apk as well. Problems will mention androidx.work.
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
+
+androidxCollection = "1.4.5"
 
 
 [libraries]
@@ -69,6 +74,8 @@ clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt
 
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 jna-platform = { group = "net.java.dev.jna", name = "jna-platform", version.ref = "jna" }
+
+androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "androidxCollection" }
 
 android-ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "ktxCore" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }

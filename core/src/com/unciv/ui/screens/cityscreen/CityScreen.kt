@@ -16,7 +16,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
@@ -161,7 +160,9 @@ class CityScreen(
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
-        update()
+
+        cityView.updateCityStats()
+        updateSync() // NOT async since that gives a "visual flash" when entering the city
 
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
@@ -178,13 +179,22 @@ class CityScreen(
 
     override fun getCivilopediaRuleset() = cityView.getRuleset()
 
-    internal fun update() {
-        // Recalculate Stats
-        cityView.updateCityStats()
-
+    /** Async */
+    internal fun updateAsync() {
+        Concurrency.run {
+            // Recalculate Stats
+            cityView.updateCityStats()
+            Concurrency.runOnGLThread {
+                // This screen may have been replaced while we were computing stats - #15642
+                if (game.screen !== this@CityScreen) return@runOnGLThread
+                updateSync()
+            }
+        }
+    }
+    
+    internal fun updateSync(){
         constructionsTable.isVisible = !isSpying
         constructionsTable.update(selectedConstruction)
-
         updateWithoutConstructionAndMap()
 
         // Rest of screen: Map of surroundings
@@ -303,14 +313,14 @@ class CityScreen(
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
                 cityView.tryAnnexCity()
-                update()
+                updateAsync()
             }
             if (!canChangeState) annexCityButton.disable()
             razeCityButtonHolder.add(annexCityButton) //.colspan(cityPickerTable.columns)
         } else if (!cityView.isBeingRazed()) {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
-            razeCityButton.onClick { cityView.trySetRazing(true); update() }
+            razeCityButton.onClick { cityView.trySetRazing(true); updateAsync() }
             if (!canChangeState || !cityView.canBeDestroyed() || !canAnnex) {
                 razeCityButton.disable()
             }
@@ -319,7 +329,7 @@ class CityScreen(
         } else {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
-            stopRazingCityButton.onClick { cityView.trySetRazing(false); update() }
+            stopRazingCityButton.onClick { cityView.trySetRazing(false); updateAsync() }
             if (!canChangeState) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
@@ -407,7 +417,7 @@ class CityScreen(
                 cityView.tryStopWorkingTile(tileGroup.tileView)
             }
             cityView.updateCityStats()
-            update()
+            updateAsync()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
             askToBuyTile(tileGroup.tileView)
@@ -434,19 +444,18 @@ class CityScreen(
             purchasePrompt,
             "Purchase",
             true,
-            restoreDefault = { update() }
+            restoreDefault = { updateAsync() }
         ) {
             Concurrency.run {
                 val success = cityView.tryBuyTile(selectedTile)
                 if (!success){
-                    update()
+                    updateAsync()
                     return@run
                 }
                 Concurrency.runOnGLThread {
                     SoundPlayer.play(UncivSound.Coin)
-                    InputDisabling.disableInput()
                     // preselect the next tile on city screen rebuild so bulk buying can go faster
-                    game.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
+                    game.replaceCurrentScreen { CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()) }
                 }
             }
         }.open()
@@ -464,7 +473,7 @@ class CityScreen(
         if (tileGroup.tileView.isWorked())
             cityView.tryLockTile(tileGroup.tileView)
 
-        update()
+        updateAsync()
     }
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup) {
@@ -484,19 +493,20 @@ class CityScreen(
                     cityView.tryAddToQueueWithTile(pickTileData.building, tileInfo)
                 }
             }
-            update()
+            updateAsync()
             return
         }
 
         selectTile(tileGroup.tileView)
-        update()
+        updateAsync()
     }
 
     /** Convenience shortcut to [CivConstructions.hasFreeBuilding][com.unciv.logic.civilization.CivConstructions.hasFreeBuilding], nothing more */
     internal fun hasFreeBuilding(building: Building) = cityView.hasFreeBuilding(building)
 
     fun selectConstructionFromQueue(index: Int) {
-        selectConstruction(cityView.constructions.constructionQueue[index])
+        val constructionName = cityView.constructions.constructionQueue.getOrNull(index) ?: return
+        selectConstruction(constructionName)
     }
     fun selectConstruction(name: String) {
         selectConstruction(cityView.constructions.getConstruction(name))
@@ -555,10 +565,12 @@ class CityScreen(
         if (numCities == 0) return
         val indexOfCity = viewableCities.indexOfFirst { it == cityView }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
-        newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
-        newCityScreen.update()
-        game.replaceCurrentScreen(newCityScreen)
+        game.replaceCurrentScreen {
+            val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+            newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
+            newCityScreen.updateAsync()
+            newCityScreen
+        }
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,

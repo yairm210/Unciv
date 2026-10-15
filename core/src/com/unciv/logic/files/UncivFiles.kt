@@ -224,7 +224,7 @@ class UncivFiles(
         try {
             val data = gameInfoToString(game)
             debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
-            saverLoader.saveGame(data, saveLocation,
+            saverLoader.saveGame(data, saveZipped, saveLocation,
                 { location ->
                     game.customSaveLocation = location
                     Concurrency.runOnGLThread { onSaved() }
@@ -250,6 +250,8 @@ class UncivFiles(
 
         val gameInfo = try {
             FileConversions.readJson(gameFile, GameInfo::class.java)
+        } catch (outOfMemory: OutOfMemoryError) {
+            throw UncivShowableException("Not enough memory on phone to load game!", outOfMemory)
         } catch (ex: Exception) {
             Log.error("Exception while deserializing GameInfo JSON", ex)
             val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!
@@ -430,7 +432,7 @@ class UncivFiles(
             val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
                 FileConversions.unzip(fixedData)
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 fixedData
             }
             val gameInfo = try {

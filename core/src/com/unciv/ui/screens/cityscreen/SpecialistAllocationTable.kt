@@ -34,7 +34,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
                 "Manual Specialists".toTextButton(smallButtonStyle)
                    .onActivation {
                        cityView.tryDisableManualSpecialists()
-                       cityScreen.update()
+                       cityScreen.updateAsync()
                    }
             } else {
                 "Auto Specialists".toTextButton(smallButtonStyle)
@@ -87,7 +87,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             .surroundWithCircle(30f).apply { circle.color = Color.GREEN.darken(0.2f) }
         assignButton.onClick {
             cityView.tryAssignSpecialist(specialistName)
-            cityScreen.update()
+            cityScreen.updateAsync()
         }
         if (cityView.getFreePopulation() == 0 || !cityScreen.canChangeState)
             assignButton.clear()
@@ -100,7 +100,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             .surroundWithCircle(30f).apply { circle.color = Color.RED.darken(0.1f) }
         unassignButton.onClick {
             cityView.tryUnassignSpecialist(specialistName)
-            cityScreen.update()
+            cityScreen.updateAsync()
         }
 
         if (assignedSpecialists <= 0 || cityView.isPuppet()) unassignButton.isVisible = false

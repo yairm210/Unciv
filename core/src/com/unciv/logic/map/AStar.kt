@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
+import yairm210.purity.annotations.Readonly
 import java.util.PriorityQueue
 
 
@@ -38,12 +40,12 @@ data class TilePriority(val tile: Tile, val priority: Float)
  * val path = aStarSearch.findPath(goalTile)
  * ```
  */
-@InternalState
+@ModifiesInternalStateOnly
 class AStar(
     val startingPoint: Tile,
-    private val predicate : (Tile) -> Boolean,
-    private val cost: (Tile, Tile) -> Float,
-    private val heuristic : (Tile, Tile) -> Float,
+    @Readonly private val predicate : (Tile) -> Boolean,
+    @Readonly private val cost: (Tile, Tile) -> Float,
+    @Readonly private val heuristic : (Tile, Tile) -> Float,
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE

@@ -222,6 +222,7 @@ class ImprovementPickerScreen(
             improvementButton.addListener(object : ClickListener() {
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     setDescription(improvement, Color.LIGHT_GRAY)
+                    rightSideButton.disable()
                 }
             })
         } else {
@@ -256,8 +257,9 @@ class ImprovementPickerScreen(
             maintenance.add(statName, -amount)
         }
 
-        for (unique in currentPlayerCiv.getMatchingUniques(UniqueType.RoadMaintenance))
+        currentPlayerCiv.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
             maintenance.timesInPlace(unique.params[0].toPercent())
+        }
         return maintenance
     }
 
@@ -332,7 +334,7 @@ class ImprovementPickerScreen(
                 removalImprovement = ruleset.tileImprovements[removalName]
                 if (removalImprovement != null) {
                     // Check for removals that need a tech that's not yet researched
-                    val cannotRemoveReport = getProblemReport(tileWithoutLastTerrain!!, null, removalImprovement!!)
+                    val cannotRemoveReport = getProblemReport(tile, null, removalImprovement!!)
                     if (cannotRemoveReport != null) proposedSolutions.addAll(cannotRemoveReport.proposedSolutions)
                     proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first" to removalImprovement!!.makeLink())
                 }
@@ -352,10 +354,14 @@ class ImprovementPickerScreen(
             if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile inside your empire" to null)
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
-                val resources = improvement.getMatchingUniques(UniqueType.ConsumesResources)
-                    .filter { currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt() }
-                    .map { "Acquire more [${it.params[1]}]" to ruleset.tileResources[it.params[1]]?.makeLink() }
-                proposedSolutions.addAll(resources)
+                fun proposeMissingResource(name: String, amount: Int) {
+                    if (currentPlayerCiv.getResourceAmount(name) >= amount) return
+                    proposedSolutions.add("Acquire more [$name]" to ruleset.tileResources[name]?.makeLink())
+                }
+                for (unique in improvement.getMatchingUniques(UniqueType.ConsumesResources))
+                    proposeMissingResource(unique.params[1], unique.params[0].toInt())
+                for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(unit.cache.state))
+                    proposeMissingResource(resourceName, amount)
             }
         }
         return report

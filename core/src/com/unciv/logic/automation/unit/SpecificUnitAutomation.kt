@@ -12,8 +12,10 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
+import com.unciv.view.GameView
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -157,9 +159,13 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
-            fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled(unit.civ) }
+            fun getFrontierScore(city: City): Int {
+                var frontierScore = 0
+                city.getCenterTile().forEachTileAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1) {
+                    if (it.canBeSettled(unit.civ)) frontierScore++
+                }
+                return frontierScore
+            }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -179,7 +185,7 @@ object SpecificUnitAutomation {
         val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
-        if (tryRunAwayIfNeccessary(unit)) return 
+        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
@@ -318,10 +324,7 @@ object SpecificUnitAutomation {
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
                     getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
-                0,
-                wonderToHurry.name
-            )
+            nearbyCityWithAvailableWonders.cityConstructions.editQueue { add(0, wonderToHurry.name) }
             return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
                 || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }
@@ -340,15 +343,14 @@ object SpecificUnitAutomation {
         }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
 
-    fun automateAddInCapital(unit: MapUnit) {
-        if (unit.civ.getCapital() == null) return // safeguard
-        val capitalTile = unit.civ.getCapital()!!.getCenterTile()
-        if (unit.movement.canReach(capitalTile))
-            unit.movement.headTowards(capitalTile)
-        if (unit.movement.canUnitSwapTo(capitalTile))
-            unit.movement.swapMoveToTile(capitalTile)
+    fun automateAddInCapital(unit: MapUnitView) {
+        val capitalTile = unit.civ().cities().firstOrNull { it.isCapital() }?.centerTile() ?: return // safeguard
+        if (unit.canReach(capitalTile))
+            unit.tryHeadTowards(capitalTile)
+        if (unit.canSwapTo(capitalTile))
+            unit.trySwapMoveToTile(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
+            unit.tryInvokeUnitAction(UnitActionType.AddInCapital)
         }
     }
 

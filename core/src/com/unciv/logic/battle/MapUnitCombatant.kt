@@ -17,12 +17,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
-    override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesFilter(filter: String, multiFilter: Boolean) = unit.matchesFilter(filter, multiFilter)
     override fun getAttackSound() = unit.baseUnit.attackSound.let {
         if (it == null) UncivSound.Click else UncivSound(it)
     }
+    override fun isVisibleTo(to: Civilization): Boolean = unit.isVisibleTo(to)
 
     override fun getNotificationDisplay(leadingText: String): String {
         val isUnitUnnamed = unit.instanceName.isNullOrEmpty()
@@ -37,7 +37,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        var extraStrength = 0
+        unit.forEachMatchingUnique(UniqueType.StrengthAmount, state) { extraStrength += it.params[0].toInt() }
         return if (isRanged()) unit.baseUnit.rangedStrength + extraStrength
         else unit.baseUnit.strength + extraStrength
     }
@@ -45,7 +46,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getDefendingStrength(attacker: ICombatant?): Int {
         val attackedByRanged = attacker?.isRanged() == true
         val state = GameContext(this, attacker, this.getTile(), CombatAction.Defend)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        var extraStrength = 0
+        unit.forEachMatchingUnique(UniqueType.StrengthAmount, state) { extraStrength += it.params[0].toInt() }
         return if (unit.isEmbarked() && !isCivilian())
             unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)

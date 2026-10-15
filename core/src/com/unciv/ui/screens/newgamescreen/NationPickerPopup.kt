@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
@@ -219,7 +220,9 @@ internal class NationPickerPopup(
             val (nationActor, currentSelectInfo) = nationActorFactory(element)
 
             nationActor.onClick {
-                highlightNation(currentSelectInfo)
+                InputDisabling.withInputDisabled {
+                    highlightNation(currentSelectInfo)
+                }
             }
             nationActor.onDoubleClick {
                 selection = currentSelectInfo

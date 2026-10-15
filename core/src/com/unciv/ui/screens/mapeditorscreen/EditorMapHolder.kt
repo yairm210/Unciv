@@ -76,7 +76,7 @@ class EditorMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
                 if (child !is TileGroup) return
                 Concurrency.runOnGLThread("Sound") { SoundPlayer.play(UncivSound.Click) }
-                onTileClick(child.tile)
+                onTileClick(tileMap[child.tileView.position()])
             }
         }
         tileGroupMap.addListener(listener)
@@ -95,7 +95,7 @@ class EditorMapHolder(
 
         for (tileGroup in daTileGroups) {
             allTileGroups.add(tileGroup)
-            tileGroups[tileGroup.tile] = tileGroup
+            tileGroups[tileMap[tileGroup.tileView.position()]] = tileGroup
         }
 
         for (tileGroup in allTileGroups) {
@@ -111,7 +111,6 @@ class EditorMapHolder(
                 }
             }
 */
-            tileGroup.isForceVisible = true
             tileGroup.update()
         }
 
@@ -148,7 +147,7 @@ class EditorMapHolder(
      * TODO remove code duplication
      */
     fun setCenterPosition(vector: HexCoord, blink: Boolean = false) {
-        val tileGroup = allTileGroups.firstOrNull { it.tile.position == vector } ?: return
+        val tileGroup = allTileGroups.firstOrNull { it.tileView.position() == vector } ?: return
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))

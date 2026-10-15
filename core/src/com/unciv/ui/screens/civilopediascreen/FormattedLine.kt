@@ -46,7 +46,7 @@ import kotlin.math.max
  *  - A separator line ([separator])
  *  - Automatic external links ([link] begins with a URL protocol)
  */
-class FormattedLine (
+data class FormattedLine (
     /** Text to display. */
     val text: String = "",
     /** Create link: Line gets a 'Link' icon and is linked to either
@@ -168,6 +168,7 @@ class FormattedLine (
     private fun isValidInternalLink(link: String) = link.matches(Regex("""^[^/]+/[^/]+$"""))
 
     /** Constants used by [FormattedLine] */
+    @Suppress("ConstPropertyName")
     companion object {
         /** Array of text sizes to translate the [header] attribute */
         val headerSizes = arrayOf(Constants.defaultFontSize,36,32,27,24,21,15,12,9)    // pretty arbitrary, yes
@@ -188,7 +189,7 @@ class FormattedLine (
 
         private var rulesetCachedInNameMap: Ruleset? = null
         // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
-        private var allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories>? = null
+        private var allObjectNamesCategoryMap: Map<String, CivilopediaCategories>? = null
 
         // Helper for constructor(Unique)
         private fun getUniqueLink(unique: Unique): String {
@@ -206,42 +207,36 @@ class FormattedLine (
         }
         private fun getCurrentRuleset() = when {
             !UncivGame.isCurrentInitialized() -> Ruleset()
-            UncivGame.Current.gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+            UncivGame.Current.gameInfo == null ->
+                (UncivGame.Current.screen as? CivilopediaScreen)?.ruleset // Best bet when we're running this without a gameInfo
+                    ?: RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
             else -> UncivGame.Current.gameInfo!!.ruleset
         }
-        private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
-            //val startTime = System.nanoTime()
-            // These are because the IDEA compiler DOES NOT like them being directly in the yield
-            //  This is some kinf o compiler bug, looks like
-            fun wonderBuildings() = ruleSet.buildings.filter { it.value.isAnyWonder() }
-            fun nonWonderBuildings() = ruleSet.buildings.filter { !it.value.isAnyWonder() }
-            
+        private fun initNamesCategoryMap(ruleSet: Ruleset): Map<String, CivilopediaCategories> {
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
-            val allObjectMapsSequence = sequence {
-                yield(CivilopediaCategories.Belief to ruleSet.beliefs)
-                yield(CivilopediaCategories.Difficulty to ruleSet.difficulties)
-                yield(CivilopediaCategories.Promotion to ruleSet.unitPromotions)
-                yield(CivilopediaCategories.Policy to ruleSet.policies)
-                yield(CivilopediaCategories.Terrain to ruleSet.terrains)
-                yield(CivilopediaCategories.Improvement to ruleSet.tileImprovements)
-                yield(CivilopediaCategories.Resource to ruleSet.tileResources)
-                yield(CivilopediaCategories.Nation to ruleSet.nations)
-                yield(CivilopediaCategories.UnitType to ruleSet.unitTypes)
-                yield(CivilopediaCategories.Unit to ruleSet.units)
-                yield(CivilopediaCategories.Technology to ruleSet.technologies)
-                yield(CivilopediaCategories.Building to nonWonderBuildings())
-                yield(CivilopediaCategories.Wonder to wonderBuildings())
-                yield(CivilopediaCategories.UnitNameGroup to ruleSet.unitNameGroups)
-            }
-            val result = HashMap<String, CivilopediaCategories>()
-            allObjectMapsSequence
-                .flatMap { pair -> pair.second.keys.asSequence().map { key -> pair.first to key } }
-                .forEach {
-                    result[it.second] = it.first
-                }
-            result["Maya Long Count calendar cycle"] = CivilopediaCategories.Tutorial
-
-            //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
+            val allObjectMapsSequence = sequenceOf(
+                CivilopediaCategories.Tutorial to ruleSet.tutorials,
+                CivilopediaCategories.Belief to ruleSet.beliefs,
+                CivilopediaCategories.Difficulty to ruleSet.difficulties,
+                CivilopediaCategories.Promotion to ruleSet.unitPromotions,
+                CivilopediaCategories.Policy to ruleSet.policies,
+                CivilopediaCategories.Terrain to ruleSet.terrains,
+                CivilopediaCategories.Improvement to ruleSet.tileImprovements,
+                CivilopediaCategories.Resource to ruleSet.tileResources,
+                CivilopediaCategories.Nation to ruleSet.nations,
+                CivilopediaCategories.UnitType to ruleSet.unitTypes,
+                CivilopediaCategories.Unit to ruleSet.units,
+                CivilopediaCategories.Technology to ruleSet.technologies,
+                CivilopediaCategories.Building to ruleSet.buildings.filter { !it.value.isAnyWonder() },
+                CivilopediaCategories.Wonder to ruleSet.buildings.filter { it.value.isAnyWonder() },
+                CivilopediaCategories.UnitNameGroup to ruleSet.unitNameGroups
+            )
+            val result = allObjectMapsSequence
+                .flatMap { (category, objects) ->
+                    objects.entries.asSequence()
+                        .filterNot { it.value.isHiddenFromCivilopedia(ruleSet) }
+                        .map { (key, _) -> key to category }
+                }.toMap(hashMapOf())
             rulesetCachedInNameMap = ruleSet
             return result
         }
@@ -391,6 +386,9 @@ class FormattedLine (
             else -> "'$text'->$link"
         }
     }
+
+    override fun hashCode() = throw IllegalStateException("FormattedLine isn't supposed to be compared or used as hash key")
+    override fun equals(other: Any?) = throw IllegalStateException("FormattedLine isn't supposed to be compared or used as hash key")
 
     // region Helpers to crop an image to content
     private fun TextureRegionDrawable.cropToContent(): Image {

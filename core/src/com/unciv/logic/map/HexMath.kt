@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -22,12 +22,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
-    @Pure
+    @Pure @ReturnsNewInstance
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
-    @Pure
+    @Pure @ReturnsNewInstance
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -220,7 +220,6 @@ object HexMath {
         fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
 
-        @LocalState
         var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current

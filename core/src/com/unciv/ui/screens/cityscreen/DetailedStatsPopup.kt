@@ -41,8 +41,16 @@ class DetailedStatsPopup(
     private val colorTotal: Color = Color.BLUE.brighten(0.5f)
     private val colorSelector: Color = Color.GREEN.darken(0.5f)
 
-    private val percentFormatter = DecimalFormat("0.#%").apply { positivePrefix = "+"; multiplier = 1 }
-    private val decimalFormatter = DecimalFormat("0.#")
+    private val settings get() = cityScreen.game.settings
+    private val percentFormatter = settings.getAndModifyCurrentNumberFormat {
+        applyPattern(settings.getCurrentPercentPattern())
+        positivePrefix = "+"
+        multiplier = 1
+        maximumFractionDigits = 1
+    }
+    private val decimalFormatter = settings.getAndModifyCurrentNumberFormat {
+        maximumFractionDigits = 1
+    }
 
     init {
         headerTable.defaults().pad(3f, 0f)
@@ -164,7 +172,7 @@ class DetailedStatsPopup(
         }
         totalTable.row()
 
-        // Mini version of IPageExtensions.equalizeColumns - the number columns work thanks to statColMinWidth
+        // Mini version of Scene2dExtensions.equalizeColumns - the number columns work thanks to statColMinWidth
         headerTable.packIfNeeded()
         totalTable.packIfNeeded()
         val firstColumnWidth = max(totalTable.getColumnWidth(0), headerTable.getColumnWidth(0))

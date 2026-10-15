@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.*
+import com.unciv.logic.map.MapSize.Companion.auto
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -28,6 +29,7 @@ import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.ulp
 import kotlin.sequences.filter
@@ -146,7 +148,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
     fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
-        val mapSize = mapParameters.mapSize
+        val mapSize = if (mapParameters.mapSize.name != auto) mapParameters.mapSize else resolveAutoMapSize(mapParameters, gameParameters, gameInfo)
         val mapType = mapParameters.type
 
         if (mapParameters.seed == 0L)
@@ -238,7 +240,23 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         return map
     }
-    
+    private fun resolveAutoMapSize(mapParameters: MapParameters, gameParameters: GameParameters, gameInfo: GameInfo?): MapSize {
+        if (gameInfo == null) return mapParameters.mapSize
+
+        val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv() }
+        val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
+        // This is mostly just vibes, tries to make the average distance between a civ and its closest neighbor as close to 13 tiles as possible
+        val majorCivContribution = 384 * numberOfMajorCivs - 134
+        val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
+
+        // Calculates mapsize from tile number, simple algebra reversing area formulas
+        val aspectRatio = 1.55 // This is around the default aspect ratios
+        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) + 1.0/2).roundToInt()
+        mapParameters.mapSize.height = sqrt(targetNumberOfTiles/aspectRatio).roundToInt()
+        mapParameters.mapSize.width = (sqrt(targetNumberOfTiles/aspectRatio) * aspectRatio).roundToInt()
+
+        return mapParameters.mapSize
+    }
     private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
     private fun flipLeftRight(vector: HexCoord): HexCoord = HexCoord.of(vector.y, vector.x)
 

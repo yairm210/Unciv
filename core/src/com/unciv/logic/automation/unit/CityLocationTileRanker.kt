@@ -47,9 +47,10 @@ object CityLocationTileRanker {
 
         // Assume unexplored tiles are worth the average of the explored tiles around us
         val throwawayLuxuries = HashSet<TileResource>()
-        for (tile in unit.getTile().getTilesInDistance(range + 2))
-            // onCoast doesn't matter here, it does not change baseTileMap
+        // onCoast doesn't matter here, it does not change baseTileMap
+        unit.getTile().forEachTileInDistance(range + 2) { tile ->
             if (unit.civ.hasExplored(tile)) rankTile(tile, unit.civ, false, throwawayLuxuries, baseTileMap, 0f)
+        }
         val unexploredTilePrior = if (baseTileMap.isEmpty()) 0f else baseTileMap.values.average().toFloat()
 
         val possibleTileLocationsWithRank = possibleCityLocations
@@ -138,7 +139,7 @@ object CityLocationTileRanker {
         var tiles = 0
         for (i in 0..2) {
             //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
-            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+            newCityTile.forEachTileAtDistance(i) { nearbyTile ->
                 tiles++
                 tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, unexploredTilePrior) * (3f / (i + 1))
                 //Tiles close to the city can be worked more quickly, and thus should gain higher weight.

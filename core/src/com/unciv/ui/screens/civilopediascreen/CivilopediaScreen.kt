@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -117,6 +116,7 @@ class CivilopediaScreen(
      */
     private fun selectCategory(category: CivilopediaCategories) {
         currentCategory = category
+        lastCategory = category
         entrySelectTable.clear()
         entryIndex.clear()
         flavourTable.clear()
@@ -198,6 +198,7 @@ class CivilopediaScreen(
     }
     private fun selectEntry(entry: CivilopediaEntry) {
         currentEntry = entry.name
+        lastEntryName = entry.name
         currentEntryPerCategory[currentCategory] = entry.name
         flavourTable.clear()
         if (entry.flavour != null) {
@@ -288,16 +289,22 @@ class CivilopediaScreen(
         entrySplitPane.setFillParent(true)
         entrySplitPane.pack()  // ensure selectEntry has correct entrySelectScroll.height and maxY
 
-        if (link.isEmpty() || '/' !in link)
+        if (link.isEmpty()) {
+            // Generic open (e.g. keyboard shortcut, menu button) - resume where we left off
+            val resumeCategory = lastCategory ?: category
+            val resumeEntry = lastEntryName     // capture before selectCategory overwrites it
+            selectCategory(resumeCategory)
+            if (resumeEntry != null && resumeEntry in entryIndex) {
+                selectEntry(resumeEntry, noScrollAnimation = true)
+            } else if (resumeCategory == CivilopediaCategories.Tutorial) {
+                selectDefaultEntry()
+            }
+        } else if ('/' in link) {
+            selectLink(link)
+        } else {
             selectCategory(category)
-        // show a default entry when opened without a target
-        if (link.isEmpty() && category == CivilopediaCategories.Tutorial)
-            selectDefaultEntry()
-        if (link.isNotEmpty())
-            if ('/' in link)
-                selectLink(link)
-            else
-                selectEntry(link, noScrollAnimation = true)
+            selectEntry(link, noScrollAnimation = true)
+        }
 
         globalShortcuts.add(Input.Keys.LEFT) { navigateCategories(-1) }
         globalShortcuts.add(Input.Keys.RIGHT) { navigateCategories(1) }
@@ -331,6 +338,11 @@ class CivilopediaScreen(
     override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
 
     companion object {
+        /** Remembers the last viewed category/entry so re-opening the Civilopedia without
+         *  an explicit link resumes where the user left off. */
+        private var lastCategory: CivilopediaCategories? = null
+        private var lastEntryName: String? = null
+
         /** Test whether to show Religion-specific items, does not require a game to be running
          *  - Do not make public - use IHasUniques.isHiddenFromCivilopedia if possible!
          */

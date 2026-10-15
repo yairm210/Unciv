@@ -9,11 +9,14 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView,
-                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<CityConstructions>(cityConstructions, viewer, spectatorMode) {
+class CityConstructionsView(private val cityConstructions: CityConstructions, gameView: GameView,
+                             viewer: Civilization, spectatorMode: Boolean = false) : OwnedView<CityConstructions>(cityConstructions, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = cityConstructions.city.civ
+
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation
+    @Deprecated("Scheduled for removal - views should unwrap() instead")
     @Readonly fun getCityConstructions(): CityConstructions = cityConstructions
 
     // Data retrieval
@@ -21,8 +24,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
     @Readonly fun getConstruction(name: String): IConstruction = cityConstructions.getConstruction(name)
     @Readonly fun isFirstConstructionOfItsKind(index: Int, name: String): Boolean = cityConstructions.isFirstConstructionOfItsKind(index, name)
     @Readonly fun isBuilt(name: String): Boolean = cityConstructions.isBuilt(name)
-    @Readonly fun getTurnsToConstructionString(construction: IConstruction, isFirst: Boolean = true): String = cityConstructions.getTurnsToConstructionString(construction, isFirst)
     @Readonly fun getWorkDone(name: String): Int = cityConstructions.getWorkDone(name)
+    @Readonly fun turnsToConstruction(name: String, useStoredProduction: Boolean = true): Int = cityConstructions.turnsToConstruction(name, useStoredProduction)
     @Readonly fun shouldBeDisplayed(construction: IConstruction): Boolean = construction.shouldBeDisplayed(cityConstructions)
     @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)

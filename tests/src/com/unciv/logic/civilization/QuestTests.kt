@@ -14,6 +14,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.random.Random
 
 @RunWith(BaseTestRunner::class)
 class QuestTests {
@@ -158,15 +159,25 @@ class QuestTests {
             testGame.createTileImprovement("Marks a barbarian camp")
         }
         testGame.addCiv(testGame.ruleset.nations[Constants.barbarians]!!)
-        setupBarbarianCamp()
+        val (campTile, _) = setupBarbarianCamp()
         val barbs = testGame.gameInfo.barbarians
         // Act
         repeat(9) {
             barbs.placeBarbarianEncampment(forTesting = true)
         }
-        // Assert
+        // Assert the placement pipeline itself produces valid results
         val improvementNames = barbs.encampments.map { testGame.tileMap[it.position].improvement }.toSet()
-        assertTrue("After placing several encampments, there should be more than one improvement used, but we see only $improvementNames", improvementNames.size > 1)
         assertFalse("After placing several encampments, none should have no tile improvements", improvementNames.isEmpty() || null in improvementNames)
+
+        // The map above only fits 6-7 camps due to the spacing rule between them - too small a sample to
+        // reliably assert variety without an occasional flake, so sample the improvement choice directly instead
+        val sampledImprovements = (0 until 30).map { seed ->
+            barbs.createNewCamp(campTile, Random(seed))
+            campTile.improvement
+        }.toSet()
+        assertTrue(
+            "After creating several camps, there should be more than one improvement used, but we see only $sampledImprovements",
+            sampledImprovements.size > 1
+        )
     }
 }

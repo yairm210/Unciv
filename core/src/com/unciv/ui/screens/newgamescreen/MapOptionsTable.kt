@@ -46,6 +46,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
                 }
                 MapGeneratedMainType.randomGenerated -> {
                     mapParameters.name = ""
+                    randomMapOptionsTable.activateRandomMapType()
                     mapTypeSpecificTable.add(randomMapOptionsTable)
                     newGameScreen.unlockTables()
                 }

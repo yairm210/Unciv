@@ -162,7 +162,7 @@ object FasterUIDevelopment {
             }
 
             table.addSelectbox("UI Scale", game.settings::screenSize) {
-                game.replaceCurrentScreen(UIDevTestPicker(game, tests))
+                game.replaceCurrentScreen{ UIDevTestPicker(game, tests) }
             }
             table.addSelectbox("Gdx Scene2D debug", ::enableSceneDebug)
 

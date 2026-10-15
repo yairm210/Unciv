@@ -88,11 +88,13 @@ class CityFounder {
         addStartingBuildings(city, civInfo, startingEra)
         
         city.resetDisabledConstructions()
+        city.resetSpecialistsControl()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
-            GameContext(civInfo, city, unit)
-        ))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponFoundingCity,
+            GameContext(civInfo, city, unit), ignoreCities = false
+        ) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
+        }
         if (unit != null)
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
                 GameContext(civInfo, city, unit)))
