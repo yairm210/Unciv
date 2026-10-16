@@ -1,0 +1,36 @@
+
+
+View implementation - View-ify improvement picker - see 
+
+View implementation - protect cityview.city, change combatantview constructors to not require hacks - see 
+
+View implementation - Era API cleanup - see 
+
+Unit upgrade refactor part 4:
+
+Unit upgrade refactor part 3:
+
+Unit upgrade refactor part 2:
+
+Unit upgrade refactor:
+
+Added "Auto" screen setting
+
+Resolved  - "max amount" rejections do not include the currently checked city, that would make the current construction "count against itself"
+
+build: Added "readonly" to the new function :/
+
+Resolved 
+
+Resolved  - selecting random map after custom no longer generates land-only
+
+Resolved  - "get neighboring cities" returns current value
+
+By SomeTroglodyte:
+- Improve espionage screen and spy movement handling via map 
+- Fix broken keyboard binding for "Create [improvement]" 
+- chore: Prepare translation engine for full nesting support without using Regex 
+- Extension Mods allow more removals via ModOptions 
+- Fix loading games with invalid speed or difficulty entry crashes 
+
+MP preview displays number of players and estimated time until player's turn - By unciv-loof
