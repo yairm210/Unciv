@@ -53,7 +53,7 @@ class UnitUpgradeMenu(
                     && it.hasMovement()
                     && it.isInOwnTerritory()
                     && !it.isEmbarked()
-                    && it.canUpgradeTo(unitToUpgradeTo, ignoreResources = true)
+                    && it.canUpgradeTo(unitToUpgradeTo)
             }
     }
 
@@ -107,15 +107,13 @@ class UnitUpgradeMenu(
 
     private fun doUpgrade() {
         SoundPlayer.play(UiUnitActionType.Upgrade.uncivSound)
-        unit.getUnit().upgrade.performUpgrade(upgrade, isFree = false)
+        unit.tryUpgradeTo(unitToUpgradeTo)
     }
 
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherUpgrade = unit.getPossibleUpgrades()
-                .firstOrNull { it.upgradedUnit == unitToUpgradeTo && unit.canPerformUpgrade(it) }
-            if (otherUpgrade != null) unit.getUnit().upgrade.performUpgrade(otherUpgrade, isFree = false)
+            unit.tryUpgradeTo(unitToUpgradeTo)
         }
     }
 }

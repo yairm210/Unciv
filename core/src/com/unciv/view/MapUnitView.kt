@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
-import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UnitActionType
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -34,13 +33,20 @@ class MapUnitView internal constructor(
     @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
     /** The unit's promotions as objects, in json order. */
     @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
-    @Readonly fun canUpgradeTo(unitToUpgradeTo: BaseUnit, ignoreResources: Boolean = false): Boolean =
-        unit.upgrade.canUpgrade(unitToUpgradeTo).let {
-            it == UpgradeAvailability.Available || (ignoreResources && it == UpgradeAvailability.AvailableExceptResources)
-        }
-    /** Upgrades of this unit, see [PossibleUpgrade.isShownToPlayer]. Not all are possible at the current moment. */
+    /** Upgrades of this unit worth showing (normal ones, not ruins-only), see [PossibleUpgrade.isShownToPlayer] */
     @Readonly fun getPossibleUpgrades(): List<PossibleUpgrade> = unit.upgrade.getUpgradesOfKind(isSpecial = false)
-    @Readonly fun canPerformUpgrade(upgrade: PossibleUpgrade): Boolean = unit.upgrade.canPerformUpgrade(upgrade, isFree = false)
+    /** `true` if a regular upgrade to [baseUnit] could be performed right now */
+    @Readonly fun canUpgradeTo(baseUnit: BaseUnit): Boolean = getPossibleUpgrades()
+        .any { it.upgradedUnit == baseUnit && unit.upgrade.canPerformUpgrade(it, isFree = false) }
+    /** Performs a regular upgrade to [baseUnit] if [canUpgradeTo] allows it
+     *  @return whether an upgrade was performed */
+    fun tryUpgradeTo(baseUnit: BaseUnit): Boolean {
+        val upgrade = getPossibleUpgrades()
+            .firstOrNull { it.upgradedUnit == baseUnit && unit.upgrade.canPerformUpgrade(it, isFree = false) }
+            ?: return false
+        unit.upgrade.performUpgrade(upgrade, isFree = false)
+        return true
+    }
     @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
     @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements

@@ -62,7 +62,7 @@ open class UnitOverviewTabHelpers {
         val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
 
         for (upgrade in upgrades) {
-            val enable = canEnable && unitView.canPerformUpgrade(upgrade)
+            val enable = canEnable && unitView.canUpgradeTo(upgrade.upgradedUnit)
             val unitToUpgradeTo = upgrade.upgradedUnit
             val selectKey = unitView.id.toString()
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
