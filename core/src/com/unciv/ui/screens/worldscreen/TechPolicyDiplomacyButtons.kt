@@ -20,7 +20,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.espionage.EspionageScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
@@ -97,7 +97,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
                 if (worldScreen.bottomUnitTable.selectedSpy != null) {
                     worldScreen.bottomUnitTable.selectSpy(null)
                 }
-                game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
+                game.pushScreen{ EspionageScreen(worldScreen.selectedCiv, worldScreen) }
             }
         }
     }
