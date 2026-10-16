@@ -73,6 +73,14 @@ class UnitUpgradeManager(val unit: MapUnit) {
             }
     }
 
+    /** [getUpgrades] narrowed to the kind requested: if [isSpecial] and a special (ruins) upgrade exists, only the first of those,
+     *  otherwise only the normal ones. */
+    fun getUpgradesOfKind(isSpecial: Boolean): List<PossibleUpgrade> {
+        val allUpgrades = getUpgrades()
+        return allUpgrades.filter { it.isSpecial }.take(1).takeIf { isSpecial && it.isNotEmpty() }
+            ?: allUpgrades.filter { !it.isSpecial }
+    }
+
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
      *  @return the strictest [UpgradeAvailability] that holds:

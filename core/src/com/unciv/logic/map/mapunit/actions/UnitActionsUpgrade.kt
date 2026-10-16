@@ -11,38 +11,27 @@ import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    /**  Common implementation for `getUpgradeActions(unit)`, [getFreeUpgradeAction], [getAncientRuinsUpgradeAction] and [getUpgradeActionAnywhere] */
-    private fun getUpgradeActions(
-        unit: MapUnit,
-        isFree: Boolean,
-        isSpecial: Boolean,
-        isAnywhere: Boolean
-    ) = sequence<UnitAction> {
+    /**  Common implementation for [getUpgradeActions] and [getUpgradeActionAnywhere] */
+    private fun getUpgradeActions(unit: MapUnit, isAnywhere: Boolean) = sequence<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val allUpgrades = unit.upgrade.getUpgrades()
-        // Special (ruins) upgrades replace the normal ones when requested and present
-        val upgradeUnits = allUpgrades.filter { it.isSpecial }.take(1).takeIf { isSpecial && it.isNotEmpty() }
-            ?: allUpgrades.filter { !it.isSpecial }
+        val upgradeUnits = unit.upgrade.getUpgradesOfKind(isSpecial = false)
         if (upgradeUnits.isEmpty()) return@sequence // can't upgrade to anything
         if (!isAnywhere && unitTile.getOwner() != civInfo) return@sequence
 
         for (upgrade in upgradeUnits) {
             val upgradedUnit = upgrade.upgradedUnit
 
-            val isShown = if (isFree) upgrade.availability != UpgradeAvailability.Unavailable
-                else upgrade.availability == UpgradeAvailability.Available
-                    || upgrade.availability == UpgradeAvailability.AvailableExceptResources
-            if (!isShown) continue
+            // Upgrades we lack only the resources for are shown, but disabled
+            if (upgrade.availability != UpgradeAvailability.Available
+                && upgrade.availability != UpgradeAvailability.AvailableExceptResources) continue
 
             val resourceRequirementsDelta = upgrade.newResourceRequirements
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            val goldCostOfUpgrade = if (isFree) 0 else upgrade.goldCostOfUpgrade
+            val goldCostOfUpgrade = upgrade.goldCostOfUpgrade
 
-            // No string for "FREE" variants, these are never shown to the user.
-            // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
             val title = if (newResourceRequirementsString.isEmpty())
                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
             else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
@@ -54,18 +43,12 @@ object UnitActionsUpgrade {
                 newResourceRequirements = resourceRequirementsDelta,
                 associatedUnique = upgrade.unique,
                 action = {
-                    unit.upgrade.performUpgrade(upgrade, isFree)
-                }.takeIf { unit.upgrade.canPerformUpgrade(upgrade, isFree) },
+                    unit.upgrade.performUpgrade(upgrade, isFree = false)
+                }.takeIf { unit.upgrade.canPerformUpgrade(upgrade, isFree = false) },
             ))
         }
     }
 
-    fun getUpgradeActions(unit: MapUnit) =
-        getUpgradeActions(unit, isSpecial = false, isFree = false, isAnywhere = false)
-    fun getFreeUpgradeAction(unit: MapUnit) =
-        getUpgradeActions(unit, isSpecial = false, isFree = true, isAnywhere = true)
-    fun getAncientRuinsUpgradeAction(unit: MapUnit) =
-        getUpgradeActions(unit, isSpecial = true, isFree = true, isAnywhere = true)
-    fun getUpgradeActionAnywhere(unit: MapUnit) =
-        getUpgradeActions(unit, isSpecial = false, isFree = false, isAnywhere = true)
+    fun getUpgradeActions(unit: MapUnit) = getUpgradeActions(unit, isAnywhere = false)
+    fun getUpgradeActionAnywhere(unit: MapUnit) = getUpgradeActions(unit, isAnywhere = true)
 }

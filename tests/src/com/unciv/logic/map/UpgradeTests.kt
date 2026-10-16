@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map
 
-import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.testing.BaseTestRunner
@@ -61,11 +60,12 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
 
-        Assert.assertEquals(1, upgradeActions.count())
+        Assert.assertEquals(1, upgrades.size)
         Assert.assertFalse("Unit should not be able to upgrade to special unit",
-            upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
+            upgrades.any { it.upgradedUnit == unitToUpgradeTo })
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
@@ -84,9 +84,10 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
 
-        Assert.assertTrue(upgradeActions.count() == 2)
+        Assert.assertEquals(2, upgrades.size)
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
