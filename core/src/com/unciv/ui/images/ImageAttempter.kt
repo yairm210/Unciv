@@ -65,7 +65,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      *  Tries eras from the civ's current one down to the first era defined, by json order of eras.
      *  Result looks like "Plains-Rome-Ancient era": [style] goes before era if supplied.
      *
-     * @param civView the civ who owns the tile or unit, used for getEraNumber and ruleset (but not for nation.getStyleOrCivName)
+     * @param civView the civ who owns the tile or unit, used for its era and ruleset (but not for nation.getStyleOrCivName)
      * @param locationToCheck the beginning of the filename to check
      * @param style an optional string to load a civ- or style-specific sprite
      * @return Chainable `this` [ImageAttempter] extended by one or more checks for era-specific images
@@ -73,10 +73,14 @@ class ImageAttempter<out T: Any>(val scope: T) {
      fun tryEraImage(civView: ForeignCivView, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings,
                      active: Boolean = true): ImageAttempter<T> {
         if (!active) return this // for easier chaining
+        // Eras in json order, so everything up to and including the civ's current one - newest first
+        val erasToCheck = civView.ruleset.eras.values.toList()
+            .filter { it.eraNumber <= civView.getEra().eraNumber }
+            .sortedByDescending { it.eraNumber }
         return tryImages(
-            (civView.getEraNumber() downTo 0).asSequence().map {
+            erasToCheck.asSequence().map {
                 {
-                    val era = civView.getEraNameAt(it)
+                    val era = it.name
                     if (style != null)
                         tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
                     else

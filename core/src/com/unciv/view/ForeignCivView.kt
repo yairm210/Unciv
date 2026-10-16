@@ -3,6 +3,7 @@ package com.unciv.view
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ImmutableColor
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
@@ -24,11 +25,9 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
     @Readonly fun getOuterColor(): ImmutableColor = civ.nation.getOuterColor()
     @Readonly fun getInnerColor(): ImmutableColor = civ.nation.getInnerColor()
 
-    @Readonly fun getEraName(): String = civ.getEra().name
     @Readonly fun getStyle(): String = civ.nation.style
     @Readonly fun getStyleOrCivName(): String = civ.nation.getStyleOrCivName()
-    @Readonly fun getEraNumber(): Int = civ.getEraNumber()
-    @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
+    @Readonly fun getEra(): Era = civ.getEra()
 
     @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
     @Readonly fun getDiplomacyManagerWith(other: ForeignCivView): DiplomacyManagerView? =
