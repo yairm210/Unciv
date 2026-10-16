@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.MAX_CONDITIONAL_NESTING
+import com.unciv.models.translations.TranslationCache
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
@@ -24,12 +25,11 @@ import com.unciv.models.translations.Translations.Companion.conditionalOrderingK
 import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
 import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
-import com.unciv.models.translations.curlyBraceRegex
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getModifiers
+import com.unciv.models.translations.getPartsInsideCurlies
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.GitInfo
@@ -110,8 +110,8 @@ class TranslationTests {
 
     @Test
     fun allUnitActionsHaveTemplate() {
-        fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
-        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues?.get(1) else null) ?: this
+        fun String.getTemplateKey() = getPlaceholderText()
+        fun String.getInnerTemplate() = getPartsInsideCurlies().firstOrNull() ?: this
 
         val allKeys = TranslationFileReader.readTemplates { lines ->
             lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
@@ -155,8 +155,7 @@ class TranslationTests {
 
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
-            val placeholders = squareBraceRegex.findAll(translationEntry)
-                    .map { it.value }.toList()
+            val placeholders = translationEntry.getPlaceholderParameters()
             for (language in languages) {
                 val output = translations.getText(key, language)
                 if (output == key) continue // the language doesn't have the required translation, so we got back the key
@@ -183,13 +182,11 @@ class TranslationTests {
 
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
-            val placeholders = squareBraceRegex.findAll(translationEntry)
-                .map { it.value }.toSet()
+            val placeholders = translationEntry.getPlaceholderParameters().toSet()
             for (language in languages) {
                 val output = translations.getText(key, language)
                 if (output == key) continue // the language doesn't have the required translation, so we got back the key
-                val translatedPlaceholders = squareBraceRegex.findAll(output)
-                    .map { it.value }.toSet()
+                val translatedPlaceholders = output.getPlaceholderParameters().toSet()
                 val extras = translatedPlaceholders - placeholders
                 for (placeholder in extras) {
                     allTranslationsHaveNoExtraPlaceholders = false
@@ -211,7 +208,7 @@ class TranslationTests {
         for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
             val translationEntry = translation.entry
-            val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
+            val keyFromEntry = translationEntry.getPlaceholderText()
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
                 println("Entry $translationEntry found under bad key $key")
@@ -231,7 +228,7 @@ class TranslationTests {
         TranslationFileReader.readTemplates { templateLines ->
             for ((index, template) in templateLines.withIndex()) {
                 if (template.isEmpty() || template.startsWith('#')) continue
-                val key = template.replace(squareBraceRegex, "[]")
+                val key = template.getPlaceholderText()
                 if (key in keyToEntryMap) {
                     failures++
                     val (otherEntry, otherLine) = keyToEntryMap[key]!!
@@ -251,8 +248,7 @@ class TranslationTests {
         TranslationFileReader.readTemplates { templateLines ->
             for (template in templateLines) {
                 if (template.isEmpty() || template.startsWith('#')) continue
-                val placeholders = squareBraceRegex.findAll(template)
-                    .map { it.value }.toList()
+                val placeholders = template.getPlaceholderParameters()
 
                 for (placeholder in placeholders)
                     if (placeholders.count { it == placeholder } > 1) {
@@ -273,8 +269,7 @@ class TranslationTests {
         var noTwoPlaceholdersAreTheSame = true
 
         for (translationEntry in translations.values) {
-            val placeholders = squareBraceRegex.findAll(translationEntry.entry)
-                    .map { it.value }.toList()
+            val placeholders = translationEntry.entry.getPlaceholderParameters()
 
             for (placeholder in placeholders)
                 if (placeholders.count { it == placeholder } > 1) {
@@ -587,10 +582,12 @@ class TranslationTests {
     fun testTranslateConditionals() {
         fun setReordered() {
             addTranslation(conditionalOrderingKey, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+            TranslationCache.invalidateLanguage()
         }
         fun setBeforeAndCapitalized() {
             addTranslation(conditionalPlacementKey, "before")
             addTranslation(shouldCapitalizeKey, "true")
+            TranslationCache.invalidateLanguage()
         }
         data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
         val testData = listOf(
@@ -856,7 +853,7 @@ class TranslationTests {
             "Hungarian" to "c3d4d2c26bb74b9e263fb839f063d1a478b7f59d0db7c51244d583d3a980b0f3",
             "Japanese" to "d785720f7ccc3924396ee113527c091096e506f0131d897cb318f7c9ac3385b6",
             "Maltese" to "3ca88caee228aed32f986662c27812467b449a09003cf469ed52f8c57eb12310",
-            "Russian" to "5bcf51e491d162ab2280d07105dc43883e611dbd839ca7b036758f05c654dd46",
+            "Russian" to "d4ac55e23bb20405a246ef2d026dca49cf62fc2a8c06b287bb0e945d66977dd8",
             "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
             "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
             "Vietnamese" to "34c5cba47b42d0811b143e3d336260fc5f12733be6b3c8bbb97ad6943fca3388",
@@ -1007,6 +1004,7 @@ class TranslationTests {
         for ((key, expectedHash) in expectedHashes) {
             val language = if (key == "generated") "English" else key
             UncivGame.Current.settings.language = language
+            TranslationCache.invalidateLanguage()
             val data = if (key == "generated") generated else civilopedia
             val outWriter = openWriter(key)
             var lines = 0

@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.squareBraceRegex
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.addUnitDifferences
 import com.unciv.ui.objectdescriptions.BuildingDescriptions.addBuildingDifferences
@@ -45,7 +45,7 @@ object NationDescriptions {
             for ((index, bias) in effectiveStartBias.withIndex()) {
                 // can be "Avoid []"
                 val link = if ('[' !in bias) bias
-                else squareBraceRegex.find(bias)!!.groups[1]!!.value
+                else bias.getPlaceholderParameters().first()
                 add(
                     (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
                     link = "Terrain/$link",

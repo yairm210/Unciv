@@ -1,12 +1,7 @@
 package com.unciv.models.metadata
 
 import com.unciv.UncivGame
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
 import java.util.Locale
-import java.util.regex.Pattern
-import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
@@ -111,7 +106,10 @@ enum class LocaleCode(
         fun getSystemLanguage(): String =
             find(UncivGame.Current.getDefaultLocale())?.takeUnless { it.unused }?.languageName().orEmpty()
 
-        /** Get a Java Locale for a [language] as stored in GameSettings */
+        /** Get a Java Locale for a [language] as stored in GameSettings
+         *
+         *  Used by [TranslationCache.locale][com.unciv.models.translations.TranslationCache.locale], and in most cases using that cached instance is preferable.
+         */
         @Readonly
         fun getLocale(language: String): Locale =
             find(language)?.locale() ?: Locale.getDefault()
@@ -123,68 +121,5 @@ enum class LocaleCode(
         /** Get the fastlane folder name for a [language] as stored in GameSettings */
         fun fastlaneFolder(language: String) =
             find(language)?.fastlaneFolder() ?: "en"
-
-        // DecimalFormat cache, key: language, value: DecimalFormat
-        @Cache
-        private val languageToNumberFormat = mutableMapOf<String, DecimalFormat>()
-
-        // Cache for Regex to recognize numbers as words in tr(), key: language, value: Regex
-        @Cache
-        private val languageToNumberRegex = mutableMapOf<String, Regex>()
-
-        @Readonly
-        fun getNumberFormatFromLanguage(language: String): DecimalFormat =
-            languageToNumberFormat.getOrPut(language) {
-                NumberFormat.getInstance(getLocale(language)) as? DecimalFormat
-                // This should never happen, at least not in stock Java 21:
-                    ?: getFallbackDecimalFormat(language)
-            }
-
-        @Readonly
-        private fun getFallbackDecimalFormat(language: String) =
-            DecimalFormat("#,##0.###", DecimalFormatSymbols.getInstance(getLocale(language)))
-
-        private fun StringBuilder.optional(str: String) = when {
-            str.isEmpty() -> Unit
-            str.length == 1 -> {
-                append('\\')
-                append(str)
-                append('?')
-            }
-            else -> {
-                append("(?:")
-                append(Pattern.quote(str))
-                append(")?")
-            }
-        }
-
-        @Suppress("purity") // Using builder
-        @Readonly
-        fun getNumberRegexForLanguage(language: String): Regex =
-            languageToNumberRegex.getOrPut(language) {
-                val formatter = getNumberFormatFromLanguage(language)
-                val symbols = formatter.decimalFormatSymbols
-                val pattern = buildString {
-                    append("\\b")
-                    optional(formatter.negativePrefix)
-                    append("\\p{Nd}+")
-                    if (formatter.isGroupingUsed) {
-                        append("(?:\\")
-                        append(symbols.groupingSeparator)
-                        append("\\p{Nd}{")
-                        append(formatter.groupingSize)
-                        append("})*")
-                    }
-                    /* Activate the following to allow post-processing numbers with fractions (would change number of decimal places, therefore disabled)
-                    append("(?:\\")
-                    append(symbols.decimalSeparator)
-                    append("\\p{Nd}+")
-                    append(")?")
-                    */
-                    optional(formatter.negativeSuffix)
-                    append("\\b")
-                }
-                Regex(pattern)
-            }
     }
 }

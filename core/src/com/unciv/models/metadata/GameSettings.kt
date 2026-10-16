@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.TranslationCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -251,15 +252,9 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
-    /** A NumberFormat for the chosen [language] - cached instance, do not mutate */
-    @Readonly
-    fun getCurrentNumberFormat(): DecimalFormat {
-        return LocaleCode.getNumberFormatFromLanguage(language)
-    }
-
     /** A NumberFormat for the chosen [language] - mutable and can be configured in [block] right away */
     fun getAndModifyCurrentNumberFormat(block: (DecimalFormat.() -> Unit)?): DecimalFormat {
-        val formatter = LocaleCode.getNumberFormatFromLanguage(language).clone() as DecimalFormat
+        val formatter = TranslationCache.getNumberFormatter()
         if (block != null) formatter.block()
         return formatter
     }
