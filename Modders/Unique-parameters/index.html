@@ -1046,6 +1046,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#resourcefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resourceFilter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#populationfilter" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1123,7 +1134,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#resourcefilter" class="md-nav__link">
+  <a href="#resourcefilter_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         resourceFilter
@@ -1193,6 +1204,17 @@
     <span class="md-ellipsis">
       
         terrainQuality
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unittypefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unitTypeFilter
       
     </span>
   </a>
@@ -2102,6 +2124,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#resourcefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resourceFilter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#populationfilter" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2179,7 +2212,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#resourcefilter" class="md-nav__link">
+  <a href="#resourcefilter_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         resourceFilter
@@ -2249,6 +2282,17 @@
     <span class="md-ellipsis">
       
         terrainQuality
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unittypefilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unitTypeFilter
       
     </span>
   </a>
@@ -2446,6 +2490,15 @@ The latter is tested against the unit as it appears on the map, including its na
 <li><code>Great Improvement</code>, <code>Great</code></li>
 <li><code>All Road</code> - for Roads &amp; Railroads</li>
 </ul>
+<h2 id="resourcefilter">resourceFilter</h2>
+<p>For filtering tile resources.</p>
+<p>Allowed values:</p>
+<ul>
+<li>resource name</li>
+<li>resource type name, e.g. <code>Strategic</code></li>
+<li>a Stat listed in the resource's improvementStats</li>
+<li><code>any</code>, <code>all</code>, <code>All</code></li>
+</ul>
 <h2 id="populationfilter">populationFilter</h2>
 <p>A filter determining a part of the population of a city.</p>
 <p>Allowed values:</p>
@@ -2463,7 +2516,7 @@ The latter is tested against the unit as it appears on the map, including its na
 <li><code>major</code></li>
 <li><code>enhanced</code></li>
 <li><code>your</code></li>
-<li><code>foriegn</code></li>
+<li><code>foreign</code></li>
 <li><code>enemy</code></li>
 <li>The name of a relgion symbol</li>
 <li>The name of a belief</li>
@@ -2507,7 +2560,7 @@ where 'stat' is one of the seven major stats
 (eg <code>Production</code>, <code>Food</code>, <code>Gold</code>, <code>Science</code>, <code>Culture</code>, <code>Happiness</code> and <code>Faith</code>).
 For example: <code>+1 Science</code>.</p>
 <p>These can be strung together with ", " between them, for example: <code>+2 Production, +3 Food</code>.</p>
-<h2 id="resourcefilter">resourceFilter</h2>
+<h2 id="resourcefilter_1">resourceFilter</h2>
 <p>Allowed values:</p>
 <ul>
 <li>Resource name</li>
@@ -2599,6 +2652,14 @@ them in other Uniques.</p>
 <li><code>Food</code></li>
 <li><code>Desirable</code></li>
 <li><code>Production</code></li>
+</ul>
+<h2 id="unittypefilter">unitTypeFilter</h2>
+<p>Used when filtering Unit Types (e.g. "Mounted").</p>
+<p>Allowed values:</p>
+<ul>
+<li>The type's name</li>
+<li><code>Land</code>, <code>Water</code>, <code>Air</code></li>
+<li>Any exact unique the unit type has</li>
 </ul>
 <h2 id="countable">countable</h2>
 <p>Indicates <em>something that can be counted</em>, used both for comparisons and for multiplying uniques</p>

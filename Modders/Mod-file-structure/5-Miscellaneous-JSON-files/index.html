@@ -2733,10 +2733,10 @@ Incompatibility filtering works so far between extension and base mods, but feel
 <td>Mod-wide specials, <a href="../../uniques/#modoptions-uniques">see here</a></td>
 </tr>
 <tr>
-<td>techsToRemove</td>
+<td>beliefsToRemove</td>
 <td>List</td>
 <td>empty</td>
-<td>List of <a href="../2-Civilization-related-JSON-files/#techsjson">Technologies</a> or <a href="../../Unique-parameters/#technologyfilter">technologyFilter</a> to remove (isBaseRuleset=false only)</td>
+<td>List of <a href="../2-Civilization-related-JSON-files/#beliefsjson">Beliefs</a> or beliefFilter (matches name, type, "All" or a filtering Unique) to remove (isBaseRuleset=false only)</td>
 </tr>
 <tr>
 <td>buildingsToRemove</td>
@@ -2745,16 +2745,40 @@ Incompatibility filtering works so far between extension and base mods, but feel
 <td>List of <a href="../2-Civilization-related-JSON-files/#buildingsjson">Buildings or Wonders</a> or <a href="../../Unique-parameters/#buildingfilter">buildingFilter</a> to remove (isBaseRuleset=false only)</td>
 </tr>
 <tr>
-<td>unitsToRemove</td>
+<td>cityStateTypesToRemove</td>
 <td>List</td>
 <td>empty</td>
-<td>List of <a href="../4-Unit-related-JSON-files/#unitsjson">Units</a> or <a href="../../Unique-parameters/#baseunitfilter">unitFilter</a> to remove (isBaseRuleset=false only)</td>
+<td>List of Citystate Types or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>difficultiesToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Difficulties or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>eventsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of List of Events or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>improvementsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of List of Tile Improvements or <a href="../../Unique-parameters/#improvementFilter">improvementFilter</a> to remove (isBaseRuleset=false only).</td>
 </tr>
 <tr>
 <td>nationsToRemove</td>
 <td>List</td>
 <td>empty</td>
 <td>List of <a href="../2-Civilization-related-JSON-files/#nationsjson">Nations</a> or <a href="../../Unique-parameters/#nationfilter">nationFilter</a> to remove (isBaseRuleset=false only)</td>
+</tr>
+<tr>
+<td>personalitiesToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Leader Personalities or "All" to remove (isBaseRuleset=false only).</td>
 </tr>
 <tr>
 <td>policyBranchesToRemove</td>
@@ -2769,16 +2793,88 @@ Incompatibility filtering works so far between extension and base mods, but feel
 <td>List of <a href="../2-Civilization-related-JSON-files/#policiesjson">Policies</a> to remove (isBaseRuleset=false only)</td>
 </tr>
 <tr>
-<td>beliefsToRemove</td>
+<td>questsToRemove</td>
 <td>List</td>
 <td>empty</td>
-<td>List of <a href="../2-Civilization-related-JSON-files/#beliefsjson">Beliefs</a> to remove (isBaseRuleset=false only)</td>
+<td>List of Citystate Quest names or "All" to remove (isBaseRuleset=false only).</td>
 </tr>
 <tr>
 <td>religionsToRemove</td>
 <td>List</td>
 <td>empty</td>
-<td>List of <a href="../2-Civilization-related-JSON-files/#religionsjson">Religions</a> to remove (isBaseRuleset=false only)</td>
+<td>List of <a href="../2-Civilization-related-JSON-files/#religionsjson">Religions</a> or "All" to remove (isBaseRuleset=false only)</td>
+</tr>
+<tr>
+<td>resourcesToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Tile Resources or <a href="../../Unique-parameters/#resourceFilter">resourceFilter</a> to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>ruinRewardsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Ruin Rewards or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>specialistsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Specialists or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>speedsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Game Speeds or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>techsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of <a href="../2-Civilization-related-JSON-files/#techsjson">Technologies</a> or <a href="../../Unique-parameters/#technologyfilter">technologyFilter</a> to remove (isBaseRuleset=false only)</td>
+</tr>
+<tr>
+<td>terrainsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Terrains or <a href="../../Unique-parameters/#terrainFilter">terrainFilter</a> to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>tutorialsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Tutorials or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>unitsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of <a href="../4-Unit-related-JSON-files/#unitsjson">Units</a> or <a href="../../Unique-parameters/#baseunitfilter">unitFilter</a> to remove (isBaseRuleset=false only)</td>
+</tr>
+<tr>
+<td>unitNameGroupsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Unit-name Groups or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>unitPromotionsToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Unit Promotions or "All" to remove (isBaseRuleset=false only).</td>
+</tr>
+<tr>
+<td>unitTypesToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Unit Types or <a href="../../Unique-parameters/#unitTypeFilter">unitTypeFilter</a> to remove (isBaseRuleset=false only). Note dependent units are not automatically removed as well.</td>
+</tr>
+<tr>
+<td>victoriesToRemove</td>
+<td>List</td>
+<td>empty</td>
+<td>List of Victories or "All" to remove (isBaseRuleset=false only).</td>
 </tr>
 <tr>
 <td>constants</td>
@@ -2800,6 +2896,17 @@ Incompatibility filtering works so far between extension and base mods, but feel
 </tr>
 </tbody>
 </table>
+<p>Note that removal happens before adding new content from your mod, so an "All" filter won't kill your content too.</p>
+<p>Policies with their branches and Technoligies have more complex removal rules.</p>
+<ul>
+<li>Removing Policy Branches removes their member Policies as well.</li>
+<li>Overriding a Policy Branch will remove existing member Policies.</li>
+<li>Removing all techs from a TechColumn will also remove that column.</li>
+<li>Adding techs will merge columns by their <code>columnNumber</code>.</li>
+<li>After tech removal and merge is done, TechColumns are resorted and renumbered so <code>columnNumber</code> is monotonous, contiguous ands starts at 0.</li>
+</ul>
+<p>Removing religions will clean those from the preferred religions of nations.</p>
+<p>Otherwise, no interdependencies are handled automatically, and your mod may easily fail validation unless you're careful.</p>
 <p>The values normally set automatically from github metadata are:</p>
 <table>
 <thead>
