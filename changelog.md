@@ -1,39 +1,18 @@
 ## 4.22.11
 
-View implementation - View-ify improvement picker - see 
+Added "Auto" screen size setting
 
-View implementation - protect cityview.city, change combatantview constructors to not require hacks - see 
+Spaceship parts buildable again
 
-View implementation - Era API cleanup - see 
+Selecting random map after custom no longer generates land-only
 
-Unit upgrade refactor part 4:
-
-Unit upgrade refactor part 3:
-
-Unit upgrade refactor part 2:
-
-Unit upgrade refactor:
-
-Added "Auto" screen setting
-
-Resolved  - "max amount" rejections do not include the currently checked city, that would make the current construction "count against itself"
-
-build: Added "readonly" to the new function :/
-
-Resolved 
-
-Resolved  - selecting random map after custom no longer generates land-only
-
-Resolved  - "get neighboring cities" returns current value
+MP preview displays number of players and estimated time until player's turn - By unciv-loof
 
 By SomeTroglodyte:
 - Improve espionage screen and spy movement handling via map 
 - Fix broken keyboard binding for "Create [improvement]" 
-- chore: Prepare translation engine for full nesting support without using Regex 
 - Extension Mods allow more removals via ModOptions 
-- Fix loading games with invalid speed or difficulty entry crashes 
-
-MP preview displays number of players and estimated time until player's turn - By unciv-loof
+- Fix loading games with invalid speed or difficulty entry crashes
 
 ## 4.22.10
 
