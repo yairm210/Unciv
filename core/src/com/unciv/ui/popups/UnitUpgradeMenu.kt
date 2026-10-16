@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.Counter
-import com.unciv.models.UpgradeUnitAction
+import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
@@ -23,7 +23,7 @@ import com.unciv.view.MapUnitView
  *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
  *  @param positionNextTo stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
  *  @param unit Who is ready to upgrade?
- *  @param unitAction Holds pre-calculated info like unitToUpgradeTo, cost or resource requirements. Its action is mapped to the Upgrade button.
+ *  @param upgrade Holds pre-calculated info like unitToUpgradeTo, cost or resource requirements. Performed by the Upgrade button.
  *  @param enable Whether the buttons should be enabled - allows use to display benefits when you can't actually afford them.
  *  @param callbackAfterAnimation If true the following will be delayed until the Popup is actually closed (Stage.hasOpenPopups returns false).
  *  @param onButtonClicked A callback after one or several upgrades have been performed (and the menu is about to close)
@@ -38,13 +38,13 @@ class UnitUpgradeMenu(
     stage: Stage,
     positionNextTo: Actor,
     private val unit: MapUnitView,
-    private val unitAction: UpgradeUnitAction,
+    private val upgrade: PossibleUpgrade,
     private val enable: Boolean,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
 ) : ScrollableAnimatedMenuPopup(stage, positionNextTo) {
 
-    private val unitToUpgradeTo by lazy { unitAction.unitToUpgradeTo }
+    private val unitToUpgradeTo by lazy { upgrade.upgradedUnit }
 
     private val allUpgradableUnits: List<MapUnitView> by lazy {
         unit.civ().getUnits()
@@ -66,7 +66,7 @@ class UnitUpgradeMenu(
     }
 
     override fun createScrollableContent() =
-        BaseUnitDescriptions.getUpgradeInfoTable(unitAction.title, unit.getBaseUnit(), unitToUpgradeTo)
+        BaseUnitDescriptions.getUpgradeInfoTable(UnitActionsUpgrade.getUpgradeTitle(upgrade), unit.getBaseUnit(), unitToUpgradeTo)
 
     override fun createFixedContent() = Table().apply {
         val singleButton = getButton("Upgrade", KeyboardBinding.Upgrade, ::doUpgrade)
@@ -79,8 +79,8 @@ class UnitUpgradeMenu(
 
         // Note - all same-baseunit units cost the same to upgrade? What if a mod says e.g. 50% discount on Oasis?
         // - As far as I can see the rest of the upgrading code doesn't support such conditions at the moment.
-        val allCost = unitAction.goldCostOfUpgrade * allCount
-        val allResources = unitAction.newResourceRequirements * allCount
+        val allCost = upgrade.goldCostOfUpgrade * allCount
+        val allResources = upgrade.newResourceRequirements * allCount
         val upgradeAllText = "Upgrade all [$allCount] [${unit.name}] ([$allCost] gold)"
         val upgradeAllButton = getButton(upgradeAllText, KeyboardBinding.UpgradeAll, ::doAllUpgrade)
         val insufficientGold = unit.civ().gold < allCost
@@ -107,16 +107,15 @@ class UnitUpgradeMenu(
 
     private fun doUpgrade() {
         SoundPlayer.play(UiUnitActionType.Upgrade.uncivSound)
-        unitAction.action!!()
+        unit.getUnit().upgrade.performUpgrade(upgrade, isFree = false)
     }
 
     private fun doAllUpgrade() {
         SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound)
         for (unit in allUpgradableUnits) {
-            val otherAction = UnitActionsUpgrade.getUpgradeActions(unit.getUnit())
-                .firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo &&
-                    it.action != null }
-            otherAction?.action?.invoke()
+            val otherUpgrade = unit.getPossibleUpgrades()
+                .firstOrNull { it.upgradedUnit == unitToUpgradeTo && unit.canPerformUpgrade(it) }
+            if (otherUpgrade != null) unit.getUnit().upgrade.performUpgrade(otherUpgrade, isFree = false)
         }
     }
 }

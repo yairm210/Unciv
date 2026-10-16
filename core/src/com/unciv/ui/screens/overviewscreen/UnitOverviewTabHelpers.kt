@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.UnitActionType
-import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.darken
@@ -15,7 +14,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
@@ -59,18 +57,18 @@ open class UnitOverviewTabHelpers {
     protected fun getUpgradeTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table? {
         val unit = unitView.getUnit()
         val table = Table()
-        val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
-        if (unitActions.none()) return null
+        val upgrades = unitView.getPossibleUpgrades().filter { it.isShownToPlayer }
+        if (upgrades.isEmpty()) return null
         val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
 
-        for (unitAction in unitActions) {
-            val enable = canEnable && unitAction.action != null
-            val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+        for (upgrade in upgrades) {
+            val enable = canEnable && unitView.canPerformUpgrade(upgrade)
+            val unitToUpgradeTo = upgrade.upgradedUnit
             val selectKey = unitView.id.toString()
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
-                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unitView, unitAction, enable) {
+                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unitView, upgrade, enable) {
                     actionContext.update(true)
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
                 }
@@ -83,9 +81,9 @@ open class UnitOverviewTabHelpers {
 
     @Readonly @Suppress("purity") // Calls action
     protected fun getUpgradeSortString(unitView: MapUnitView): String? {
-        val upgrade = UnitActionsUpgrade.getUpgradeActionAnywhere(unitView.getUnit()).firstOrNull()
+        val upgrade = unitView.getPossibleUpgrades().firstOrNull { it.isShownToPlayer }
             ?: return null
-        return (upgrade as UpgradeUnitAction).unitToUpgradeTo.name.tr(hideIcons = true)
+        return upgrade.upgradedUnit.name.tr(hideIcons = true)
     }
 
     protected fun getPromotionsTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table {

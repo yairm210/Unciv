@@ -9,6 +9,7 @@ import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UnitActionType
@@ -37,6 +38,9 @@ class MapUnitView internal constructor(
         unit.upgrade.canUpgrade(unitToUpgradeTo).let {
             it == UpgradeAvailability.Available || (ignoreResources && it == UpgradeAvailability.AvailableExceptResources)
         }
+    /** Upgrades of this unit, see [PossibleUpgrade.isShownToPlayer]. Not all are possible at the current moment. */
+    @Readonly fun getPossibleUpgrades(): List<PossibleUpgrade> = unit.upgrade.getUpgradesOfKind(isSpecial = false)
+    @Readonly fun canPerformUpgrade(upgrade: PossibleUpgrade): Boolean = unit.upgrade.canPerformUpgrade(upgrade, isFree = false)
     @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
     @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements

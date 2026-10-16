@@ -112,7 +112,7 @@ enum class UnitOverviewTabColumn(
     },
 
     Upgrade {
-        //todo these overrides call UnitActionsUpgrade.getUpgradeActionAnywhere independently and possibly repeatedly - caching?
+        //todo these overrides call getPossibleUpgrades independently and possibly repeatedly - caching?
         override fun getEntryString(item: MapUnitView) = getUpgradeSortString(item)
         override fun getEntryActor(item: MapUnitView, iconSize: Float, actionContext: UnitOverviewTab) = getUpgradeTable(item, actionContext)
         override fun getTotalsActor(items: Iterable<MapUnitView>) = items.count { getUpgradeSortString(it) != null }.toCenteredLabel()

@@ -1,6 +1,7 @@
 package com.unciv.models
 
 import com.unciv.Constants
+import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.fonts.Fonts
@@ -57,12 +58,11 @@ open class UnitAction(
  */
 class UpgradeUnitAction(
     title: String,
-    val unitToUpgradeTo: BaseUnit,
-    val goldCostOfUpgrade: Int,
-    val newResourceRequirements: Counter<String>,
-    associatedUnique: Unique?,
+    val upgrade: PossibleUpgrade,
     action: (() -> Unit)?,
-) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = associatedUnique, action = action)
+) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = upgrade.unique, action = action) {
+    val unitToUpgradeTo: BaseUnit get() = upgrade.upgradedUnit
+}
 
 /**
  * Unit Actions - generic enum with static, UI-independent properties

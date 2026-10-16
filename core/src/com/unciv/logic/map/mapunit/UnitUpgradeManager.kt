@@ -15,6 +15,7 @@ import kotlin.math.pow
  *  @property unique the [UniqueType.CanUpgrade] or [UniqueType.RuinsUpgrade] unique granting this upgrade, `null` for the base unit's normal `upgradesTo`
  *  @property isSpecial from [UniqueType.RuinsUpgrade] (ancient ruins)
  *  @property availability how far this upgrade is available
+ *  @property isShownToPlayer worth listing for the player - disabled if we only lack resources
  *  @property goldCostOfUpgrade regular gold cost - free upgrades pay 0 instead
  *  @property newResourceRequirements additional resources per turn the upgraded unit needs (never negative)
  */
@@ -35,10 +36,14 @@ class PossibleUpgrade(
     val availability: UpgradeAvailability,
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>
-)
+) {
+    val isShownToPlayer get() = availability == UpgradeAvailability.Available
+        || availability == UpgradeAvailability.AvailableExceptResources
+}
 
 class UnitUpgradeManager(val unit: MapUnit) {
 
+    @Readonly
     private fun getNewResourceRequirements(upgradedUnit: BaseUnit): Counter<String> {
         val resourceRequirementsDelta = Counter<String>()
         for ((resource, amount) in unit.getResourceRequirementsPerTurn())
@@ -51,14 +56,15 @@ class UnitUpgradeManager(val unit: MapUnit) {
     }
 
     /** Lists every upgrade this unit has, regardless of location, cost or movement. Callers filter on the flags. */
+    @Readonly
     fun getUpgrades(): List<PossibleUpgrade> {
         val specialUpgrades = unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, unit.cache.state)
             .map { Triple(it.params[0], it, true) }
-        val baseUpgrade = unit.baseUnit.upgradesTo?.let { Triple(it, null, false) }
+        val baseUpgrade = unit.baseUnit.upgradesTo?.let { sequenceOf(Triple(it, null, false)) } ?: emptySequence()
         val uniqueUpgrades = unit.baseUnit.getMatchingUniques(UniqueType.CanUpgrade, unit.cache.state)
             .map { Triple(it.params[0], it, false) }
 
-        return (specialUpgrades + uniqueUpgrades + listOfNotNull(baseUpgrade))
+        return (specialUpgrades + uniqueUpgrades + baseUpgrade)
             .toList()
             .map { (name, unique, isSpecial) ->
                 val upgradedUnit = unit.civ.getEquivalentUnit(name)
@@ -75,6 +81,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
 
     /** [getUpgrades] narrowed to the kind requested: if [isSpecial] and a special (ruins) upgrade exists, only the first of those,
      *  otherwise only the normal ones. */
+    @Readonly
     fun getUpgradesOfKind(isSpecial: Boolean): List<PossibleUpgrade> {
         val allUpgrades = getUpgrades()
         return allUpgrades.filter { it.isSpecial }.take(1).takeIf { isSpecial && it.isNotEmpty() }

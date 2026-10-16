@@ -6,7 +6,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -106,15 +105,15 @@ class UpgradeTests {
         testGame.addCity(civ, testGame.getTile(HexCoord.Zero)) // We need to own the tile to be able to upgrade here
 
         val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        var upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
+        var upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
 
-        Assert.assertTrue("We should need gold to upgrade here", upgradeActions.all { it.action == null })
+        Assert.assertTrue("We should need gold to upgrade here", upgrades.none { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
 
         civ.addGold(unit1.upgrade.getCostOfUpgrade(unitToUpgradeTo))
 
-        upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
+        upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
 
-        Assert.assertEquals(1, upgradeActions.count())
-        Assert.assertTrue(upgradeActions.none { it.action == null })
+        Assert.assertEquals(1, upgrades.size)
+        Assert.assertTrue(upgrades.all { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
     }
 }
