@@ -693,7 +693,7 @@ class GlobalUniquesTests {
         val tests = listOf(
             "<if no Civilization has adopted [Oligarchy]>" to 1,
             "<if no Civilization has adopted [Tradition]>" to 0,
-            "<if no Civilization has adopted [God of Craftsman]>" to 1,
+            "<if no Civilization has adopted [God of Craftsmen]>" to 1,
             "<if no Civilization has adopted [Not A Policy]>" to 1,
             "<if no Civilization has adopted [Ancestor Worship]>" to 0,
             "<if no Civilization has adopted [Not A Belief]>" to 1,
