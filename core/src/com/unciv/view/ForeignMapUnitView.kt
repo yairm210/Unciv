@@ -30,7 +30,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     }
     @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
     /** Wraps [unit] as a [MapUnitCombatantView] for battle purposes. */
-    @Readonly fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(this, viewer, spectatorMode, gameView)
+    @Readonly fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(this, unit, viewer, spectatorMode, gameView)
 
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()

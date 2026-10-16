@@ -13,7 +13,7 @@ import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign cities. Superclass of [CityView]. */
-open class ForeignCityView(internal open val city: City,
+open class ForeignCityView(protected open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
                            gameView: GameView) : OwnedView<City>(city, viewer, spectatorMode, gameView) {
@@ -26,8 +26,6 @@ open class ForeignCityView(internal open val city: City,
     val owningCivView: CivView get() = gameView.getCivView(city.civ)
 
     // Navigation
-    @Deprecated("Scheduled for removal")
-    @Readonly fun getCity(): City = city
     @Deprecated("Scheduled for removal")
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
@@ -89,5 +87,5 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
 
     /** Wraps [city] as a [CityCombatantView] for battle purposes. */
-    @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, viewer, spectatorMode, gameView)
+    @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, city, viewer, spectatorMode, gameView)
 }

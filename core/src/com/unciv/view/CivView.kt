@@ -27,8 +27,7 @@ class CivView(civ: Civilization,
               gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode, gameView) {
 
     // Navigation
-    @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
-    @Readonly override fun cities(): List<CityView> = civ.cities.map { getCity(it) }
+    @Readonly override fun cities(): List<CityView> = civ.cities.map { gameView.getCityView(it) }
     @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.unwrap(), gameView)
 
     // Data retrieval

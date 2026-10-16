@@ -50,6 +50,7 @@ class CityView(city: City,
 
     @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
     @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
+    @Deprecated("Scheduled for removal")
     @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
