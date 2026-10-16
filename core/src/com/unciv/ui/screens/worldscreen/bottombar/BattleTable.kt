@@ -114,6 +114,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     @Readonly
     private fun tryGetAttackerUnit(): MapUnitView? {
         val unit = worldScreen.bottomUnitTable.selectedUnit ?: return null
+        // A selected unit may have just changed owner (gifted, captured) - it is then no longer ours to attack with
+        if (unit.tryGetMapUnitView() == null) return null
         if (unit.isCivilian() || unit.hasUnique(UniqueType.CannotAttack)) return null
         return unit
     }
@@ -341,7 +343,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val (damageToDefender, damageToAttacker) = when (attacker) {
             is MapUnitCombatantView -> attacker.getUnitView().tryGetMapUnitView()!!.attackOrNuke(attackableTileView)
-            is CityCombatantView -> attacker.getCityView().tryBombard(attackableTileView)
+            is CityCombatantView -> attacker.getCityView().tryGetCityView()!!.tryBombard(attackableTileView)
         }
 
         worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)

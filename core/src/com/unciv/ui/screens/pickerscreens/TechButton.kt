@@ -21,7 +21,8 @@ import com.unciv.ui.components.extensions.toLabel
 class TechButton(
     techName: String,
     private val techManager: TechManager,
-    isWorldScreen: Boolean = true
+    isWorldScreen: Boolean = true,
+    private val techIconsIndex: TechnologyDescriptions.TechIconsIndex? = null
 ) : Table(BaseScreen.skin) {
 
     internal val text = "".toLabel().apply {
@@ -114,7 +115,7 @@ class TechButton(
         val civ = techManager.civInfo
         val tech = civ.gameInfo.ruleset.technologies[techName]!!
 
-        TechnologyDescriptions.getTechEnabledIcons(tech, civ, techIconSize = 30f)
+        TechnologyDescriptions.getTechEnabledIcons(tech, civ, techIconSize = 30f, iconsIndex = techIconsIndex)
             .take(5)
             .forEach { techEnabledIcons.add(it) }
 

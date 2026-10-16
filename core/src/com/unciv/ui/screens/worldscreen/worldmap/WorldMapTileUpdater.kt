@@ -3,14 +3,13 @@ package com.unciv.ui.screens.worldscreen.worldmap
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
-import com.unciv.logic.battle.TargetHelper
-import com.unciv.logic.city.City
-import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.view.AttackableTileView
 import com.unciv.view.CivView
+import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
 
 object WorldMapTileUpdater {
 
@@ -28,8 +27,7 @@ object WorldMapTileUpdater {
                 updateTilesForSelectedSpy(unitTable.selectedSpy!!)
             }
             unitTable.selectedCity != null -> {
-                val city = unitTable.selectedCity!!.getCity()
-                updateBombardableTilesForSelectedCity(city)
+                updateBombardableTilesForSelectedCity(unitTable.selectedCity!!)
                 // We still want to show road paths to the selected city if they are present
                 if (unitTable.selectedUnitIsConnectingRoad) {
                     updateTilesForSelectedUnit(unitTable.selectedUnits[0])
@@ -218,23 +216,25 @@ object WorldMapTileUpdater {
         }
     }
 
-    private fun WorldMapHolder.updateTilesForSelectedSpy(spy: Spy) {
+    private fun WorldMapHolder.updateTilesForSelectedSpy(spyView: SpyView) {
         for (group in tileGroups.values) {
             group.layerOverlay.reset()
             if (!group.tileView.isCityCenter())
                 group.layerImprovement.dimImprovement(true)
             group.layerCityButton.moveDown()
         }
-        for (city in worldScreen.gameInfo.getCities()) {
-            if (spy.canMoveTo(city)) {
-                tileGroups[tileMapView.getTile(city.getCenterTile())]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+        for (foreignCivView in worldScreen.selectedGameView.civView.getKnownCivs()) {
+            for (cityView in foreignCivView.cities()) {
+                if (spyView.canMoveTo(cityView)) {
+                    tileGroups[cityView.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+                }
             }
         }
     }
 
-    private fun WorldMapHolder.updateBombardableTilesForSelectedCity(city: City) {
+    private fun WorldMapHolder.updateBombardableTilesForSelectedCity(city: ForeignCityView) {
         if (!city.canBombard()) return
-        for (tileView in TargetHelper.getBombardableTiles(city).map { tileMapView.getTile(it) }) {
+        for (tileView in city.getBombardableTiles()) {
             val group = tileGroups[tileView]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()

@@ -346,7 +346,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val cities = gameContext.civInfo?.cities ?: return null
             val filter = parameterText.getPlaceholderParameters()[0]
-            return cities.sumOf { it.getWorkedTiles().filter { it.matchesFilter(filter, gameContext.civInfo) }.count() }
+            return cities.sumOf { it.getWorkedTiles().count { it.matchesFilter(filter, gameContext.civInfo) } }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)

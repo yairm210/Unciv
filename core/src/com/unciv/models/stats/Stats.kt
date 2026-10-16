@@ -11,7 +11,7 @@ import yairm210.purity.annotations.*
  *
  * Use [sum], [min], [max] for fast aggregates.
  */
-@InternalState
+@ModifiesInternalStateOnly
 open class Stats(
     var production: Float = 0f,
     var food: Float = 0f,
@@ -65,7 +65,7 @@ open class Stats(
 
     /** **Non-Mutating function**
      * @return a new instance containing the same values as `this` */
-    @Readonly fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+    @Readonly @ReturnsNewInstance fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
     @Readonly
@@ -105,11 +105,19 @@ open class Stats(
 
     /** **Non-mutating function**
      * @return a new [Stats] instance */
-    operator fun plus(stats: Stats) = clone().apply { add(stats) }
+    operator fun plus(stats: Stats): Stats {
+        val clone = clone()
+        clone.add(stats)
+        return clone
+    }
 
     /** **Non-mutating function**
      * @return a new [Stats] instance */
-    operator fun minus(stats: Stats) = clone().apply { add(stats.times(-1)) }
+    operator fun minus(stats: Stats): Stats {
+        val clone = clone()
+        clone.add(stats.times(-1))
+        return clone
+    }
 
     /** **Mutating function**
      * Adds the [value] parameter to the instance value specified by [stat] in place
@@ -279,11 +287,14 @@ open class Stats(
     }
 }
 
-@InternalState
+@ModifiesInternalStateOnly
 class StatMap : LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
         // We always clone to avoid touching the mutable stats of uniques
         if (!containsKey(source)) put(source, stats.clone())
-        else get(source)!!.add(stats)
+        else {
+            @LocalState val existingStats = get(source)!! 
+            existingStats.add(stats)
+        }
     }
 }

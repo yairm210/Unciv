@@ -210,7 +210,7 @@ class TileSetStrings(
         val civView = unit.civ()
         val imageKey = getString(
             unit.name, tag,
-            civView.getEraName(), tag,
+            civView.getEra().name, tag,
             civView.civName, tag,
             civView.getStyle(), tag,
             unit.isEmbarked().toString()
@@ -237,7 +237,7 @@ class TileSetStrings(
 
     fun getOwnedTileImageLocation(baseLocation: String, owner: ForeignCivView): String {
         val imageKey = getString(baseLocation, tag,
-            owner.getEraName(), tag,
+            owner.getEra().name, tag,
             owner.getStyleOrCivName())
         val currentImageMapping = imageParamsToImageLocation[imageKey]
         if (currentImageMapping != null) return currentImageMapping

@@ -2,28 +2,28 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.map.HexCoord
-import com.unciv.models.Spy
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.view.SpyView
 
 class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
 
-    var selectedSpy: Spy? = null
+    var selectedSpy: SpyView? = null
 
     override val position: HexCoord?
-        get() = selectedSpy?.getCityOrNull()?.location
-    
-    fun selectSpy(spy: Spy?) {
-        selectedSpy = spy
+        get() = selectedSpy?.getCityViewOrNull()?.location
+
+    fun selectSpy(spyView: SpyView?) {
+        selectedSpy = spyView
     }
 
     override fun shouldBeShown(): Boolean = selectedSpy != null
 
     override fun updateWhenNeeded() = with(unitTable) {
-        val spy = selectedSpy!!
+        val spyView = selectedSpy!!
         unitNameLabel.clearListeners()
-        unitNameLabel.setText(spy.name.tr(hideIcons = true))
+        unitNameLabel.setText(spyView.name.tr(hideIcons = true))
         descriptionTable.clear()
 
         unitIconHolder.clear()
@@ -32,7 +32,7 @@ class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
         }).size(30f)
 
         separator.isVisible = true
-        val displayRank = spy.getEffectiveRank()
+        val displayRank = spyView.getEffectiveRank()
         val color = when (displayRank) {
             1 -> Color.BROWN
             2 -> Color.LIGHT_GRAY

@@ -70,9 +70,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Transient
     val builtBuildingUniqueMap = UniqueMap()
 
-    @Readonly fun currentConstructionName() = if (constructionQueue.isEmpty()) "" else constructionQueue.first()
-    fun setCurrentConstruction(value: String) {
-        if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
+    @Readonly fun currentConstructionName(): String {
+        val queue = constructionQueue // Single read, the field may be swapped by another thread
+        return if (queue.isEmpty()) "" else queue.first()
+    }
+    fun setCurrentConstruction(value: String) = editQueue {
+        if (isEmpty()) add(value) else this[0] = value
+    }
+
+    /** The queue is never mutated in place, only replaced as a whole, so concurrent readers always see a consistent list.
+     *  All modifications must go through here (or assign a freshly built list). */
+    fun editQueue(edit: MutableList<String>.() -> Unit) {
+        val newQueue = ArrayList(constructionQueue)
+        newQueue.edit()
+        constructionQueue = newQueue
     }
 
     //endregion
@@ -81,7 +92,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionIsUserSet = false
-    var constructionQueue = ArrayList<String>(queueMaxSize)
+    var constructionQueue: List<String> = ArrayList(queueMaxSize)
+        private set
     var productionOverflow = 0
 
     /** Maps cities by id to a set of the buildings they received (by nation equivalent name)
@@ -97,7 +109,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
-        toReturn.constructionQueue.addAll(constructionQueue)
+        toReturn.constructionQueue = ArrayList(constructionQueue)
         toReturn.productionOverflow = productionOverflow
         toReturn.freeBuildingsProvidedFromThisCity.putAll(freeBuildingsProvidedFromThisCity.mapValues { it.value.toHashSet() })
         return toReturn
@@ -363,13 +375,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
 
     private fun validateConstructionQueue() {
-        val queueSnapshot = constructionQueue.toMutableList()
-        constructionQueue.clear()
+        val queueSnapshot = constructionQueue.toList()
+        // Build into a new list and swap it in at the end, so concurrent readers never see an empty queue
+        val validatedQueue = ArrayList<String>(queueMaxSize)
 
         for (constructionName in queueSnapshot) {
             val construction = getConstruction(constructionName)
             // First construction will be built next turn, we need to make sure it has the correct resources
-            if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0) {
+            if (validatedQueue.isEmpty() && getWorkDone(constructionName) == 0) {
                 val stockpileCosts = construction.getStockpiledResourceRequirements(city.state)
                 val civResources = city.civ.getCivResourcesByName()
 
@@ -382,10 +395,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 }
             }
             if (construction.isBuildable(this))
-                constructionQueue.add(constructionName)
+                validatedQueue.add(constructionName)
             else if (construction is Building)
                 removeImprovementForBuilding(construction)
         }
+        constructionQueue = validatedQueue
         chooseNextConstruction()
         validateCreatesOneImprovementMarkers()
     }
@@ -908,17 +922,17 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             addToTop && construction is PerpetualConstruction && PerpetualConstruction.isNamePerpetual( currentConstructionName()) ->
                  setCurrentConstruction(constructionName) // perpetual constructions will replace each other
             addToTop ->
-                constructionQueue.add(0, constructionName)
+                editQueue { add(0, constructionName) }
             isLastConstructionPerpetual() -> {
                 // Note this also works if  currentConstructionName() is perpetual and the only entry - that var is delegated to the first queue position
                 if (construction is PerpetualConstruction) {
                     // perpetual constructions will replace each other
-                    constructionQueue[constructionQueue.lastIndex] = constructionName
+                    editQueue { this[lastIndex] = constructionName }
                 } else
-                    constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
+                    editQueue { add(size - 1, constructionName) } // insert new construction before perpetual one
             }
             else ->
-                constructionQueue.add(constructionName)
+                editQueue { add(constructionName) }
         }
         currentConstructionIsUserSet = true
     }
@@ -946,7 +960,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  @param automatic  If this was done automatically, we should automatically try to choose a new construction and treat it as such
      */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
-        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        val newQueue = ArrayList(constructionQueue)
+        val constructionName = newQueue.removeAt(constructionQueueIndex)
+        val queueBecameEmpty = newQueue.isEmpty()
+        // To prevent Construction Automation
+        if (queueBecameEmpty && !automatic) newQueue.add(PerpetualConstruction.Idle.name)
+        constructionQueue = newQueue
 
         // UniqueType.CreatesOneImprovement support
         val construction = getConstruction(constructionName)
@@ -959,9 +978,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
         }
 
-        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
+        currentConstructionIsUserSet = if (queueBecameEmpty) {
             if (automatic) chooseNextConstruction()
-            else constructionQueue.add(PerpetualConstruction.Idle.name) // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
     }
@@ -991,8 +1009,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  No-op when index invalid. Must not be called for PerpetualConstruction entries - unchecked! */
     fun moveEntryToTop(constructionQueueIndex: Int) {
         if (constructionQueueIndex == 0 || constructionQueueIndex >= constructionQueue.size) return
-        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
-        constructionQueue.add(0, constructionName)
+        editQueue { add(0, removeAt(constructionQueueIndex)) }
     }
 
     /** Moves an entry by index to the end of the queue, or just before a PerpetualConstruction
@@ -1000,15 +1017,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun moveEntryToEnd(constructionQueueIndex: Int) {
         if (constructionQueueIndex >= constructionQueue.size) return
-        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        val withoutEntry = ArrayList(constructionQueue)
+        val constructionName = withoutEntry.removeAt(constructionQueueIndex)
         // Some of the overhead of addToQueue is redundant here, but if the complex "needs to replace or go before a perpetual" logic is needed, then use it anyway
-        if (isLastConstructionPerpetual()) return addToQueue(constructionName)
-        constructionQueue.add(constructionName)
+        if (withoutEntry.isNotEmpty() && PerpetualConstruction.isNamePerpetual(withoutEntry.last())) {
+            constructionQueue = withoutEntry
+            return addToQueue(constructionName)
+        }
+        withoutEntry.add(constructionName)
+        constructionQueue = withoutEntry
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {
         if (constructionQueueIndex == 0) return 0 // Already first
-        constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
+        editQueue { swap(constructionQueueIndex - 1, constructionQueueIndex) }
         return constructionQueueIndex - 1
     }
 
@@ -1017,16 +1039,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (constructionQueueIndex >= constructionQueue.size - 1) return constructionQueueIndex // Already last
         raisePriority(constructionQueueIndex + 1)
         return constructionQueueIndex + 1
-    }
-
-    /** Replace each element of [constructionQueue] with the result of [transformConstruction],
-     *  optionally dropping elements if the predicate returns `null`. */
-    fun transformQueue(transformConstruction: (String, City) -> String?) {
-        // Replace queue - the iteration and finalization happens before the result
-        // is reassigned, therefore no concurrent modification worries
-        constructionQueue = constructionQueue
-                .mapNotNullTo(ArrayList(city.cityConstructions.constructionQueue.size))
-                { transformConstruction(it, city) }
     }
 
     private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
@@ -1064,12 +1076,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             it.index.takeIf { buildingImprovement == improvement }
         } ?: return
 
-        constructionQueue.removeAt(indexToRemove)
+        val newQueue = ArrayList(constructionQueue)
+        newQueue.removeAt(indexToRemove)
+        val queueBecameEmpty = newQueue.isEmpty()
+        if (queueBecameEmpty) newQueue.add(PerpetualConstruction.Idle.name)
+        constructionQueue = newQueue
 
-        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
-            constructionQueue.add(PerpetualConstruction.Idle.name)
-            false
-        } else true
+        currentConstructionIsUserSet = !queueBecameEmpty
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:

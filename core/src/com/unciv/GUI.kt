@@ -17,8 +17,8 @@ object GUI {
         UncivGame.Current.worldScreen?.shouldUpdate = true
     }
 
-    fun pushScreen(getScreen: () -> BaseScreen) {
-        UncivGame.Current.pushScreen(getScreen)
+    fun pushScreen(onScreenCreated: (BaseScreen) -> Unit = {}, getScreen: () -> BaseScreen) {
+        UncivGame.Current.pushScreen(onScreenCreated, getScreen)
     }
 
     fun resetToWorldScreen() {

@@ -3,14 +3,18 @@ package com.unciv.view
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ImmutableColor
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign civilizations. Superclass of [CivView]. */
-open class ForeignCivView(protected open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<Civilization>(civ, viewer, spectatorMode, gameView) {
+open class ForeignCivView(protected open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : OwnedView<Civilization>(civ, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = civ
+
     val civName: String get() = civ.civName
     val civID: String get() = civ.civID
     val gold: Int get() = civ.gold
+    val isCityState: Boolean get() = civ.isCityState
     val ruleset = civ.gameInfo.ruleset
 
     // Navigation
@@ -21,14 +25,17 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
     @Readonly fun getOuterColor(): ImmutableColor = civ.nation.getOuterColor()
     @Readonly fun getInnerColor(): ImmutableColor = civ.nation.getInnerColor()
 
-    @Readonly fun getEraName(): String = civ.getEra().name
     @Readonly fun getStyle(): String = civ.nation.style
     @Readonly fun getStyleOrCivName(): String = civ.nation.getStyleOrCivName()
-    @Readonly fun getEraNumber(): Int = civ.getEraNumber()
-    @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
+    @Readonly fun getEra(): Era = civ.getEra()
 
     @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
+    @Readonly fun getDiplomacyManagerWith(other: ForeignCivView): DiplomacyManagerView? =
+        civ.getDiplomacyManager(other.civ)?.let { gameView.getDiplomacyManagerView(it) }
     @Readonly fun isBarbarian(): Boolean = civ.isBarbarian
+    @Readonly fun isDefeated(): Boolean = civ.isDefeated()
+    @Readonly open fun cities(): List<ForeignCityView> =
+        civ.cities.filter { it.getCenterTile().isExplored(viewer) }.map { gameView.getForeignCityView(it) }
     @Readonly fun getNation(): Nation = civ.nation
 
     @Readonly fun getGoldPerTurn(): Int = civ.stats.statsForNextTurn.gold.toInt()

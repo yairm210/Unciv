@@ -88,6 +88,9 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
             mapRadius = mapParameters.mapSize.radius.toFloat()
     }
 
+    @Readonly
+    fun isEmpty() = topLeft == Vector2.Zero && bottomRight == Vector2.Zero
+
     // Check if tilePosition is beyond explored region
     fun checkTilePosition(tilePosition: HexCoord, explorerPosition: HexCoord?) {
         var mapExplored = false
@@ -95,7 +98,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
         val latitude = getLatitude(tilePosition).toFloat()
 
         // First time call
-        if (topLeft == Vector2.Zero && bottomRight == Vector2.Zero) {
+        if (isEmpty()) {
             topLeft = Vector2(longitude, latitude)
             bottomRight = Vector2(longitude, latitude)
             return

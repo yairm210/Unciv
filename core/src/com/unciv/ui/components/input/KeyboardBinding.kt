@@ -15,6 +15,11 @@ private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $
  *  and translation keys are automatically generated for all labels. This also works for [KeyboardBinding.Category].
  *
  *  [label] entries containing a placeholder need special treatment - see [getTranslationEntries] and update it when adding more.
+ *
+ *  The name of Unit actions MUST correspond to [UiUnitActionType.name][com.unciv.ui.screens.worldscreen.unit.actions.UiUnitActionType.name] because the shorthand constructor
+ *  there looks up bindings here by name - which also means we must not use UiUnitActionType here as it will not be guaranteed to already be fully initialized.
+ *  If a name regressed and differs, the association must be overriden in the `UiUnitActionType` -
+ *  or accept that changing the name here will cause that binding to be lost when reading the settings.
  */
 enum class KeyboardBinding(
     val category: Category,
@@ -101,9 +106,7 @@ enum class KeyboardBinding(
     PanDownAlternate(Category.MapPanning, 'S'),
     PanRightAlternate(Category.MapPanning, 'D'),
 
-    // Unit actions - name MUST correspond to UnitActionType.name because the shorthand constructor
-    // there looks up bindings here by name - which also means we must not use UnitActionType
-    // here as it will not be guaranteed to already be fully initialized.
+    // Unit actions - see Kdoc for relation to UiUnitActionType
     SwapUnits(Category.UnitActions, "Swap units", 'y'),
     Automate(Category.UnitActions, 'm'),
     ConnectRoad(Category.UnitActions, "Connect road", 'c'),

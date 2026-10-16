@@ -17,6 +17,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.TechnologyDescriptions
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
@@ -146,6 +147,9 @@ class TechPickerScreen(
         for (label in eraLabels) label.remove()
         eraLabels.clear()
 
+        // Computed once for all techs instead of per-TechButton - see #15641
+        val techIconsIndex = TechnologyDescriptions.buildTechIconsIndex(ruleset, civInfo)
+
         val allTechs = ruleset.technologies.values
         if (allTechs.isEmpty()) return
         val columns = allTechs.maxOf { it.column!!.columnNumber } + 1
@@ -207,7 +211,7 @@ class TechPickerScreen(
                 if (tech == null) {
                     techTable.add(table).fill()
                 } else {
-                    val techButton = TechButton(tech.name, civTech, false)
+                    val techButton = TechButton(tech.name, civTech, false, techIconsIndex)
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, queue = false, center = false) }

@@ -262,8 +262,18 @@ class TechManager : IsPartOfGameInfoSerialization {
         addScience(finalScienceToAdd)
     }
 
+    /**
+     *  Adds science "income" e.g. from normal research (see [endTurn]) or a triggered Unique.
+     *
+     *  Also called from [updateResearchProgress] to _apply_ overflow.
+     *  Adds the points to the [current research][currentTechnology], or, if there is none, to [overflow][overflowScience].
+     */
     fun addScience(scienceGet: Int) {
-        val currentTechnology = currentTechnologyName() ?: return
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) {
+            overflowScience += scienceGet
+            return
+        }
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
@@ -391,7 +401,11 @@ class TechManager : IsPartOfGameInfoSerialization {
             return obsoleteUnits[old]?.name  // Replacement, or pass through null to remove from queue
         }
         for (city in civInfo.cities) {
-            city.cityConstructions.transformQueue(::transformConstruction)
+            city.cityConstructions.editQueue {
+                val transformed = mapNotNull { transformConstruction(it, city) }
+                clear()
+                addAll(transformed)
+            }
         }
 
         // Add notifications for obsolete units/constructions

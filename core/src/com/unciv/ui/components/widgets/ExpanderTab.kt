@@ -14,6 +14,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.keyShortcuts
@@ -66,7 +67,15 @@ class ExpanderTab(
     /** Header with label, [headerContent] and icon, touchable to show/hide.
      *  This internal container is public to allow e.g. alignment changes.
      */
-    val header = Table(skin)
+    val header = object : Table(skin) {
+        override fun sizeChanged() {
+            super.sizeChanged()
+            positionToggleHitArea()
+        }
+    }
+
+    /** Used to [toggle] after calling [toggleOnIconOnly] */
+    private var toggleHitArea: ClickableCircle? = null
 
     /** Additional elements can be added to the `ExpanderTab`'s header using this container, empty by default. */
     val headerContent = Table(skin)
@@ -198,9 +207,22 @@ class ExpanderTab(
         headerLabel.setText(text)
     }
 
+    /** Stop opening/closing by clicking anywhere in the header, instead use a circular hit area around the arrow.
+     *  - Changing header size after callin gthis will not update the hit area's position. */
     fun toggleOnIconOnly() {
+        check(toggleHitArea == null) { "You can only call Expander.toggleOnIconOnly once" }
         header.clearActivationActions(ActivationTypes.Tap)
-        headerIcon.onActivation { toggle() }
+        toggleHitArea = ClickableCircle(header.height).apply {
+            onActivation { toggle() }
+        }
+        header.addActor(toggleHitArea)
+        positionToggleHitArea()
+    }
+
+    private fun positionToggleHitArea() {
+        val area = toggleHitArea ?: return
+        area.setSize(header.height, header.height)
+        area.setPosition(header.width, header.height, Align.topRight)
     }
 
     private fun Cell<Actor>.resetFixedSize(): Cell<Actor> {

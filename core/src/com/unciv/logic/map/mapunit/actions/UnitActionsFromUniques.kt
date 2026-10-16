@@ -1,7 +1,6 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
@@ -10,13 +9,13 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
-import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -25,9 +24,6 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
 import yairm210.purity.annotations.Readonly
 
 @Suppress("UNUSED_PARAMETER") // These methods are used as references in UnitActions.actionTypeToFunctions and need identical signature
@@ -53,10 +49,9 @@ object UnitActionsFromUniques {
         if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
-        val useFrequency = getUseFrequency(unit, unique, 80f)
 
         if (!unit.hasMovement() || !tile.canBeSettled(unit.civ))
-            return UnitAction(UnitActionType.FoundCity, useFrequency, action = null)
+            return UnitAction(UnitActionType.FoundCity, associatedUnique = unique, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
@@ -69,7 +64,6 @@ object UnitActionsFromUniques {
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
-            GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
             // If unit has FoundPuppetCity make it into a puppet city.
             if (unique.type == UniqueType.FoundPuppetCity) {
                 city.isPuppet = true
@@ -77,7 +71,7 @@ object UnitActionsFromUniques {
         }
 
         if (unit.civ.playerType == PlayerType.AI)
-            return UnitAction(UnitActionType.FoundCity, useFrequency, action = foundAction)
+            return UnitAction(UnitActionType.FoundCity, associatedUnique = unique, action = foundAction)
 
         val title =
             if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
@@ -87,28 +81,19 @@ object UnitActionsFromUniques {
             )
             else UnitActionType.FoundCity.value
 
+        // check if we would be breaking a promise
+        val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
+        val confirmation = if (leadersPromisedNotToSettleNear == null) null
+            else UnitActionConfirmation(
+                "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?",
+                "Break promise")
+
         return UnitAction(
             type = UnitActionType.FoundCity,
-            useFrequency = useFrequency,
             title = title,
-            uncivSound = UncivSound.Chimes,
             associatedUnique = unique,
-            action = {
-                // check if we would be breaking a promise
-                val leadersPromisedNotToSettleNear = getLeadersWePromisedNotToSettleNear(unit.civ, tile)
-                if (leadersPromisedNotToSettleNear == null)
-                    foundAction()
-                else {
-                    // ask if we would be breaking a promise
-                    val text = "Do you want to break your promise to [$leadersPromisedNotToSettleNear]?"
-                    ConfirmPopup(
-                        GUI.getWorldScreen(),
-                        text,
-                        "Break promise",
-                        action = foundAction
-                    ).open(force = true)
-                }
-            }.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) }
+            action = foundAction.takeIf { UnitActionModifiers.canActivateSideEffects(unit, unique) },
+            confirmation = confirmation
         )
     }
 
@@ -138,7 +123,6 @@ object UnitActionsFromUniques {
         val isSetUp = unit.isSetUpForSiege()
         return sequenceOf(UnitAction(UnitActionType.SetUp,
             isCurrentAction = isSetUp,
-            useFrequency = 85f,
             action = {
                 unit.action = UnitActionType.SetUp.value
                 unit.useMovementPoints(1f)
@@ -151,7 +135,7 @@ object UnitActionsFromUniques {
 
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
-        var useFrequency = 0f
+        var frequencyUnique: Unique? = null
 
         // Construct the list of possible destination tile filters, keeping the largest distance
         for (unique in paradropUniques) {
@@ -160,14 +144,14 @@ object UnitActionsFromUniques {
             val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
             if (existingDistance == null || distance > existingDistance) {
                 unit.cache.paradropDestinationTileFilters[tileFilter] = distance
-                useFrequency = getUseFrequency(unit, unique, 60f)
+                frequencyUnique = unique
             }
         }
         if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
 
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
-            useFrequency = useFrequency, // While it is important to see, it isn't nessesary used a lot
+            associatedUnique = frequencyUnique,
             action = {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
@@ -180,10 +164,9 @@ object UnitActionsFromUniques {
     internal fun getAirSweepActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val airsweepUnique =
             unit.getMatchingUniques(UniqueType.CanAirsweep).firstOrNull() ?: return emptySequence()
-        val useFrequency = getUseFrequency(unit, airsweepUnique, 90f)
         return sequenceOf(UnitAction(UnitActionType.AirSweep,
             isCurrentAction = unit.isPreparingAirSweep(),
-            useFrequency = useFrequency,
+            associatedUnique = airsweepUnique,
             action = {
                 if (unit.isPreparingAirSweep()) unit.action = null
                 else unit.action = UnitActionType.AirSweep.value
@@ -197,21 +180,20 @@ object UnitActionsFromUniques {
     // Different than Fortify
     internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val unique = unit.getMatchingUniques(UniqueType.WithdrawsBeforeMeleeCombat).firstOrNull() ?: return emptySequence()
-        val useFrequency = getUseFrequency(unit, unique, 0f)
 
         if (unit.isGuarding()) {
             val title = if (unit.canFortify()) "${"Guarding".tr()} ${unit.getFortificationTurns() * 20}%" else "Guarding".tr()
             return sequenceOf(UnitAction(UnitActionType.Guard,
-                useFrequency = useFrequency,
                 isCurrentAction = true,
-                title = title
+                title = title,
+                associatedUnique = unique
             ))
         }
         
         if (!unit.hasMovement()) return emptySequence()
         
         return sequenceOf(UnitAction(UnitActionType.Guard,
-            useFrequency = useFrequency,
+            associatedUnique = unique,
             action = {
                 unit.action = UnitActionType.Guard.value
             }.takeIf { !unit.isGuarding() })
@@ -261,7 +243,6 @@ object UnitActionsFromUniques {
                 else -> unique.text.removeConditionals()
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
-            val useFrequency = getUseFrequency(unit, unique, 80f)
 
             val unitAction = fun (): (()->Unit)? {
                 if (!unit.hasMovement()) return null
@@ -276,7 +257,7 @@ object UnitActionsFromUniques {
             }()
 
             yield(
-                UnitAction(UnitActionType.TriggerUnique, useFrequency, title,
+                UnitAction(UnitActionType.TriggerUnique, title,
                     associatedUnique = unique,
                     action = unitAction.takeIf {
                         UnitActionModifiers.canActivateSideEffects(unit, unique)
@@ -287,10 +268,9 @@ object UnitActionsFromUniques {
 
     internal fun getAddInCapitalActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val unique = unit.getMatchingUniques(UniqueType.AddInCapital).firstOrNull() ?: return emptySequence()
-        val useFrequency = getUseFrequency(unit, unique, 80f)
         return sequenceOf(UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unique.params[0]}]",
-            useFrequency = useFrequency,
+            associatedUnique = unique,
             action = {
                 unit.civ.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
                 unit.destroy()
@@ -313,9 +293,9 @@ object UnitActionsFromUniques {
 
         val improvement = tile.tileResource?.getImprovingImprovement(tile, unit.cache.state) ?: return null
         if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
-        val useFrequency = getUseFrequency(unit, unique, 82f)
 
-        return UnitAction(UnitActionType.CreateImprovement, useFrequency, "Create [${improvement.name}]",
+        return UnitAction(UnitActionType.CreateImprovement, "Create [${improvement.name}]",
+            associatedUnique = unique,
             action = {
                 tile.setImprovement(improvement, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
@@ -332,7 +312,6 @@ object UnitActionsFromUniques {
         for (unique in uniquesToCheck) {
             val improvementFilter = unique.params[0]
             val improvements = tile.ruleset.tileImprovements.values.filter { it.matchesFilter(improvementFilter, gameContext) }
-            val useFrequency = getUseFrequency(unit, unique, 85f)
 
             for (improvement in improvements) {
                 // Try to skip Improvements we can never build
@@ -344,7 +323,7 @@ object UnitActionsFromUniques {
                         (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
                 }
 
-                yield(UnitAction(UnitActionType.CreateImprovement, useFrequency,
+                yield(UnitAction(UnitActionType.CreateImprovement,
                     title = UnitActionModifiers.actionTextWithSideEffects(
                         "Create [${improvement.name}]",
                         unique,
@@ -370,35 +349,6 @@ object UnitActionsFromUniques {
                 ))
             }
         }
-    }
-
-    internal fun getConnectRoadActions(unit: MapUnit, tile: Tile) = sequence {
-        if (!unit.hasUnique(UniqueType.BuildImprovements)) return@sequence
-        val unitCivBestRoad = unit.civ.tech.getBestRoadAvailable()
-        if (unitCivBestRoad == RoadStatus.None) return@sequence
-
-        val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.BuildImprovements)
-
-        // If a unit has terrainFilter "Land" or improvementFilter "All", then we may proceed.
-        // If a unit only had improvement filter "Road" or "Railroad", then we need to also check if that tech is unlocked
-        val unique = uniquesToCheck.firstOrNull { it.params[0] == "Land" || it.params[0] in Constants.all
-                || (it.params[0] == "Road" && (unitCivBestRoad == RoadStatus.Road || unitCivBestRoad == RoadStatus.Railroad))
-                || (it.params[0] == "Railroad" && (unitCivBestRoad == RoadStatus.Railroad))
-        }
-
-        if(unique == null) return@sequence
-        val useFrequency = getUseFrequency(unit, unique, 25f)
-
-        val worldScreen = GUI.getWorldScreen()
-        yield(UnitAction(UnitActionType.ConnectRoad, useFrequency, // Press once for a multiturn command, it doesn't need to be used that frequently
-               isCurrentAction = unit.isAutomatingRoadConnection(),
-               action = {
-                   worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad =
-                       !worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad
-                   worldScreen.shouldUpdate = true
-               }
-           )
-        )
     }
 
     internal fun getTransformActions(unit: MapUnit, tile: Tile) = sequence {
@@ -434,9 +384,8 @@ object UnitActionsFromUniques {
             title += UnitActionModifiers.getSideEffectString(unit, unique, true)
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"
-            val useFrequency = getUseFrequency(unit, unique, 70f)
 
-            yield(UnitAction(UnitActionType.Transform, useFrequency,
+            yield(UnitAction(UnitActionType.Transform,
                 title = title,
                 associatedUnique = unique,
                 action = {
@@ -469,37 +418,6 @@ object UnitActionsFromUniques {
                 }
             ))
         }
-    }
-
-    internal fun getBuildingImprovementsActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        if (!unit.cache.hasUniqueToBuildImprovements) return emptySequence()
-        // Conditional uniques (e.g. <when above [0] [Stockpile]>) may no longer apply even though
-        // the cache flag was set true - use firstOrNull to avoid NoSuchElementException (#15114)
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
-            ?: return emptySequence()
-
-        val couldConstruct = unit.hasMovement()
-            && !tile.isCityCenter()
-            && unit.civ.gameInfo.ruleset.tileImprovements.values.any {
-            ImprovementPickerScreen.canReport(
-                tile.improvementFunctions.getImprovementBuildingProblems(
-                    it,
-                    unit.cache.state
-                ).toSet()
-            )
-                && unit.canBuildImprovement(it)
-        }
-        val useFrequency = getUseFrequency(unit, unique, 85f)
-
-        return sequenceOf(UnitAction(UnitActionType.ConstructImprovement, useFrequency,
-            isCurrentAction = tile.hasImprovementInProgress(),
-            action = {
-                GUI.pushScreen{ ImprovementPickerScreen(tile, unit) {
-                    if (GUI.getSettings().autoUnitCycle)
-                        GUI.getWorldScreen().switchToNextUnit()
-                } }
-            }.takeIf { couldConstruct }
-        ))
     }
 
     @Readonly
@@ -544,10 +462,10 @@ object UnitActionsFromUniques {
                 .none { it == ImprovementBuildingProblem.OutsideBorders }
 
         val turnsToBuild = getRepairTurns(unit)
-        val useFrequency = getUseFrequency(unit, uniques.first(), 90f)
 
-        return UnitAction(UnitActionType.Repair, useFrequency,
+        return UnitAction(UnitActionType.Repair,
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
+            associatedUnique = uniques.first(),
             action = {
                 tile.queueImprovement(Constants.repair, turnsToBuild)
                 unit.action = null

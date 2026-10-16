@@ -78,7 +78,8 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(UnitIconGroup(garrison, 30f)).padLeft(5f)
         }
 
-        val width = if (cityScreen.isCrampedPortrait()) stage.width / 3 else stage.width / 4
+        // Accessing this Table's `stage` directly led to a race condition in rare cases (#15621)
+        val width = cityScreen.stage.width / (if (cityScreen.isCrampedPortrait()) 3 else 4)
         add(cityNameTable).width(width)
 
         if (cityScreen.viewableCities.size > 1) {

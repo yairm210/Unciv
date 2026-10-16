@@ -18,6 +18,7 @@ import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.YieldGroup
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.DebugUtils
 import kotlin.math.atan2
@@ -327,23 +328,21 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = tileGroup.tileView.position().toPrettyString()
+            val label = tileGroup.tileView.position().toPrettyString() + "{}" // Prevent tr() from killing the comma
             val tileW = tileGroup.width
             val tileH = tileGroup.height
-            startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
-                touchable = Touchable.disabled
-                setOrigin(Align.center)
-                x = tileX + (tileW - width) / 2 + 15.4f
-                y = tileY + (tileH - height) / 2 - 0.6f
-                tileGroup.layerMisc.addOwnedActor(this)
-            })
-            startingLocationIcons.add(label.toLabel(Color.FIREBRICK, 14).apply {
-                touchable = Touchable.disabled
-                setOrigin(Align.center)
-                x = tileX + (tileW - width) / 2 + 15f
-                y = tileY + (tileH - height) / 2
-                tileGroup.layerMisc.addOwnedActor(this)
-            })
+            val lbl = ShadowedLabel(
+                label, 14,
+                labelColor = Color.FIREBRICK,
+                shadowColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.7f },
+                shadowOffset =  0.6f
+            )
+            lbl.apply {
+                x = tileX + (tileW - width) / 2 + 10f
+                y = tileY + (tileH - height) / 2 - 2f
+            }
+            startingLocationIcons.add(lbl)
+            tileGroup.layerMisc.addOwnedActor(lbl)
         }
 
         if (DebugUtils.SHOW_SETTLER_SCORES) {

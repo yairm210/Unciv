@@ -10,14 +10,13 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
 import com.unciv.UncivGame
-import com.unciv.logic.city.City
 import com.unciv.logic.map.*
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
-import com.unciv.models.Spy
 import com.unciv.models.UncivSound
+import com.unciv.view.ForeignCityView
 import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
 import com.unciv.view.TileView
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
@@ -509,10 +508,10 @@ class WorldMapHolder(
         }
     }
 
-    private fun addMovingSpyOverlay(spy: Spy, tileView: TileView) {
+    private fun addMovingSpyOverlay(spyView: SpyView, tileView: TileView) {
         val cityView = tileView.owningCity()
-        val city: City? = if (tileView.isCityCenter() && cityView != null && spy.canMoveTo(cityView.getCity())) cityView.getCity() else null
-        addTileOverlays(tileView, MoveSpyOverlayButtonData(spy, city))
+        val targetCityView: ForeignCityView? = if (tileView.isCityCenter() && cityView != null && spyView.canMoveTo(cityView)) cityView else null
+        addTileOverlays(tileView, MoveSpyOverlayButtonData(spyView, targetCityView))
         worldScreen.shouldUpdate = true
     }
 
@@ -632,11 +631,11 @@ class WorldMapHolder(
      * @param selectUnit Select a unit at the destination
      * @return `true` if scroll position was changed, `false` otherwise
      */
-    fun setCenterPosition(vector: HexCoord, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
+    fun setCenterPosition(vector: HexCoord, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnitView? = null): Boolean {
         val tileGroup = tileGroups.values.firstOrNull { it.tileView.position() == vector } ?: return false
         selectedTile = tileGroup.tileView
         if (selectUnit || forceSelectUnit != null)
-            worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit?.let { worldScreen.selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView() })
+            worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2), immediately))

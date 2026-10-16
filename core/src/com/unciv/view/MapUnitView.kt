@@ -9,7 +9,15 @@ import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.PossibleUpgrade
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.models.Counter
+import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
+import com.unciv.logic.map.mapunit.AvailablePromotion
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.Promotion
 import yairm210.purity.annotations.Readonly
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
@@ -20,6 +28,39 @@ class MapUnitView internal constructor(
     gameView: GameView,
 ) : ForeignMapUnitView(unit, viewer, spectatorMode, gameView) {
     val due: Boolean get() = unit.due
+
+    val xp: Int get() = unit.promotions.XP
+    @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
+    @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
+    @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
+    /** The unit's promotions as objects, in json order. */
+    @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
+    /** Upgrades of this unit worth showing (normal ones, not ruins-only), see [PossibleUpgrade.isShownToPlayer] */
+    @Readonly fun getPossibleUpgrades(): List<PossibleUpgrade> = unit.upgrade.getUpgradesOfKind(isSpecial = false)
+    /** `true` if a regular upgrade to [baseUnit] could be performed right now */
+    @Readonly fun canUpgradeTo(baseUnit: BaseUnit): Boolean = getPossibleUpgrades()
+        .any { it.upgradedUnit == baseUnit && unit.upgrade.canPerformUpgrade(it, isFree = false) }
+    /** Performs a regular upgrade to [baseUnit] if [canUpgradeTo] allows it
+     *  @return whether an upgrade was performed */
+    fun tryUpgradeTo(baseUnit: BaseUnit): Boolean {
+        val upgrade = getPossibleUpgrades()
+            .firstOrNull { it.upgradedUnit == baseUnit && unit.upgrade.canPerformUpgrade(it, isFree = false) }
+            ?: return false
+        unit.upgrade.performUpgrade(upgrade, isFree = false)
+        return true
+    }
+    @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
+    @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
+    @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
+    @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
+    @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
+    @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
+    @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
+    /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
+    @Readonly fun canSaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        return city.civ == unit.civ && !city.isPuppet
+    }
 
     @Readonly override fun civ(): CivView = gameView.getCivView(unit.civ)
 
@@ -35,6 +76,10 @@ class MapUnitView internal constructor(
     @Readonly fun isSleeping(): Boolean = unit.isSleeping()
     @Readonly fun isAutomated(): Boolean = unit.isAutomated()
     @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
+    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean = unit.canBuildImprovement(improvement)
+    @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
+    @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
+        improvement.getStockpiledResourceRequirements(unit.cache.state)
     @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
     @Readonly fun canBuildCurrentImprovement(): Boolean {
         val tile = unit.getTile()
@@ -96,6 +141,38 @@ class MapUnitView internal constructor(
         unit.movement.swapMoveToTile(tileView.unwrap(), keepEscorting)
         return true
     }
+    /** Clears the improvement queue of the tile this unit stands on. */
+    fun tryStopWorkingOnImprovement(): Boolean {
+        unit.getTile().stopWorkingOnImprovement()
+        return true
+    }
+    /** Starts working on [improvement] on the tile this unit stands on, and queues [queuedImprovement] after it if given. */
+    fun tryStartWorkingOnImprovement(improvement: TileImprovement, queuedImprovement: TileImprovement? = null): Boolean {
+        val tile = unit.getTile()
+        tile.startWorkingOnImprovement(improvement, unit.civ, unit)
+        if (queuedImprovement != null)
+            tile.queueImprovement(queuedImprovement, unit.civ, unit)
+        return true
+    }
+    fun trySetInstanceName(name: String?): Boolean {
+        unit.instanceName = name
+        return true
+    }
+    fun tryAddPromotion(promotionName: String): Boolean {
+        unit.promotions.addPromotion(promotionName)
+        return true
+    }
+    /** Remembers this unit's promotions as the default for new units of its type built in the city it stands in. */
+    fun trySaveDefaultPromotions(): Boolean {
+        val city = unit.currentTile.getCity() ?: return false
+        city.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
+        city.unitToPromotions[unit.baseUnit.name] = unit.promotions
+        return true
+    }
+    fun tryDisband(): Boolean {
+        unit.disband()
+        return true
+    }
     fun tryResetAction(): Boolean {
         unit.action = null
         return true
@@ -124,6 +201,7 @@ class MapUnitView internal constructor(
         AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
+    fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
     fun tryMoveToTile(tileView: TileView): Boolean {
         unit.movement.moveToTile(tileView.unwrap())
         return true

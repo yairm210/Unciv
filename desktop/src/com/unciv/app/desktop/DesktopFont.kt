@@ -1,8 +1,6 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
 import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
@@ -15,16 +13,9 @@ import java.awt.GraphicsEnvironment
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.util.Locale
-import org.lwjgl.opengl.GL14
 
 
 class DesktopFont : FontImplementation {
-
-    override fun configureFontTexture(texture: Texture) {
-        // Prefer slightly finer mip levels to sharpen text while retaining trilinear filtering.
-        texture.bind()
-        Gdx.gl.glTexParameterf(texture.glTarget, GL14.GL_TEXTURE_LOD_BIAS, -0.5f)
-    }
 
     private lateinit var font: Font
     private lateinit var metric: FontMetrics
@@ -71,9 +62,9 @@ class DesktopFont : FontImplementation {
         return font.size
     }
 
-    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString()) { metric.charWidth(char) }
+    override fun getCharPixmap(char: Char) = getCharPixmapCommon(char.toString()) { it.charWidth(char) }
 
-    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString) { metric.stringWidth(symbolString) }
+    override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString) { it.stringWidth(symbolString) }
 
     private fun getCharPixmapCommon(symbolString: String, measureWidth: (FontMetrics) -> Int): Pixmap {
         val renderFont: Font
@@ -102,19 +93,8 @@ class DesktopFont : FontImplementation {
         g.color = Color.WHITE
         g.drawString(symbolString, 0, renderMetric.leading + renderMetric.ascent)
 
-        val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
-        // Mipmaps average RGB as well as alpha. Transparent black around white glyphs
-        // would darken their edges, then alpha blending would attenuate them again.
-        // Keep white RGB at zero coverage, preserving visible colours from colour fonts.
-        // Copy without blending to preserve the RGB of fully transparent pixels.
-        pixmap.blending = Pixmap.Blending.None
         val data = bi.getRGB(0, 0, bi.width, bi.height, null, 0, bi.width)
-        for (i in 0 until bi.width) {
-            for (j in 0 until bi.height) {
-                val rgba = Integer.rotateLeft(data[i + (j * bi.width)], 8)
-                pixmap.drawPixel(i, j, if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba)
-            }
-        }
+        val pixmap = Fonts.pixmapFromArgb(bi.width, bi.height, data)
         g.dispose()
         return pixmap
     }

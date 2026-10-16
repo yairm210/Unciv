@@ -16,6 +16,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -347,7 +348,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             civInfo.forEachMatchingUnique(UniqueType.BonusStatsFromCityStates) { unique ->
                 val bonusPercent = unique.params[0].toPercent()
                 val bonusStat = Stat.valueOf(unique.params[1])
-                statMap[Constants.cityStates]!![bonusStat] *= bonusPercent
+                @LocalState val cityStatesStats = statMap[Constants.cityStates]!! 
+                cityStatesStats[bonusStat] *= bonusPercent
             }
         }
 

@@ -23,6 +23,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getBaseUnitCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
@@ -99,8 +100,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun makeLink() = "Unit/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
-            BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> = getBaseUnitCivilopediaTextLines(ruleset)
 
     override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
     override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
@@ -276,7 +276,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
-                civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
+                civ.civConstructions.countConstructedObjects(this@BaseUnit, city) >= it.params[0].toInt()
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 

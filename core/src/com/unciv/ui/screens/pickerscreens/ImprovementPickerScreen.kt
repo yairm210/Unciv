@@ -8,21 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.GUI
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActivationTypes
@@ -33,11 +27,13 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
-    private val tile: Tile,
-    private val unit: MapUnit,
+    private val tile: TileView,
+    private val unit: MapUnitView,
     private val onAccept: ()->Unit,
 ) : PickerScreen() {
 
@@ -47,12 +43,13 @@ class ImprovementPickerScreen(
     }
 
     private var selectedImprovement: TileImprovement? = null
-    private val gameInfo = tile.tileMap.gameInfo
-    private val ruleset = gameInfo.ruleset
-    private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
+    private val ruleset = tile.getRuleset()
+    private val currentPlayerCiv = unit.civ()
     // Support for UniqueType.CreatesOneImprovement
     private val tileMarkedForCreatesOneImprovement = tile.isMarkedForCreatesOneImprovement()
-    private val tileWithoutLastTerrain = getTileWithoutLastTerrain()
+    // Whether removing the top terrain feature is possible at all, so improvements can be checked as if it were removed
+    private val lastTerrainName = tile.getAllTerrains().last().name
+    private val canRemoveLastTerrain = Constants.remove + lastTerrainName in ruleset.tileImprovements
     private val maxErasForward = ruleset.modOptions.constants.maxImprovementTechErasForward.takeUnless { it < 0 } ?: Int.MAX_VALUE
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
@@ -61,15 +58,13 @@ class ImprovementPickerScreen(
     fun accept(improvement: TileImprovement?, secondImprovement: TileImprovement? = null) {
         if (improvement == null || tileMarkedForCreatesOneImprovement) return
         if (improvement.name == Constants.cancelImprovementOrder) {
-            tile.stopWorkingOnImprovement()
+            unit.tryStopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
         } else {
             if (improvement.name != tile.improvementInProgress) {
-                tile.startWorkingOnImprovement(improvement, currentPlayerCiv, unit)
-                if (secondImprovement != null)
-                    tile.queueImprovement(secondImprovement, currentPlayerCiv, unit)
+                unit.tryStartWorkingOnImprovement(improvement, secondImprovement)
             }
-            unit.action = null // this is to "wake up" the worker if it's sleeping
+            unit.tryResetAction() // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
         game.popScreen()
@@ -105,36 +100,26 @@ class ImprovementPickerScreen(
         val ownerTable = Table()
         if (tile.getOwner() == null) {
             ownerTable.add("Unowned tile".toLabel()).pad(10f)
-        } else if (tile.getOwner()!!.isCurrentPlayer()) {
+        } else if (tile.getOwner()!!.isOwnedByViewer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
-                val cityView = GUI.getWorldScreen().selectedGameView.getCityView(tile.getCity()!!)
-                game.pushScreen{ CityScreen(cityView, null, cityView.tileView(tile)) }
+                val cityView = tile.getCity()!!.tryGetCityView() ?: return@onClick
+                game.pushScreen{ CityScreen(cityView, null, tile) }
             }
             val label = "Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()
-            label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
+            label.onClick { openCivilopedia(tile.getOwner()!!.getNation().makeLink()) }
             ownerTable.add(label)
             ownerTable.add(button).padLeft(20f)
             ownerTable.padTop(2.5f) // The button causes the label to have ample padding, just unglue the button from the window border a little
         } else {
             val label = "Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".toLabel()
-            label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
+            label.onClick { openCivilopedia(tile.getOwner()!!.getNation().makeLink()) }
             ownerTable.add(label).pad(10f)
         }
 
         topTable.add(ownerTable)
         topTable.row()
         topTable.add(regularImprovements)
-    }
-
-    private fun getTileWithoutLastTerrain(): Tile? {
-        // clone tileInfo without "top" feature if it could be removed
-        // Keep this copy around for speed (in tileWithoutLastTerrain)
-        if (Constants.remove + tile.lastTerrain.name !in ruleset.tileImprovements) return null
-        val newTile = tile.clone(addUnits = false)
-        newTile.setTerrainTransients()
-        newTile.removeTerrainFeature(newTile.lastTerrain.name)
-        return newTile
     }
 
     private fun Table.addImprovementRow(improvement: TileImprovement, problemReport: ProblemReport) {
@@ -148,7 +133,7 @@ class ImprovementPickerScreen(
                 // *other* improvements with same shortcutKey
                 .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                 // civ can build it (checks tech researched)
-                .filter { tile.improvementFunctions.canBuildImprovement(it, unit.cache.state) }
+                .filter { tile.getImprovementBuildingProblems(it, unit).isEmpty() }
                 // is technologically more advanced, or same tech with alphabetically earlier name (tie-breaking
                 // prevents two improvements at the same tech level both registering the same shortcut key,
                 // which would trigger accept() twice and cause a spurious "exit game?" dialog)
@@ -159,12 +144,12 @@ class ImprovementPickerScreen(
 
         var labelText = improvement.name.tr(true)
         val turnsToBuild = if (tile.improvementInProgress == improvement.name) tile.turnsToImprovement
-        else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+        else unit.getTurnsToBuild(improvement)
 
         if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
-        val tileResource = tile.tileResource
-        val provideResource = currentPlayerCiv.canSeeResource(tileResource) && tileResource.isImprovedBy(improvement.name)
-        if (provideResource) labelText += "\n" + "Provides [${tileResource.name}]".tr()
+        val tileResource = tile.getViewableResource(currentPlayerCiv)
+        val provideResource = tileResource != null && tileResource.isImprovedBy(improvement.name)
+        if (provideResource) labelText += "\n" + "Provides [${tileResource!!.name}]".tr()
         val removeImprovement = (!improvement.isRoad()
             && !improvement.name.startsWith(Constants.remove)
             && improvement.name != Constants.cancelImprovementOrder)
@@ -173,24 +158,20 @@ class ImprovementPickerScreen(
         val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
         // get benefits of the new improvement
-        val stats = tile.stats.getStatDiffForImprovement(
-            improvement,
-            currentPlayerCiv,
-            tile.getCity(),
-        )
+        val stats = tile.getStatDiffForImprovement(improvement, currentPlayerCiv)
 
         // Add per-turn maintenance costs as negative stats.
-        stats.add(getMaintenance(improvement))
+        stats.add(tile.getImprovementMaintenance(improvement, currentPlayerCiv))
 
         //Warn when the current improvement will increase a stat for the tile,
         // but the tile is outside of the range (> 3 tiles from any city center) that can be
         // worked by a city's population
-        if (tile.owningCity != null
+        if (tile.owningCity() != null
             && !improvement.isRoad()
             && stats.max() > 0f
             && !improvement.name.startsWith(Constants.remove)
-            && !tile.getTilesInDistance(currentPlayerCiv.modConstants.cityWorkRange)
-                .any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
+            && !tile.getVisibleTilesInDistance(ruleset.modOptions.constants.cityWorkRange)
+                .any { it.isCityCenter() && it.getCity()?.isOwnedByViewer() == true }
         )
             labelText += "\n" + "Not in city work range".tr()
 
@@ -222,6 +203,7 @@ class ImprovementPickerScreen(
             improvementButton.addListener(object : ClickListener() {
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     setDescription(improvement, Color.LIGHT_GRAY)
+                    rightSideButton.disable()
                 }
             })
         } else {
@@ -236,30 +218,6 @@ class ImprovementPickerScreen(
         add(improvementButton)
         add(getExplanationActor(improvement, problemReport)).padLeft(10f)
         row()
-    }
-
-    /** Calculate maintenance costs, matching logic in [getTransportationUpkeep][com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
-    // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
-    private fun getMaintenance(improvement: TileImprovement): Stats {
-        val maintenance = Stats()
-        if (currentPlayerCiv.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
-                .any { tile.matchesFilter(it.params[0], currentPlayerCiv) }
-        ) return maintenance
-
-        val context = GameContext(currentPlayerCiv, tile = tile)
-        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance, context) +
-            // ImprovementMaintenance only applies inside city territory; ImprovementAllMaintenance applies everywhere.
-            (if (tile.getOwner() == currentPlayerCiv) improvement.getMatchingUniques(UniqueType.ImprovementMaintenance, context) else emptySequence())
-        for (maintenanceUnique in maintenanceUniques) {
-            val amount = maintenanceUnique.params[0].toFloat()
-            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
-            maintenance.add(statName, -amount)
-        }
-
-        currentPlayerCiv.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
-            maintenance.timesInPlace(unique.params[0].toPercent())
-        }
-        return maintenance
     }
 
     /** Sets the PickerPane's description and where in Civilopedia a click on it should go - but not the right side button */
@@ -281,8 +239,8 @@ class ImprovementPickerScreen(
         }
 
         // icon for removing the resource by replacing improvement
-        val resource = tile.tileResource
-        if (removeImprovement && tile.improvement != null && currentPlayerCiv.canSeeResource(resource) && resource.isImprovedBy(tile.improvement!!)) {
+        val resource = tile.getViewableResource(currentPlayerCiv)
+        if (removeImprovement && tile.improvement != null && resource != null && resource.isImprovedBy(tile.improvement!!)) {
             val resourceIcon = ImageGetter.getResourcePortrait(tile.resource!!, 30f)
             statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }
@@ -315,13 +273,12 @@ class ImprovementPickerScreen(
         fun isQueueable() = removalImprovement != null && proposedSolutions.size == 1
     }
 
-    private fun getProblemReport(improvement: TileImprovement) = getProblemReport(tile, tileWithoutLastTerrain, improvement)
-    private fun getProblemReport(tile: Tile, tileWithoutLastTerrain: Tile?, improvement: TileImprovement): ProblemReport? {
+    private fun getProblemReport(improvement: TileImprovement, mayRemoveLastTerrain: Boolean = canRemoveLastTerrain): ProblemReport? {
         val report = ProblemReport()
-        var unbuildableBecause = tile.improvementFunctions.getImprovementBuildingProblems(improvement, unit.cache.state).toSet()
-        if (!canReport(unbuildableBecause) && tileWithoutLastTerrain != null) {
+        var unbuildableBecause = tile.getImprovementBuildingProblems(improvement, unit)
+        if (!canReport(unbuildableBecause) && mayRemoveLastTerrain) {
             // Try after pretending to have removed the top terrain layer.
-            unbuildableBecause = tileWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, unit.cache.state).toSet()
+            unbuildableBecause = tile.getImprovementBuildingProblems(improvement, unit, pretendLastTerrainRemoved = true)
             if (!canReport(unbuildableBecause)) return null
             report.suggestRemoval = true
         }
@@ -329,21 +286,21 @@ class ImprovementPickerScreen(
 
         with(report) {
             if (suggestRemoval) {
-                val removalName = Constants.remove + tile.lastTerrain.name
+                val removalName = Constants.remove + lastTerrainName
                 removalImprovement = ruleset.tileImprovements[removalName]
                 if (removalImprovement != null) {
                     // Check for removals that need a tech that's not yet researched
-                    val cannotRemoveReport = getProblemReport(tile, null, removalImprovement!!)
+                    val cannotRemoveReport = getProblemReport(removalImprovement!!, mayRemoveLastTerrain = false)
                     if (cannotRemoveReport != null) proposedSolutions.addAll(cannotRemoveReport.proposedSolutions)
-                    proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first" to removalImprovement!!.makeLink())
+                    proposedSolutions.add("${Constants.remove}[${lastTerrainName}] first" to removalImprovement!!.makeLink())
                 }
             }
 
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause) {
-                val maxEraNumber = if (maxErasForward == Int.MAX_VALUE) Int.MAX_VALUE else currentPlayerCiv.getEraNumber()
+                val maxEraNumber = if (maxErasForward == Int.MAX_VALUE) Int.MAX_VALUE else currentPlayerCiv.getEra().eraNumber
                 for (tech in improvement.requiredTechnologies(ruleset)) {
                     val techEra = tech?.era(ruleset) ?: continue
-                    if (unit.civ.tech.isResearched(tech.name)) continue
+                    if (currentPlayerCiv.isResearched(tech.name)) continue
                     if (techEra.eraNumber > maxEraNumber) return null
                     proposedSolutions.add("Research [${tech.name}] first" to tech.makeLink())
                 }
@@ -353,10 +310,14 @@ class ImprovementPickerScreen(
             if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile inside your empire" to null)
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
-                val resources = improvement.getMatchingUniques(UniqueType.ConsumesResources)
-                    .filter { currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt() }
-                    .map { "Acquire more [${it.params[1]}]" to ruleset.tileResources[it.params[1]]?.makeLink() }
-                proposedSolutions.addAll(resources)
+                fun proposeMissingResource(name: String, amount: Int) {
+                    if (currentPlayerCiv.getResourceAmount(name) >= amount) return
+                    proposedSolutions.add("Acquire more [$name]" to ruleset.tileResources[name]?.makeLink())
+                }
+                for (unique in improvement.getMatchingUniques(UniqueType.ConsumesResources))
+                    proposeMissingResource(unique.params[1], unique.params[0].toInt())
+                for ((resourceName, amount) in unit.getStockpiledResourceRequirements(improvement))
+                    proposeMissingResource(resourceName, amount)
             }
         }
         return report

@@ -831,7 +831,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (!startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.remove(StartingLocation(tile.position, nationName))
+        startingLocations.removeAll { it.position == tile.position && it.nation == nationName }
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
@@ -839,9 +839,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Removes all starting positions for [nationName], maintaining the transients */
     fun removeStartingLocations(nationName: String) {
         if (startingLocationsByNation[nationName] == null) return
-        for (tile in startingLocationsByNation[nationName]!!) {
-            startingLocations.remove(StartingLocation(tile.position, nationName))
-        }
+        startingLocations.removeAll { it.nation == nationName }
         startingLocationsByNation[nationName]!!.clear()
     }
 

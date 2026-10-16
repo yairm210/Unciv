@@ -13,12 +13,16 @@ import com.unciv.utils.DebugUtils
 import com.unciv.view.CityView
 import com.unciv.view.CivView
 import com.unciv.view.TileView
+import yairm210.purity.annotations.Mutated
+import yairm210.purity.annotations.Readonly
 
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(tileView: TileView, viewingCiv: CivView?, hideUnits: Boolean = false, spyCity: CityView? = null): ArrayList<FormattedLine> {
+    @Readonly
+    fun toMarkup(tileView: TileView, hideUnits: Boolean = false, spyCity: CityView? = null): ArrayList<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
+        val viewingCiv = tileView.getCivView()
         val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
                 || viewingCiv.canSeeTile(tileView)
 
@@ -27,7 +31,7 @@ object TileDescription {
             var cityString = cityView.name.tr()
             if (isViewableToPlayer) cityString += " (${cityView.getHealth()})"
             lineList += FormattedLine(cityString)
-            if (DebugUtils.VISIBLE_MAP || viewingCiv != null && viewingCiv.isOwnerOf(cityView)
+            if (DebugUtils.VISIBLE_MAP || viewingCiv != null && cityView.isOwnedByViewer()
                     && (spyCity == null || spyCity == cityView))
                 lineList += cityView.getProductionMarkup()
         }
@@ -91,7 +95,8 @@ object TileDescription {
         return lineList
     }
 
-    private fun addNeedsResearchLine(lineList: ArrayList<FormattedLine>, tileView: TileView, viewingCiv: CivView, resource: TileResource) {
+    @Readonly
+    private fun addNeedsResearchLine(@Mutated lineList: ArrayList<FormattedLine>, tileView: TileView, viewingCiv: CivView, resource: TileResource) {
         val tileImprovements = resource.getImprovements()
             .mapNotNull { tileView.getRuleset().tileImprovements[it] }
         if (tileImprovements.any { viewingCiv.canBuildImprovementOn(it, tileView) })

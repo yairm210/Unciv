@@ -7,7 +7,6 @@ import com.unciv.ui.images.ImageGetter
 class TileSetConfig {
     var useColorAsBaseTerrain = false
     var useSummaryImages = false
-    var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = ImageGetter.CHARCOAL
     /** Name of the tileset to use when this one is missing images. Null to disable. */
     var fallbackTileSet: String? = Constants.defaultFallbackTileset
@@ -20,7 +19,6 @@ class TileSetConfig {
         val toReturn = TileSetConfig()
         toReturn.useColorAsBaseTerrain = useColorAsBaseTerrain
         toReturn.useSummaryImages = useSummaryImages
-        toReturn.unexploredTileColor = unexploredTileColor
         toReturn.fogOfWarColor = fogOfWarColor
         toReturn.fallbackTileSet = fallbackTileSet
         toReturn.tileScale = tileScale
@@ -32,7 +30,6 @@ class TileSetConfig {
     fun updateConfig(other: TileSetConfig) {
         useColorAsBaseTerrain = other.useColorAsBaseTerrain
         useSummaryImages = other.useSummaryImages
-        unexploredTileColor = other.unexploredTileColor
         fogOfWarColor = other.fogOfWarColor
         fallbackTileSet = other.fallbackTileSet
         tileScale = other.tileScale

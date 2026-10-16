@@ -1,10 +1,8 @@
 package com.unciv.models.metadata
 
 import com.unciv.UncivGame
-import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.Readonly
-import java.text.NumberFormat
 import java.util.Locale
+import yairm210.purity.annotations.Readonly
 
 /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
  *  It is also used to list all available languages ([getSupportedLanguages]).
@@ -108,7 +106,10 @@ enum class LocaleCode(
         fun getSystemLanguage(): String =
             find(UncivGame.Current.getDefaultLocale())?.takeUnless { it.unused }?.languageName().orEmpty()
 
-        /** Get a Java Locale for a [language] as stored in GameSettings */
+        /** Get a Java Locale for a [language] as stored in GameSettings
+         *
+         *  Used by [TranslationCache.locale][com.unciv.models.translations.TranslationCache.locale], and in most cases using that cached instance is preferable.
+         */
         @Readonly
         fun getLocale(language: String): Locale =
             find(language)?.locale() ?: Locale.getDefault()
@@ -120,14 +121,5 @@ enum class LocaleCode(
         /** Get the fastlane folder name for a [language] as stored in GameSettings */
         fun fastlaneFolder(language: String) =
             find(language)?.fastlaneFolder() ?: "en"
-
-        // NumberFormat cache, key: language, value: NumberFormat
-        @Cache private val languageToNumberFormat = mutableMapOf<String, NumberFormat>()
-
-        @Readonly
-        fun getNumberFormatFromLanguage(language: String): NumberFormat =
-            languageToNumberFormat.getOrPut(language) {
-                NumberFormat.getInstance(getLocale(language))
-            }
     }
 }

@@ -1088,7 +1088,10 @@ class Tile : IsPartOfGameInfoSerialization {
         if (isMarkedForCreatesOneImprovement()) return
 
         val gameContext = GameContext(civInfo, unit = unit, tile = this)
-        for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(gameContext)) {
+        val stockpiledResourceRequirements = improvement.getStockpiledResourceRequirements(gameContext)
+        if (stockpiledResourceRequirements.any { (resourceName, amount) -> civInfo.getResourceAmount(resourceName) < amount })
+            return
+        for ((resourceName, amount) in stockpiledResourceRequirements) {
             val resource = ruleset.tileResources[resourceName] ?: continue
             civInfo.gainStockpiledResource(resource, -amount)
         }

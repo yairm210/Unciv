@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
@@ -20,13 +21,11 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
-import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -236,9 +235,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        @LocalState val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
+        val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
         for ((name, status) in statusMap) {
-            @LocalState val newStatus = status.clone()
+            val newStatus = status.clone()
             newStatusMap[name] = newStatus
         }
         toReturn.statusMap = newStatusMap
@@ -250,8 +249,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val type: UnitType
         get() = baseUnit.type
 
-    @Readonly fun getMovementString(): String =
-        (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
+    @Readonly fun getMovementString(): String {
+        // DecimalFormat("0.#") would use _system_ Locale, and a subsequent tr() might misread the thousands separator.
+        // Therefore, settings-dependent Locale->NumberFormat, and avoid double translation.
+        // This clone is cheap enough for UI, caching not worthwhile - and remember these are not thread-safe.
+        @Suppress("purity") // Someone tell me how to properly tell purity this does not endanger anything outside this function
+        val format = UncivGame.Current.settings.getAndModifyCurrentNumberFormat {
+            minimumFractionDigits = 0
+            maximumFractionDigits = 1
+            isGroupingUsed = false
+        }
+        // Note: This passes boxed numbers since only Double and Long exist directly. Negligible.
+        return format.format(currentMovement) + "/" + format.format(getMaxMovement())
+    }
 
 
     @Readonly fun getTile(): Tile = currentTile
@@ -288,7 +298,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly fun isAutomated() = automated
 
-    @Readonly fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
+    @Readonly fun isAutomatingRoadConnection() = action == Constants.connectRoadAction
     @Readonly fun isExploring() = action == UnitActionType.Explore.value
     @Readonly fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     @Readonly fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
@@ -797,7 +807,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun updateUniques() {
-        val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
+        val otherUniqueSources = promotions.getPromotions(sorted = true).flatMap { it.uniqueObjects } +
             statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
 

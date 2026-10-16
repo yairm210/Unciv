@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.worldscreen.unit.actions
+package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.Unique

@@ -16,7 +16,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.models.UncivSound
-import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.TerrainType
@@ -28,7 +27,6 @@ import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
 import java.util.EnumSet
@@ -120,6 +118,7 @@ object UniqueTriggerActivation {
                 val event = ruleset.events[unique.params[0]] ?: return null
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
+                if (choices.isEmpty()) return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
                     val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
@@ -955,8 +954,10 @@ object UniqueTriggerActivation {
                     if (notification != null) {
                         civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
                     }
-                    civInfo.gameInfo.tileMap.values.asSequence()
-                        .forEach { it.setExplored(civInfo, true) }
+                    val tiles = civInfo.gameInfo.tileMap.values
+                    tiles.forEach { it.setExplored(civInfo, true) }
+                    if (!civInfo.isBarbarian)
+                        civInfo.cache.discoverNaturalWonders(tiles)
                     true
                 }
             }
@@ -1252,13 +1253,12 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeUnitUpgrade, UniqueType.OneTimeUnitSpecialUpgrade -> {
                 if (unit == null) return null
-                val upgradeAction =
-                    if (unique.type == UniqueType.OneTimeUnitSpecialUpgrade)
-                        UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
-                    else UnitActionsUpgrade.getFreeUpgradeAction(unit)
-                if (upgradeAction.none()) return null
+                val upgrade = unit.upgrade.getUpgradesOfKind(isSpecial = unique.type == UniqueType.OneTimeUnitSpecialUpgrade)
+                    .filter { unit.upgrade.canPerformUpgrade(it, isFree = true) }
+                    .minByOrNull { it.upgradedUnit.cost }
+                    ?: return null
                 return {
-                    (upgradeAction.minBy { (it as UpgradeUnitAction).unitToUpgradeTo.cost }).action!!()
+                    unit.upgrade.performUpgrade(upgrade, isFree = true)
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "UnitActionIcons/Upgrade")
                     true

@@ -57,6 +57,7 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
+@Suppress("ConstPropertyName")
 object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
@@ -286,9 +287,6 @@ object TranslationFileWriter {
         }
     }
 
-    @Pure private fun String.toHashKey() =
-        replace(pointyBraceRegex, "")
-        .replace(squareBraceRegex, "[]")
     @Pure private fun String.unEscapeNewLines() =
         replace("\\n", "\n")
     @Pure private fun String.escapeNewLines() =
@@ -310,7 +308,7 @@ object TranslationFileWriter {
 
             val eqIndex = line.indexOf(" = ")
             val translationKey = line.substring(0, eqIndex).unEscapeNewLines()
-            val hashMapKey = translationKey.toHashKey()
+            val hashMapKey = translationKey.getPlaceholderText()
             if (!existingTranslationKeys.add(hashMapKey)) continue // don't add it twice
 
             val defaultValue = line.substring(eqIndex + 3)
@@ -466,7 +464,7 @@ object TranslationFileWriter {
 
         val oldTranslations = TranslationFileReader.read(file)
         val oldEntriesWithHashKey = oldTranslations.entries
-            .associateBy { it.key.toHashKey() }
+            .associateBy { it.key.getPlaceholderText() }
         for ((hashKey, entry) in oldEntriesWithHashKey) {
             if (hashKey !in keysToPreserve) continue
             stringBuilder.appendTranslation(entry.key, entry.value)
@@ -593,10 +591,10 @@ object TranslationFileWriter {
         fun submitString(string: String) {
             if (string.isEmpty()) return  // entries in Collection<String> do not pass isFieldTranslatable
             if ('{' in string) {
-                val matches = curlyBraceRegex.findAll(string)
-                if (matches.any()) {
+                val matches = string.getPartsInsideCurlies()
+                if (matches.isNotEmpty()) {
                     // Ignore outer string, only translate the parts within `{}`
-                    matches.forEach { submitString(it.groups[1]!!.value) }
+                    matches.forEach { submitString(it) }
                     return
                 }
             }

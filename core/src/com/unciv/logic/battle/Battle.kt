@@ -16,7 +16,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -520,7 +520,7 @@ object Battle {
         damageDealt: DamageDealt? = null
     ) {
         if (attacker.getCivInfo() == defender.getCivInfo()) return
-        
+
         // If what happened was that a civilian unit was captured, that's dealt with in the captureCivilianUnit function
         val (battleActionIcon, battleActionString) = when {
             attacker !is CityCombatant && attacker.isDefeated() ->
@@ -540,8 +540,8 @@ object Battle {
 
         val defenderString =
                 if (defender.isCity())
-                    if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
-                    else " [" + defender.getName() + "]"
+                    if (defender.isDefeated() && attacker.isRanged()) "the defence of [" + defender.getName() + "]"
+                    else "[" + defender.getName() + "]"
                 else defender.getNotificationDisplay("our ")
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
@@ -549,7 +549,7 @@ object Battle {
         val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
-        
+
         val locations = LocationAction(attackedTile.position, attackerTile?.position)
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }

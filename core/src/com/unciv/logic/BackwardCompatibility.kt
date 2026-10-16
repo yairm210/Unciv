@@ -124,10 +124,7 @@ object BackwardCompatibility {
                     && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
 
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
-            for (construction in city.cityConstructions.constructionQueue.toList()) {
-                if (isInvalidConstruction(construction))
-                    city.cityConstructions.constructionQueue.remove(construction)
-            }
+            city.cityConstructions.editQueue { removeAll { isInvalidConstruction(it) } }
             // And from being in progress
             for (construction in city.cityConstructions.inProgressConstructions.keys.toList())
                 if (isInvalidConstruction(construction))
@@ -170,9 +167,9 @@ object BackwardCompatibility {
         }
         // Replace in construction queue
         if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
-            cityConstructions.transformQueue { entry, _ -> if (entry == oldBuildingName) newBuildingName else entry }
+            cityConstructions.editQueue { replaceAll { if (it == oldBuildingName) newBuildingName else it } }
         else
-            cityConstructions.constructionQueue.remove(oldBuildingName)
+            cityConstructions.editQueue { removeAll { it == oldBuildingName } }
         // Replace in in-progress constructions
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
             if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
@@ -207,13 +204,6 @@ object BackwardCompatibility {
             }
         }
         civilizations.flatMap { civ -> civ.diplomacy.values }.forEach { it.replaceFlag() }
-    }
-
-    /** Make sure all MapUnits have the starting promotions that they're supposed to. */
-    fun GameInfo.guaranteeUnitPromotions() {
-        for (tileInfo in tileMap.values) for (unit in tileInfo.getUnits())
-            for (startingPromo in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(startingPromo, true)
     }
 
     /** Move max XP from barbarians to new home */

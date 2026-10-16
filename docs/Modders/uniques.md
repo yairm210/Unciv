@@ -1166,6 +1166,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
@@ -2319,6 +2321,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
@@ -3500,6 +3504,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ## Event uniques
+??? example  "Only the first available choice is offered"
+	When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement.
+
+	Applicable to: Event
+
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
@@ -3794,8 +3803,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when above [amount] Happiness'
-
 	Example: "&lt;when above [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3803,8 +3810,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when below [amount] Happiness'
-
 	Example: "&lt;when below [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3812,7 +3817,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
@@ -4446,6 +4451,6 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[unitNameGroup]: The name of a unit name group found in UnitNameGroups.json, or one of their unique tags.
 *[unitTriggerTarget]: `This Unit` or `Target Unit`.
-*[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
+*[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

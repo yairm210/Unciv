@@ -1,3 +1,149 @@
+## 4.22.11
+
+Added "Auto" screen size setting
+
+Spaceship parts buildable again
+
+Selecting random map after custom no longer generates land-only
+
+MP preview displays number of players and estimated time until player's turn - By unciv-loof
+
+By SomeTroglodyte:
+- Improve espionage screen and spy movement handling via map 
+- Fix broken keyboard binding for "Create [improvement]" 
+- Extension Mods allow more removals via ModOptions 
+- Fix loading games with invalid speed or difficulty entry crashes
+
+## 4.22.10
+
+Allow removing all forms of starting locations in map editor
+
+Disable "pick improvement" when selecting an unpickable improvement
+
+Make multiplayer check worker work with specific game ids again
+
+"Popup confirm" unit actions correctly move to next unit, refresh UI, etc
+
+More detailed color coding of diplomacy modifiers - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix a few console quirks 
+- Allow using Unique Builder for console activatetrigger 
+
+## 4.22.9
+
+Made new rendering opt-in, added FPS measure for comparison
+
+Add "autosize" experimental button + text
+
+By SomeTroglodyte:
+- UI: Make menu button and city stats collapse arrow easier to hit 
+
+By unciv-loof:
+- Use actual bombard range to classify long range units 
+
+fix: restore promotion modifier order in battle preview - By SomSamantray
+
+## 4.22.8
+
+Liberated city states make peace with anyone they were at war with pre-liberation
+
+When loading a game that causes Out Of Memory, show error message instead of crashing
+
+Added "Only the first available choice is offered" event unique, for switch/case style options
+
+By SomeTroglodyte:
+- Add science income without a research target to overflow, so it's not lost 
+- Allow finer control of the value for "snapping" Sliders (not only for Android) 
+- Fix locale-dependent number formatting messing up some numbers
+
+Resolved "doesn't work on Java 8", hopefully for future changes as well
+
+Update multiplayer game preview as players turns change, even if turn number is the same
+
+## 4.22.7
+
+Sharper text on Android - By finalpatch
+
+game ends with no alive major civ - By ssamt
+
+Block tile improvements when the stockpiled resource cost is unpaid - By mvanhorn
+
+Adjust happiness threshold for AI valuation - By EmperorPinguin
+
+Desktop: fix fallback-font glyphs being clipped on the right - By xysggol
+
+By SomeTroglodyte:
+- Improve numeric text fields localized formatting and parsing
+- Add missing translation templates for battle notifications
+- Add flag for the Navajo language
+- Replace sort arrows across all translation files
+
+## 4.22.6
+
+Fixed F6 crashes
+
+By dangdinhbaohoang12:
+- Prioritize roads when connecting new cities 
+- Prevent attacks with units after ownership change 
+
+By SomeTroglodyte: 
+- Fix Minimap derailing when passed an AI observing civ
+- Fix the debug tile coordinates shown on/for tiles 
+
+Keep the world screen tutorial task card on screen and scrollable - By JN0V
+
+## 4.22.5
+
+Faster tech screen 
+
+By dangdinhbaohoang12:
+- Better movement logic when discovering hidden units
+
+Prevent displacement captures and stale unit automation - By mvanhorn
+
+Only alive major civs for time victory - By ssamt
+
+Added default promotion entry to tutorial.json - By Emandac
+
+## 4.22.4
+
+Fixed error on cityscreen update when screen has already been replaced
+
+Fixed victory screen number-formatting bug
+
+Fix Java 9+ specific method use crashing NextTurn on Java 8 - By SomeTroglodyte: 
+
+Fix overview screen column visibility - By dangdinhbaohoang12
+
+Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
+
+## 4.22.3
+
+Massive rendering lag improvement!!
+
+ANRs reduction when switching screens
+
+By SomeTroglodyte:
+- Disallow spectators to rename units
+- Allow unit rename to "reset" to base unit name
+
+## 4.22.2
+
+Spectator deselect sets UI correctly
+.
+Fix defensive pact count motivation clamp - By Angais
+
+By SomeTroglodyte:
+- Fix layout for GPP table  
+- Crash fix for UI race conditions 
+
+fix: discover natural wonders when revealing the entire map - By mvanhorn
+
+Fix mod fonts missing from Font family selection - By ethanstoner
+
+AStar puts correct movement in PathsToTilesWithinTurn - By Ambeco
+
 ## 4.22.1
 
 Fixed crash on "ID from clipboard" when clipboard not set
@@ -3288,13 +3434,13 @@ Fixed uniques of marble - By woo1127
 
 ## 4.10.21
 
-Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependent building filter activating *when initializing ruleset*
 
 Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
 Fixed rare crash on city-state diplomatic relationship update
 
-Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+Fix loop when improvement is unbuildable and removes feature  - By SeventhM
 
 ## 4.10.20
 

@@ -240,7 +240,7 @@ class AttackRecorderTest {
         val recorder = recorder()
         dealDamage(recorder, attacker, 4)
 
-        attacker.upgrade.performUpgrade(testGame.ruleset.units.getValue("Composite Bowman"), isFree = true)
+        attacker.upgrade.performUpgrade(attacker.upgrade.getUpgrades().first { it.upgradedUnit.name == "Composite Bowman" }, isFree = true)
         val successor = attackingCiv.units.getUnitById(attacker.id)!!
         successor.instanceName = "New composite bowmen"
         successor.takeDamage(9) // No callback replaces the recorder's old unit reference.

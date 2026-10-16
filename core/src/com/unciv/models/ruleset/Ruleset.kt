@@ -221,63 +221,106 @@ class Ruleset {
     }
 
     fun add(ruleset: Ruleset) {
+        beliefs.selectiveRemove(ruleset.modOptions.beliefsToRemove) { matchesFilter(it) }
         beliefs.putAll(ruleset.beliefs)
-        ruleset.modOptions.beliefsToRemove
-            .flatMap { beliefsToRemove ->
-                beliefs.filter { it.value.matchesFilter(beliefsToRemove) }.keys
-            }.toSet().forEach {
-                beliefs.remove(it)
-            }
-
-        ruleset.modOptions.buildingsToRemove
-            .flatMap { buildingToRemove ->
-                buildings.filter { it.value.matchesFilter(buildingToRemove) }.keys
-            }.toSet().forEach {
-                buildings.remove(it)
-            }
+        buildings.selectiveRemove(ruleset.modOptions.buildingsToRemove) { matchesFilter(it) }
         buildings.putAll(ruleset.buildings)
+        difficulties.selectiveRemove(ruleset.modOptions.difficultiesToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        speeds.selectiveRemove(ruleset.modOptions.speedsToRemove)
         speeds.putAll(ruleset.speeds)
         globalUniques = GlobalUniques.combine(globalUniques, ruleset.globalUniques)
-        ruleset.modOptions.nationsToRemove
-            .flatMap { nationToRemove ->
-                nations.filter { it.value.matchesFilter(nationToRemove) }.keys
-            }.toSet().forEach {
-                nations.remove(it)
-            }
+        nations.selectiveRemove(ruleset.modOptions.nationsToRemove) { matchesFilter(it) }
         nations.putAll(ruleset.nations)
-        
+        mergePolicies(ruleset)
+        quests.selectiveRemove(ruleset.modOptions.questsToRemove)
+        quests.putAll(ruleset.quests)
+
+        // Remove associated Religions, including when they're favored by Nations
+        religions.removeAll(ruleset.modOptions.religionsToRemove)
+        religions.addAll(ruleset.religions)
+        nations.filter { it.value.favoredReligion !in religions }
+            .forEach { it.value.favoredReligion = null }
+
+        ruinRewards.selectiveRemove(ruleset.modOptions.ruinRewardsToRemove)
+        ruinRewards.putAll(ruleset.ruinRewards)
+        specialists.selectiveRemove(ruleset.modOptions.specialistsToRemove)
+        specialists.putAll(ruleset.specialists)
+        mergeTechnologies(ruleset)
+        terrains.selectiveRemove(ruleset.modOptions.terrainsToRemove) { matchesFilter(it) }
+        terrains.putAll(ruleset.terrains)
+        tileImprovements.selectiveRemove(ruleset.modOptions.improvementsToRemove) { matchesFilter(it) }
+        tileImprovements.putAll(ruleset.tileImprovements)
+        tileResources.selectiveRemove(ruleset.modOptions.resourcesToRemove) { matchesFilter(it) }
+        tileResources.putAll(ruleset.tileResources)
+        tutorials.selectiveRemove(ruleset.modOptions.tutorialsToRemove)
+        tutorials.putAll(ruleset.tutorials)
+        unitTypes.selectiveRemove(ruleset.modOptions.unitTypesToRemove) { matchesFilter(it) }
+        unitTypes.putAll(ruleset.unitTypes)
+        victories.selectiveRemove(ruleset.modOptions.victoriesToRemove)
+        victories.putAll(ruleset.victories)
+        cityStateTypes.selectiveRemove(ruleset.modOptions.cityStateTypesToRemove)
+        cityStateTypes.putAll(ruleset.cityStateTypes)
+        units.selectiveRemove(ruleset.modOptions.unitsToRemove) {
+            setRuleset(this@Ruleset)
+            matchesFilter(it)
+        }
+        units.putAll(ruleset.units)
+        personalities.selectiveRemove(ruleset.modOptions.personalitiesToRemove)
+        personalities.putAll(ruleset.personalities)
+        events.selectiveRemove(ruleset.modOptions.eventsToRemove)
+        events.putAll(ruleset.events)
+        unitPromotions.selectiveRemove(ruleset.modOptions.unitPromotionsToRemove)
+        unitPromotions.putAll(ruleset.unitPromotions)
+        unitNameGroups.selectiveRemove(ruleset.modOptions.unitNameGroupsToRemove)
+        unitNameGroups.putAll(ruleset.unitNameGroups)
+
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
+
+        mods += ruleset.mods
+    }
+
+    /** Helper for the "ToRemove" lists of ModOptions */
+    private fun <T: INamed> MutableMap<String, T>.selectiveRemove(
+        removals: Set<String>,
+        filter: T.(String) -> Boolean = { it in Constants.all || name == it }
+    ) {
+        if (removals.isEmpty()) return
+        removals.flatMap { item ->
+            filter { it.value.filter(item) }.keys
+        }.toSet().forEach {
+            remove(it)
+        }
+    }
+
+    private fun mergePolicies(ruleset: Ruleset) {
+        if (ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty() && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty())
+            return
+
         /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
          *  but are still considered "available" */
-        fun removePolicyBranch(policyBranch: PolicyBranch){
+        fun removePolicyBranch(policyBranch: PolicyBranch) {
             policyBranches.remove(policyBranch.name)
             for (policy in policyBranch.policies)
                 policies.remove(policy.name)
         }
-        
+
         ruleset.modOptions.policyBranchesToRemove
             .flatMap { policyBranchToRemove ->
                 policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
             }.toSet().forEach {
                 removePolicyBranch(it)
             }
-        
+
         val overriddenPolicyBranches = policyBranches
             .filter { it.key in ruleset.policyBranches }.map { it.value }
-        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch
-        )
+        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
         policyBranches.putAll(ruleset.policyBranches)
-        
-        policies.putAll(ruleset.policies)
 
         // Remove the policies
-        ruleset.modOptions.policiesToRemove
-            .flatMap { policyToRemove ->
-                policies.filter { it.value.matchesFilter(policyToRemove) }.keys
-            }.toSet().forEach {
-                policies.remove(it)
-            }
+        policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
 
         // Remove the policies if they exist in the policy branches too
         for (policyToRemove in ruleset.modOptions.policiesToRemove) {
@@ -286,47 +329,39 @@ class Ruleset {
             }
         }
 
-        quests.putAll(ruleset.quests)
+        policies.putAll(ruleset.policies)
+    }
 
-        // Remove associated Religions, including when they're favored by Nations
-        religions.addAll(ruleset.religions)
-        religions.removeAll(ruleset.modOptions.religionsToRemove)
-        nations.filter { it.value.favoredReligion in ruleset.modOptions.religionsToRemove }
-            .forEach { it.value.favoredReligion = null }
+    private fun mergeTechnologies(ruleset: Ruleset) {
+        if (ruleset.modOptions.techsToRemove.isEmpty() && ruleset.technologies.isEmpty()) return
 
-        ruinRewards.putAll(ruleset.ruinRewards)
-        specialists.putAll(ruleset.specialists)
-        ruleset.modOptions.techsToRemove
-            .flatMap { techToRemove ->
-                technologies.filter { it.value.matchesFilter(techToRemove) }.keys
-            }.toSet().forEach {
-                technologies.remove(it)
-            }
+        // Remove techs with some special TechColumn handling
+        fun TechColumn.mergeWith(other: TechColumn) {
+            check(other.columnNumber == columnNumber)
+            techs.addAll(other.techs.filterNot { it in techs })
+            techCost = other.techCost
+            buildingCost = other.buildingCost
+            wonderCost = other.wonderCost
+        }
+        // Removals
+        technologies.selectiveRemove(ruleset.modOptions.techsToRemove) { matchesFilter(it) }
+        // Remove techs from techColumns and remove columns with no techs left
+        val techColumnIterator = techColumns.iterator()
+        for (techColumn in techColumnIterator) {
+            techColumn.techs.removeAll { it.name !in technologies }
+            if (techColumn.techs.isEmpty()) techColumnIterator.remove()
+        }
+        // New techs
         technologies.putAll(ruleset.technologies)
-        techColumns.addAll(ruleset.techColumns)
-        terrains.putAll(ruleset.terrains)
-        tileImprovements.putAll(ruleset.tileImprovements)
-        tileResources.putAll(ruleset.tileResources)
-        tutorials.putAll(ruleset.tutorials)
-        unitTypes.putAll(ruleset.unitTypes)
-        victories.putAll(ruleset.victories)
-        cityStateTypes.putAll(ruleset.cityStateTypes)
-        ruleset.modOptions.unitsToRemove
-            .flatMap { unitToRemove ->
-                units.filter { it.apply { value.setRuleset(this@Ruleset) }.value.matchesFilter(unitToRemove) }.keys
-            }.toSet().forEach {
-                units.remove(it)
-            }
-        units.putAll(ruleset.units)
-        personalities.putAll(ruleset.personalities)
-        events.putAll(ruleset.events)
-        modOptions.uniques.addAll(ruleset.modOptions.uniques)
-        modOptions.constants.merge(ruleset.modOptions.constants)
-
-        unitPromotions.putAll(ruleset.unitPromotions)
-        unitNameGroups.putAll(ruleset.unitNameGroups)
-
-        mods += ruleset.mods
+        // Merge techColumns by columnNumber
+        for (techColumn in ruleset.techColumns) {
+            val existing = techColumns.firstOrNull { it.columnNumber == techColumn.columnNumber }
+            if (existing == null) techColumns.add(techColumn)
+            else existing.mergeWith(techColumn)
+        }
+        // Reorder and make columnNumber contiguous (TechPickerScreen could shift techs to wrong columns otherwise)
+        for ((index, techColumn) in techColumns.sortedBy { it.columnNumber }.withIndex())
+            techColumn.columnNumber = index
     }
 
     fun clear() {

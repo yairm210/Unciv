@@ -15,6 +15,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BuildingDescriptions
+import com.unciv.ui.objectdescriptions.BuildingDescriptions.getBuildingCivilopediaTextLines
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
@@ -59,7 +60,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getShortDescription(multiline: Boolean = false, uniqueInclusionFilter: ((Unique) -> Boolean)? = null) = BuildingDescriptions.getShortDescription(this, multiline, uniqueInclusionFilter)
     @Readonly fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getBuildingCivilopediaTextLines(ruleset)
 
     override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
     override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
@@ -346,7 +347,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
 
                 UniqueType.MaxNumberBuildable ->
-                    if (civ.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
+                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 // To be replaced with `Only available <after [Apollo Project] has been build>`

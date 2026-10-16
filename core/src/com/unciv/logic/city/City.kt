@@ -129,11 +129,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     
     var unitToPromotions = HashMap<String, UnitPromotions>()
 
-    /** Neighboring explored cities, in radius of 12 tiles */
-    @delegate:Transient
-    val neighboringCities: List<City> by lazy { 
-        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
-    }
+    /** Neighboring explored cities, within [maxDistance] tiles */
+    @Readonly fun getNeighboringCities(maxDistance: Int = 12): List<City> =
+        civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= maxDistance }.toList()
 
     private var cityAIFocus: String = CityFocus.NoFocus.name
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus

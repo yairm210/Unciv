@@ -179,6 +179,17 @@ Allowed values:
 - `Great Improvement`, `Great`
 - `All Road` - for Roads & Railroads
 
+## resourceFilter
+
+For filtering tile resources.
+
+Allowed values:
+
+- resource name
+- resource type name, e.g. `Strategic`
+- a Stat listed in the resource's improvementStats
+- `any`, `all`, `All`
+
 ## populationFilter
 
 A filter determining a part of the population of a city.
@@ -199,7 +210,7 @@ For filtering specific relgions
 - `major`
 - `enhanced`
 - `your`
-- `foriegn`
+- `foreign`
 - `enemy`
 - The name of a relgion symbol
 - The name of a belief
@@ -358,6 +369,16 @@ Allowed values:
 - `Food`
 - `Desirable`
 - `Production`
+
+## unitTypeFilter
+
+Used when filtering Unit Types (e.g. "Mounted").
+
+Allowed values:
+
+- The type's name
+- `Land`, `Water`, `Air`
+- Any exact unique the unit type has
 
 ## countable
 

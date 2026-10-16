@@ -184,7 +184,11 @@ class CityScreen(
         Concurrency.run {
             // Recalculate Stats
             cityView.updateCityStats()
-            Concurrency.runOnGLThread { updateSync() }
+            Concurrency.runOnGLThread {
+                // This screen may have been replaced while we were computing stats - #15642
+                if (game.screen !== this@CityScreen) return@runOnGLThread
+                updateSync()
+            }
         }
     }
     

@@ -31,6 +31,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.runBlocking
+import yairm210.purity.annotations.Readonly
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -224,9 +225,11 @@ object ImageGetter {
     fun getExternalImage(fileName: String) =
         getExternalImage(Gdx.files.internal("ExtraImages/$fileName"))
 
-    fun getImage(fileName: String?, tintColor: Color? = null): Image = 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Image it returns
+    fun getImage(fileName: String?, tintColor: Color? = null): Image =
         ImageWithCustomSize(getDrawable(fileName)).apply { color = tintColor ?: Color.WHITE }
 
+    @Readonly
     fun getDrawable(fileName: String?): TextureRegionDrawable =
         textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
 
@@ -251,6 +254,7 @@ object ImageGetter {
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun ninePatchImageExists(fileName: String) = ninePatchDrawables.containsKey(fileName)
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Image it returns
     fun getStatIcon(statName: String, size: Float = 20f): Image = getImage("StatIcons/$statName")
             .apply { setSize(size, size) }
 
@@ -267,6 +271,7 @@ object ImageGetter {
             getImage("UnitIcons/${unit.name}").apply { this.color = color }
         else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Group it returns
     fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
             return PortraitBuilding(construction, size)
@@ -279,15 +284,18 @@ object ImageGetter {
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
+    @Readonly
     fun getUniquePortrait(uniqueName: String, size: Float): Group = PortraitUnique(uniqueName, size)
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
+    @Readonly
     fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
         PortraitResource(resourceName, size, amount)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
+    @Readonly
     fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
         PortraitImprovement(improvementName, size, false, isPillaged)
 
@@ -328,6 +336,7 @@ object ImageGetter {
 
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Actor it returns
     fun getRedCross(size: Float, alpha: Float): Actor {
         val redCross = getImage("OtherIcons/Close")
         redCross.setSize(size, size)

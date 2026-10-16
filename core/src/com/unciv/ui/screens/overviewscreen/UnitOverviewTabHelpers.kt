@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.UnitActionType
-import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.darken
@@ -15,7 +14,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
@@ -29,7 +27,7 @@ open class UnitOverviewTabHelpers {
 
     private fun showWorldScreenAt(position: HexCoord, unit: MapUnitView?) {
         GUI.resetToWorldScreen()
-        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit?.getUnit())
+        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
     }
 
     protected fun showWorldScreenAt(unit: MapUnitView) = showWorldScreenAt(unit.getTile().position(), unit)
@@ -59,18 +57,18 @@ open class UnitOverviewTabHelpers {
     protected fun getUpgradeTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table? {
         val unit = unitView.getUnit()
         val table = Table()
-        val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
-        if (unitActions.none()) return null
+        val upgrades = unitView.getPossibleUpgrades().filter { it.isShownToPlayer }
+        if (upgrades.isEmpty()) return null
         val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
 
-        for (unitAction in unitActions) {
-            val enable = canEnable && unitAction.action != null
-            val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+        for (upgrade in upgrades) {
+            val enable = canEnable && unitView.canUpgradeTo(upgrade.upgradedUnit)
+            val unitToUpgradeTo = upgrade.upgradedUnit
             val selectKey = unitView.id.toString()
             val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo,
                 if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
             upgradeIcon.onClick {
-                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unit, unitAction, enable) {
+                UnitUpgradeMenu(actionContext.overviewScreen.stage, upgradeIcon, unitView, upgrade, enable) {
                     actionContext.update(true)
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
                 }
@@ -83,9 +81,9 @@ open class UnitOverviewTabHelpers {
 
     @Readonly @Suppress("purity") // Calls action
     protected fun getUpgradeSortString(unitView: MapUnitView): String? {
-        val upgrade = UnitActionsUpgrade.getUpgradeActionAnywhere(unitView.getUnit()).firstOrNull()
+        val upgrade = unitView.getPossibleUpgrades().firstOrNull { it.isShownToPlayer }
             ?: return null
-        return (upgrade as UpgradeUnitAction).unitToUpgradeTo.name.tr(hideIcons = true)
+        return upgrade.upgradedUnit.name.tr(hideIcons = true)
     }
 
     protected fun getPromotionsTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table {
@@ -100,12 +98,12 @@ open class UnitOverviewTabHelpers {
         val selectKey = unitView.id.toString()
 
         fun onPromotionsTableClick() {
-            val canPromote = canEnable && unitView.getPromotions().canBePromoted()
-            if (!canPromote && unitView.getPromotions().promotions.isEmpty()) return
+            val canPromote = canEnable && unitView.canBePromoted()
+            if (!canPromote && unitView.getPromotionNames().isEmpty()) return
             // We can either add a promotion or at least view existing ones.
             // PromotionPickerScreen is reponsible for checking viewingPlayer.isCurrentPlayer and isAllowedChangeState **again**.
             actionContext.overviewScreen.game.pushScreen {
-                PromotionPickerScreen(unit) {
+                PromotionPickerScreen(unitView) {
                     // Todo seems the picker does not call this if only the unit rename was used
                     actionContext.update()
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
@@ -121,8 +119,8 @@ open class UnitOverviewTabHelpers {
 
         // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
         // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
-        val promotions = unitView.getPromotions().getPromotions(true)
-        val showPromoteStar = unitView.getPromotions().canBePromoted()
+        val promotions = unitView.getPromotions()
+        val showPromoteStar = unitView.canBePromoted()
         if (promotions.any()) {
             val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)
             val numberOfLines = (iconCount - 1) / 8 + 1  // Int math: -1,/,+1 means divide rounding *up*

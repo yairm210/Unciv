@@ -21,7 +21,6 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
-@InternalState
 class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
@@ -205,12 +204,12 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromUniquesBySource(): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         val cityStateStatsMultipliers = city.civ.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
 
         fun addUniqueStats(unique: Unique) {
-            @LocalState val stats = unique.stats.clone()
+            val stats = unique.stats.clone()
             if (unique.sourceObjectType==UniqueTarget.CityState)
                 for (multiplierUnique in cityStateStatsMultipliers)
                     stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
@@ -248,7 +247,7 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
-        val sourceToStats = StatTreeNode()
+        @LocalState val sourceToStats = StatTreeNode()
 
         fun addUniqueStats(unique: Unique, stat: Stat, amount: Float) {
             val stats = Stats()
@@ -466,7 +465,7 @@ class CityStats(val city: City) {
     
     @Readonly
     private fun getStatPercentBonusList(currentConstruction: IConstruction): StatTreeNode = timeThis("CityStats.getStatPercentBonusList") {
-        val newStatsBonusTree = StatTreeNode()
+        @LocalState val newStatsBonusTree = StatTreeNode()
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
@@ -653,11 +652,6 @@ class CityStats(val city: City) {
     private fun calcFoodEaten(): Float {
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
         var foodEaten = city.population.population.toFloat() * 2 - foodEatenBySpecialists
-        
-        city.forEachMatchingUnique(UniqueType.FoodConsumptionBySpecialists) { unique ->
-            if (city.matchesFilter(unique.params[1]))
-                foodEatenBySpecialists *= unique.params[0].toPercent()
-        }
 
         foodEaten += foodEatenBySpecialists
 

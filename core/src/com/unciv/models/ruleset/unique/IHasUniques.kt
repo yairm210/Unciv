@@ -72,7 +72,14 @@ interface IHasUniques : INamed {
     @Readonly
     fun hasTagUnique(uniqueTag: String) =
         uniqueMap.hasTagUnique(uniqueTag)
-    
+
+    /** Helper used for Civilopedia when finding cross-references, e.g. for see-also lists
+     *  @return `true` if any unique parameter is equal to [name]
+     */
+    @Readonly
+    fun hasUniquesMentioning(name: String) =
+        uniqueObjects.any { unique -> unique.params.any { it == name } }
+
     @Readonly
     fun techsRequiredByUniques(): Sequence<String> {
         val availabilityUniques = getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals) + 
