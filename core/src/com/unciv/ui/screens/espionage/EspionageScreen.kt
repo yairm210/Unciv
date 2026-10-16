@@ -62,6 +62,10 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
     private val locationLabels = mutableMapOf<String?, Actor>()
     private val closeButton: Group
 
+    // With dynamic button text, the layout "flutters" when selecting/deselecting a Spy - so control the minWidth:
+    // Which one is fatter is obvious in English, but in other languages not so much
+    private val moveButtonWidth = "Move".toTextButton().prefWidth.coerceAtLeast(Constants.cancel.toTextButton().prefWidth)
+
     /** Readability shortcut */
     private val manager get() = civInfo.espionageManager
 
@@ -184,7 +188,7 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
             // Spectators aren't allowed to move the spies of the Civs they are viewing
             moveSpyButton.disable()
         }
-        spySelectionTable.add(moveSpyButton).row()
+        spySelectionTable.add(moveSpyButton).minWidth(moveButtonWidth).row()
         moveSpyButtons[spy] = moveSpyButton
     }
 
