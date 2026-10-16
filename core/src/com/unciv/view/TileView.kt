@@ -4,14 +4,20 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
@@ -161,6 +167,46 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     ): List<Pair<String, Stats>> {
         val city = cityView?.unwrap() ?: tile.getCity()
         return tile.stats.getTileStatsBreakdown(city, viewingCiv?.unwrap())
+    }
+    /** Base terrain, natural wonder (if any), then terrain features, in order - the last one is the "top" terrain */
+    @Readonly fun getAllTerrains(): List<Terrain> = tile.allTerrains.toList()
+    /** [pretendLastTerrainRemoved] checks against a copy of this tile with its top terrain feature removed */
+    @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, unitView: MapUnitView, pretendLastTerrainRemoved: Boolean = false): Set<ImprovementBuildingProblem> {
+        val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
+        return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
+    }
+    /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
+    @Readonly private fun getTileWithoutLastTerrain(): Tile {
+        @LocalState val newTile = tile.clone(addUnits = false)
+        newTile.setTerrainTransients()
+        newTile.removeTerrainFeature(newTile.lastTerrain.name)
+        return newTile
+    }
+    @Readonly fun getStatDiffForImprovement(improvement: TileImprovement, civView: CivView): Stats =
+        tile.stats.getStatDiffForImprovement(improvement, civView.unwrap(), tile.getCity())
+    /** Per-turn maintenance of [improvement] on this tile as negative stats, matching [com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
+    // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
+    @Readonly fun getImprovementMaintenance(improvement: TileImprovement, civView: CivView): Stats {
+        val civ = civView.unwrap()
+        val maintenance = Stats()
+        if (civ.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
+                .any { tile.matchesFilter(it.params[0], civ) }
+        ) return maintenance
+
+        val context = GameContext(civ, tile = tile)
+        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance, context) +
+            // ImprovementMaintenance only applies inside city territory; ImprovementAllMaintenance applies everywhere.
+            (if (tile.getOwner() == civ) improvement.getMatchingUniques(UniqueType.ImprovementMaintenance, context) else emptySequence())
+        for (maintenanceUnique in maintenanceUniques) {
+            val amount = maintenanceUnique.params[0].toFloat()
+            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
+            maintenance.add(statName, -amount)
+        }
+
+        civ.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
+            maintenance.timesInPlace(unique.params[0].toPercent())
+        }
+        return maintenance
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 

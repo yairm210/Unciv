@@ -131,7 +131,8 @@ object UiOnlyUnitActions {
         return UiUnitAction(UiUnitActionType.ConstructImprovement, useFrequency,
             isCurrentAction = tile.hasImprovementInProgress(),
             action = {
-                GUI.pushScreen { ImprovementPickerScreen(tile, unit) {
+                val gameView = GUI.getWorldScreen().selectedGameView
+                GUI.pushScreen { ImprovementPickerScreen(gameView.getTile(tile), gameView.getMapUnitView(unit)) {
                     if (GUI.getSettings().autoUnitCycle)
                         GUI.getWorldScreen().switchToNextUnit()
                 } }

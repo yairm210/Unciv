@@ -11,7 +11,9 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -74,6 +76,10 @@ class MapUnitView internal constructor(
     @Readonly fun isSleeping(): Boolean = unit.isSleeping()
     @Readonly fun isAutomated(): Boolean = unit.isAutomated()
     @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
+    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean = unit.canBuildImprovement(improvement)
+    @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
+    @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
+        improvement.getStockpiledResourceRequirements(unit.cache.state)
     @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
     @Readonly fun canBuildCurrentImprovement(): Boolean {
         val tile = unit.getTile()
@@ -133,6 +139,19 @@ class MapUnitView internal constructor(
     // Actions
     fun trySwapMoveToTile(tileView: TileView, keepEscorting: Boolean = false): Boolean {
         unit.movement.swapMoveToTile(tileView.unwrap(), keepEscorting)
+        return true
+    }
+    /** Clears the improvement queue of the tile this unit stands on. */
+    fun tryStopWorkingOnImprovement(): Boolean {
+        unit.getTile().stopWorkingOnImprovement()
+        return true
+    }
+    /** Starts working on [improvement] on the tile this unit stands on, and queues [queuedImprovement] after it if given. */
+    fun tryStartWorkingOnImprovement(improvement: TileImprovement, queuedImprovement: TileImprovement? = null): Boolean {
+        val tile = unit.getTile()
+        tile.startWorkingOnImprovement(improvement, unit.civ, unit)
+        if (queuedImprovement != null)
+            tile.queueImprovement(queuedImprovement, unit.civ, unit)
         return true
     }
     fun trySetInstanceName(name: String?): Boolean {

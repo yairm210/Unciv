@@ -39,6 +39,8 @@ class CivView(civ: Civilization,
         tileView.unwrap().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
         tileView.unwrap().improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
+    // TODO Compare with getCivResourcesByName for overlap/conflict
+    @Readonly fun getResourceAmount(resourceName: String): Int = civ.getResourceAmount(resourceName)
     @Readonly fun technologyByName(name: String?): Technology? = civ.gameInfo.ruleset.technologies[name]
 
     @Readonly fun hasUnique(type: UniqueType): Boolean = civ.hasUnique(type)
