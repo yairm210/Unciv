@@ -33,6 +33,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -187,6 +188,8 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
         if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
             // Spectators aren't allowed to move the spies of the Civs they are viewing
             moveSpyButton.disable()
+        } else {
+            AnimatedMenuPopup.Helpers.addIndicator(moveSpyButton, 0.5f)
         }
         spySelectionTable.add(moveSpyButton).minWidth(moveButtonWidth).row()
         moveSpyButtons[spy] = moveSpyButton
