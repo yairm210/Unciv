@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
@@ -19,38 +20,26 @@ object UnitActionsUpgrade {
     ) = sequence<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        val specialUpgradesTo = if (isSpecial) 
-                unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, unit.cache.state).firstOrNull()
-                    ?.let { Pair(it.params[0], it) }
-            else null
-        val baseUpgrade = unit.baseUnit.upgradesTo?.let { Pair(it, null) }
-        val uniqueUpgrades = unit.baseUnit.getMatchingUniques(UniqueType.CanUpgrade, unit.cache.state)
-            .map { Pair(it.params[0], it)}
-        val upgradeUnits = if (specialUpgradesTo != null) sequenceOf(specialUpgradesTo)
-            else if (baseUpgrade != null) uniqueUpgrades + baseUpgrade
-            else uniqueUpgrades
-        if (upgradeUnits.none()) return@sequence // can't upgrade to anything
+        val allUpgrades = unit.upgrade.getUpgrades()
+        // Special (ruins) upgrades replace the normal ones when requested and present
+        val upgradeUnits = allUpgrades.filter { it.isSpecial }.take(1).takeIf { isSpecial && it.isNotEmpty() }
+            ?: allUpgrades.filter { !it.isSpecial }
+        if (upgradeUnits.isEmpty()) return@sequence // can't upgrade to anything
         if (!isAnywhere && unitTile.getOwner() != civInfo) return@sequence
 
-        for (upgradesTo in upgradeUnits){
-            val upgradedUnit = civInfo.getEquivalentUnit(upgradesTo.first)
+        for (upgrade in upgradeUnits) {
+            val upgradedUnit = upgrade.upgradedUnit
 
-            if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
-                continue
+            val isShown = if (isFree) upgrade.availability != UpgradeAvailability.Unavailable
+                else upgrade.availability == UpgradeAvailability.Available
+                    || upgrade.availability == UpgradeAvailability.AvailableExceptResources
+            if (!isShown) continue
 
-            // Check _new_ resource requirements (display only - yes even for free or special upgrades)
-            // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
-            val resourceRequirementsDelta = Counter<String>()
-            for ((resource, amount) in unit.getResourceRequirementsPerTurn())
-                resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state))
-                resourceRequirementsDelta.add(resource, amount)
-            for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
-                resourceRequirementsDelta[resource] = 0
+            val resourceRequirementsDelta = upgrade.newResourceRequirements
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            val goldCostOfUpgrade = if (isFree) 0 else unit.upgrade.getCostOfUpgrade(upgradedUnit)
+            val goldCostOfUpgrade = if (isFree) 0 else upgrade.goldCostOfUpgrade
 
             // No string for "FREE" variants, these are never shown to the user.
             // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
@@ -63,18 +52,10 @@ object UnitActionsUpgrade {
                 unitToUpgradeTo = upgradedUnit,
                 goldCostOfUpgrade = goldCostOfUpgrade,
                 newResourceRequirements = resourceRequirementsDelta,
-                associatedUnique = upgradesTo.second,
+                associatedUnique = upgrade.unique,
                 action = {
-                    unit.upgrade.performUpgrade(upgradedUnit, isFree, goldCostOfUpgrade)
-                }.takeIf {
-                    isFree || (
-                        unit.civ.gold >= goldCostOfUpgrade
-                            && unit.hasMovement()
-                            && unitTile.getOwner() == civInfo
-                            && !unit.isEmbarked()
-                            && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
-                        )
-                },
+                    unit.upgrade.performUpgrade(upgrade, isFree)
+                }.takeIf { unit.upgrade.canPerformUpgrade(upgrade, isFree) },
             ))
         }
     }

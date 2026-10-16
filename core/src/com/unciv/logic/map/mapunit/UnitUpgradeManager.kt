@@ -1,6 +1,8 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.RejectionReasonType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
@@ -8,33 +10,89 @@ import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
+/** A unit this [MapUnit] could upgrade to, as found by [getUpgrades]
+ *  @property upgradedUnit civ-specific equivalent of the target unit
+ *  @property unique the [UniqueType.CanUpgrade] or [UniqueType.RuinsUpgrade] unique granting this upgrade, `null` for the base unit's normal `upgradesTo`
+ *  @property isSpecial from [UniqueType.RuinsUpgrade] (ancient ruins)
+ *  @property availability how far this upgrade is available
+ *  @property goldCostOfUpgrade regular gold cost - free upgrades pay 0 instead
+ *  @property newResourceRequirements additional resources per turn the upgraded unit needs (never negative)
+ */
+enum class UpgradeAvailability {
+    /** Passes all requirements, including resources */
+    Available,
+    /** Passes all requirements (tech, policy, etc) except resources - shown, but can't be performed */
+    AvailableExceptResources,
+    /** Passes only when tech/policy/era/wonder requirements and resources are ignored - only free upgrades can be performed */
+    AvailableForFree,
+    Unavailable
+}
+
+class PossibleUpgrade(
+    val upgradedUnit: BaseUnit,
+    val unique: Unique?,
+    val isSpecial: Boolean,
+    val availability: UpgradeAvailability,
+    val goldCostOfUpgrade: Int,
+    val newResourceRequirements: Counter<String>
+)
+
 class UnitUpgradeManager(val unit: MapUnit) {
+
+    private fun getNewResourceRequirements(upgradedUnit: BaseUnit): Counter<String> {
+        val resourceRequirementsDelta = Counter<String>()
+        for ((resource, amount) in unit.getResourceRequirementsPerTurn())
+            resourceRequirementsDelta.add(resource, -amount)
+        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state))
+            resourceRequirementsDelta.add(resource, amount)
+        for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
+            resourceRequirementsDelta[resource] = 0
+        return resourceRequirementsDelta
+    }
+
+    /** Lists every upgrade this unit has, regardless of location, cost or movement. Callers filter on the flags. */
+    fun getUpgrades(): List<PossibleUpgrade> {
+        val specialUpgrades = unit.baseUnit.getMatchingUniques(UniqueType.RuinsUpgrade, unit.cache.state)
+            .map { Triple(it.params[0], it, true) }
+        val baseUpgrade = unit.baseUnit.upgradesTo?.let { Triple(it, null, false) }
+        val uniqueUpgrades = unit.baseUnit.getMatchingUniques(UniqueType.CanUpgrade, unit.cache.state)
+            .map { Triple(it.params[0], it, false) }
+
+        return (specialUpgrades + uniqueUpgrades + listOfNotNull(baseUpgrade))
+            .toList()
+            .map { (name, unique, isSpecial) ->
+                val upgradedUnit = unit.civ.getEquivalentUnit(name)
+                PossibleUpgrade(
+                    upgradedUnit = upgradedUnit,
+                    unique = unique,
+                    isSpecial = isSpecial,
+                    availability = canUpgrade(upgradedUnit),
+                    goldCostOfUpgrade = getCostOfUpgrade(upgradedUnit),
+                    newResourceRequirements = getNewResourceRequirements(upgradedUnit)
+                )
+            }
+    }
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
-     *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
-     *          Used for upgrading units via ancient ruins.
-     *  @param ignoreResources Ignore resource requirements (tech still counts)
-     *          Used to display disabled Upgrade button
+     *  @return the strictest [UpgradeAvailability] that holds:
+     *          [UpgradeAvailability.AvailableExceptResources] is used to display a disabled Upgrade button,
+     *          [UpgradeAvailability.AvailableForFree] ignores tech/policy/building requirements (e.g. ancient ruins).
      */
     @Readonly
-    fun canUpgrade(
-        unitToUpgradeTo: BaseUnit,
-        ignoreRequirements: Boolean = false,
-        ignoreResources: Boolean = false
-    ): Boolean {
-        if (unit.name == unitToUpgradeTo.name) return false
+    fun canUpgrade(unitToUpgradeTo: BaseUnit): UpgradeAvailability {
+        if (unit.name == unitToUpgradeTo.name) return UpgradeAvailability.Unavailable
 
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.getResourceRequirementsPerTurn())
+            .filterNot { it.isConstructionRejection() || it.type == RejectionReasonType.Obsoleted }
 
-        var relevantRejectionReasons = rejectionReasons.filterNot {
-            it.isConstructionRejection() || it.type == RejectionReasonType.Obsoleted
+        val withoutResources = rejectionReasons.filterNot { it.type == RejectionReasonType.ConsumesResources }
+        return when {
+            rejectionReasons.none() -> UpgradeAvailability.Available
+            withoutResources.none() -> UpgradeAvailability.AvailableExceptResources
+            withoutResources.none { !it.techPolicyEraWonderRequirements() } -> UpgradeAvailability.AvailableForFree
+            else -> UpgradeAvailability.Unavailable
         }
-        if (ignoreRequirements)
-            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.techPolicyEraWonderRequirements() }
-        if (ignoreResources)
-            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.type == RejectionReasonType.ConsumesResources }
-        return relevantRejectionReasons.none()
     }
 
     /** Determine gold cost of a Unit Upgrade, potentially over several steps.
@@ -75,23 +133,40 @@ class UnitUpgradeManager(val unit: MapUnit) {
         return goldCostOfUpgrade
     }
 
+    /** Whether [upgrade] can be performed right now: free upgrades only need to be available at all,
+     *  paid ones also need gold, movement, own territory, not being embarked and all requirements and resources met. */
+    @Readonly
+    fun canPerformUpgrade(upgrade: PossibleUpgrade, isFree: Boolean): Boolean {
+        if (isFree) return upgrade.availability != UpgradeAvailability.Unavailable
+        return upgrade.availability == UpgradeAvailability.Available
+            && unit.civ.gold >= upgrade.goldCostOfUpgrade
+            && unit.hasMovement()
+            && unit.currentTile.getOwner() == unit.civ
+            && !unit.isEmbarked()
+    }
+
     /** _Perform_ an upgrade, assuming validity checks were already passed.
      *
      *  Continuing to use a reference to this manager or its unit after this call is invalid!
      *
      *  Please use [UnitActionsUpgrade.getUpgradeActions] instead if at all possible.
+     *  @throws IllegalStateException if [canPerformUpgrade] is false
      *
      *  Note - the upgraded unit is a new instance, and it's possible this method will need to place it on a different tile.
      *  It is also possible the placement fails and the original is resurrected - in which case it is a **new instance** as well.
      *  It might be desirable to return `newUnit` (or `resurrectedUnit`) if needed -
      *  but then the lambda in UnitActionsUpgrade will complain and need to be forced back to Unit type.
      */
-    fun performUpgrade(upgradedUnit: BaseUnit, isFree: Boolean, goldCostOfUpgrade: Int? = null) {
+    fun performUpgrade(upgrade: PossibleUpgrade, isFree: Boolean) {
+        val upgradedUnit = upgrade.upgradedUnit
         // When mashing the upgrade button, you can 'queue' 2 upgrade actions
         //  If both are performed, what you get is the unit is doubled
         //  This prevents this, since we lack another way to do so -_-'  
         if (unit.isDestroyed) return  
-            
+
+        if (!canPerformUpgrade(upgrade, isFree))
+            throw IllegalStateException("Cannot upgrade ${unit.name} to ${upgrade.upgradedUnit.name}")
+
         val wasEscorting = unit.isEscorting()
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
@@ -107,7 +182,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
         }
 
         // Managed to upgrade
-        if (!isFree) civ.addGold(-(goldCostOfUpgrade ?: getCostOfUpgrade(upgradedUnit)))
+        if (!isFree) civ.addGold(-upgrade.goldCostOfUpgrade)
         newUnit.currentMovement = 0f
         // wake up if lost ability to fortify
         if (newUnit.isFortified() && !newUnit.canFortify(ignoreAlreadyFortified = true))

@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
@@ -273,7 +274,7 @@ object UnitAutomation {
 
         return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
             .map { unit.civ.getEquivalentUnit(it) }
-            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) }
+            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) == UpgradeAvailability.Available }
     }
 
 

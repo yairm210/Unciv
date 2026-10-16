@@ -9,6 +9,7 @@ import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UnitActionType
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -33,7 +34,9 @@ class MapUnitView internal constructor(
     /** The unit's promotions as objects, in json order. */
     @Readonly fun getPromotions(): Sequence<Promotion> = unit.promotions.getPromotions(sorted = true)
     @Readonly fun canUpgradeTo(unitToUpgradeTo: BaseUnit, ignoreResources: Boolean = false): Boolean =
-        unit.upgrade.canUpgrade(unitToUpgradeTo, ignoreResources = ignoreResources)
+        unit.upgrade.canUpgrade(unitToUpgradeTo).let {
+            it == UpgradeAvailability.Available || (ignoreResources && it == UpgradeAvailability.AvailableExceptResources)
+        }
     @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
     @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
