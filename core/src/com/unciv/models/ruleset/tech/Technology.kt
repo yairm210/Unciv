@@ -60,7 +60,8 @@ class Technology: RulesetObject() {
             in Constants.all -> true
             name -> true
             era() -> true
-            else -> state?.gameInfo?.ruleset?.eras?.get(era())?.matchesFilter(filter, state, false) == true
+            else -> hasTagUnique(filter, state) ||
+                state?.gameInfo?.ruleset?.eras?.get(era())?.matchesFilter(filter, state, false) == true
         }
     }
 

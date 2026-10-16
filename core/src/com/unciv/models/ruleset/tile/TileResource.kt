@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.Constants
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
@@ -133,11 +134,13 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     @Readonly
     fun matchesSingleFilter(filter: String) = when (filter) {
-        name -> true
         "any" -> true
-        "all" -> true
-        resourceType.name -> true
-        else -> improvementStats?.any { filter == it.key.name } == true
+        in Constants.all -> true
+        else -> when (filter) {
+            name -> true
+            resourceType.name -> true
+            else -> improvementStats?.any { filter == it.key.name } == true
+        }
     }
 
     @Readonly
