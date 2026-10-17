@@ -57,4 +57,13 @@ internal class ActivationActionMap : MutableMap<ActivationTypes, ActivationActio
             action.invoke()
         return true
     }
+
+    fun hasAction(type: ActivationTypes, noEquivalence: Boolean): Boolean {
+        if (get(type)?.isNotEmpty() == true) return true
+        if (noEquivalence) return false
+        for (other in ActivationTypes.equivalentValues(type)) {
+            if (get(other)?.isNotEmpty() == true) return true
+        }
+        return false
+    }
 }
