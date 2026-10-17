@@ -16,6 +16,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
@@ -226,8 +227,9 @@ internal class AdvancedTab(
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
 
+        val newLanguages = LocaleCode.getUnsupportedLanguages().map { "New language: [$it]" }
         // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
-        val entries = listOf("All mods") +
+        val entries = newLanguages + listOf("All mods") +
             (if (isRunFromJar(this)) emptyList() else listOf(BaseRuleset.Civ_V_GnK.fullName)) +
             RulesetCache.keys.filter { mod -> BaseRuleset.entries.none { it.fullName == mod } }.sorted()
         val modSelect = TranslatedSelectBox(entries, "All mods")
