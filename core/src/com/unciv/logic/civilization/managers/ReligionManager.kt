@@ -473,7 +473,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
 
     internal fun foundReligion(displayName: String, name: String) {
-        val foundingTurn = religion?.foundingTurn ?: civInfo.gameInfo.turns
+        val foundingTurn = religion?.foundingTurn // use the turn when we founded our pantheon
+            ?: civInfo.gameInfo.turns
         val newReligion = Religion(name, civInfo.gameInfo, civInfo, foundingTurn)
         newReligion.displayName = displayName
         if (religion != null) {
