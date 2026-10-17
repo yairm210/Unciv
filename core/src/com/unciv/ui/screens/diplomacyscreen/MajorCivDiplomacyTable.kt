@@ -30,7 +30,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         VeryNegative(Color(1f, 0.15f, 0.15f, 1f), -16), // red-pink
         Negative(Color(1f, 0.6f, 0f, 1f), -4), // orange-yellow
         Insignificant(Color.LIGHT_GRAY, 3),
-        Positive(Color(0f, 0.65f, 0f, 1f), 15), // dark green
+        Positive(Color(0f, 0.75f, 0f, 1f), 15), // darker green
         VeryPositive(Color(0.15f, 1f, 0.15f, 1f), Int.MAX_VALUE); // lighter green
         
         companion object {
