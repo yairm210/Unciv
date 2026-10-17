@@ -45,13 +45,13 @@ private object ObsoleteRegexes {
 /** Affects scanning in [String.translatePlaceholders], [String.getPlaceholderParameters] and [String.getPlaceholderText] */
 private const val supportNestingSquare = true
 /** Affects the replacement in [String.translatePlaceholders]: `false` can replace the result of previous substitutions, `true` is single-pass and cannot. */
-private const val supportNestingSquareReplacement = false
+private const val supportNestingSquareReplacement = true
 /** Affects [String.translatePartial] */
-private const val supportNestingCurly = false
+private const val supportNestingCurly = true
 /** Affects [String.translateConditionals], [String.removeConditionals], [String.getModifiers] */
-private const val supportNestingPointy = false
+private const val supportNestingPointy = true
 /** Affects [String.fillPlaceholders] */
-private const val supportNestingHelpers = false
+private const val supportNestingHelpers = true
 
 
 /**
@@ -520,6 +520,8 @@ private fun String.validateConditionals(recursionDepth: Int): String? {
     val base = removeConditionals()
     if ('<' in base || '>' in base) return "mismatched conditional braces"
     if (!trimStart().startsWith(base.trimStart())) return "text between or after conditionals"
+    if (recursionDepth > 9)
+        println()
     if (recursionDepth >= MAX_CONDITIONAL_NESTING) return "excessive nesting of conditionals"
     return getModifiers().firstNotNullOfOrNull { it.text.validateConditionals(recursionDepth + 1) }
 }

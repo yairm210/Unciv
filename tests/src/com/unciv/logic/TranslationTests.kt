@@ -398,7 +398,7 @@ class TranslationTests {
             "Gain [a] and [b]".fillPlaceholders("x", "y")
         )
         Assert.assertEquals(
-            "[x]]",    // TODO Bug in master, should be "[x]"
+            "[x]",
             "[a [b]]".fillPlaceholders("x")
         )
         Assert.assertThrows(
@@ -772,11 +772,10 @@ class TranslationTests {
             "Foo <a>bar", "Foo+Bar A",
             "Foo<a> bar", "FooBar A",
             "Foo<a>bar", "FooBar A",
-            // TODO Currently "wrong" results
-            "{{a}", "{a",                       // first { pairs with the first }, the inner "{a" isn't looked up as is, but neither does the regex find a match
-            "{a {b} c}", "a {b c}",             // nested {} not supported, only inner "a {b" found, no key lookup or further replace
-            "[][[]", "[",                       // textual replace of "[]"
-            "[]][[]", "][",
+            "{{a}", "{{a}",                     // Unmatched brace: Not matched at all
+            "{a {b} c}", "a B c",               // nested {} now supported
+            "[][[]", "[[]",                     // First pair removed, second counts as no match
+            "[]][[]", "][[]",                   // First pair removed, second counts as no match
         )
     }
 
@@ -799,21 +798,21 @@ class TranslationTests {
             return errors
         }
 
+        fun nested(levels: Int) = "[+1] Sight " + "<a".repeat(levels) + ">".repeat(levels)
         // "expected" is alwas an empty list so we can output lists of _unexpected_ validation errors
         runTestParcours("Validate Uniques with malformed conditionals", ::check,
             "[+1] Sight <when at war>" to emptyList<String>(), emptyList<String>(), // control: perfectly fine
             "[+1] Sight <a>" to listOf("unknown type"), emptyList<String>(), // control: error not reported by validateConditionals
             "[+1] Sight > 9 <when at war>" to listOf("mismatched conditional braces"), emptyList<String>(),
-            "[+1] Sight <for [Civilian] units<hidden from users>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect emptyList when conditional nesting is supported
+            "[+1] Sight <for [Civilian] units<hidden from users>>" to emptyList<String>(), emptyList<String>(),
             "[+1] Sight <when at war>>" to listOf("mismatched conditional braces"), emptyList<String>(),
             "[+1] Sight <when at war><" to listOf("mismatched conditional braces"), emptyList<String>(),
-            "[+1] Sight <a<a<a>>>" to listOf("mismatched conditional braces"), emptyList<String>(), // expect "unknown type" when conditional nesting is supported
+            "[+1] Sight <a<a<a>>>" to listOf("contains the conditional \"a<a<a>>\", which is of an unknown type"), emptyList<String>(),
             "[+1] Sight <a> <b> <c>" to listOf("unknown type", "unknown type", "unknown type"), emptyList<String>(), // control: errors not reported by validateConditionals
             "[+1] Sight <a> <b> <c>!" to listOf("text between or after conditionals"), emptyList<String>(),
             "[+1] Sight <a>, <b>, <c>" to listOf("text between or after conditionals"), emptyList<String>(),
-
-            //nested(MAX_CONDITIONAL_NESTING + 1) to listOf("excessive nesting of conditionals"), emptyList<String>(),
-            //fun nested(levels: Int) = "[+1] Sight " + "<a".repeat(levels) + ">".repeat(levels)
+            nested(MAX_CONDITIONAL_NESTING) to listOf("which is of an unknown type"), emptyList<String>(),
+            nested(MAX_CONDITIONAL_NESTING + 1) to listOf("excessive nesting of conditionals", "which is of an unknown type"), emptyList<String>(),
         )
     }
 
@@ -857,7 +856,7 @@ class TranslationTests {
             "Simplified_Chinese" to "bf73ef9eb54d24a30f1dfdcfa4f4786c6a9de6b4de9f7865ab6cce8de26d925f",
             "Swedish" to "9bd56a8f06e78c94ae3cf5a1272749f545a20ac6892dd086db834532d70fb2a5",
             "Vietnamese" to "34c5cba47b42d0811b143e3d336260fc5f12733be6b3c8bbb97ad6943fca3388",
-            "generated" to "96ead1ff5d094f84dd7be1cafde621638a278725b5cc130a16937c2eb8ef4cc1",
+            "generated" to "7df4e96847a9e483799deee0b1e01a24886c647752e775de575f8a8fbfca8c68",
         )
 
         setupUncivGame()
