@@ -25,7 +25,7 @@ class OptionsPopup(
     val game = screen.game
     val settings = screen.game.settings
     val tabs: TabbedPager
-    private val pageIndex = HashMap<OptionsPopupPages, OptionsPopupTab>()
+    private val pageIndex = LinkedHashMap<OptionsPopupPages, OptionsPopupTab>()
     override val activePage get() = OptionsPopupPages[tabs.activePage]
     override val rightWidgetMinWidth: Float
     internal val tabMinWidth: Float
@@ -87,6 +87,6 @@ class OptionsPopup(
         if (!visible) return
         if (tabs.activePage >= 0) return
         pageIndex[selectPage]?.subSelect(subSelect)
-        tabs.selectPage(selectPage.ordinal)
+        tabs.selectPage(pageIndex.keys.indexOf(selectPage))
     }
 }
