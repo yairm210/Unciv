@@ -18,6 +18,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     override lateinit var name: String
     var displayName: String? = null
+    var foundingTurn = 0
 
     private var founderBeliefs: HashSet<String> = hashSetOf()
     private var followerBeliefs: HashSet<String> = hashSetOf()
@@ -46,21 +47,23 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         unlockedBuildingsPurchasable()
     }
     
-    constructor(name: String, gameInfo: GameInfo, foundingCiv: Civilization): this() {
+    constructor(name: String, gameInfo: GameInfo, foundingCiv: Civilization, foundingTurn: Int): this() {
         this.name = name
+        this.foundingTurn = foundingTurn
         this.gameInfo = gameInfo
         this._foundingCiv = foundingCiv
         this.foundingCivName = foundingCiv.civID
     }
 
-    constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
+    constructor(name: String, gameInfo: GameInfo, foundingCivName: String, foundingTurn: Int) : this() {
         this.name = name
+        this.foundingTurn = foundingTurn
         this.foundingCivName = foundingCivName
         this.gameInfo = gameInfo
     }
 
     fun clone(): Religion {
-        val toReturn = Religion(name, gameInfo, foundingCivName)
+        val toReturn = Religion(name, gameInfo, foundingCivName, foundingTurn)
         toReturn.displayName = displayName
         toReturn.founderBeliefs.addAll(founderBeliefs)
         toReturn.followerBeliefs.addAll(followerBeliefs)

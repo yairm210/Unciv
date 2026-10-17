@@ -144,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             // paid for the initial pantheon using faith
             storedFaith -= faithForPantheon()
         }
-        religion = Religion(beliefName, civInfo.gameInfo, civInfo)
+        religion = Religion(beliefName, civInfo.gameInfo, civInfo, civInfo.gameInfo.turns)
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
@@ -473,7 +473,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
 
     internal fun foundReligion(displayName: String, name: String) {
-        val newReligion = Religion(name, civInfo.gameInfo, civInfo)
+        val foundingTurn = religion?.foundingTurn // use the turn when we founded our pantheon
+            ?: civInfo.gameInfo.turns
+        val newReligion = Religion(name, civInfo.gameInfo, civInfo, foundingTurn)
         newReligion.displayName = displayName
         if (religion != null) {
             newReligion.addBeliefs(religion!!.getAllBeliefsOrdered().asIterable())

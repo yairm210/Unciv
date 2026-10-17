@@ -103,6 +103,7 @@ class ReligionOverviewTab(
     private fun loadReligionButtons() {
         religionButtons.clear()
         val existingReligions: List<Religion> = gameInfo.civilizations.mapNotNull { it.religionManager.religion }
+            .sortedBy { it.foundingTurn }
         for (religion in existingReligions) {
             val image = if (religion.isPantheon()) {
                 if (viewingPlayer.getCiv().knows(religion.foundingCiv) || viewingPlayer.getCiv() == religion.foundingCiv)
