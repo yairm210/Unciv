@@ -296,8 +296,8 @@ class Ruleset {
     }
 
     private fun mergePolicies(ruleset: Ruleset) {
-        if (ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty() && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty())
-            return
+        val noRemovals = ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty()
+        if (noRemovals && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty()) return
 
         /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
          *  but are still considered "available" */
@@ -307,25 +307,30 @@ class Ruleset {
                 policies.remove(policy.name)
         }
 
-        ruleset.modOptions.policyBranchesToRemove
-            .flatMap { policyBranchToRemove ->
-                policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
-            }.toSet().forEach {
-                removePolicyBranch(it)
-            }
+        if (!noRemovals) {
+            ruleset.modOptions.policyBranchesToRemove
+                .flatMap { policyBranchToRemove ->
+                    policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
+                }.toSet().forEach {
+                    removePolicyBranch(it)
+                }
 
-        val overriddenPolicyBranches = policyBranches
-            .filter { it.key in ruleset.policyBranches }.map { it.value }
-        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
+            val overriddenPolicyBranches = policyBranches
+                .filter { it.key in ruleset.policyBranches }.map { it.value }
+            for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
+        }
+
         policyBranches.putAll(ruleset.policyBranches)
 
-        // Remove the policies
-        policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
+        if (!noRemovals) {
+            // Remove the policies
+            policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
 
-        // Remove the policies if they exist in the policy branches too
-        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
-            for (branch in policyBranches.values) {
-                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+            // Remove the policies if they exist in the policy branches too
+            for (policyToRemove in ruleset.modOptions.policiesToRemove) {
+                for (branch in policyBranches.values) {
+                    branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+                }
             }
         }
 
@@ -333,35 +338,10 @@ class Ruleset {
     }
 
     private fun mergeTechnologies(ruleset: Ruleset) {
-        if (ruleset.modOptions.techsToRemove.isEmpty() && ruleset.technologies.isEmpty()) return
-
-        // Remove techs with some special TechColumn handling
-        fun TechColumn.mergeWith(other: TechColumn) {
-            check(other.columnNumber == columnNumber)
-            techs.addAll(other.techs.filterNot { it in techs })
-            techCost = other.techCost
-            buildingCost = other.buildingCost
-            wonderCost = other.wonderCost
-        }
-        // Removals
+        //TODO this is the old fragile way
         technologies.selectiveRemove(ruleset.modOptions.techsToRemove) { matchesFilter(it) }
-        // Remove techs from techColumns and remove columns with no techs left
-        val techColumnIterator = techColumns.iterator()
-        for (techColumn in techColumnIterator) {
-            techColumn.techs.removeAll { it.name !in technologies }
-            if (techColumn.techs.isEmpty()) techColumnIterator.remove()
-        }
-        // New techs
         technologies.putAll(ruleset.technologies)
-        // Merge techColumns by columnNumber
-        for (techColumn in ruleset.techColumns) {
-            val existing = techColumns.firstOrNull { it.columnNumber == techColumn.columnNumber }
-            if (existing == null) techColumns.add(techColumn)
-            else existing.mergeWith(techColumn)
-        }
-        // Reorder and make columnNumber contiguous (TechPickerScreen could shift techs to wrong columns otherwise)
-        for ((index, techColumn) in techColumns.sortedBy { it.columnNumber }.withIndex())
-            techColumn.columnNumber = index
+        techColumns.addAll(ruleset.techColumns)
     }
 
     fun clear() {
