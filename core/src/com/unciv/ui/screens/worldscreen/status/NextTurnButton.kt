@@ -2,6 +2,10 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.unciv.logic.automation.civilization.SingleStepAutomator
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -43,11 +47,10 @@ class NextTurnButton(
         val autoPlay = worldScreen.autoPlay
         if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
-                TurnManager(worldScreen.selectedGameView.civView.getCiv()).automateTurn()
-                Concurrency.runOnGLThread { worldScreen.nextTurn() }
-                autoPlay.endTurnMultiturnAutoPlay()
-            }
+            if (worldScreen.game.settings.autoPlay.autoPlayOneUnit)
+                autoPlayOneUnit()
+            else
+                autoPlayWholeTurn()
         }
 
         isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay"
@@ -59,6 +62,49 @@ class NextTurnButton(
         }
 
         worldScreen.smallUnitButton.update()
+    }
+    
+    private fun autoPlayWholeTurn() {
+        val autoPlay = worldScreen.autoPlay
+        autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
+            TurnManager(worldScreen.selectedGameView.civView.getCiv()).automateTurn()
+            autoPlay.autoPlayJob = Concurrency.runOnGLThread {
+                worldScreen.nextTurn()
+            }
+            autoPlay.endTurnMultiturnAutoPlay()
+        }
+    }
+    
+    private fun autoPlayOneUnit() {
+        val autoPlay = worldScreen.autoPlay
+        val civInfo = worldScreen.selectedGameView.civView.getCiv()
+        // Captured on the GL thread now, rather than read from the background automation thread.
+        val selected = currentlySelectedCombatant()
+        val automator = SingleStepAutomator(civInfo) { selected }
+        autoPlay.autoPlayTurnInProgress = true
+        autoPlay.autoPlayJob = Concurrency.runOnNonDaemonThreadPool("OneUnitAutoPlay") {
+            val automated = automator.automateSingleStep()
+            Concurrency.runOnGLThread {
+                when (automated) {
+                    is CityCombatant -> {
+                        worldScreen.mapHolder.setCenterPosition(automated.city.getCenterTile().position, immediately = true, selectUnit = false)
+                        worldScreen.bottomUnitTable.citySelected(worldScreen.selectedGameView.getForeignCityView(automated.city))
+                    }
+                    is MapUnitCombatant -> worldScreen.mapHolder.setCenterPosition(automated.unit.currentTile.position, immediately = true, forceSelectUnit = automated.unit)
+                    null -> {
+                        worldScreen.nextTurn()
+                        autoPlay.endTurnMultiturnAutoPlay()
+                    }
+                }
+                autoPlay.autoPlayTurnInProgress = false
+                worldScreen.shouldUpdate = true
+            }
+        }
+    }
+
+    private fun currentlySelectedCombatant(): ICombatant? {
+        return worldScreen.bottomUnitTable.selectedUnit?.getUnit()?.let { MapUnitCombatant(it) }
+            ?: worldScreen.bottomUnitTable.selectedCity?.city?.let { CityCombatant(it) }
     }
 
     internal fun updateButton(nextTurnAction: NextTurnAction) {
