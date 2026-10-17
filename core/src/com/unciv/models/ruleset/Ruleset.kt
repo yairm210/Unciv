@@ -338,10 +338,106 @@ class Ruleset {
     }
 
     private fun mergeTechnologies(ruleset: Ruleset) {
-        //TODO this is the old fragile way
-        technologies.selectiveRemove(ruleset.modOptions.techsToRemove) { matchesFilter(it) }
+        // Ensure we're not modifying a base or mod ruleset
+        check(folderLocation == null)
+        // Ensure existing techColumns are correctly numbered (dense, increasing, 0-based)
+        check(techColumns.withIndex().all { it.value.columnNumber == it.index })
+        val removals = ruleset.modOptions.techsToRemove
+        if (removals.isEmpty() && ruleset.technologies.isEmpty()) return
+
+        // Incoming columns need to be ordered by columnNumber, but may have gaps and needn't start at 0
+        val incomingCols = ruleset.techColumns.sortedBy { it.columnNumber }
+
+        // Technology and TechColumn instances are shared with the source rulesets and refer to each other
+        // (Technology.column), so they must never be modified here. Whenever a column needs to change,
+        // we build a new one, and it gets its own clones of the techs so back-references stay consistent.
+        fun Technology.cloneWithoutColumn() = Technology().also {
+            it.name = name
+            it.originRuleset = originRuleset
+            it.uniques.addAll(uniques)
+            it.civilopediaText = civilopediaText
+            it.cost = cost
+            it.prerequisites.addAll(prerequisites)
+            it.row = row
+            it.quote = quote
+        }
+
+        // Builds a new column that owns clones of [techs] (also registered in [technologies]).
+        // [props] supplies era and costs.
+        fun TechColumn.derive(
+            columnNumber: Int = this.columnNumber,
+            techs: List<Technology> = this.techs,
+            props: TechColumn = this
+        ): TechColumn {
+            val newColumn = TechColumn().also {
+                it.columnNumber = columnNumber
+                it.era = props.era
+                it.techCost = props.techCost
+                it.buildingCost = props.buildingCost
+                it.wonderCost = props.wonderCost
+            }
+            for (tech in techs) {
+                val clone = tech.cloneWithoutColumn()
+                clone.column = newColumn
+                newColumn.techs += clone
+                technologies[clone.name] = clone
+            }
+            return newColumn
+        }
+
+        // Reuse the instance if it's already in the right place
+        fun TechColumn.at(position: Int) =
+            if (columnNumber == position) this else derive(columnNumber = position)
+
+        // Drop techs that are removed or superseded by the incoming mod.
+        // Only columns that actually lose techs are copied; columns left empty disappear.
+        technologies.selectiveRemove(removals) { matchesFilter(it) }  // no-op if removals is empty
+        val existingCols = techColumns.mapNotNull { column ->
+            val kept = column.techs.filter { it.name in technologies && it.name !in ruleset.technologies }
+            when {
+                kept.size == column.techs.size -> column
+                kept.isEmpty() -> null
+                else -> column.derive(techs = kept)
+            }
+        }
+
+        // Add new techs (replaces superseded entries by name)
         technologies.putAll(ruleset.technologies)
-        techColumns.addAll(ruleset.techColumns)
+
+        // Merge both column lists in columnNumber order. The output position becomes the new
+        // columnNumber, so the result is dense, increasing and 0-based again.
+        val resultCols = ArrayList<TechColumn>(existingCols.size + incomingCols.size)
+        var i = 0
+        var j = 0
+        while (true) {
+            val position = resultCols.size
+            val a = existingCols.getOrNull(i)
+            val b = incomingCols.getOrNull(j)
+            when {
+                a == null && b == null -> break
+                b == null || (a != null && a.columnNumber < b.columnNumber) -> {
+                    resultCols += a!!.at(position)
+                    i++
+                }
+                a == null || b.columnNumber < a.columnNumber -> {
+                    resultCols += b.at(position)
+                    j++
+                }
+                else -> {  // same columnNumber: merge, incoming mod's era and costs win
+                    resultCols += a.derive(position, a.techs + b.techs, props = b)
+                    i++
+                    j++
+                }
+            }
+        }
+
+        // Every tech is in exactly one column, and column and map agree on the instances
+        check(resultCols.sumOf { it.techs.size } == technologies.size)
+        // columns.techs and the technologies map agree on the instances
+        check(resultCols.all { col -> col.techs.all { it.column === col && technologies[it.name] === it } })
+
+        techColumns.clear()
+        techColumns.addAll(resultCols)
     }
 
     fun clear() {
