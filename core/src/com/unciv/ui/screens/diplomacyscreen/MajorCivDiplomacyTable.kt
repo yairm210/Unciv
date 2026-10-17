@@ -21,6 +21,7 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.ConfirmPopup
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
@@ -215,7 +216,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val diplomacyModifiersTable = Table()
         diplomacyModifiersTable.defaults().spaceBottom(4f)
-        for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
+        for (modifier in otherCivDiplomacyManager.diplomaticModifiers.entries.sortedByDescending { abs(it.value) }) {
             // Angry about attacked CS and destroyed CS do not stack
             if (modifier.key == DiplomaticModifiers.AttackedProtectedMinor.name
                 && otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
