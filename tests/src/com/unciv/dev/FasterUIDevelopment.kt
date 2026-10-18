@@ -121,7 +121,8 @@ object FasterUIDevelopment {
         }
 
         override fun resize(width: Int, height: Int) {
-            game.resize(width, height)
+            // The initial pushScreen is asynchronous, so the first resize can arrive before it.
+            if (game.screen != null) game.resize(width, height)
         }
     }
 
