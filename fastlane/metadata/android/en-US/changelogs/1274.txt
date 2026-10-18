@@ -1,0 +1,17 @@
+
+
+View implementation - Remove .getUnit call in DevConsolePopup - see 
+
+View implementation - Remove .getUnit calls for 'due' and TileLayerUnitFlag  - see 
+
+View implementation - Remove un-viewifying .getUnit calls - see 
+
+View implementation - get attackable enemies gets no params - see 
+
+4.22.11-patch1
+
+Sort modifiers in diplomacy screen by their impact on relationship - By unciv-loof
+
+By SomeTroglodyte:
+- Revert the complex technology merge of  
+- chore: Translation engine: Turn nesting support ON, including adapting tests 
