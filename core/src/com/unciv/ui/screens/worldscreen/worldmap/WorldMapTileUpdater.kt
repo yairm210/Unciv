@@ -186,7 +186,7 @@ object WorldMapTileUpdater {
             // (per Nuke.mayUseNuke) regardless of visible enemies on them; for everything else we still only
             // want to show tiles we can currently see.
             val attackableTiles: List<AttackableTileView> =
-                unitView.getAttackableEnemies(unitView.getDistanceToTiles())
+                unitView.getAttackableEnemies()
                     .filter { unitView.isNuclearWeapon() || it.getTileToAttack().isVisible() }
                     .distinctBy { it.getTileToAttack() }
 

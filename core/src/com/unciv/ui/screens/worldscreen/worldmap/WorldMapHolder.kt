@@ -245,7 +245,7 @@ class WorldMapHolder(
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
             val attackableTile = unitView
-                    .getAttackableEnemies(unitView.getDistanceToTiles())
+                    .getAttackableEnemies()
                     .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */

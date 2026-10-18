@@ -79,7 +79,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             } else {
                 val defender = tryGetDefender() ?: return hide()
                 // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-                val tileToAttackFromView = attackerUnitView.getAttackableEnemies(attackerUnitView.getUnit().movement.getDistanceToTiles())
+                val tileToAttackFromView = attackerUnitView.getAttackableEnemies()
                     .firstOrNull { it.getTileToAttack() == defender.getTile() }?.getTileToAttackFrom()
                     ?: attackerUnitView.getTile()
                 simulateBattle(attacker, defender, tileToAttackFromView)
@@ -293,7 +293,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     is MapUnitCombatantView -> {
                         val unitView = attacker.getUnitView().tryGetMapUnitView()!!
                         attackableTileView = unitView
-                            .getAttackableEnemies(unitView.getUnit().movement.getDistanceToTiles())
+                            .getAttackableEnemies()
                             .firstOrNull { it.getTileToAttack() == defender.getTile() }
                     }
                     is CityCombatantView -> {

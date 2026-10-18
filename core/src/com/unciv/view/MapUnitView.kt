@@ -14,7 +14,6 @@ import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -95,7 +94,6 @@ class MapUnitView internal constructor(
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
         unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
-    @Readonly fun getDistanceToTiles(): PathsToTilesWithinTurn = unit.movement.getDistanceToTiles()
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
@@ -120,12 +118,8 @@ class MapUnitView internal constructor(
             .map { gameView.tileMapView.getTile(it) }
     @Readonly fun getTilesInAttackRange(): List<TileView> =
         unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange())).map { gameView.tileMapView.getTile(it) }.toList()
-    @Readonly fun getAttackableEnemies(
-        unitDistanceToTiles: PathsToTilesWithinTurn,
-        tilesToCheck: List<TileView>? = null,
-        stayOnTile: Boolean = false
-    ): List<AttackableTileView> =
-        TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck?.map { it.unwrap() }, stayOnTile)
+    @Readonly fun getAttackableEnemies(): List<AttackableTileView> =
+        TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
             .map { AttackableTileView(it, viewer, spectatorMode, gameView) }
     /** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
     @Readonly fun getFutureAutomatedRoadConnectionTiles(): List<TileView>? {
