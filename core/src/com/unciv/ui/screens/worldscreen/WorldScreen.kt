@@ -644,7 +644,7 @@ class WorldScreen(
     fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
-            bottomUnitTable.selectedUnit!!.getUnit().due = false
+            bottomUnitTable.selectedUnit!!.setDue(false)
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit?.getUnit())
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(

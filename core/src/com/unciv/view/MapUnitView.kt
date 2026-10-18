@@ -202,5 +202,11 @@ class MapUnitView internal constructor(
         return true
     }
 
+    /** @return whether [due] was set */
+    fun setDue(value: Boolean): Boolean {
+        unit.due = value
+        return true
+    }
+
     @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(MapUnitCombatant(unit))
 }
