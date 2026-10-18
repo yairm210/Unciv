@@ -441,6 +441,10 @@ open class RulesetValidator protected constructor(
     }
 
     protected open fun addTechErrors(lines: RulesetErrorList) {
+        val duplicateColumnNumbers = ruleset.techColumns.groupBy { it.columnNumber }.filter { it.value.size > 1 }.map { it.key }
+        if (duplicateColumnNumbers.isNotEmpty())
+            lines.add("Tech column numbers $duplicateColumnNumbers have multiple TechColumn entries", RulesetErrorSeverity.ErrorOptionsOnly)
+
         for (tech in ruleset.technologies.values) {
             if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
             uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors)

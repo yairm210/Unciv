@@ -203,12 +203,13 @@ The file can have the following attributes, not including the values Unciv sets 
 
 Note that removal happens before adding new content from your mod, so an "All" filter won't kill your content too.
 
-Policies with their branches and Technoligies have more complex removal rules.
+Policies with their branches and Technologies have more complex removal rules.
 
 - Removing Policy Branches removes their member Policies as well.
 - Overriding a Policy Branch will remove existing member Policies.
 - Removing all techs from a TechColumn will also remove that column.
 - Adding techs will merge columns by their `columnNumber`.
+- Adding tech columns outside the existing ones is allowed: Replacing a column that was removed, or placing a column before (using negative `columnNumber`) or after the existing ones.
 - After tech removal and merge is done, TechColumns are resorted and renumbered so `columnNumber` is monotonous, contiguous ands starts at 0.
 
 Removing religions will clean those from the preferred religions of nations.

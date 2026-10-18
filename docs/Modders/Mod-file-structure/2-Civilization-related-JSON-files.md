@@ -354,6 +354,9 @@ Each tech column has the following structure:
 | wonderCost   | Integer | Required | Default cost of wonders requiring this tech                                                                                              |
 | techs        | List    | Required | List of [techs](#tech-structure) - pay attention to the nesting of {} and []                                                             |
 
+`columnNumber` is required to be unique within a mod, and for base rulesets this is stricter - they need to be numbered starting at 0, in order, and contiguously.
+Extension mods are not bound this way because merging will match by `columnNumber` and re-sort. Mods can even use negative `columnNumber`s to insert columns before existing ones.
+
 #### Tech structure
 
 | Attribute       | Type            | Default                              | Notes                                                                                                     |

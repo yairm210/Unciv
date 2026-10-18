@@ -413,6 +413,21 @@ internal class BaseRulesetValidator(
     override fun addTechErrors(lines: RulesetErrorList) {
         super.addTechErrors(lines)
 
+        val numbers = ruleset.techColumns.map { it.columnNumber }
+        if (ruleset.techColumns.indices.toList() != numbers)
+            lines.add("Tech columns should be ordered, gap-free and start with columnNumber 0. Actual: $numbers", RulesetErrorSeverity.ErrorOptionsOnly)
+        for (column in ruleset.techColumns) {
+            if (column.techs.isEmpty())
+                lines.add("Tech column ${column.columnNumber} is empty")
+            if (column.era !in ruleset.eras) {
+                val tech = column.techs.firstOrNull()
+                if (tech == null)
+                    lines.add("Unknown era ${column.era} referenced in tech column ${column.columnNumber}")
+                else
+                    lines.add("Unknown era ${column.era} referenced in tech column ${column.columnNumber} of tech ${tech.name}", sourceObject = tech)
+            }
+        }
+
         for (tech in ruleset.technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!ruleset.technologies.containsKey(prereq))
@@ -428,8 +443,6 @@ internal class BaseRulesetValidator(
                 if (getPrereqTree(prereq).contains(tech.name))
                     lines.add("Techs ${tech.name} and $prereq require each other!", sourceObject = tech)
             }
-            if (tech.era() !in ruleset.eras)
-                lines.add("Unknown era ${tech.era()} referenced in column of tech ${tech.name}", sourceObject = tech)
 
             for (otherTech in ruleset.technologies.values) {
                 if (tech.name > otherTech.name && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
