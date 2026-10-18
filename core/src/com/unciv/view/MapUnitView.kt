@@ -69,6 +69,7 @@ class MapUnitView internal constructor(
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
+    val action: String? get() = unit.action
     @Readonly fun isMoving(): Boolean = unit.isMoving()
     @Readonly fun isExploring(): Boolean = unit.isExploring()
     @Readonly fun isEscorting(): Boolean = unit.isEscorting()

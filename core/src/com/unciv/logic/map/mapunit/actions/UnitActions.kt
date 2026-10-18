@@ -128,7 +128,7 @@ object UnitActions {
             // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
             val tile = selectedUnits.first().getTile()
             if (selectedUnits.last().getTile() != tile) return
-            if (selectedUnits.any { it.getUnit().baseUnit.isAirUnit() }) return
+            if (selectedUnits.any { it.isAirUnit() }) return
         } else if (selectedUnits.size != 1) {
             return
         }
