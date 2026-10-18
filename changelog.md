@@ -1,20 +1,12 @@
 ## 4.22.12
 
-View implementation - Remove .getUnit call in DevConsolePopup - see 
+Fix city status layout when city resources are shown - by kilo-cy (New contributor!)
 
-View implementation - Remove .getUnit calls for 'due' and TileLayerUnitFlag  - see 
+By unciv-loof:
+- Sort modifiers in diplomacy screen by their impact on relationship - 
+- Sort pantheons and religions in overview tab by founding turn
 
-View implementation - Remove un-viewifying .getUnit calls - see 
-
-View implementation - get attackable enemies gets no params - see 
-
-4.22.11-patch1
-
-Sort modifiers in diplomacy screen by their impact on relationship - By unciv-loof
-
-By SomeTroglodyte:
-- Revert the complex technology merge of  
-- chore: Translation engine: Turn nesting support ON, including adapting tests 
+Fix "Check this mod" button not selecting the tab and mod in the OptionsPopup on Android - By SomeTroglodyte
 
 ## 4.22.11
 
