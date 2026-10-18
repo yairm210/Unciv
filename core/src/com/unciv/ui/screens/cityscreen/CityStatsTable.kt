@@ -196,7 +196,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
 
         if (resourceTable.cells.notEmpty())
-            tableWithIcons.add(resourceTable)
+            tableWithIcons.add(resourceTable).row()
 
         val (wltkIcon: Actor?, wltkLabel: Label?) = when {
             cityView.isWeLoveTheKingDayActive() ->
