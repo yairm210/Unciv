@@ -142,7 +142,6 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
                     mapToSave.assignContinents(TileMap.AssignContinentsMode.Reassign)
                     if (!isActive) return@startBackgroundJob
                     MapSaver.saveMap("Autosave", mapToSave)
-                    isDirty = false
                 } catch (ex: Exception) {
                     Log.error("Failed to autosave map", ex)
                 }
