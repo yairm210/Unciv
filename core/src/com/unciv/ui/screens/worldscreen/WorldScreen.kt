@@ -502,6 +502,7 @@ class WorldScreen(
     }
 
     fun setSelectedCiv(civ: Civilization) {
+        if (!viewingCiv.isSpectator()) throw Exception("Tried to select a different civ when not spectator!")
         selectedCiv = civ
         selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }
@@ -510,8 +511,8 @@ class WorldScreen(
         // Only spectators/replays follow the selection's owner. For ordinary players selectedCiv must stay viewingCiv:
         // otherwise a selected unit that just changed owner (gifted to a city-state, captured) would switch the
         // whole view to its new owner, defeat UnitPresenter's "no longer ours" deselection, and leave a stale selection.
+        if (!viewingCiv.isSpectator()) return
         setSelectedCiv(when {
-            !viewingCiv.isSpectator() -> viewingCiv
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
@@ -537,13 +538,14 @@ class WorldScreen(
     private fun restore(restoreState: RestoreState) {
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (viewingCiv.civID == restoreState.viewingCivName) {
-            mapHolder.zoom(restoreState.zoom)
-            mapHolder.scrollX = restoreState.scrollX
-            mapHolder.scrollY = restoreState.scrollY
-            mapHolder.updateVisualScroll()
-        }
+        if (viewingCiv.civID != restoreState.viewingCivName) return
+        
+        mapHolder.zoom(restoreState.zoom)
+        mapHolder.scrollX = restoreState.scrollX
+        mapHolder.scrollY = restoreState.scrollY
+        mapHolder.updateVisualScroll()
 
+        if (!viewingCiv.isSpectator()) return
         setSelectedCiv(gameInfo.getCivilization(restoreState.selectedCivName))
         fogOfWar = restoreState.fogOfWar
     }

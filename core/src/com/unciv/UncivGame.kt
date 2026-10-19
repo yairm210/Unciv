@@ -209,7 +209,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         initializeResources(newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
-        val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
+        // Don't restore when the viewing player changes (hotseat) - the old selection would point at the previous player's civ
+        val isSameViewingCiv = isLoadingSameGame && worldScreen!!.viewingCiv.civID == newGameInfo.getPlayerToViewAs().civID
+        val worldScreenRestoreState = if (!callFromLoadScreen && isSameViewingCiv) worldScreen!!.getRestoreState() else null
 
         lateinit var loadingScreen: LoadingScreen
 
