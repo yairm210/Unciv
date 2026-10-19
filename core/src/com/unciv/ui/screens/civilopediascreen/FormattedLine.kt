@@ -74,7 +74,7 @@ data class FormattedLine (
     val separator: Boolean = false,
     /** Decorates text with a star icon - if set, it receives the [color] instead of the text. */
     val starred: Boolean = false,
-    /** Centers the line (and turns off wrap) */
+    /** Centers the line (independent of icons and indent) */
     val centered: Boolean = false,
     /** Paint a red X over the [icon] or [link] image */
     val iconCrossed: Boolean = false
@@ -303,29 +303,30 @@ data class FormattedLine (
         }
         if (textToDisplay.isNotEmpty()) {
             val usedWidth = iconCount * (iconSize + iconPad)
-            val indentWidth = when {
-                centered -> -usedWidth
+            val extraIntentWidth = when {
+                centered -> 0f
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
                 iconCount == 0 -> indent * indentPad - usedWidth
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
-            }
+            }.coerceAtLeast(0f)
             val label = if ('«' in textToDisplay)
                 ColorMarkupLabel(textToDisplay, fontSize, hideIcons = iconCount != 0)
             else
                 textToDisplay.toLabel(labelColor, fontSize, hideIcons = iconCount != 0)
-            label.wrap = !centered && labelWidth > 0f
+            label.wrap = labelWidth > 0f
             label.setAlignment(align)
+            val padRight = if (centered) usedWidth + extraIntentWidth else 0f
             if (labelWidth == 0f)
                 table.add(label)
-                    .padLeft(indentWidth.coerceAtLeast(0f))
-                    .padRight((-indentWidth).coerceAtLeast(0f))
+                    .padLeft(extraIntentWidth)
+                    .padRight(padRight)
                     .align(align)
             else
                 table.add(label)
-                    .width(labelWidth - usedWidth - indentWidth)
-                    .padLeft(indentWidth)
+                    .width((labelWidth - usedWidth - extraIntentWidth - padRight).coerceAtLeast(labelWidth * 0.5f))
+                    .padRight(padRight)
                     .align(align)
         }
         return table
