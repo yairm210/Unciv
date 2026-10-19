@@ -414,8 +414,8 @@ internal class BaseRulesetValidator(
         super.addTechErrors(lines)
 
         val numbers = ruleset.techColumns.map { it.columnNumber }
-        if (ruleset.techColumns.indices.toList() != numbers)
-            lines.add("Tech columns should be ordered, gap-free and start with columnNumber 0. Actual: $numbers", RulesetErrorSeverity.ErrorOptionsOnly)
+        if (numbers.sorted() != numbers)
+            lines.add("Tech columns should be ordered. Actual: $numbers", RulesetErrorSeverity.ErrorOptionsOnly)
         for (column in ruleset.techColumns) {
             if (column.techs.isEmpty())
                 lines.add("Tech column ${column.columnNumber} is empty")
