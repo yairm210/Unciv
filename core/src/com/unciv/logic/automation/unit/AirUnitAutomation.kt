@@ -1,6 +1,8 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.isAtWar
 import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -17,7 +19,7 @@ object AirUnitAutomation {
 
     fun automateFighter(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        if (unit.health < 75) return // Wait and heal
+        if (unitView.unitHealth < 75) return // Wait and heal
 
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
@@ -42,7 +44,7 @@ object AirUnitAutomation {
             // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
             // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
             if (friendlyUsedFighterCount + friendlyUnusedFighterCount < enemyFighters
-                && !unit.hasUnique(UniqueType.HealsEvenAfterAction)
+                && !unitView.hasUnique(UniqueType.HealsEvenAfterAction)
                 && airSweepDamagePercentBonus() <= 0) {
                 return
             } else {
@@ -50,27 +52,25 @@ object AirUnitAutomation {
             }
         }
 
-        if (unit.health < 80) {
+        if (unitView.unitHealth < 80) {
             return // Wait and heal up, no point in moving closer to battle if we aren't healed
         }
 
         if (BattleHelper.tryAttackNearbyEnemy(unitView)) return
 
-        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
+        if (unitView.cannotMove()) return // from here on it's all "try to move somewhere else"
 
         if (tryRelocateToCitiesWithEnemyNearBy(unitView)) return
 
-        val pathsToCities = unit.movement.getAerialPathsToCities()
+        val pathsToCities = getAerialPathsToCities(unitView)
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
             .groupBy { key ->
-                var count = 0
-                key.forEachTileInDistance(unit.getAirUnitMovementRange()) {
-                    val firstAirUnit = it.airUnits.firstOrNull()
-                    if (firstAirUnit != null && firstAirUnit.civ.isAtWarWith(unit.civ)) count++
+                key.getExploredTilesInDistance(unitView.getAirUnitMovementRange()!!).count { tile ->
+                    val firstAirUnit = tile.getVisibleUnits().firstOrNull { it.isAirUnit() }
+                    firstAirUnit != null && firstAirUnit.civ().isAtWarWith(unitView.civ())
                 }
-                count
             }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
@@ -78,7 +78,7 @@ object AirUnitAutomation {
             //todo: maybe group by size and choose highest priority within the same size turns
             val chosenCity = citiesWithMostNeedOfAirUnits.minByOrNull { pathsToCities.getValue(it).size }!! // city with min path = least turns to get there
             val firstStepInPath = pathsToCities.getValue(chosenCity).first()
-            unit.movement.moveToTile(firstStepInPath)
+            unitView.tryMoveToTile(firstStepInPath)
             return
         }
 
@@ -93,35 +93,34 @@ object AirUnitAutomation {
                 || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
             }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
         AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
-        return !unit.hasMovement()
+        return !unitView.hasMovement()
     }
 
     fun automateBomber(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        if (unit.health < 75) return // Wait and heal
+        if (unitView.unitHealth < 75) return // Wait and heal
 
         if (BattleHelper.tryAttackNearbyEnemy(unitView)) return
 
-        if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
+        if (unitView.unitHealth <= 90 || (unitView.unitHealth < 100 && !unitView.civ().isAtWar())) {
             return // Wait and heal
         }
 
-        if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
+        if (unitView.cannotMove()) return // from here on it's all "try to move somewhere else"
 
         if (tryRelocateToCitiesWithEnemyNearBy(unitView)) return
 
-        val pathsToCities = unit.movement.getAerialPathsToCities()
+        val pathsToCities = getAerialPathsToCities(unitView)
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unitView)
     }
 
-    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<Tile, ArrayList<Tile>>, airUnitView: MapUnitView) {
-        val airUnit = airUnitView.getUnit()
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: Map<TileView, List<TileView>>, airUnitView: MapUnitView) {
         val citiesThatCanAttackFrom = pathsToCities.keys
             .filter { destinationCity ->
-                destinationCity != airUnit.currentTile
-                    && destinationCity.getTilesInDistance(airUnit.getRange())
-                    .any { TargetHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                destinationCity != airUnitView.getTile()
+                    && destinationCity.getExploredTilesInDistance(airUnitView.getRange())
+                    .any { airUnitView.containsAttackableEnemy(it) }
             }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -130,12 +129,12 @@ object AirUnitAutomation {
         val closestCityThatCanAttackFrom =
             citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
-        airUnit.movement.moveToTile(firstStepInPath)
+        airUnitView.tryMoveToTile(firstStepInPath)
     }
 
     fun automateNukes(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        if (!unit.civ.isAtWar()) return
+        if (!unitView.civ().isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
         if (unit.type.isAirUnit()) {
             val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
@@ -227,19 +226,18 @@ object AirUnitAutomation {
     }
 
     private fun tryRelocateMissileToNearbyAttackableCities(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val tilesInRange = unitView.getTile().getExploredTilesInDistance(unitView.getRange())
         val immediatelyReachableCities = tilesInRange
-            .filter { unit.movement.canMoveTo(it) }
+            .filter { unitView.canMoveTo(it) }
 
-        for (city in immediatelyReachableCities) if (city.getTilesInDistance(unit.getRange())
-                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civ) }
+        for (city in immediatelyReachableCities) if (city.getExploredTilesInDistance(unitView.getRange())
+                .any { it.isCityCenter() && it.getOwner()?.isAtWarWith(unitView.civ()) == true }
         ) {
-            unit.movement.moveToTile(city)
+            unitView.tryMoveToTile(city)
             return
         }
 
-        val pathsToCities = unit.movement.getAerialPathsToCities()
+        val pathsToCities = getAerialPathsToCities(unitView)
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unitView)
     }
@@ -257,5 +255,45 @@ object AirUnitAutomation {
             }
         }
         return false
+    }
+
+    /** Aerial equivalent of [UnitMovement.getMovementToTilesAtPosition]: for each tile the air unit can reach by hopping, the path of tiles to it */
+    private fun getAerialPathsToCities(unitView: MapUnitView): Map<TileView, List<TileView>> {
+        var tilesToCheck = ArrayList<TileView>()
+        /** each tile reached points to its parent tile, where we got to it from */
+        val tilesReached = HashMap<TileView, TileView>()
+
+        val startingTile = unitView.getTile()
+        tilesToCheck.add(startingTile)
+        tilesReached[startingTile] = startingTile
+
+        while (tilesToCheck.isNotEmpty()) {
+            val newTilesToCheck = ArrayList<TileView>()
+            for (currentTileToCheck in tilesToCheck) {
+                for (reachableTile in currentTileToCheck.getExploredTilesInDistance(unitView.getRange()).filter { unitView.canMoveTo(it) }) {
+                    if (!tilesReached.containsKey(reachableTile)) {
+                        tilesReached[reachableTile] = currentTileToCheck
+                        newTilesToCheck.add(reachableTile)
+                    }
+                }
+            }
+            tilesToCheck = newTilesToCheck
+        }
+
+        val pathsToCities = HashMap<TileView, List<TileView>>()
+
+        for (city in tilesReached.keys) {
+            val path = ArrayList<TileView>()
+            var currentCity = city
+            while (currentCity != startingTile) { // we don't add the "starting tile" to the arraylist
+                path.add(currentCity)
+                currentCity = tilesReached[currentCity]!! // go to parent
+            }
+            path.reverse()
+            pathsToCities[city] = path
+        }
+
+        pathsToCities.remove(startingTile)
+        return pathsToCities
     }
 }
