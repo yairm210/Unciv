@@ -170,8 +170,8 @@ object SpecificUnitAutomation {
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
-            if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit, tilesToAvoid = dangerousTiles) // go around aimlessly
+            if (UnitAutomation.tryExplore(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return // try to find new areas
+            UnitAutomation.wander(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
 

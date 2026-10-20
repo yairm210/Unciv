@@ -16,13 +16,13 @@ object ReligiousUnitAutomation {
 
     fun automateMissionary(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        if (unit.religion != unit.civ.religionManager.religion?.name || unit.religion == null) {
+        if (unitView.religion != unitView.civ().getReligion()?.name || unitView.religion == null) {
             unitView.tryDisband()
             return
         }
 
         val ourCitiesWithoutReligion = unit.civ.cities.filter {
-            it.religion.getMajorityReligion() != unit.civ.religionManager.religion
+            it.religion.getMajorityReligion() != unitView.civ().getReligion()
         }
         
         @Readonly
@@ -55,9 +55,9 @@ object ReligiousUnitAutomation {
             if (ourCitiesWithoutReligion.any())
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             else unit.civ.gameInfo.getCities()
-                .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
+                .filter { it.religion.getMajorityReligion() != unitView.civ().getReligion() }
                 .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
-                .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
+                .filterNot { it.religion.isProtectedByInquisitor(unitView.religion) }
                 .filter { isValidSpreadReligionTarget(it) }
                 .minByOrNull { rankCityForReligionSpread(it) }
 
@@ -76,9 +76,9 @@ object ReligiousUnitAutomation {
 
     fun automateInquisitor(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        val civReligion = unit.civ.religionManager.religion
+        val civReligion = unitView.civ().getReligion()
 
-        if (unit.religion != civReligion?.name || unit.religion == null) {
+        if (unitView.religion != civReligion?.name || unitView.religion == null) {
             // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
             unitView.tryDisband()
             return
@@ -134,16 +134,16 @@ object ReligiousUnitAutomation {
         unitView: MapUnitView,
     ): City? {
         val unit = unitView.getUnit()
-        if (unit.religion != unit.civ.religionManager.religion?.name || !unitView.hasUnique(UniqueType.CanRemoveHeresy))
+        if (unitView.religion != unitView.civ().getReligion()?.name || !unitView.hasUnique(UniqueType.CanRemoveHeresy))
             return null
 
         val holyCity = unit.civ.religionManager.getHolyCity()
         // Our own holy city was taken over!
         if (holyCity != null && holyCity.civ == unit.civ
-            && holyCity.religion.getMajorityReligion() != unit.civ.religionManager.religion!!)
+            && holyCity.religion.getMajorityReligion() != unitView.civ().getReligion()!!)
             return holyCity
 
-        val blockedHolyCity = unit.civ.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unit.religion }
+        val blockedHolyCity = unit.civ.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unitView.religion }
         if (blockedHolyCity != null)
             return blockedHolyCity
 
@@ -153,16 +153,16 @@ object ReligiousUnitAutomation {
             // Someone else is controlling this city
             .filter { 
                 val majorityReligion = it.religion.getMajorityReligion()
-                majorityReligion != null && majorityReligion != unit.civ.religionManager.religion
+                majorityReligion != null && majorityReligion != unitView.civ().getReligion()
             }
         
         val closeCity = relevantCities
             .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 }
             // Find the city that we're the closest to converting
-            .minByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
+            .minByOrNull { it.religion.getPressureDeficit(unitView.civ().getReligion()?.name) }
         if (closeCity != null) return closeCity
         
-        return relevantCities.minByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
+        return relevantCities.minByOrNull { it.religion.getPressureDeficit(unitView.civ().getReligion()?.name) }
     }
 
 
@@ -188,7 +188,7 @@ object ReligiousUnitAutomation {
         val unit = unitView.getUnit()
         // Try go to a nearby city
         if (!unitView.getTile().isCityCenter())
-            UnitAutomation.tryEnterOwnClosestCity(unit)
+            UnitAutomation.tryEnterOwnClosestCity(unitView)
 
         // If we were unable to go there this turn, unable to do anything else
         if (!unitView.getTile().isCityCenter())

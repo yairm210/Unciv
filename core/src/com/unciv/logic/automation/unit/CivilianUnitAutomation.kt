@@ -59,7 +59,7 @@ object CivilianUnitAutomation {
 
         if (unit.hasUniqueToCreateWaterImprovements()) {
             if (!mapUnit.civ.getWorkerAutomation().automateWorkBoats(mapUnit))
-                UnitAutomation.tryExplore(mapUnit)
+                UnitAutomation.tryExplore(unit)
             return
         }
 

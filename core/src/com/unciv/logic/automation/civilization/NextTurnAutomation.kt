@@ -443,7 +443,7 @@ object NextTurnAutomation {
             // move spaceship parts before that to make sure we're not blocking them
             if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) continue
             if (!isStillOurUnit(unit, civView)) continue
-            UnitAutomation.automateUnitMoves(unit.getUnit())
+            UnitAutomation.automateUnitMoves(unit)
         }
 
         if (civView.cities().isNotEmpty()) automateSettlerEscorting(civView)
@@ -454,7 +454,7 @@ object NextTurnAutomation {
             // spaceship parts and settlers have already moved
             if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) continue
             if (!isStillOurUnit(unit, civView)) continue
-            UnitAutomation.automateUnitMoves(unit.getUnit())
+            UnitAutomation.automateUnitMoves(unit)
         }
     }
 
@@ -508,7 +508,7 @@ object NextTurnAutomation {
         
         // Air units should do their thing before any of this
         for (unit in ourUnitsInRange(7).filter { it.baseUnit.isAirUnit() })
-            UnitAutomation.automateUnitMoves(unit)
+            UnitAutomation.automateUnitMoves(GameView(civInfo.gameInfo, civInfo).getMapUnitView(unit))
         
         // First off, any siege unit that can attack the city, should - as long as it's not defeated
         if (city.health != 1) {

@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -932,9 +933,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return
         }
 
-        if (isAutomated()) UnitAutomation.automateUnitMoves(this)
+        if (isAutomated()) UnitAutomation.automateUnitMoves(GameView(civ.gameInfo, civ).getMapUnitView(this))
 
-        if (isExploring()) UnitAutomation.automatedExplore(this)
+        if (isExploring()) UnitAutomation.automatedExplore(GameView(civ.gameInfo, civ).getMapUnitView(this))
     }
 
     fun healBy(amount: Int) {

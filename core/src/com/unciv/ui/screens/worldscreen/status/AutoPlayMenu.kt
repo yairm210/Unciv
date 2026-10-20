@@ -68,7 +68,7 @@ class AutoPlayMenu(
         val autoPlayMilitaryFunction = {
             val isAtWar = civInfo.isAtWar()
             val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(worldScreen.selectedGameView.getMapUnitView(unit), isAtWar) }
-            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(worldScreen.selectedGameView.getMapUnitView(unit))
 
             for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
             worldScreen.shouldUpdate = true
@@ -88,7 +88,7 @@ class AutoPlayMenu(
             val isAtWar = civInfo.isAtWar()
             val sortedUnits = civInfo.units.getCivUnits().filter { it.isCivilian() }
                 .sortedBy { unit -> NextTurnAutomation.getUnitPriority(worldScreen.selectedGameView.getMapUnitView(unit), isAtWar) }
-            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+            for (unit in sortedUnits) UnitAutomation.automateUnitMoves(worldScreen.selectedGameView.getMapUnitView(unit))
             worldScreen.shouldUpdate = true
         }
         if (civInfo.units.getCivUnitsSize() > 50) {

@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.GameView
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -52,7 +53,7 @@ object AirUnitAutomation {
             return // Wait and heal up, no point in moving closer to battle if we aren't healed
         }
 
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return
 
         if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
 
@@ -96,7 +97,7 @@ object AirUnitAutomation {
     fun automateBomber(unit: MapUnit) {
         if (unit.health < 75) return // Wait and heal
 
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return
 
         if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
             return // Wait and heal
@@ -215,7 +216,7 @@ object AirUnitAutomation {
 
     // This really needs to be changed, to have better targeting for missiles
     fun automateMissile(unit: MapUnit) {
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return
         tryRelocateMissileToNearbyAttackableCities(unit)
     }
 

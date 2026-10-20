@@ -113,7 +113,7 @@ class WorkerAutomation(
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)
-            wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
+            wander(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
     
     @Readonly private fun MapUnit.closestCity()

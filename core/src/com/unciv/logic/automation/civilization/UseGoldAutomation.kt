@@ -20,7 +20,7 @@ object UseGoldAutomation {
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     fun useGold(civ: Civilization) {
         for (unit in civ.units.getCivUnits())
-            UnitAutomation.tryUpgradeUnit(unit)
+            UnitAutomation.tryUpgradeUnit(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))
 
         if (civ.isMajorCiv())
             useGoldForCityStates(civ)

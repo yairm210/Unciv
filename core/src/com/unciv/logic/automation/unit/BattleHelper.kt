@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.MapUnitView
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -15,17 +16,18 @@ import yairm210.purity.annotations.Readonly
 object BattleHelper {
 
     /** Returns true if the unit cannot further move this turn - NOT if an attack was successful! */
-    fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
-        if (unit.hasUnique(UniqueType.CannotAttack)) return false
+    fun tryAttackNearbyEnemy(unitView: MapUnitView, stayOnTile: Boolean = false): Boolean {
+        val unit = unitView.getUnit()
+        if (unitView.hasUnique(UniqueType.CannotAttack)) return false
         val distanceToTiles = unit.movement.getDistanceToTiles()
         val attackableEnemies = TargetHelper.getAttackableEnemies(unit, distanceToTiles, stayOnTile=stayOnTile)
             // Only take enemies we can fight without dying or are made to die
             .filter {
                 val defender = Battle.getMapCombatantOfTile(it.tileToAttack)
-                unit.hasUnique(UniqueType.SelfDestructs) || (defender != null &&
+                unitView.hasUnique(UniqueType.SelfDestructs) || (defender != null &&
                 (BattleDamage.calculateDamageToAttacker(
                     MapUnitCombatant(unit),
-                    defender) < unit.health
+                    defender) < unitView.unitHealth
                     && unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0))
                     // For mounted units it is fine to attack from these tiles, but with current AI movement logic it is not easy to determine if our unit can meaningfully move away after attacking
                     // Also, AI doesn't build tactical roads
@@ -34,7 +36,7 @@ object BattleHelper {
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            if (enemyTileToAttack.tileToAttack.militaryUnit == null && unit.baseUnit.isRanged()
+            if (enemyTileToAttack.tileToAttack.militaryUnit == null && unitView.getBaseUnit().isRanged()
                 && unit.movement.canMoveTo(enemyTileToAttack.tileToAttack)
                 && distanceToTiles.containsKey(enemyTileToAttack.tileToAttack)) { // Since the 'getAttackableEnemies' could return a tile we attack at range but cannot reach
                 // Ranged units should move to caputre a civilian unit instead of attacking it
@@ -43,7 +45,7 @@ object BattleHelper {
                 Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
             }
         }
-        return !unit.hasMovement()
+        return !unitView.hasMovement()
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
