@@ -55,10 +55,10 @@ object CivilianUnitAutomation {
             return mapUnit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(mapUnit, dangerousTiles)
 
         if (unit.hasUniqueToBuildImprovements())
-            return mapUnit.civ.getWorkerAutomation().automateWorkerAction(mapUnit, dangerousTiles)
+            return mapUnit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
         if (unit.hasUniqueToCreateWaterImprovements()) {
-            if (!mapUnit.civ.getWorkerAutomation().automateWorkBoats(mapUnit))
+            if (!mapUnit.civ.getWorkerAutomation().automateWorkBoats(unit))
                 UnitAutomation.tryExplore(unit)
             return
         }
