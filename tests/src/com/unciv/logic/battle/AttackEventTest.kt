@@ -108,7 +108,7 @@ class AttackEventTest {
         clone.civIdsKnowingAttackTarget.clear()
         clone.attacker.civIdsThatKnowMe.clear()
         clone.targets.single().civIdsThatKnowMe.clear()
-        clone.targets.single().instanceName = "Changed clone"
+        clone.targets[0] = clone.targets.single().copy(instanceName = "Changed clone")
         clone.targets.single().damageReceived = 99
         clone.targets.clear()
 

@@ -2,8 +2,6 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexCoord
-import yairm210.purity.annotations.InternalState
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 
@@ -13,34 +11,45 @@ enum class AttackParticipantOutcome {
 
 /** A participant's identity at attack time, independent of later movement, renaming or capture. */
 @ModifiesInternalStateOnly
-class AttackParticipant() : IsPartOfGameInfoSerialization {
-    var combatantID: String? = null
-    var civID = ""
-    var name = ""
-    var instanceName: String? = null
-    var position = HexCoord.Zero
-    var healthBefore = 0
-    var healthAfter: Int? = null
+data class AttackParticipant(
+    val combatantID: String,
+    val civID: String,
+    val name: String,
+    val position: HexCoord,
+    val healthBefore: Int,
+    val instanceName: String? = null,
+    var healthAfter: Int = healthBefore,
     /**
      * Actual HP loss recorded by direct combat effects; indirect effect chains are excluded.
      * Destruction or capture without HP loss is represented by [outcome].
      */
-    var damageReceived = 0
-    var outcome: AttackParticipantOutcome? = null
+    var damageReceived: Int = 0,
+    var outcome: AttackParticipantOutcome = AttackParticipantOutcome.Survived,
     /**
      * Civilizations that identified this particular participant when the attack happened.
      * A combat report may disclose its unit type without identifying the unit, owner or origin.
      */
-    var civIdsThatKnowMe = HashSet<String>()
+    val civIdsThatKnowMe: HashSet<String> = HashSet()
+) : IsPartOfGameInfoSerialization {
 
-    constructor(combatant: ICombatant) : this() {
-        val owner = combatant.getCivInfo()
-        civID = owner.civID
-        name = combatant.getName()
-        position = combatant.getTile().position
-        healthBefore = combatant.getHealth()
-        combatantID = combatant.getId()
+    @Suppress("unused")
+    constructor() : this(
+        combatantID = "",
+        civID = "",
+        name = "",
+        position = HexCoord.Zero,
+        healthBefore = 0
+    )
+
+    constructor(combatant: ICombatant) : this(
+        combatantID = combatant.getId(),
+        civID = combatant.getCivInfo().civID,
+        name = combatant.getName(),
+        position = combatant.getTile().position,
+        healthBefore = combatant.getHealth(),
         instanceName = combatant.getInstanceName()
+    ) {
+        val owner = combatant.getCivInfo()
         for (civ in owner.gameInfo.civilizations) {
             if (combatant.isVisibleTo(civ))
                 civIdsThatKnowMe.add(civ.civID)
@@ -49,17 +58,6 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun clone(): AttackParticipant {
-        val result = AttackParticipant()
-        result.combatantID = combatantID
-        result.civID = civID
-        result.name = name
-        result.instanceName = instanceName
-        result.position = position
-        result.healthBefore = healthBefore
-        result.healthAfter = healthAfter
-        result.damageReceived = damageReceived
-        result.outcome = outcome
-        result.civIdsThatKnowMe = HashSet(civIdsThatKnowMe)
-        return result
+        return copy(civIdsThatKnowMe = HashSet(civIdsThatKnowMe))
     }
 }
