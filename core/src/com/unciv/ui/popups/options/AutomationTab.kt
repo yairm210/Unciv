@@ -1,6 +1,7 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 
@@ -9,6 +10,7 @@ internal class AutomationTab(
 ): OptionsPopupTab(optionsPopup) {
     lateinit var autoPlayMaxTurnsSliderTable: Table
     lateinit var autoPlayMaxTurnsSliderCell: Cell<Table>
+    private lateinit var hintCityProductionCheckbox: CheckBox
 //     val fullAutoPlayTable: Table
 //     val fullAutoPlayCell: Cell<Table>
 
@@ -20,7 +22,12 @@ internal class AutomationTab(
 
         addCheckbox("Auto-assign city production", settings::autoAssignCityProduction, updateWorld = true) {
             allCitiesChooseNextConstruction(it)
+            hintCityProductionCheckbox.isDisabled = settings.autoAssignCityProduction
         }
+        hintCityProductionCheckbox = addCheckbox("Suggest city production", settings::hintCityProduction)
+        hintCityProductionCheckbox.isDisabled = settings.autoAssignCityProduction
+        getCell(hintCityProductionCheckbox).padLeft(42f)
+
         addCheckbox("Auto-build roads", settings::autoBuildingRoads)
         addCheckbox("Automated workers replace improvements", settings::automatedWorkersReplaceImprovements)
         addCheckbox("Stop automated workers from removing vegetation terrain", settings::stopAutomatedWorkersRemoveVegetation)

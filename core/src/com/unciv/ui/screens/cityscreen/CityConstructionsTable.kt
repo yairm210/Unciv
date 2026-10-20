@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -70,6 +71,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     var selectedQueueEntry = -1 // None
 
     private val cityView get() = cityScreen.cityView
+    private val settings get() = cityScreen.game.settings
 
     private val upperTable = Table(BaseScreen.skin)
     private val constructionsQueueScrollPane: ScrollPane
@@ -213,6 +215,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .expandX().fillX().row()
         else
             constructionsQueueTable.add("Pick a construction".toLabel()).height(50f).pad(2f).row()
+
+        if (settings.hintCityProduction && !settings.autoAssignCityProduction) {
+            val hintConstruction = cityConstructions.getHintNextConstruction()
+            if (hintConstruction != null && hintConstruction != currentConstruction) {
+                val label = "Suggestion: [$hintConstruction]".toLabel().apply { setAlignment(Align.center) }
+                constructionsQueueTable.add(label).pad(4f).growX().row()
+            }
+        }
 
         // always show queue expander, even when empty, in order to keep lowerTable at constant position
         queueExpander.innerTable.clear()
@@ -673,7 +683,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.clearSelection()
         if (cityView.constructions.constructionQueue.first() == construction.name)
             cityView.tryReassignPopulation()
-        cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
+        settings.addCompletedTutorialTask("Pick construction")
     }
 
     private fun getConstructionSound(construction: IConstruction): UncivSound {

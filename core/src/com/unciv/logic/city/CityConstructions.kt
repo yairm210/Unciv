@@ -856,11 +856,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return
         val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
-        
+
         if (getTileForImprovement(improvement.name) == null) {
             val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
             tryPlaceCreateOneImprovementMarker(improvement, newTile)
         }
+    }
+
+    /** @return The construction name that city production automation would choose, or `null` when hints are disabled,
+     *          or the city is already producing a nonperpetual or user-set construction. */
+    fun getHintNextConstruction(): String? {
+        if (!UncivGame.Current.settings.hintCityProduction || UncivGame.Current.settings.autoAssignCityProduction) return null
+        if (!isQueueEmptyOrIdle()) {
+            if (getConstruction(currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return null
+        }
+        val automation = ConstructionAutomation(this)
+        return automation.getConstructionToChoose()?.name
     }
 
     /** Whether this city may mark its own [tile] to create [improvement] when construction completes. */

@@ -87,8 +87,9 @@ internal interface OptionsPopupHelpers {
      *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
      *  @param newRow `true`: The cell gets `colspan(2)` and `row()`.
      *  @param action Mandatory - you'll need to write back the new value here.
+     *  @return The new [CheckBox]
      */
-    fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
+    fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)): CheckBox {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             val worldScreen = GUI.getWorldScreenIfActive()
@@ -96,6 +97,7 @@ internal interface OptionsPopupHelpers {
         }
         if (newRow) add(checkbox).colspan(2).left().row()
         else add(checkbox).left()
+        return checkbox
     }
 
     /**
@@ -106,10 +108,11 @@ internal interface OptionsPopupHelpers {
      *
      *  @param settingsProperty A `::` reference to a class field (references to local variables aren't yet supported)
      *  @param updateWorld If `true` and the active screen is a [WorldScreen], the [WorldScreen.shouldUpdate] flag is set when the value changes.
-     *  @param action Optional if you need to take further action when the value is set.
+     *  @param action Optional if you need to take further action after the value is set.
+     *  @return The new [CheckBox]
      */
-    fun Table.addCheckbox(text: String, settingsProperty: KMutableProperty0<Boolean>, updateWorld: Boolean = false, action: (Boolean) -> Unit = {}) {
-        addCheckbox(text, settingsProperty.get(), updateWorld) {
+    fun Table.addCheckbox(text: String, settingsProperty: KMutableProperty0<Boolean>, updateWorld: Boolean = false, action: (Boolean) -> Unit = {}): CheckBox {
+        return addCheckbox(text, settingsProperty.get(), updateWorld) {
             settingsProperty.set(it)
             action(it)
         }
