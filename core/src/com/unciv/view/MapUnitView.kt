@@ -109,6 +109,11 @@ class MapUnitView internal constructor(
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
+    /** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
+    @Readonly fun getAirUnitMovementRange(): Int? = if (unit.baseUnit.isAirUnit()) unit.getAirUnitMovementRange() else null
+    /** `true` if [tileView] holds something this unit could attack */
+    @Readonly fun containsAttackableEnemy(tileView: TileView): Boolean =
+        TargetHelper.containsAttackableEnemy(tileView.unwrap(), MapUnitCombatant(unit))
     @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove

@@ -366,7 +366,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         val blastRadius = attackerView.getNukeBlastRadius()
 
         val defenderNameWrapper = Table()
-        for (tileView in targetTileView.getVisibleTilesInDistance(blastRadius)) {
+        for (tileView in targetTileView.getExploredTilesInDistance(blastRadius)) {
             val defender = tryGetDefenderAtTile(tileView, true) ?: continue
 
             val defenderLabel = defender.getCombatantName().toLabel(hideIcons = true)

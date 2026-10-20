@@ -115,7 +115,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     //. that's not really relevant for the API
     // We should see if we can avoid this entirely
     @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
-    @Readonly fun getVisibleTilesInDistance(distance: Int): Sequence<TileView> =
+    @Readonly fun getExploredTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }

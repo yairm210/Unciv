@@ -336,7 +336,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.isAirUnit() ->
-            unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
+            unit.currentTile.aerialDistanceTo(destination) <= unit.getAirUnitMovementRange()
         unit.isPreparingParadrop() ->
             canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
         else ->
@@ -352,7 +352,7 @@ class UnitMovement(val unit: MapUnit) {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.isAirUnit() ->
-                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
+                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getAirUnitMovementRange()))
             unit.isPreparingParadrop() -> {
                 unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
                     .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }

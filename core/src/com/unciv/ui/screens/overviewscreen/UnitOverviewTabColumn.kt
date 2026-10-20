@@ -100,7 +100,7 @@ enum class UnitOverviewTabColumn(
         }
         @Readonly
         private fun getClosestCityTile(item: MapUnitView): TileView? = item.getTile()
-            .getVisibleTilesInDistance(3).firstOrNull { it.isCityCenter() }
+            .getExploredTilesInDistance(3).firstOrNull { it.isCityCenter() }
     },
 
     Promotions(isNumeric = true) {

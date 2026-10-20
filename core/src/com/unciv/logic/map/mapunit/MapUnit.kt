@@ -469,7 +469,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return range
     }
 
-    @Readonly fun getMaxMovementForAirUnits(): Int = getRange() * 2
+
+    /** How many tiles away this air unit can relocate to or reach in one move */
+    @Readonly fun getAirUnitMovementRange(): Int = getRange() * 2
 
     @Readonly
     fun isEmbarked(): Boolean {
@@ -1148,7 +1150,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (unit.currentMovement < Constants.minimumMovementEpsilon)
                 unit.disband()
             // let's find closest city or another carrier where it can be evacuated
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getMaxMovementForAirUnits())
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getAirUnitMovementRange())
                     .filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
 
             if (tileCanMoveTo != null)
