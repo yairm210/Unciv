@@ -53,15 +53,15 @@ class AttackEventTest {
         assertEquals(12, event.turn)
         assertEquals(source.position, event.sourceTile)
         assertEquals(target.position, event.targetTile)
-        assertEquals(attackingCiv.civID, event.attacker!!.civID)
+        assertEquals(attackingCiv.civID, event.attacker.civID)
         assertEquals(setOf(attackingCiv.civID, observer.civID), event.civIdsKnowingAttackSource)
         assertEquals(setOf(attackingCiv.civID, defendingCiv.civID, observer.civID), event.civIdsKnowingAttackTarget)
-        assertEquals("Original archers", event.attacker!!.instanceName)
+        assertEquals("Original archers", event.attacker.instanceName)
         assertEquals("Original defenders", event.targets.single().instanceName)
-        assertEquals(source.position, event.attacker!!.position)
+        assertEquals(source.position, event.attacker.position)
         assertEquals(target.position, event.targets.single().position)
-        assertFalse(defendingCiv.civID in event.attacker!!.civIdsThatKnowMe)
-        assertTrue(observer.civID in event.attacker!!.civIdsThatKnowMe)
+        assertFalse(defendingCiv.civID in event.attacker.civIdsThatKnowMe)
+        assertTrue(observer.civID in event.attacker.civIdsThatKnowMe)
     }
 
     @Test
@@ -71,7 +71,7 @@ class AttackEventTest {
 
         val undetected = AttackEvent(MapUnitCombatant(attacker), target)
         assertFalse(defendingCiv.civID in undetected.civIdsKnowingAttackSource)
-        assertFalse(defendingCiv.civID in undetected.attacker!!.civIdsThatKnowMe)
+        assertFalse(defendingCiv.civID in undetected.attacker.civIdsThatKnowMe)
         assertTrue(defendingCiv.civID in undetected.civIdsKnowingAttackTarget)
         assertTrue(attackingCiv.civID in undetected.civIdsKnowingAttackSource)
 
@@ -86,7 +86,7 @@ class AttackEventTest {
         defendingCiv.viewableTiles = setOf(source, target)
         val detected = AttackEvent(MapUnitCombatant(attacker), target)
         assertTrue(defendingCiv.civID in detected.civIdsKnowingAttackSource)
-        assertTrue(defendingCiv.civID in detected.attacker!!.civIdsThatKnowMe)
+        assertTrue(defendingCiv.civID in detected.attacker.civIdsThatKnowMe)
         // Learning the origin now cannot add knowledge to an earlier record.
         assertFalse(defendingCiv.civID in undetected.civIdsKnowingAttackSource)
     }
@@ -99,14 +99,14 @@ class AttackEventTest {
         assertNotSame(event.attacker, clone.attacker)
         assertNotSame(event.targets, clone.targets)
         assertNotSame(event.targets.single(), clone.targets.single())
-        assertNotSame(event.attacker!!.civIdsThatKnowMe, clone.attacker!!.civIdsThatKnowMe)
+        assertNotSame(event.attacker.civIdsThatKnowMe, clone.attacker.civIdsThatKnowMe)
         assertNotSame(event.targets.single().civIdsThatKnowMe, clone.targets.single().civIdsThatKnowMe)
-        assertParticipantEquals(event.attacker!!, clone.attacker!!)
+        assertParticipantEquals(event.attacker, clone.attacker)
         assertParticipantEquals(event.targets.single(), clone.targets.single())
 
         clone.civIdsKnowingAttackSource.add(defendingCiv.civID)
         clone.civIdsKnowingAttackTarget.clear()
-        clone.attacker!!.civIdsThatKnowMe.clear()
+        clone.attacker.civIdsThatKnowMe.clear()
         clone.targets.single().civIdsThatKnowMe.clear()
         clone.targets.single().instanceName = "Changed clone"
         clone.targets.single().damageReceived = 99
@@ -114,7 +114,7 @@ class AttackEventTest {
 
         assertFalse(defendingCiv.civID in event.civIdsKnowingAttackSource)
         assertTrue(defendingCiv.civID in event.civIdsKnowingAttackTarget)
-        assertTrue(attackingCiv.civID in event.attacker!!.civIdsThatKnowMe)
+        assertTrue(attackingCiv.civID in event.attacker.civIdsThatKnowMe)
         assertTrue(defendingCiv.civID in event.targets.single().civIdsThatKnowMe)
         assertEquals("Original defenders", event.targets.single().instanceName)
         assertEquals(5, event.targets.single().damageReceived)
@@ -129,15 +129,15 @@ class AttackEventTest {
         assertEquals(event.turn, restored.turn)
         assertEquals(event.sourceTile, restored.sourceTile)
         assertEquals(event.targetTile, restored.targetTile)
-        assertEquals(event.attacker!!.civID, restored.attacker!!.civID)
+        assertEquals(event.attacker.civID, restored.attacker.civID)
         assertEquals(event.resolution, restored.resolution)
         assertEquals(event.civIdsKnowingAttackSource, restored.civIdsKnowingAttackSource)
         assertEquals(event.civIdsKnowingAttackTarget, restored.civIdsKnowingAttackTarget)
-        assertParticipantEquals(event.attacker!!, restored.attacker!!)
+        assertParticipantEquals(event.attacker, restored.attacker)
         assertParticipantEquals(event.targets.single(), restored.targets.single())
-        restored.attacker!!.civIdsThatKnowMe.clear()
+        restored.attacker.civIdsThatKnowMe.clear()
         restored.targets.clear()
-        assertTrue(attackingCiv.civID in event.attacker!!.civIdsThatKnowMe)
+        assertTrue(attackingCiv.civID in event.attacker.civIdsThatKnowMe)
         assertEquals(1, event.targets.size)
     }
 

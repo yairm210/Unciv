@@ -26,7 +26,7 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
         require(targetTile.tileMap.gameInfo === gameInfo) { "An attack cannot target another game instance" }
         val attack = AttackEvent(attacker, targetTile)
         event = attack
-        participants[attacker.getId()] = ParticipantState(attacker, attack.attacker!!)
+        participants[attacker.getId()] = ParticipantState(attacker, attack.attacker)
     }
 
     /** Validate once at the recorder boundary, before a unit mutation can take place. */
@@ -86,8 +86,7 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
         val attack = currentEvent()
         try {
             for (state in participants.values) finishParticipant(state)
-            attack.resolution = resolution
-            return attack
+            return attack.copy(resolution = resolution)
         } finally {
             participants.clear()
             event = null
