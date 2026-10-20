@@ -50,7 +50,7 @@ object UnitAutomation {
         val isHumanAndNotAutoplaying =
             unit.civ.isHuman() && GUI.getWorldScreenIfActive()?.autoPlay?.isAutoPlaying() != true
         // AI promotes units via NextTurnAutomation.automateUnits
-        if (isHumanAndNotAutoplaying) NextTurnAutomation.applyPromotions(unit)
+        if (isHumanAndNotAutoplaying) NextTurnAutomation.applyPromotions(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
         if (isHumanAndNotAutoplaying && tryUpgradeUnit(unit)) return
 

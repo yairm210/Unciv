@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.map.HexCoord
@@ -169,7 +170,7 @@ class GreatPersonSelectionTest {
         val manager = scenario.civ.greatPeople
         manager.freeGreatPeople = 1
 
-        NextTurnAutomation.chooseGreatPerson(scenario.civ)
+        NextTurnAutomation.chooseGreatPerson(GameView(scenario.civ.gameInfo, scenario.civ).civView)
 
         assertEquals(0, manager.freeGreatPeople)
         assertTrue(scenario.civ.units.getCivGreatPeople().any { it.name == "Great Scientist" })
@@ -184,7 +185,7 @@ class GreatPersonSelectionTest {
         civ.greatPeople.freeGreatPeople = 1
         val originalUnits = civ.units.getCivUnits().toList()
 
-        NextTurnAutomation.chooseGreatPerson(civ)
+        NextTurnAutomation.chooseGreatPerson(GameView(civ.gameInfo, civ).civView)
 
         assertEquals(1, civ.greatPeople.freeGreatPeople)
         assertEquals(originalUnits, civ.units.getCivUnits().toList())

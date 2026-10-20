@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.status
 
+import com.unciv.view.GameView
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -66,7 +67,7 @@ class AutoPlayMenu(
         val civInfo = worldScreen.selectedGameView.civView.getCiv()
         val autoPlayMilitaryFunction = {
             val isAtWar = civInfo.isAtWar()
-            val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+            val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(worldScreen.selectedGameView.getMapUnitView(unit), isAtWar) }
             for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
 
             for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
@@ -86,7 +87,7 @@ class AutoPlayMenu(
         val autoPlayCivilainFunction = {
             val isAtWar = civInfo.isAtWar()
             val sortedUnits = civInfo.units.getCivUnits().filter { it.isCivilian() }
-                .sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+                .sortedBy { unit -> NextTurnAutomation.getUnitPriority(worldScreen.selectedGameView.getMapUnitView(unit), isAtWar) }
             for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
             worldScreen.shouldUpdate = true
         }
@@ -101,7 +102,7 @@ class AutoPlayMenu(
 
     private fun autoPlayEconomy() {
         val civInfo = worldScreen.selectedGameView.civView.getCiv()
-        NextTurnAutomation.automateCities(civInfo)
+        NextTurnAutomation.automateCities(worldScreen.selectedGameView.civView)
         worldScreen.shouldUpdate = true
         worldScreen.render(0f)
     }

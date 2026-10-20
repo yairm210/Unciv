@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.GameView
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -59,7 +60,7 @@ object UseGoldAutomation {
         if (civ.gold < 500 || knownCityStates.none()) return // skip checks if tryGainInfluence will bail anyway
         val cityState = knownCityStates
             .filter { it.allyCiv != civ }
-            .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it, true) }
+            .associateWith { NextTurnAutomation.valueCityStateAlliance(GameView(civ.gameInfo, civ).civView, it, true) }
             .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
         if (cityState != null) {
             tryGainInfluence(civ, cityState)
@@ -168,7 +169,7 @@ object UseGoldAutomation {
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
         if (civInfo.gold < 500) return // Save up, giving 500 gold in one go typically grants +5 influence compared to giving 2×250 gold
         val influence = cityState.getDiplomacyManager(civInfo)!!.getInfluence()
-        val stopSpending =  influence > 60 + 2 * NextTurnAutomation.valueCityStateAlliance(civInfo, cityState, true)
+        val stopSpending =  influence > 60 + 2 * NextTurnAutomation.valueCityStateAlliance(GameView(civInfo.gameInfo, civInfo).civView, cityState, true)
         // Don't go into a gold gift race: be content with friendship for cheap, or use the gold on more productive uses,
         // for example upgrading an army to conquer the player who's contesting our city states
         if (influence < 10 || stopSpending) return
