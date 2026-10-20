@@ -389,8 +389,7 @@ class WorldScreen(
             bottomUnitTable.update()
 
             minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
-            bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
-            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.update(getGameViewConsideringForOfWar().civView, mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
