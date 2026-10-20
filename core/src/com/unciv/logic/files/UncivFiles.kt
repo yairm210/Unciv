@@ -379,9 +379,10 @@ class UncivFiles(
             return emptyList()
         }
     }
-    
+
     fun loadExcludedModAuthors(): Iterable<String> {
-        val file = getLocalFile(EXCLUDED_MOD_AUTHORS_FILE_NAME)
+        val file = files.internal(EXCLUDED_MOD_AUTHORS_FILE_NAME).takeIf { it.exists() } // First look inside packaged assets
+            ?: getLocalFile(EXCLUDED_MOD_AUTHORS_FILE_NAME) // Then locally for runs from source
         if (!file.exists()) return emptyList()
         try {
             return file.reader().readLines()
