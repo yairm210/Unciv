@@ -154,7 +154,7 @@ class AttackEventTest {
     }
 
     private fun assertParticipantEquals(expected: AttackParticipant, actual: AttackParticipant) {
-        assertEquals(expected.unitID, actual.unitID)
+        assertEquals(expected.combatantID, actual.combatantID)
         assertEquals(expected.civID, actual.civID)
         assertEquals(expected.name, actual.name)
         assertEquals(expected.instanceName, actual.instanceName)

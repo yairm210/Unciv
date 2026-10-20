@@ -1,7 +1,6 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.GameInfo
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 
 /**
@@ -13,21 +12,21 @@ import com.unciv.logic.map.tile.Tile
  * Never store this temporary object in game state, cached GameContexts, Views or deferred actions.
  * Its operations are engine-only; raw records must not be exposed through user-facing APIs.
  */
-class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile: Tile) {
+class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile) {
     private var gameInfo: GameInfo? = attacker.getCivInfo().gameInfo
     private var event: AttackEvent? = null
 
-    private class ParticipantState(var unit: MapUnit, val record: AttackParticipant) {
+    private class ParticipantState(var combatant: ICombatant, val record: AttackParticipant) {
         var explicitOutcome: AttackParticipantOutcome? = null
     }
 
-    private val participants = LinkedHashMap<Int, ParticipantState>()
+    private val participants = LinkedHashMap<String, ParticipantState>()
 
     init {
         require(targetTile.tileMap.gameInfo === gameInfo) { "An attack cannot target another game instance" }
         val attack = AttackEvent(attacker, targetTile)
         event = attack
-        participants[attacker.unit.id] = ParticipantState(attacker.unit, attack.attacker!!)
+        participants[attacker.getId()] = ParticipantState(attacker, attack.attacker!!)
     }
 
     /** Validate once at the recorder boundary, before a unit mutation can take place. */
@@ -38,42 +37,47 @@ class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile
     }
 
     /** Preserve the intended target even when the attack deals no damage. */
-    internal fun snapshotTarget(combatant: MapUnitCombatant) {
+    internal fun snapshotTarget(combatant: ICombatant) {
         val attack = validate(combatant.getCivInfo().gameInfo)
-        getOrCreateParticipantState(combatant.unit, attack)
+        getOrCreateParticipantState(combatant, attack)
     }
 
     /** Capture identity and initial health before healing or another direct effect changes a unit. */
-    internal fun markUnitAffected(unit: MapUnit) {
-        val attack = validate(unit.civ.gameInfo)
-        getOrCreateParticipantState(unit, attack)
+    internal fun markUnitAffected(combatant: ICombatant) {
+        val attack = validate(combatant.getCivInfo().gameInfo)
+        getOrCreateParticipantState(combatant, attack)
     }
 
     /** Capture and withdrawal must be reported explicitly when ordinary survival cannot describe them. */
-    internal fun recordOutcome(combatant: MapUnitCombatant, outcome: AttackParticipantOutcome?) {
+    internal fun recordOutcome(combatant: ICombatant, outcome: AttackParticipantOutcome?) {
         val attack = validate(combatant.getCivInfo().gameInfo)
         require(outcome == AttackParticipantOutcome.Captured || outcome == AttackParticipantOutcome.Withdrew)
-        getOrCreateParticipantState(combatant.unit, attack).explicitOutcome = outcome
+        getOrCreateParticipantState(combatant, attack)?.explicitOutcome = outcome
     }
 
     /** Replacement can destroy an old unit object; survival is resolved by stable ID at finish. */
-    internal fun recordDestruction(unit: MapUnit) {
-        markUnitAffected(unit)
+    internal fun recordDestruction(combatant: ICombatant) {
+        markUnitAffected(combatant)
     }
 
     /** Report clamped HP loss before applying it; healing never subtracts from accumulated damage. */
-    internal fun recordDamage(unit: MapUnit, actualDamage: Int) {
-        val attack = validate(unit.civ.gameInfo)
+    internal fun recordDamage(combatantId: String, actualDamage: Int) {
+        currentEvent()
         if (actualDamage <= 0) return
-        getOrCreateParticipantState(unit, attack).record.damageReceived += actualDamage
+        val participant = requireNotNull(participants[combatantId]) {
+            "Register the participant before reporting damage: $combatantId"
+        }
+        participant.record.damageReceived += actualDamage
     }
 
-    private fun getOrCreateParticipantState(unit: MapUnit, attack: AttackEvent): ParticipantState =
-        participants.getOrPut(unit.id) {
-            val record = AttackParticipant(MapUnitCombatant(unit))
+    private fun getOrCreateParticipantState(combatant: ICombatant, attack: AttackEvent): ParticipantState {
+        val id = combatant.getId()
+        return participants.getOrPut(id) {
+            val record = AttackParticipant(combatant)
             attack.targets.add(record)
-            ParticipantState(unit, record)
-        }.also { it.unit = unit }
+            ParticipantState(combatant, record)
+        }
+    }
 
     private fun currentEvent(): AttackEvent = checkNotNull(event) { "This attack has already finished" }
 
@@ -100,15 +104,26 @@ class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile
     }
 
     private fun finishParticipant(state: ParticipantState) {
-        val unit = state.unit
+        val combatant = state.combatant
         val record = state.record
-        val survivingUnit = record.unitID?.let { unit.civ.units.getUnitById(it) }
-        val captured = unit.civ.civID != record.civID && survivingUnit != null
+        val currentCombatant = getCurrentCombatant(combatant)
+        
         record.outcome = state.explicitOutcome ?: when {
-            captured -> AttackParticipantOutcome.Captured
-            survivingUnit == null -> AttackParticipantOutcome.Destroyed
+            currentCombatant == null -> AttackParticipantOutcome.Destroyed
+            currentCombatant.getCivInfo().civID != record.civID -> AttackParticipantOutcome.Captured
             else -> AttackParticipantOutcome.Survived
         }
-        record.healthAfter = survivingUnit?.health ?: unit.health
+        record.healthAfter = currentCombatant?.getHealth() ?: combatant.getHealth()
+    }
+
+    private fun getCurrentCombatant(combatant: ICombatant): ICombatant? = when (combatant) {
+        is MapUnitCombatant -> 
+            gameInfo!!.civilizations
+            .firstNotNullOfOrNull { it.units.getUnitById(combatant.unit.id) }
+            ?.let { MapUnitCombatant(it) }
+        
+        is CityCombatant -> combatant // TODO: Resolve the current city from game state.
+        
+        else -> error("Unknown combatant type: $combatant")
     }
 }

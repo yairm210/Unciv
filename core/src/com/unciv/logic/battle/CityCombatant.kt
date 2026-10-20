@@ -16,6 +16,10 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityCombatant(val city: City) : ICombatant {
+    
+    override fun getId(): String = getName()
+    override fun getInstanceName(): String = getName()
+
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }

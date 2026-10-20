@@ -23,7 +23,7 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
     /** The intended target and units affected by direct combat effects. */
     var targets = ArrayList<AttackParticipant>()
 
-    constructor(attacker: MapUnitCombatant, targetTile: Tile) : this() {
+    constructor(attacker: ICombatant, targetTile: Tile) : this() {
         val attackingCiv = attacker.getCivInfo()
         val gameInfo = attackingCiv.gameInfo
         val sourceTile = attacker.getTile()

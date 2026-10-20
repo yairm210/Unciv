@@ -11,6 +11,10 @@ import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
+    
+    override fun getId(): String = unit.id.toString()
+    override fun getInstanceName(): String? = unit.instanceName
+
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
     override fun getCivInfo(): Civilization = unit.civ

@@ -81,7 +81,7 @@ class AttackRecorderTest {
         val record = recorder.finishForTesting().targets.single()
 
         assertTrue(defender.isDestroyed)
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(60, record.healthBefore)
         assertEquals(60, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -97,7 +97,7 @@ class AttackRecorderTest {
         defender.healBy(50)
         val record = recorder.finishForTesting().targets.single()
 
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(60, record.healthBefore)
         assertEquals(100, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -149,7 +149,7 @@ class AttackRecorderTest {
 
         val record = recorder.finishForTesting().targets.single()
 
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(100, record.healthBefore)
         assertEquals(100, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -168,8 +168,6 @@ class AttackRecorderTest {
         assertThrows(IllegalArgumentException::class.java) {
             newAttackRecorderForTesting(MapUnitCombatant(attacker), otherGame.getTile(1, 0))
         }
-        for (amount in listOf(0, -9, 9))
-            assertThrows(IllegalArgumentException::class.java) { recorder.recordDamageForTesting(otherUnit, amount) }
         assertThrows(IllegalArgumentException::class.java) { recorder.markUnitAffectedForTesting(otherUnit) }
         assertThrows(IllegalArgumentException::class.java) { recorder.recordDestructionForTesting(otherUnit) }
         assertThrows(IllegalArgumentException::class.java) {
@@ -248,7 +246,7 @@ class AttackRecorderTest {
 
         assertNotSame(attacker, successor)
         assertEquals("Composite Bowman", successor.name)
-        assertEquals(attacker.id, record.unitID)
+        assertEquals(attacker.id.toString(), record.combatantID)
         assertEquals("Archer", record.name)
         assertEquals("Original archers", record.instanceName)
         assertEquals(63, record.healthBefore)
@@ -287,7 +285,7 @@ class AttackRecorderTest {
         defender.capturedBy(attackingCiv)
         val captured = captureRecorder.finishForTesting().targets.single()
         assertEquals(originalOwner, captured.civID)
-        assertEquals(defender.id, captured.unitID)
+        assertEquals(defender.id.toString(), captured.combatantID)
         assertEquals(AttackParticipantOutcome.Captured, captured.outcome)
         assertEquals(0, captured.damageReceived)
 

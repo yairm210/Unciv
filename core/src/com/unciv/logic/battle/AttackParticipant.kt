@@ -14,7 +14,7 @@ enum class AttackParticipantOutcome {
 /** A participant's identity at attack time, independent of later movement, renaming or capture. */
 @ModifiesInternalStateOnly
 class AttackParticipant() : IsPartOfGameInfoSerialization {
-    var unitID: Int? = null
+    var combatantID: String? = null
     var civID = ""
     var name = ""
     var instanceName: String? = null
@@ -33,14 +33,14 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
      */
     var civIdsThatKnowMe = HashSet<String>()
 
-    constructor(combatant: MapUnitCombatant) : this() {
+    constructor(combatant: ICombatant) : this() {
         val owner = combatant.getCivInfo()
         civID = owner.civID
         name = combatant.getName()
         position = combatant.getTile().position
         healthBefore = combatant.getHealth()
-        unitID = combatant.unit.id
-        instanceName = combatant.unit.instanceName
+        combatantID = combatant.getId()
+        instanceName = combatant.getInstanceName()
         for (civ in owner.gameInfo.civilizations) {
             if (combatant.isVisibleTo(civ))
                 civIdsThatKnowMe.add(civ.civID)
@@ -50,7 +50,7 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
     @Readonly
     fun clone(): AttackParticipant {
         val result = AttackParticipant()
-        result.unitID = unitID
+        result.combatantID = combatantID
         result.civID = civID
         result.name = name
         result.instanceName = instanceName

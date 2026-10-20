@@ -11,6 +11,8 @@ import yairm210.purity.annotations.Readonly
 
 
 interface ICombatant {
+    @Readonly fun getId(): String
+    @Readonly fun getInstanceName(): String?
     @Readonly fun getName(): String
     @Readonly fun getHealth(): Int
     @Readonly fun getMaxHealth(): Int
