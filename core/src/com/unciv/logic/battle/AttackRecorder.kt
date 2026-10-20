@@ -39,20 +39,20 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
     /** Preserve the intended target even when the attack deals no damage. */
     internal fun snapshotTarget(combatant: ICombatant) {
         val attack = validate(combatant.getCivInfo().gameInfo)
-        getOrCreateParticipantState(combatant, attack)
+        addParticipantState(combatant, attack)
     }
 
     /** Capture identity and initial health before healing or another direct effect changes a unit. */
     internal fun markUnitAffected(combatant: ICombatant) {
         val attack = validate(combatant.getCivInfo().gameInfo)
-        getOrCreateParticipantState(combatant, attack)
+        addParticipantState(combatant, attack)
     }
 
     /** Capture and withdrawal must be reported explicitly when ordinary survival cannot describe them. */
     internal fun recordOutcome(combatant: ICombatant, outcome: AttackParticipantOutcome?) {
         val attack = validate(combatant.getCivInfo().gameInfo)
         require(outcome == AttackParticipantOutcome.Captured || outcome == AttackParticipantOutcome.Withdrew)
-        getOrCreateParticipantState(combatant, attack)?.explicitOutcome = outcome
+        addParticipantState(combatant, attack).explicitOutcome = outcome
     }
 
     /** Replacement can destroy an old unit object; survival is resolved by stable ID at finish. */
@@ -70,7 +70,7 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
         participant.record.damageReceived += actualDamage
     }
 
-    private fun getOrCreateParticipantState(combatant: ICombatant, attack: AttackEvent): ParticipantState {
+    private fun addParticipantState(combatant: ICombatant, attack: AttackEvent): ParticipantState {
         val id = combatant.getId()
         return participants.getOrPut(id) {
             val record = AttackParticipant(combatant)
@@ -117,4 +117,15 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
         
         else -> error("Unknown combatant type: $combatant")
     }
+
+    companion object {
+
+        internal fun create(attacker: ICombatant, defender: ICombatant): AttackRecorder {
+            val recorder = AttackRecorder(attacker, targetTile = defender.getTile())
+            recorder.snapshotTarget(defender)
+            return recorder
+        }
+        
+    }
+    
 }

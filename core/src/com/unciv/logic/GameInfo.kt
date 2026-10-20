@@ -13,6 +13,7 @@ import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
+import com.unciv.logic.battle.AttackEvent
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.managers.TechManager
@@ -110,6 +111,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
     var turns = 0
+    var attackEvents = ArrayList<AttackEvent>()
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = Clock.System.now().toEpochMilliseconds()
