@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -141,7 +142,9 @@ class ThreatManager(val civInfo: Civilization) {
             .filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
 
     @Readonly
-    fun getDangerousTiles(unit: MapUnit, distance: Int = 3): HashSet<Tile> {
+    fun getDangerousTiles(unitView: MapUnitView, distance: Int = 3): HashSet<Tile> {
+        // Temporary - tile logic below still works on MapUnit
+        val unit = unitView.getUnit()
         val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(unit.getTile(), distance)
         val nearbyRangedEnemyUnits = getEnemyUnitsOnTiles(tilesWithEnemyUnits)
 

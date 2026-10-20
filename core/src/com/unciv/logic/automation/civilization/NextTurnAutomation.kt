@@ -611,7 +611,7 @@ object NextTurnAutomation {
         if (civInfo.isOneCityChallenger()) return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
-        if (CivilianUnitAutomation.isLateGame(civInfo)){
+        if (CivilianUnitAutomation.isLateGame(GameView(civInfo.gameInfo, civInfo).civView)){
             // all suitable land may be occupied already
             // 10 tiles away and 6 "options" are heuristics based on nothing, feel free to change 
             var unoccupiedNearishTiles = 0

@@ -372,7 +372,7 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
-        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(unit, 3)
+        val dangerousTiles = unit.civ.threatManager.getDangerousTiles(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), 3)
         
         // If the unit can heal on this tile in two turns, just heal here
         if (unit.currentTile !in dangerousTiles 

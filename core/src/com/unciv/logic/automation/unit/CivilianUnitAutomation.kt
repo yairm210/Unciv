@@ -1,6 +1,6 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -101,14 +101,14 @@ object CivilianUnitAutomation {
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
             return ReligiousUnitAutomation.automateInquisitor(mapUnit)
 
-        val isLateGame = isLateGame(mapUnit.civ)
+        val isLateGame = isLateGame(unit.civ())
         // Great scientist -> Hurry research if late game
         // Great writer -> Hurry policy  if late game
         if (isLateGame) {
-            val hurriedResearch = UnitActions.invokeUnitAction(mapUnit, UnitActionType.HurryResearch)
+            val hurriedResearch = unit.tryInvokeUnitAction(UnitActionType.HurryResearch)
             if (hurriedResearch) return
 
-            val hurriedPolicy = UnitActions.invokeUnitAction(mapUnit, UnitActionType.HurryPolicy)
+            val hurriedPolicy = unit.tryInvokeUnitAction(UnitActionType.HurryPolicy)
             if (hurriedPolicy) return
             //TODO: save up great scientists/writers for late game (8 turns after research labs/broadcast towers resp.)
         }
@@ -179,9 +179,9 @@ object CivilianUnitAutomation {
     }
 
     @Readonly
-    fun isLateGame(civ: Civilization): Boolean {
-        val researchCompletePercent =
-            (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
+    fun isLateGame(civ: CivView): Boolean {
+        val technologies = civ.ruleset.technologies.keys
+        val researchCompletePercent = technologies.count { civ.isResearched(it) } * 1.0f / technologies.size
         return researchCompletePercent >= 0.55f
     }
 
@@ -194,7 +194,7 @@ object CivilianUnitAutomation {
             .filter { mapUnit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.getBaseUnit().isMilitary
-            && mapUnit.getTile().militaryUnit == null && !mapUnit.getTile().isCityCenter()) {
+            && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
             runAway(unit)
             return true
         }
@@ -221,7 +221,7 @@ object CivilianUnitAutomation {
         }
 
         val unitTile = mapUnit.getTile()
-        val dangerousTiles = mapUnit.civ.threatManager.getDangerousTiles(mapUnit)
+        val dangerousTiles = mapUnit.civ.threatManager.getDangerousTiles(unit)
         val tileClosestToDanger = dangerousTiles
             // Priotirize capture threat over ranged attack
             .sortedByDescending { mapUnit.civ.threatManager.getEnemyUnitsOnTiles(listOf(it)).isNotEmpty() }
@@ -229,7 +229,7 @@ object CivilianUnitAutomation {
         val tileFurthestFromDanger = reachableTiles.keys
             .filter {
                 mapUnit.movement.canMoveTo(it)
-                    && mapUnit.getDamageFromTerrain(it) < mapUnit.health
+                    && mapUnit.getDamageFromTerrain(it) < unit.unitHealth
                     && it !in dangerousTiles }
             .sortedWith(compareByDescending<Tile> { it.aerialDistanceTo(tileClosestToDanger) } // As far away from threat
                 .thenByDescending { it.isFriendlyTerritory(mapUnit.civ) }) // Priotirize friendly territory

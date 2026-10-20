@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
+import com.unciv.view.GameView
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
@@ -173,7 +174,7 @@ class ThreatManagerTests {
         testGame.addUnit("Warrior", civ, centerTile)
         testGame.addUnit("Warrior", enemyCiv, testGame.getTile(3,0))
         testGame.addUnit("Archer", enemyCiv, testGame.getTile(-3,0))
-        val dangerousTiles = threatManager.getDangerousTiles(centerTile.militaryUnit!!,3)
+        val dangerousTiles = threatManager.getDangerousTiles(GameView(testGame.gameInfo, civ).getMapUnitView(centerTile.militaryUnit!!), 3)
         assertEquals(null, testGame.getTile(3,0).getTilesInDistance(1).firstOrNull {tile -> !dangerousTiles.contains(tile)})
         assertEquals(null, testGame.getTile(-3,0).getTilesInDistance(2).firstOrNull {tile -> !dangerousTiles.contains(tile)})
     }
