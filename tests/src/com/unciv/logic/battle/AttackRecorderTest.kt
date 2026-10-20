@@ -4,7 +4,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.finishForTesting
-import com.unciv.testing.finishIncompleteForTesting
 import com.unciv.testing.newAttackRecorderForTesting
 import com.unciv.testing.markUnitAffectedForTesting
 import com.unciv.testing.recordDamageForTesting
@@ -203,31 +202,11 @@ class AttackRecorderTest {
             recorder.recordOutcomeForTesting(MapUnitCombatant(defender), AttackParticipantOutcome.Withdrew)
         }
         assertThrows(IllegalStateException::class.java) { recorder.finishForTesting() }
-        assertThrows(IllegalStateException::class.java) { recorder.finishIncompleteForTesting() }
         assertEquals(93, attacker.health)
         assertFalse(attacker.isDestroyed)
         assertSame(attacker, attackingCiv.units.getUnitById(attacker.id))
         assertEquals(93, event.attacker!!.healthAfter)
         assertEquals(7, event.attacker!!.damageReceived)
-        assertReleased(recorder)
-    }
-
-    @Test
-    fun `incomplete finalization preserves partial effects without rolling them back`() {
-        val recorder = recorder()
-        recorder.snapshotTargetForTesting(MapUnitCombatant(defender))
-        dealDamage(recorder, defender, 7)
-        assertThrows(IllegalArgumentException::class.java) { recorder.finishForTesting(null) }
-
-        val event = recorder.finishIncompleteForTesting()
-        assertThrows(IllegalStateException::class.java) { recorder.recordDamageForTesting(defender, 3) }
-        defender.takeDamage(11)
-
-        assertEquals(82, defender.health)
-        assertEquals(null, event.resolution)
-        assertEquals(93, event.targets.single().healthAfter)
-        assertEquals(7, event.targets.single().damageReceived)
-        assertEquals(AttackParticipantOutcome.Survived, event.targets.single().outcome)
         assertReleased(recorder)
     }
 

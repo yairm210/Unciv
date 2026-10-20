@@ -39,11 +39,8 @@ internal fun AttackRecorder.recordDestructionForTesting(unit: MapUnit) {
     recordDestructionMethod.invokeForTesting(this, MapUnitCombatant(unit))
 }
 
-internal fun AttackRecorder.finishForTesting(resolution: AttackResolution? = AttackResolution.Completed): AttackEvent =
+internal fun AttackRecorder.finishForTesting(resolution: AttackResolution = AttackResolution.Completed): AttackEvent =
     finishMethod.invokeForTesting(this, resolution) as AttackEvent
-
-internal fun AttackRecorder.finishIncompleteForTesting(): AttackEvent =
-    finishIncompleteMethod.invokeForTesting(this) as AttackEvent
 
 private val snapshotTargetMethod = recorderMethod("snapshotTarget", ICombatant::class.java)
 private val recordOutcomeMethod = recorderMethod("recordOutcome", ICombatant::class.java, AttackParticipantOutcome::class.java)
@@ -51,7 +48,6 @@ private val recordDamageMethod = recorderMethod("recordDamage", String::class.ja
 private val markUnitAffectedMethod = recorderMethod("markUnitAffected", ICombatant::class.java)
 private val recordDestructionMethod = recorderMethod("recordDestruction", ICombatant::class.java)
 private val finishMethod = recorderMethod("finish", AttackResolution::class.java)
-private val finishIncompleteMethod = recorderMethod("finishIncomplete")
 
 private fun recorderMethod(name: String, vararg parameters: Class<*>): Method =
     AttackRecorder::class.java.declaredMethods.single {

@@ -82,15 +82,7 @@ class AttackRecorder internal constructor(attacker: ICombatant, targetTile: Tile
     private fun currentEvent(): AttackEvent = checkNotNull(event) { "This attack has already finished" }
 
     /** Finalize exactly once. Storage and any later delivery are the caller's responsibility. */
-    internal fun finish(resolution: AttackResolution?): AttackEvent {
-        require(resolution != null) { "Use finishIncomplete for a failed attack" }
-        return finishRecording(resolution)
-    }
-
-    /** Preserve partial history on an explicit exception path; combat mutations are not rolled back. */
-    internal fun finishIncomplete(): AttackEvent = finishRecording(null)
-
-    private fun finishRecording(resolution: AttackResolution?): AttackEvent {
+    internal fun finish(resolution: AttackResolution): AttackEvent {
         val attack = currentEvent()
         try {
             for (state in participants.values) finishParticipant(state)
