@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.MapUnitView
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.BattleDamage
@@ -14,16 +15,17 @@ import yairm210.purity.annotations.Readonly
 object HeadTowardsEnemyCityAutomation {
 
     /** @returns whether the unit has taken this action */
-    fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean = timeThis("tryHeadTowardsEnemyCity") {
+    fun tryHeadTowardsEnemyCity(unitView: MapUnitView): Boolean = timeThis("tryHeadTowardsEnemyCity") {
+        val unit = unitView.getUnit()
         if (unit.civ.cities.isEmpty()) return false
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
-        val closestReachableEnemyCity = getEnemyCitiesByPriority(unit)
+        val closestReachableEnemyCity = getEnemyCitiesByPriority(unitView)
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
             ?: return false // No enemy city reachable
 
         return headTowardsEnemyCity(
-            unit,
+            unitView,
             closestReachableEnemyCity.getCenterTile(),
             // This should be cached after the `canReach` call above.
             unit.movement.getShortestPath(closestReachableEnemyCity.getCenterTile())
@@ -31,7 +33,8 @@ object HeadTowardsEnemyCityAutomation {
     }
 
     @Readonly
-    fun getEnemyCitiesByPriority(unit: MapUnit): Sequence<City> {
+    fun getEnemyCitiesByPriority(unitView: MapUnitView): Sequence<City> {
+        val unit = unitView.getUnit()
         val enemies = unit.civ.getKnownCivs()
             .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
 
@@ -61,16 +64,17 @@ object HeadTowardsEnemyCityAutomation {
      * @throws [NullPointerException] when [closestReachableEnemyCity] does not contain a [City]
      */
     fun headTowardsEnemyCity(
-        unit: MapUnit,
+        unitView: MapUnitView,
         closestReachableEnemyCity: Tile,
         shortestPath: List<Tile>
     ): Boolean {
+        val unit = unitView.getUnit()
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val unitRange = unit.getRange()
         val cityBombardRange = closestReachableEnemyCity.getCity()!!.getBombardRange()
         if (unitRange > cityBombardRange) { // long-ranged unit, should never be in a bombardable position
-            return headTowardsEnemyCityLongRange(closestReachableEnemyCity, unitDistanceToTiles, unitRange, unit)
+            return headTowardsEnemyCityLongRange(closestReachableEnemyCity, unitDistanceToTiles, unitRange, unitView)
         }
 
         val nextTileInPath = shortestPath[0]
@@ -92,7 +96,7 @@ object HeadTowardsEnemyCityAutomation {
         val city = closestReachableEnemyCity.getCity()!!
 
         if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)) {
-            return headToLandingGrounds(closestReachableEnemyCity, unit)
+            return headToLandingGrounds(closestReachableEnemyCity, unitView)
         }
 
         unit.movement.moveToTile(nextTileInPath) // go for it!
@@ -116,7 +120,8 @@ object HeadTowardsEnemyCityAutomation {
                 || city.health / (expectedDamagePerTurn - cityHealingPerTurn) > 5) // Can damage, but will take more than 5 turns
     }
 
-    private fun headToLandingGrounds(closestReachableEnemyCity: Tile, unit: MapUnit): Boolean {
+    private fun headToLandingGrounds(closestReachableEnemyCity: Tile, unitView: MapUnitView): Boolean {
+        val unit = unitView.getUnit()
         // don't head straight to the city, try to head to landing grounds -
         // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
         val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(minDistanceFromCityToConsiderForLandingArea..maxDistanceFromCityToConsiderForLandingArea)
@@ -134,8 +139,9 @@ object HeadTowardsEnemyCityAutomation {
         closestReachableEnemyCity: Tile,
         unitDistanceToTiles: PathsToTilesWithinTurn,
         unitRange: Int,
-        unit: MapUnit
+        unitView: MapUnitView
     ): Boolean {
+        val unit = unitView.getUnit()
         // If we're already in fire range but have no sight, hold position
         // If there IS sight, automateUnitMoves would order attacking instead of heading to city
         if (closestReachableEnemyCity.getTilesInDistance(unitRange).contains(unit.getTile()))

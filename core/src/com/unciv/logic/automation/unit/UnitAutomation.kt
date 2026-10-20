@@ -67,17 +67,17 @@ object UnitAutomation {
 
         // Note that not all nukes have to be air units
         if (unitView.isNuclearWeapon()) {
-            return AirUnitAutomation.automateNukes(unit)
+            return AirUnitAutomation.automateNukes(unitView)
         }
 
         if (unitView.isAirUnit()) {
             if (unit.canIntercept())
-                return AirUnitAutomation.automateFighter(unit)
+                return AirUnitAutomation.automateFighter(unitView)
 
             if (unitView.hasUnique(UniqueType.SelfDestructs))
-                return AirUnitAutomation.automateMissile(unit)
+                return AirUnitAutomation.automateMissile(unitView)
 
-            return AirUnitAutomation.automateBomber(unit)
+            return AirUnitAutomation.automateBomber(unitView)
         }
 
         // Accompany settlers
@@ -101,7 +101,7 @@ object UnitAutomation {
         if (tryTakeBackCapturedCity(unitView)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
-        if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
+        if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unitView)) return
 
         if (tryHeadTowardsEncampment(unitView)) return
 
@@ -654,7 +654,7 @@ object UnitAutomation {
 
         if (closestReachableCapturedCity != null) {
             return HeadTowardsEnemyCityAutomation.headTowardsEnemyCity(
-                unit,
+                unitView,
                 closestReachableCapturedCity,
                 // This should be cached after the `canReach` call above.
                 unit.movement.getShortestPath(closestReachableCapturedCity)

@@ -45,10 +45,10 @@ object CivilianUnitAutomation {
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.getTile())) {
             // First off get out of the way, then decide if you actually want to do something else
-            val tilesCanMoveTo = mapUnit.movement.getDistanceToTiles()
-                .filter { mapUnit.movement.canMoveTo(it.key) }
+            val tilesCanMoveTo = unit.getDistanceToTiles()
+                .filter { unit.canMoveTo(it.key) }
             if (tilesCanMoveTo.isNotEmpty())
-                mapUnit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalMovement }!!.key)
+                unit.tryMoveToTile(tilesCanMoveTo.minByOrNull { it.value }!!.key)
         }
 
         if (unit.isAutomatingRoadConnection())
@@ -140,23 +140,22 @@ object CivilianUnitAutomation {
             val unique = mapUnit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
             val buildingName = unique.params[0]
             // Choose the city that is closest in distance and does not have the building constructed.
-            val cityToGainBuilding = mapUnit.civ.cities.filter {
-                !it.cityConstructions.containsBuildingOrEquivalent(buildingName)
-                    && (mapUnit.movement.canMoveTo(it.getCenterTile()) || mapUnit.currentTile == it.getCenterTile())
+            val cityToGainBuilding = unit.civ().cities().filter {
+                !it.constructions.getCityConstructions().containsBuildingOrEquivalent(buildingName)
+                    && (unit.canMoveTo(it.centerTile()) || unit.getTile() == it.centerTile())
             }.map {
-                val path = mapUnit.movement.getShortestPath(it.getCenterTile())
+                val path = unit.getShortestPath(it.centerTile())
                 // We want to calc path once, but still filter out unreachable cities
                 it to path.size
             }.filter { it.second > 0 }.minByOrNull { it.second }?.first
-            
 
             if (cityToGainBuilding != null) {
-                if (mapUnit.currentTile == cityToGainBuilding.getCenterTile()) {
+                if (unit.getTile() == cityToGainBuilding.centerTile()) {
                     UniqueTriggerActivation.triggerUnique(unique, mapUnit.civ, unit = mapUnit, tile = mapUnit.currentTile)
                     UnitActionModifiers.activateSideEffects(mapUnit, unique)
                     return
                 }
-                else mapUnit.movement.headTowards(cityToGainBuilding.getCenterTile())
+                else unit.tryHeadTowards(cityToGainBuilding.centerTile())
             }
             return
         }

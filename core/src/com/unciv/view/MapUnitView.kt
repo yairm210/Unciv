@@ -91,6 +91,9 @@ class MapUnitView internal constructor(
     /** @throws com.unciv.logic.map.mapunit.movement.UnitMovement.UnreachableDestinationException if no tile can be reached this turn towards [targetTileView] */
     @Readonly fun getTileToMoveToThisTurn(targetTileView: TileView): TileView =
         gameView.tileMapView.getTile(unit.movement.getTileToMoveToThisTurn(targetTileView.unwrap()))
+    /** Tiles this unit can reach this turn, with the total movement needed to get there. */
+    @Readonly fun getDistanceToTiles(): Map<TileView, Float> =
+        unit.movement.getDistanceToTiles().entries.associate { gameView.tileMapView.getTile(it.key) to it.value.totalMovement }
     @Readonly fun getPathToTile(tileView: TileView): List<TileView> =
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
@@ -102,6 +105,7 @@ class MapUnitView internal constructor(
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
+    @Readonly fun getDamageFromTerrain(tileView: TileView): Int = unit.getDamageFromTerrain(tileView.unwrap())
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())

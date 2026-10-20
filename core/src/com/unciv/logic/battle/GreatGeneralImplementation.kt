@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.view.GameView
 import com.unciv.logic.automation.unit.HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
@@ -81,7 +82,7 @@ object GreatGeneralImplementation {
                     && (tile.civilianUnit == null || tile.civilianUnit == general)
             }
 
-        val closestReachableEnemyCity = getEnemyCitiesByPriority(general)
+        val closestReachableEnemyCity = getEnemyCitiesByPriority(GameView(general.civ.gameInfo, general.civ).getMapUnitView(general))
             .firstOrNull { general.movement.canReach(it.getCenterTile()) } 
         // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 

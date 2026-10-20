@@ -1,4 +1,4 @@
-package com.unciv.logic.civilization.managers
+package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
