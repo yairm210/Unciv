@@ -67,7 +67,7 @@ object CivilianUnitAutomation {
             && mapUnit.civ.religionManager.religionState < ReligionState.Religion
             && mapUnit.civ.religionManager.mayFoundReligionAtAll()
         )
-            return ReligiousUnitAutomation.foundReligion(mapUnit)
+            return ReligiousUnitAutomation.foundReligion(unit)
         
         if (unit.hasUnique(UniqueType.MayFoundReligion) && unit.civ().isCityState){
             // We have literally nothing to do with this unit, at least stop costing money
@@ -80,7 +80,7 @@ object CivilianUnitAutomation {
             && mapUnit.civ.religionManager.religionState < ReligionState.EnhancedReligion
             && mapUnit.civ.religionManager.mayEnhanceReligionAtAll()
         )
-            return ReligiousUnitAutomation.enhanceReligion(mapUnit)
+            return ReligiousUnitAutomation.enhanceReligion(unit)
 
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
@@ -96,10 +96,10 @@ object CivilianUnitAutomation {
             return
 
         if (mapUnit.civ.religionManager.maySpreadReligionAtAll(mapUnit))
-            return ReligiousUnitAutomation.automateMissionary(mapUnit)
+            return ReligiousUnitAutomation.automateMissionary(unit)
 
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
-            return ReligiousUnitAutomation.automateInquisitor(mapUnit)
+            return ReligiousUnitAutomation.automateInquisitor(unit)
 
         val isLateGame = isLateGame(unit.civ())
         // Great scientist -> Hurry research if late game

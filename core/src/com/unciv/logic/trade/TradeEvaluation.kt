@@ -1,5 +1,6 @@
 package com.unciv.logic.trade
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.automation.civilization.MotivationToAttackAutomation
@@ -380,7 +381,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.defensivePact -> if (DiplomacyAutomation.wantsToSignDefensivePact(civInfo, tradePartner)) 0
+                    Constants.defensivePact -> if (DiplomacyAutomation.wantsToSignDefensivePact(GameView(civInfo.gameInfo, civInfo).civView, tradePartner)) 0
                         else 100000
                     Constants.researchAgreement -> -offer.amount
                     else -> 1000
@@ -532,7 +533,7 @@ class TradeEvaluation {
         if (ourCombatStrength * 1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength > theirCombatStrength) {
-            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(ourCiv, otherCiv, 0f) <= 0) return 0
+            if (MotivationToAttackAutomation.hasAtLeastMotivationToAttack(ourCiv, GameView(ourCiv.gameInfo, ourCiv).getForeignCivView(otherCiv), 0f) <= 0) return 0
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
             // We don't add the same constraint here. We should not make peace easily if we're

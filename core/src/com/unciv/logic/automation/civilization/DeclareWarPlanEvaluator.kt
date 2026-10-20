@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.GameView
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -26,7 +27,7 @@ object DeclareWarPlanEvaluator {
         if (teamCivDiplo.isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000f
 
         var motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         if (teamCivDiplo.isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5f
         // Make sure that they can actually help us with the target
@@ -79,7 +80,7 @@ object DeclareWarPlanEvaluator {
         if (thirdCivDiplo.isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000f
 
         var motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
         // We need to be able to trust the thirdCiv at least somewhat
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
@@ -153,7 +154,7 @@ object DeclareWarPlanEvaluator {
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
         val motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         val diploManager = civInfo.getDiplomacyManager(target)!!
 
@@ -174,7 +175,7 @@ object DeclareWarPlanEvaluator {
     @Readonly
     fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         val motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it

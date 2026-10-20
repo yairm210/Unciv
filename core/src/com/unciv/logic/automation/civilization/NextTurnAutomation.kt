@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.isAtWar
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
@@ -52,20 +53,20 @@ object NextTurnAutomation {
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (!civView.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civView)
-                DiplomacyAutomation.offerPeaceTreaty(civInfo)
-                DiplomacyAutomation.askForHelp(civInfo)
-                DiplomacyAutomation.offerDeclarationOfFriendship(civInfo)
+                DiplomacyAutomation.offerPeaceTreaty(civView)
+                DiplomacyAutomation.askForHelp(civView)
+                DiplomacyAutomation.offerDeclarationOfFriendship(civView)
             }
             if (civView.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
 
-            DiplomacyAutomation.denounce(civInfo)
-            DiplomacyAutomation.offerToEstablishEmbassy(civInfo)
-            DiplomacyAutomation.offerOpenBorders(civInfo)
-            DiplomacyAutomation.offerResearchAgreement(civInfo)
-            DiplomacyAutomation.offerDefensivePact(civInfo)
-            DiplomacyAutomation.checkMilitaryPresenceNearBorder(civInfo)
+            DiplomacyAutomation.denounce(civView)
+            DiplomacyAutomation.offerToEstablishEmbassy(civView)
+            DiplomacyAutomation.offerOpenBorders(civView)
+            DiplomacyAutomation.offerResearchAgreement(civView)
+            DiplomacyAutomation.offerDefensivePact(civView)
+            DiplomacyAutomation.checkMilitaryPresenceNearBorder(civView)
             TradeAutomation.exchangeLuxuries(civInfo)
             
             issueRequests(civView)
@@ -135,7 +136,7 @@ object NextTurnAutomation {
             val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
             if (demandingCiv.isDefeated()) return
             val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-            if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
+            if (Automation.threatAssessment(civView, GameView(civInfo.gameInfo, civInfo).getForeignCivView(demandingCiv)) >= ThreatLevel.High
                 || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
                 diploManager.agreeToDemand(demand)
             else diploManager.refuseDemand(demand)
@@ -149,7 +150,7 @@ object NextTurnAutomation {
         if (requestingCiv.isDefeated()) return
         val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
         if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
-            && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo, requestingCiv)) {
+            && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civView, requestingCiv)) {
             diploManager.signDeclarationOfFriendship()
             requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civView.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civView.civName)
         } else {
@@ -416,7 +417,7 @@ object NextTurnAutomation {
 
     private fun automateUnits(civView: CivView) {
         val civInfo = civView.getCiv()
-        val isAtWar = civInfo.isAtWar()
+        val isAtWar = civView.isAtWar()
         // Instances present when the pass starts. addUnit/removeUnit replace UnitManager's list,
         // so units acquired later must not extend this pass. The instances stay mutable:
         // capturedBy changes owner on the same object, and an earlier action can do that to a
@@ -667,7 +668,7 @@ object NextTurnAutomation {
         // The "defend them first" gate permanently latches peaceful, happy civs at ~4 cities. Bypass it when
         // we clearly have room to expand safely: at peace, ample happiness, still early, and in a game with
         // other major civs whose presence deters an opportunistic attack (this is a bad idea in a 1v1 duel).
-        val hasSlackToExpandSafely = !civInfo.isAtWar() && civView.getHappiness() >= 8 && civInfo.gameInfo.turns < 150
+        val hasSlackToExpandSafely = !civView.isAtWar() && civView.getHappiness() >= 8 && civInfo.gameInfo.turns < 150
             && civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } >= 3
         if (civView.getUnits().count { it.isMilitary() } < civView.cities().size && !hasSlackToExpandSafely)
             return // We need someone to defend them first
@@ -748,7 +749,7 @@ object NextTurnAutomation {
             }
             // violation before promise
             else -> {
-                val threatLevel = Automation.threatAssessment(civInfo, offendingCiv)
+                val threatLevel = Automation.threatAssessment(civView, GameView(civInfo.gameInfo, civInfo).getForeignCivView(offendingCiv))
                 if (threatLevel < ThreatLevel.High // don't piss them off for no reason please.
                     || demand == Demand.DoNotAttackUs) 
                     offendingCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civView.civID))

@@ -141,3 +141,12 @@ class CivView(civ: Civilization,
     fun tryMarkMovedAutomatedUnits(): Boolean { civ.hasMovedAutomatedUnits = true; return true }
     fun tryAutomateAllUnits(): Boolean { civ.units.getCivUnits().forEach { it.doAction() }; return true }
 }
+
+// Helpers built on top of the view API, rather than being part of it
+// This is so we can separate the minimal API, from the helpful API.
+
+/** `true` if we are at war with any known, non-defeated civ */
+@Readonly fun CivView.isAtWar(): Boolean = getKnownCivs().any { !it.isDefeated() && isAtWarWith(it) }
+
+/** Our capital city, or `null` if we have none */
+@Readonly fun CivView.getCapital(): CityView? = cities().firstOrNull { it.isCapital() }

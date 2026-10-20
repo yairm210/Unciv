@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -360,7 +361,7 @@ class WorkerAutomation(
                 var repairBonusPriority = tile.getImprovementToRepair()!!.getTurnsToBuild(unit.civ,unit) - UnitActionsFromUniques.getRepairTurns(unit)
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += UnitActionsFromUniques.getRepairTurns(unit) - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.stats.getStatDiffForImprovement(tile.tileImprovement!!, unit.civ, tile.owningCity), unit.civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.stats.getStatDiffForImprovement(tile.tileImprovement!!, unit.civ, tile.owningCity), GameView(unit.civ.gameInfo, unit.civ).civView)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null
@@ -480,7 +481,7 @@ class WorkerAutomation(
 
             lastTerrain.let {
                 isRemovable(it) &&
-                    (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields))
+                    (Automation.rankStatsValue(it, GameView(civInfo.gameInfo, civInfo).civView) < 0 || it.hasUnique(UniqueType.NullifyYields))
             } -> potentialTileImprovements[Constants.remove + lastTerrain.name]
 
             else -> bestBuildableImprovement
@@ -560,7 +561,7 @@ class WorkerAutomation(
         if (tile.getOwner() != unit.civ)
             stats.div(3f)
 
-        var value = Automation.rankStatsValue(stats, unit.civ)
+        var value = Automation.rankStatsValue(stats, GameView(unit.civ.gameInfo, unit.civ).civView)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
         val resource = tile.tileResource
         val currentImprovement = tile.tileImprovement

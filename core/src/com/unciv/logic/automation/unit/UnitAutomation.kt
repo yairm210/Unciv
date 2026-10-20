@@ -179,7 +179,7 @@ object UnitAutomation {
 
     // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
     private fun tryFogBust(unit: MapUnit): Boolean {
-        if (!Automation.afraidOfBarbarians(unit.civ)) return false // Not if we're not afraid
+        if (!Automation.afraidOfBarbarians(GameView(unit.civ.gameInfo, unit.civ).civView)) return false // Not if we're not afraid
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
@@ -242,7 +242,7 @@ object UnitAutomation {
 
         if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
-            if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
+            if (!Automation.allowSpendingResource(GameView(unit.civ.gameInfo, unit.civ).civView, upgradedUnit)) return false
         }
 
         val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)

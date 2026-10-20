@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -202,7 +203,7 @@ object CityLocationTileRanker {
         if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
         if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
 
-        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ), civ)
+        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ), GameView(civ.gameInfo, civ).civView)
 
         if (civ.canSeeResource(resource)) {
             rankTileValue += when (resource.resourceType) {

@@ -208,7 +208,7 @@ object SpecificUnitAutomation {
 
         val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Land }
-            .map { Automation.rankStatsValue(it, unit.civ) }
+            .map { Automation.rankStatsValue(it, GameView(unit.civ.gameInfo, unit.civ).civView) }
             .average()
 
         for (city in citiesByStatBoost) {
@@ -218,7 +218,7 @@ object SpecificUnitAutomation {
                     // okay if we replace regular improvements by great improvements, but not the other way around
                     && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
                     && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), GameView(unit.civ.gameInfo, unit.civ).civView) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue
@@ -245,7 +245,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
-                    unit.civ,
+                    GameView(unit.civ.gameInfo, unit.civ).civView,
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }

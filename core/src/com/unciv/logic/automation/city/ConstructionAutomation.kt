@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.city
 
+import com.unciv.view.GameView
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -166,7 +167,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
         if (isAtWar) modifier *= 2
 
-        if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
+        if (Automation.afraidOfBarbarians(GameView(civInfo.gameInfo, civInfo).civView)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
         val civilianUnit = city.getCenterTile().civilianUnit
@@ -184,7 +185,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it)
+                    && Automation.allowAutomatedConstruction(GameView(civInfo.gameInfo, civInfo).civView, city, it)
             }.filterBuildable()
             .toSet()
         if (buildableWorkboatUnits.isEmpty()) return
@@ -233,7 +234,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val workerEquivalents = units
             .filter {
                 it.hasUnique(UniqueType.BuildImprovements)
-                        && Automation.allowAutomatedConstruction(civInfo, city, it)
+                        && Automation.allowAutomatedConstruction(GameView(civInfo.gameInfo, civInfo).civView, city, it)
             }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
@@ -359,7 +360,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
+        return Automation.rankStatsValue(buildingStats.clone(), GameView(civInfo.gameInfo, civInfo).civView)
     }
 
     // NOT readonly safe, since it alters the tile ownership of real tiles
