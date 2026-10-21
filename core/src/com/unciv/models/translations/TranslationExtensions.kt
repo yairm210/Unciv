@@ -5,7 +5,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.fonts.FontRulesetIcons
-import java.text.ParsePosition
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.LocalState
@@ -76,10 +75,31 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false) =
 
 @Readonly
 fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
-    // '<' and '>' checks for quick 'no' answer. Nested "<>" aren't caught here.
-    val ltIndex = indexOf('<')
-    if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
-        return translateConditionals(language, hideIcons, ltIndex)
+    // '<' and '>' checks for quick 'no' answer.
+    if (supportNestingPointy) {
+        val ltIndex = findNextTopLevel(this, 0, '<')
+        if (ltIndex >= 0)
+            return translateConditionals(language, hideIcons, ltIndex)
+    } else {
+        val ltIndex = indexOf('<')
+        if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
+            return translateConditionals(language, hideIcons, ltIndex)
+    }
+    return trNoConditionals(language, hideIcons, hideStats)
+}
+
+@Readonly
+private fun String.trNoConditionals(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
+    // '<' and '>' checks for quick 'no' answer.
+    if (supportNestingPointy) {
+        val ltIndex = findNextTopLevel(this, 0, '<')
+        if (ltIndex >= 0 && findMatchingAnyKind(this, ltIndex) >= 0)
+            return translateConditionals(language, hideIcons, ltIndex)
+    } else {
+        val ltIndex = indexOf('<')
+        if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
+            return translateConditionals(language, hideIcons, ltIndex)
+    }
 
     // curly and square brackets can be nested inside of each other so find the leftmost curly/square
     // bracket then process that first
@@ -93,18 +113,6 @@ fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean =
 
     // Translating partial sentences inside {}
     return translatePartial(language, hideIcons, splitIndex)
-}
-
-/** Finds a matching closing bracket in [text] starting at [openPos] supporting nesting of [open]/[close] bracket pairs. */
-@Readonly
-private fun findMatching(text: String, openPos: Int, open: Char, close: Char): Int {
-    var depth = 1
-    for (pos in openPos + 1 until text.length) {
-        val c = text[pos]
-        if (c == open) depth++
-        else if (c == close && --depth <= 0) return pos
-    }
-    return -1
 }
 
 /** Scans for [open]/[close] pairs
@@ -122,22 +130,77 @@ private fun findMatching(text: String, openPos: Int, open: Char, close: Char): I
 @Readonly
 private inline fun String.parsePairs(
     open: Char, close: Char,
-    firstPos: Int = indexOf(open),
+    firstPos: Int = Int.MIN_VALUE, // That's a sentinel, using null would somtimes box
     supportNesting: Boolean,
     emitInside: String.(start: Int, end: Int) -> Unit,
     emitOutside: String.(start: Int, end: Int) -> Unit
 ) {
     var pos = 0
-    var openPos = firstPos
+    var openPos = when {
+        firstPos != Int.MIN_VALUE -> firstPos
+        supportNesting -> findNextTopLevel(this, 0, open)
+        else -> indexOf(open)
+    }
     while (openPos >= 0) {
-        val closePos = if (supportNesting) findMatching(this, openPos, open, close) else indexOf(close, openPos + 1)
+        val closePos = if (supportNesting) findMatchingAnyKind(this, openPos) else indexOf(close, openPos + 1)
         if (closePos < 0) break
         emitOutside(pos, openPos)
         emitInside(openPos + 1, closePos)
         pos = closePos + 1
-        openPos = indexOf(open, pos)
+        openPos = if (supportNesting) findNextTopLevel(this, pos, open) else indexOf(open, pos)
     }
     emitOutside(pos, length)
+}
+
+/** Finds a matching closing bracket in [text] starting at [openPos] supporting nesting of [open]/[close] bracket pairs. */
+@Readonly
+private fun findMatchingSameKind(open: Char, close: Char, text: String, openPos: Int): Int {
+    var depth = 1
+    for (pos in openPos + 1 until text.length) {
+        val c = text[pos]
+        if (c == open) depth++
+        else if (c == close && --depth <= 0) return pos
+    }
+    return -1
+}
+
+@Readonly
+private fun closerOf(c: Char) = when (c) { '[' -> ']'; '<' -> '>'; '{' -> '}'; else -> Char.MIN_VALUE }
+
+/** Find the position of the closer matching the opener at [openPos], nesting all three types. Unmatched inner openers are plain text, stray closers are ignored. */
+@Readonly
+private fun findMatchingAnyKind(text: String, openPos: Int): Int {
+    @LocalState var stack = CharArray(8)
+    var depth = 0
+    for (pos in openPos until text.length) {
+        val c = text[pos]
+        val closer = closerOf(c)
+        if (closer != Char.MIN_VALUE) {
+            if (depth == stack.size) stack = stack.copyOf(depth * 2)
+            stack[depth++] = closer
+        } else if (c == ']' || c == '>' || c == '}') {
+            var i = depth - 1
+            while (i >= 0 && stack[i] != c) i--
+            if (i >= 0) { depth = i; if (depth == 0) return pos }
+        }
+    }
+    return -1
+}
+
+/** Find the next [open] at or after [from] that isn't inside a complete group of another type, or -1 if no such opener found */
+@Readonly
+private fun findNextTopLevel(text: String, from: Int, open: Char): Int {
+    var pos = from
+    while (pos < text.length) {
+        val c = text[pos]
+        if (c == open) return pos
+        if (closerOf(c) != Char.MIN_VALUE) {
+            val end = findMatchingAnyKind(text, pos)
+            if (end >= 0) pos = end
+        }
+        pos++
+    }
+    return -1
 }
 
 /** Helper for [removeConditionals] and the related the conditionals scan in [translateConditionals]
@@ -298,7 +361,7 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean, f
         .mapTo(ArrayList(conditionalContents.size)) { it.tr(language, hideIcons) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    val translatedBaseUnique = base.toString().tr(language, hideIcons)
+    val translatedBaseUnique = base.toString().trNoConditionals(language, hideIcons)
     @LocalState val sb = StringBuilder(length + 16) // Would be more readable with `buildString`, but: @Purity
     fun appendChangingFirstChar(text: String, transform: Char.(Locale) -> String) {
         if (text.isEmpty()) return
@@ -389,7 +452,7 @@ fun String.getPlaceholderText(): String {
     if (firstPos < 0) return stringToParse
 
     @LocalState val key = StringBuilder(length)
-    stringToParse.parsePairs('[', ']', firstPos, supportNestingSquare,
+    stringToParse.parsePairs('[', ']', supportNesting = supportNestingSquare,
         emitInside = { _, _ -> key.append("[]") },
         emitOutside = { start, end -> key.append(this, start, end) }
     )
@@ -411,22 +474,20 @@ fun String.equalsPlaceholderText(str: String): Boolean {
  *  Quickly tests whether `this` contains placeholder parameters
  *  @see getPlaceholderParameters
  */
-@Pure
+@Readonly
 fun String.hasPlaceholderParameters(): Boolean {
     if (!contains('[')) return false
     val text = removeConditionals()
     val openPos = text.indexOf('[')
-    // TODO This will return true for "[a[b]", while getPlaceholderParameters returns an emptyList for it
-    //      This un-balance was present in the Regex-based version, too. To "fix" use findMatching(text, openPos, '[', ']') >= 0
-    return openPos >= 0 && text.indexOf(']', openPos + 1) >= 0
+    return openPos >= 0 && findMatchingSameKind('[', ']', text, openPos) >= 0
 }
 
 /** Substitutes placeholders with [strings], respecting order of appearance.
  *  - Note this does not support nested [] brackets, unlike the translation engine.
- *    (to "fix", use [findMatching] for the `val closePos =` line)
- *  - Note this does not recogize conditionals, given enough [strings], it might fill out placeholders inside those too.
+ *    (to "fix", use [findMatchingSameKind] for the `val closePos =` line)
+ *  - Note this does not recognize conditionals, given enough [strings], it might fill out placeholders inside those too.
  */
-@Pure
+@Readonly
 fun String.fillPlaceholders(vararg strings: String): String {
     @LocalState val sb = StringBuilder(length + 16)
     var index = 0
@@ -460,7 +521,7 @@ fun String.getPartsInsideCurlies(): List<String> {
     return result
 }
 
-/** @return Modifier texts as Sequence */
+/** @return Modifier texts as Sequence. Supports nesting `<>` inside `[]`. */
 @VisibleForTesting
 fun String.getModifierTexts() = sequence {
     parsePairs('<', '>', supportNesting = supportNestingPointy,
@@ -492,12 +553,12 @@ fun String.getModifiers(): List<Unique> {
  *  @see getModifiers
  *  @see supportNestingPointy
  */
-@Pure
+@Readonly
 fun String.removeConditionals(): String {
-    val firstPos = indexOf('<')
+    val firstPos = if (supportNestingPointy) findNextTopLevel(this, 0, '<') else indexOf('<')
     if (firstPos < 0) return this
     @LocalState val sb = StringBuilder(length)
-    parsePairs('<', '>', supportNesting = supportNestingPointy,
+    parsePairs('<', '>', firstPos, supportNesting = supportNestingPointy,
         emitInside = { _, _ -> },
         emitOutside = { start, end -> sb.appendTrimming(this, start, end) }
     )
@@ -520,8 +581,6 @@ private fun String.validateConditionals(recursionDepth: Int): String? {
     val base = removeConditionals()
     if ('<' in base || '>' in base) return "mismatched conditional braces"
     if (!trimStart().startsWith(base.trimStart())) return "text between or after conditionals"
-    if (recursionDepth > 9)
-        println()
     if (recursionDepth >= MAX_CONDITIONAL_NESTING) return "excessive nesting of conditionals"
     return getModifiers().firstNotNullOfOrNull { it.text.validateConditionals(recursionDepth + 1) }
 }
