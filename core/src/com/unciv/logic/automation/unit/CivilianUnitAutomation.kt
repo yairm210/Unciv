@@ -25,7 +25,7 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ().getUnits().any { it.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnitView, dangerousTiles: HashSet<Tile>, cache: AutomationCache): Unit = timeThis("automateCivilianUnit") {
+    fun automateCivilianUnit(unit: MapUnitView, dangerousTiles: HashSet<TileView>, cache: AutomationCache): Unit = timeThis("automateCivilianUnit") {
         // Temporary - logic-layer automation below still works on MapUnit
         val mapUnit = unit.getUnit()
 
@@ -192,7 +192,7 @@ object CivilianUnitAutomation {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = mapUnit.movement.getDistanceToTiles().keys
-            .filter { ThreatManager.doesTileHaveMilitaryEnemy(mapUnit.civ, it) }
+            .filter { ThreatManager.doesTileHaveMilitaryEnemy(unit.civ(), unit.getTile().getTileMap().getTile(it)) }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.getBaseUnit().isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
@@ -221,18 +221,18 @@ object CivilianUnitAutomation {
             return
         }
 
-        val unitTile = mapUnit.getTile()
         val dangerousTiles = ThreatManager.getDangerousTiles(cache, unit)
+        val unitTileView = unit.getTile()
         val tileClosestToDanger = dangerousTiles
             // Priotirize capture threat over ranged attack
-            .sortedByDescending { ThreatManager.getEnemyUnitsOnTiles(mapUnit.civ, listOf(it)).isNotEmpty() }
-            .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
+            .sortedByDescending { ThreatManager.getEnemyUnitsOnTiles(unit.civ(), listOf(it)).isNotEmpty() }
+            .minByOrNull { it.aerialDistanceTo(unitTileView) } ?: unitTileView
         val tileFurthestFromDanger = reachableTiles.keys
             .filter {
                 mapUnit.movement.canMoveTo(it)
                     && mapUnit.getDamageFromTerrain(it) < unit.unitHealth
-                    && it !in dangerousTiles }
-            .sortedWith(compareByDescending<Tile> { it.aerialDistanceTo(tileClosestToDanger) } // As far away from threat
+                    && unitTileView.getTileMap().getTile(it) !in dangerousTiles }
+            .sortedWith(compareByDescending<Tile> { unitTileView.getTileMap().getTile(it).aerialDistanceTo(tileClosestToDanger) } // As far away from threat
                 .thenByDescending { it.isFriendlyTerritory(mapUnit.civ) }) // Priotirize friendly territory
             .firstOrNull() ?: return // can't move anywhere!
 

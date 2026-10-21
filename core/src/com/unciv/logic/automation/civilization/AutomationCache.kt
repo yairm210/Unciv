@@ -1,6 +1,6 @@
 package com.unciv.logic.automation.civilization
 
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 
 /**
  * Holds data that automation caches while a civ's moves are being automated.
@@ -17,8 +17,8 @@ class AutomationCache {
          * Tiles are sorted by distance in increasing order.
          * This allows us to quickly check if they are still alive and if we should search farther.
          * It is not guaranteed that each tile in this list has an enemy (since they may have died).*/
-        var tilesWithEnemies: MutableList<Pair<Tile,Int>>
+        var tilesWithEnemies: MutableList<Pair<TileView,Int>>
     )
 
-    val distanceToClosestEnemyTiles = HashMap<Tile, ClosestEnemyTileData>()
+    val distanceToClosestEnemyTiles = HashMap<TileView, ClosestEnemyTileData>()
 }

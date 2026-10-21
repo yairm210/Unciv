@@ -52,6 +52,10 @@ open class ForeignCityView(protected open val city: City,
         return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
+    @Readonly fun getBombardRange(): Int = city.getBombardRange()
+    /** Cities (of any civ) within [maxDistance] of this city */
+    @Readonly fun getNeighboringCities(maxDistance: Int = 12): List<ForeignCityView> =
+        city.getNeighboringCities(maxDistance).map { gameView.getForeignCityView(it) }
     @Readonly fun getPopulationCount(): Int = city.population.population
     @Readonly fun isCapital(): Boolean = city.isCapital()
     @Readonly fun isPuppet(): Boolean = city.isPuppet

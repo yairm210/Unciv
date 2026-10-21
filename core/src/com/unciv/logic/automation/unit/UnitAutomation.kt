@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.GUI
@@ -37,6 +38,10 @@ object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+
+    /** Temporary bridge: the [TileView] of a raw [Tile], as seen by [unitView]'s civ */
+    @Readonly
+    private fun MapUnitView.viewOf(tile: Tile): TileView = getTile().getTileMap().getTile(tile)
 
     fun automateUnitMoves(unitView: MapUnitView, cache: AutomationCache = AutomationCache()):Unit = timeThis("automateUnitMoves") {
         val unit = unitView.getUnit()
@@ -136,7 +141,7 @@ object UnitAutomation {
                 && (!unitView.civ().isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
-                && ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, tile, 3) > 3 // don't walk in range of enemy units
+                && ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(tile), 3) > 3 // don't walk in range of enemy units
                 && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
@@ -224,7 +229,7 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    fun wander(unitView: MapUnitView, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
+    fun wander(unitView: MapUnitView, stayInTerritory: Boolean = false, tilesToAvoid: Set<TileView> = setOf()) {
         val unit = unitView.getUnit()
         if (!unitView.hasMovement()) return // return in case we can't move anyways
         val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
@@ -232,7 +237,7 @@ object UnitAutomation {
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
         val reachableTiles = unitDistanceToTiles
                 .filter {
-                    it !in tilesToAvoid
+                    unitView.viewOf(it) !in tilesToAvoid
                         && unit.movement.canMoveTo(it)
                         && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
@@ -323,7 +328,7 @@ object UnitAutomation {
         if (unitView.isCivilian()) return false
         if (unitView.isAirUnit()) return false
         // Better to do a more healing oriented move then
-        if (ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, unit.getTile(), 4, true) > 3) return false
+        if (ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), 4, true) > 3) return false
 
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -337,13 +342,13 @@ object UnitAutomation {
             // Rare case, what if we don't have a city nearby?
             // Lets favor the tiles that don't have enemies close by
             // Ideally we should check in a greater radius but might get way too expensive
-            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, it, 3, false) }
+            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(it), 3, false) }
         }
 
-        val ourDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, unit.getTile(), 4, false)
+        val ourDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), 4, false)
         // Lets check all tiles and swap with the first one
         for (retreatTile in sortedTilesToRetreatTo) {
-            val tileDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, retreatTile, 4, false)
+            val tileDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(retreatTile), 4, false)
             if (ourDistanceToClosestEnemy >= tileDistanceToClosestEnemy) continue
 
             val otherUnit = retreatTile.militaryUnit
@@ -391,14 +396,14 @@ object UnitAutomation {
         val dangerousTiles = ThreatManager.getDangerousTiles(cache, unitView, 3)
         
         // If the unit can heal on this tile in two turns, just heal here
-        if (unit.currentTile !in dangerousTiles 
+        if (unitView.getTile() !in dangerousTiles 
             && canUnitHealInTurnsOnCurrentTile(unitView, cache, 3)) return true
 
         val currentUnitTile = unit.getTile()
 
 
         val viableTilesForHealing = unitDistanceToTiles.keys
-                .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
+                .filter { unitView.viewOf(it) !in dangerousTiles && unit.movement.canMoveTo(it) }
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
@@ -450,7 +455,7 @@ object UnitAutomation {
         if (unitView.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
         if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50)
-            && ThreatManager.getDistanceToClosestEnemyUnit(unit.civ, cache, unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
+            && ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), noEnemyDistance) <= noEnemyDistance) return false
 
         // Round up, otherwise e.g. 99 health over 2 turns would give 0 required healing per turn
         val healthRequiredPerTurn = ceil((100 - unitView.unitHealth).toFloat() / turns).toInt()
@@ -458,20 +463,20 @@ object UnitAutomation {
     }
 
     @Readonly
-    private fun getDangerousTiles(unitView: MapUnitView): HashSet<Tile> {
-        val unit = unitView.getUnit()
-        val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
-            .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
+    private fun getDangerousTiles(unitView: MapUnitView): HashSet<TileView> {
+        val civ = unitView.civ()
+        val nearbyEnemyUnits = unitView.getTile().getExploredTilesInDistance(3)
+            .flatMap { tile -> tile.getVisibleUnits().filter { civ.isAtWarWith(it.civ()) } }
 
         val tilesInRangeOfAttack = nearbyEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance((it.getMaxMovement() - 1) + it.getRange()) }
+            .flatMap { it.getTile().getExploredTilesInDistance((it.getMaxMovement() - 1) + it.getRange()) }
 
-        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
-            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
+        val tilesWithinBombardmentRange = unitView.getTile().getExploredTilesInDistance(3)
+            .filter { it.isCityCenter() && it.getCity()!!.owningCiv().isAtWarWith(civ) }
+            .flatMap { it.getExploredTilesInDistance(it.getCity()!!.getBombardRange()) }
 
-        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
-            .filter { unit.getDamageFromTerrain(it) > 0 }
+        val tilesWithTerrainDamage = unitView.getTile().getExploredTilesInDistance(3)
+            .filter { unitView.getDamageFromTerrain(it) > 0 }
 
         return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
@@ -545,21 +550,21 @@ object UnitAutomation {
         }
 
         val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }.toSet()
-        val closeCities = ThreatManager.getNeighboringCitiesOfOtherCivs(civInfo).filter { it.second.civ in hostileCivs }
+        val closeCities = ThreatManager.getNeighboringCitiesOfOtherCivs(unitView.civ()).filter { it.second.owningCiv().getCiv() in hostileCivs }
         val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) }
             ?: return false
         val citiesToDefend = closeCities
             .filter { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) <= closestDistance + 2 }
             .map { it.first }
             .distinct() // Remove duplicate cities
-            .sortedBy { unit.getTile().aerialDistanceTo(it.getCenterTile()) }
+            .sortedBy { unitView.getTile().aerialDistanceTo(it.getCenterTile()) }
 
         // Move to the closest city with a tile we can enter nearby
         for (city in citiesToDefend) {
-            if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
-            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2)
-                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
-            unit.movement.headTowards(tileToMoveTo)
+            if (unitView.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
+            val tileToMoveTo = city.getCenterTile().getExploredTilesInDistance(2)
+                .firstOrNull { unitView.canMoveTo(it) && unitView.canReach(it) } ?: continue
+            unitView.tryHeadTowards(tileToMoveTo)
             return true
         }
         return false

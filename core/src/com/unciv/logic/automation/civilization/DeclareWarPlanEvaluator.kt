@@ -31,13 +31,13 @@ object DeclareWarPlanEvaluator {
 
         if (teamCivDiplo.isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5f
         // Make sure that they can actually help us with the target
-        if (!ThreatManager.getNeighboringCivilizations(teamCiv).contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(teamCiv.gameInfo, teamCiv).civView).none { it.getCiv() == target }) {
             motivation -= 40f
         }
 
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
-        val teamCivForce = (teamCiv.getStatForRanking(RankingType.Force) - 0.8f * ThreatManager.getCombinedForceOfWarringCivs(teamCiv)).coerceAtLeast(100f)
+        val teamCivForce = (teamCiv.getStatForRanking(RankingType.Force) - 0.8f * ThreatManager.getCombinedForceOfWarringCivs(GameView(teamCiv.gameInfo, teamCiv).civView)).coerceAtLeast(100f)
 
         // A higher motivation means that we can be riskier
         val multiplier = when {
@@ -86,7 +86,7 @@ object DeclareWarPlanEvaluator {
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
             motivation -= 80f - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2)
         }
-        if (!ThreatManager.getNeighboringCivilizations(civToJoin).contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(civToJoin.gameInfo, civToJoin).civView).none { it.getCiv() == target }) {
             motivation -= 20f
         }
 
@@ -124,7 +124,7 @@ object DeclareWarPlanEvaluator {
     fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getDiplomacyManager(civToJoin)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000f
         var motivation = givenMotivation ?: 0f
-        if (!ThreatManager.getNeighboringCivilizations(civToJoin).contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(civToJoin.gameInfo, civToJoin).civView).none { it.getCiv() == target }) {
             motivation -= 50f
         }
 
@@ -132,7 +132,7 @@ object DeclareWarPlanEvaluator {
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // If we have more force than all enemies and overpower this enemy then we don't need help
-        if (civForce - ThreatManager.getCombinedForceOfWarringCivs(civInfo) > targetForce * 2) return 0f
+        if (civForce - ThreatManager.getCombinedForceOfWarringCivs(GameView(civInfo.gameInfo, civInfo).civView) > targetForce * 2) return 0f
 
         // They should to be at least half the targets size
         val thirdCivForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)

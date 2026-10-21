@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
 import com.unciv.view.MapUnitView
 import com.unciv.view.GameView
 import com.unciv.Constants
@@ -77,7 +78,7 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unitView: MapUnitView, dangerousTiles: HashSet<Tile>): Unit = timeThis("automateWorkerAction") {
+    fun automateWorkerAction(unitView: MapUnitView, dangerousTiles: HashSet<TileView>): Unit = timeThis("automateWorkerAction") {
         val unit = unitView.getUnit()
         val currentTile = unit.getTile()
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
@@ -85,7 +86,7 @@ class WorkerAutomation(
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
         if (!currentTileIsCreatesOneImprovementMarker
-            && currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
+            && currentTile.improvementInProgress != null && !dangerousTiles.contains(unitView.getTile())
             && getFullPriority(unit.getTile(), unitView) >= 2) {
             return
         }
@@ -225,7 +226,7 @@ class WorkerAutomation(
      * @return Null if no tile to work was found
      */
     @Readonly
-    private fun findTileToWork(unitView: MapUnitView, tilesToAvoid: Set<Tile>): Tile? = timeThis("findTileToWork") {
+    private fun findTileToWork(unitView: MapUnitView, tilesToAvoid: Set<TileView>): Tile? = timeThis("findTileToWork") {
         val unit = unitView.getUnit()
         val currentTile = unit.getTile()
         
@@ -287,12 +288,12 @@ class WorkerAutomation(
     @Readonly
     private fun isAutomationWorkableTile(
         tile: Tile,
-        tilesToAvoid: Set<Tile>,
+        tilesToAvoid: Set<TileView>,
         currentTile: Tile,
         unitView: MapUnitView
     ): Boolean {
         val unit = unitView.getUnit()
-        if (tile in tilesToAvoid) return false
+        if (unitView.getTile().getTileMap().getTile(tile) in tilesToAvoid) return false
         if (tile.isMarkedForCreatesOneImprovement()) return false
         if (!(tile == currentTile
                     || (unit.isCivilian() && (tile.civilianUnit == null || !tile.civilianUnit!!.cache.hasUniqueToBuildImprovements))

@@ -582,7 +582,7 @@ object NextTurnAutomation {
             !unit.hasUnique(UniqueType.SelfDestructs) -> 4 // Then Bombers (reusable)
             else -> 5 // Missiles
         }
-        val distance = if (!isAtWar) 0 else ThreatManager.getDistanceToClosestEnemyUnit(mapUnit.civ, cache, mapUnit.getTile(), 6)
+        val distance = if (!isAtWar) 0 else ThreatManager.getDistanceToClosestEnemyUnit(unit.civ(), cache, unit.getTile(), 6)
         // Lower health units should move earlier to swap with higher health units
         return distance + (unit.unitHealth / 10) - mapUnit.promotions.numberOfPromotions + when {
             unit.getBaseUnit().isRanged() -> 10

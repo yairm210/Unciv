@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
@@ -74,7 +75,7 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>, cache: AutomationCache) {
+    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<TileView>, cache: AutomationCache) {
         // City-state starts are predetermined by map gen / editor — trust that tile by default.
         // Mods can opt out via CityStatesSearchForFirstCitySite.
         if (unit.civ.isCityState && unit.civ.cities.isEmpty()
@@ -137,7 +138,7 @@ object SpecificUnitAutomation {
             // Find the best tile that is within
             @Readonly
             fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
-                if (it.key in dangerousTiles && it.key != unit.getTile()) return false
+                if (GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit).getTile().getTileMap().getTile(it.key) in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return pathSize in 1..3
             }

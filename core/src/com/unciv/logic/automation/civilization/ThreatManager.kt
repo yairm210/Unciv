@@ -1,11 +1,12 @@
 package com.unciv.logic.automation.civilization
 
-import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.view.CivView
+import com.unciv.view.ForeignCityView
+import com.unciv.view.ForeignCivView
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -20,7 +21,7 @@ object ThreatManager {
      * each subsequent calls are likely to be free.
      */
     @Readonly @Suppress("purity") //tilesWithEnemies is implicit cache
-    fun getDistanceToClosestEnemyUnit(civInfo: Civilization, cache: AutomationCache, tile: Tile, maxDist: Int, takeLargerValues: Boolean = true): Int {
+    fun getDistanceToClosestEnemyUnit(civ: CivView, cache: AutomationCache, tile: TileView, maxDist: Int, takeLargerValues: Boolean = true): Int {
         val tileData = cache.distanceToClosestEnemyTiles[tile]
         // Needs to be a high value, but not the max value so we can still add to it. Example: nextTurnAutomation sorting
         val notFoundDistance = if (takeLargerValues) 500000 else maxDist
@@ -31,7 +32,7 @@ object ThreatManager {
             // Check the tiles where we have previously found an enemy, if so it must be the closest
             while (tilesWithEnemies.isNotEmpty()) {
                 val enemyTile = tilesWithEnemies.first()
-                if (doesTileHaveMilitaryEnemy(civInfo, enemyTile.first)) {
+                if (doesTileHaveMilitaryEnemy(civ, enemyTile.first)) {
                     return if (takeLargerValues) enemyTile.second
                     else enemyTile.second.coerceAtMost(maxDist)
                 } else {
@@ -51,11 +52,11 @@ object ThreatManager {
 
 
         if (tileData != null && tileData.tilesWithEnemies.isNotEmpty()) throw IllegalStateException("There must be no elements in tile.data.tilesWithEnemies at this point")
-        val tilesWithEnemyAtDistance: MutableList<Pair<Tile,Int>> = mutableListOf()
+        val tilesWithEnemyAtDistance: MutableList<Pair<TileView,Int>> = mutableListOf()
         // Search for nearby enemies and store the results
         for (i in minDistanceToSearch..maxDist) {
-            tile.forEachTileAtDistance(i) { searchTile ->
-                if (doesTileHaveMilitaryEnemy(civInfo, searchTile)) {
+            tile.getExploredTilesAtDistance(i).forEach { searchTile ->
+                if (doesTileHaveMilitaryEnemy(civ, searchTile)) {
                     tilesWithEnemyAtDistance.add(Pair(searchTile, i))
                 }
             }
@@ -75,13 +76,13 @@ object ThreatManager {
      * Also ends up calculating and caching [getDistanceToClosestEnemyUnit].
      */
     @Readonly @Suppress("purity") // actually mutates cached data :think:
-    fun getTilesWithEnemyUnitsInDistance(civInfo: Civilization, cache: AutomationCache, tile: Tile, maxDist: Int): MutableList<Tile> {
+    fun getTilesWithEnemyUnitsInDistance(civ: CivView, cache: AutomationCache, tile: TileView, maxDist: Int): MutableList<TileView> {
         val tileData = cache.distanceToClosestEnemyTiles[tile]
 
         // The list of tiles that we will return
-        val tilesWithEnemies: MutableList<Tile> = mutableListOf()
+        val tilesWithEnemies: MutableList<TileView> = mutableListOf()
         // The list of tiles with distance that will be stored in cache.distanceToClosestEnemyTiles
-        val tileDataTilesWithEnemies: MutableList<Pair<Tile,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
+        val tileDataTilesWithEnemies: MutableList<Pair<TileView,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
 
         if (tileData != null) {
             // Add all tiles that we have previously found
@@ -90,7 +91,7 @@ object ThreatManager {
                 // Check if the next tile is out of our search range, if so lets stop here
                 if (tileWithDistance.second > maxDist) return tilesWithEnemies
                 // Check if the threat on the tile is still present
-                if (doesTileHaveMilitaryEnemy(civInfo, tileWithDistance.first))
+                if (doesTileHaveMilitaryEnemy(civ, tileWithDistance.first))
                     tilesWithEnemies.add(tileWithDistance.first)
                 else tilesWithEnemiesIterator.remove()
             }
@@ -105,8 +106,8 @@ object ThreatManager {
         val minDistanceToSearch = (tileData?.distanceSearched?.coerceAtLeast(0) ?: 0) + 1
 
         for (i in minDistanceToSearch..maxDist) {
-            tile.forEachTileAtDistance(i) { searchTile ->
-                if (doesTileHaveMilitaryEnemy(civInfo, searchTile)) {
+            tile.getExploredTilesAtDistance(i).forEach { searchTile ->
+                if (doesTileHaveMilitaryEnemy(civ, searchTile)) {
                     tilesWithEnemies.add(searchTile)
                     tileDataTilesWithEnemies.add(Pair(searchTile, i))
                 }
@@ -125,26 +126,25 @@ object ThreatManager {
      * Returns all enemy military units on tiles
      */
     @Readonly
-    fun getEnemyUnitsOnTiles(civInfo: Civilization, tilesWithEnemyUnitsInDistance:List<Tile>): List<MapUnit> =
-        tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getUnits()
-            .filter { it.isMilitary() && civInfo.isAtWarWith(it.civ) } }
+    fun getEnemyUnitsOnTiles(civ: CivView, tilesWithEnemyUnitsInDistance: List<TileView>): List<ForeignMapUnitView> =
+        tilesWithEnemyUnitsInDistance.flatMap { enemyTile -> enemyTile.getVisibleUnits()
+            .filter { it.isMilitary() && civ.isAtWarWith(it.civ()) } }
 
     @Readonly
-    fun getDangerousTiles(cache: AutomationCache, unitView: MapUnitView, distance: Int = 3): HashSet<Tile> {
-        // Temporary - tile logic below still works on MapUnit
-        val unit = unitView.getUnit()
-        val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(unit.civ, cache, unit.getTile(), distance)
-        val nearbyRangedEnemyUnits = getEnemyUnitsOnTiles(unit.civ, tilesWithEnemyUnits)
+    fun getDangerousTiles(cache: AutomationCache, unitView: MapUnitView, distance: Int = 3): HashSet<TileView> {
+        val civ = unitView.civ()
+        val tilesWithEnemyUnits = getTilesWithEnemyUnitsInDistance(civ, cache, unitView.getTile(), distance)
+        val nearbyRangedEnemyUnits = getEnemyUnitsOnTiles(civ, tilesWithEnemyUnits)
 
         val tilesInRangeOfAttack = nearbyRangedEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+            .flatMap { it.getTile().getExploredTilesInDistance(it.getRange()) }
 
         val tilesWithinBombardmentRange = tilesWithEnemyUnits
-            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
+            .filter { it.isCityCenter() && it.getCity()!!.owningCiv().isAtWarWith(civ) }
+            .flatMap { it.getExploredTilesInDistance(it.getCity()!!.getBombardRange()) }
 
-        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(distance)
-            .filter { unit.getDamageFromTerrain(it) > 0 }
+        val tilesWithTerrainDamage = unitView.getTile().getExploredTilesInDistance(distance)
+            .filter { unitView.getDamageFromTerrain(it) > 0 }
 
         return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
     }
@@ -153,27 +153,23 @@ object ThreatManager {
      * Returns true if the tile has a visible enemy, otherwise returns false.
      */
     @Readonly
-    fun doesTileHaveMilitaryEnemy(civInfo: Civilization, tile: Tile): Boolean {
-        if (!tile.isExplored(civInfo)) return false
-        if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo)) return true
-        if (!tile.isVisible(civInfo)) return false
-        if (tile.getUnits().any { it.isMilitary()
-            && it.civ.isAtWarWith(civInfo)
-            && it.isVisibleTo(civInfo) })
-            return true
-        return false
+    fun doesTileHaveMilitaryEnemy(civ: CivView, tile: TileView): Boolean {
+        if (!tile.isExplored()) return false
+        if (tile.isCityCenter() && tile.getCity()!!.owningCiv().isAtWarWith(civ)) return true
+        if (!tile.isVisible()) return false
+        return tile.getVisibleUnits().any { it.isMilitary() && it.civ().isAtWarWith(civ) }
     }
 
     /** @return a sequence of pairs of cities, the first city is our city and the second city is a nearby city that is not from our civ. */
     @Readonly
-    fun getNeighboringCitiesOfOtherCivs(civInfo: Civilization): Sequence<Pair<City,City>> = civInfo.cities.flatMap {
-        ourCity -> ourCity.getNeighboringCities().filter { it.civ != civInfo }.map { Pair(ourCity, it) }
+    fun getNeighboringCitiesOfOtherCivs(civ: CivView): Sequence<Pair<ForeignCityView, ForeignCityView>> = civ.cities().flatMap {
+        ourCity -> ourCity.getNeighboringCities().filter { it.owningCiv() != civ }.map { Pair(ourCity, it) }
     }.asSequence()
 
-    @Readonly fun getNeighboringCivilizations(civInfo: Civilization): Set<Civilization> = civInfo.cities
+    @Readonly fun getNeighboringCivilizations(civ: CivView): Set<ForeignCivView> = civ.cities()
         .flatMap { it.getNeighboringCities() }
-        .filter { it.civ != civInfo && civInfo.knows(it.civ) }
-        .map { it.civ }.toSet()
+        .map { it.owningCiv() }
+        .filter { it != civ && civ.knows(it) }.toSet()
 
-    @Readonly fun getCombinedForceOfWarringCivs(civInfo: Civilization): Int = civInfo.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) } 
+    @Readonly fun getCombinedForceOfWarringCivs(civ: CivView): Int = civ.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }
 }

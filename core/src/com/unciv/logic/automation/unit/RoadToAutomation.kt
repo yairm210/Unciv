@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
@@ -32,7 +33,7 @@ class RoadToAutomation(val civInfo: Civilization) {
      */
     // TODO: Caching
     @Suppress("UNUSED_PARAMETER")  // tilesWhereWeWillBeCaptured may be useful in the future
-    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<TileView>) {
         if (actualBestRoadAvailable == RoadStatus.None) return
 
         var currentTile = unit.getTile()

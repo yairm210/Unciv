@@ -35,6 +35,7 @@ open class View<T>(protected val wrapped: T,
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
 
+    // Required for equality checks in collections, and for using views as keys in maps
     override fun equals(other: Any?): Boolean = other is View<*> && wrapped == other.wrapped
     override fun hashCode(): Int = wrapped.hashCode()
 }

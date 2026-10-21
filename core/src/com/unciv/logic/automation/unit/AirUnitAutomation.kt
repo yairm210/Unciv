@@ -23,12 +23,13 @@ object AirUnitAutomation {
         val unit = unitView.getUnit()
         if (unitView.unitHealth < 75) return // Wait and heal
 
-        val tilesWithEnemyUnitsInRange = ThreatManager.getTilesWithEnemyUnitsInDistance(unit.civ, cache, unit.getTile(), unit.getRange())
+        val tilesWithEnemyUnitsInRange = ThreatManager.getTilesWithEnemyUnitsInDistance(unitView.civ(), cache, unitView.getTile(), unitView.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
-        val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
+        val friendlyAirUnitsInRange = unitView.getTile().getExploredTilesInDistance(unitView.getRange())
+            .flatMap { it.getVisibleUnits() }.filter { it.isAirUnit() && it.civ() == unitView.civ() }.toList()
         // Find all visible enemy air units
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
-            .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
+            .flatMap { it.getVisibleUnits() }.filter { it.isAirUnit() && it.civ().isAtWarWith(unitView.civ()) }
         val enemyFighters = enemyAirUnitsInRange.size / 2 // Assume half the planes are fighters
         val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.canAttack() }
         val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { !it.canAttack() }
@@ -88,13 +89,13 @@ object AirUnitAutomation {
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unitView)
     }
 
-    private fun tryAirSweep(unitView: MapUnitView, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
-        val unit = unitView.getUnit()
-        val targetTile = tilesWithEnemyUnitsInRange.filter {
-            tile -> tile.getUnits().any { it.civ.isAtWarWith(unit.civ)
-                || (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ)) }
-            }.minByOrNull { it.aerialDistanceTo(unit.getTile()) } ?: return false
-        AirInterception.airSweep(MapUnitCombatant(unit),targetTile)
+    private fun tryAirSweep(unitView: MapUnitView, tilesWithEnemyUnitsInRange: List<TileView>): Boolean {
+        val unitCiv = unitView.civ()
+        val targetTile = tilesWithEnemyUnitsInRange.filter { tile ->
+            tile.getVisibleUnits().any { it.civ().isAtWarWith(unitCiv) }
+                || tile.getCity()?.owningCiv()?.isAtWarWith(unitCiv) == true
+            }.minByOrNull { it.aerialDistanceTo(unitView.getTile()) } ?: return false
+        unitView.tryAirSweep(targetTile)
         return !unitView.hasMovement()
     }
 
