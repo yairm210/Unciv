@@ -36,11 +36,9 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActorAttachments
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.VirtualMouseButtonKeys
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.IconCircleButton
 import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
@@ -297,15 +295,8 @@ fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = fal
 
 /** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
  *  hover version of the image from it, then [surroundWithCircle] it. */
-fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): IconCircleGroup<ImageButton> {
-    val style = ImageButton.ImageButtonStyle()
-    val image = ImageGetter.getDrawable(this)
-    style.imageUp = image
-    style.imageOver = image.tint(overColor)
-    val button = ImageButton(style)
-    button.setSize(iconSize, iconSize)
-    return button.surroundWithCircle(circleSize, false, circleColor)
-}
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color) =
+    IconCircleButton(this, iconSize, circleSize, circleColor, overColor)
 
 /** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
  *
@@ -318,12 +309,7 @@ fun getCloseButton(
     circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
     overColor: Color = Color.RED,
     action: () -> Unit
-): IconCircleGroup<ImageButton> {
-    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
-    closeButton.onActivation(action)
-    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-    return closeButton
-}
+) = IconCircleButton.getCloseButton(size, iconSize, circleColor, overColor, action)
 
 /**
  * Adds a white-circled (x) close button to [parent], positioned to the top right,
