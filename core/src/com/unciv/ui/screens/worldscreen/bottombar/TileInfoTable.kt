@@ -60,6 +60,7 @@ class TileInfoTable(
             val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tileView]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
             add(imagesString.toLabel())
         }
+        statsCell.padRight(indicator.prefWidth + 2f)
         addActor(indicator)
     }
 
