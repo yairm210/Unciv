@@ -1,58 +1,17 @@
 ## 4.22.13
 
-View implementation - UnitAutomation viewification 3 - see 
+Correct civ for hotseat "player ready" screen
 
-View implementation - UnitAutomation viewification 1 - see 
-
-View implementation - UnitAutomation viewification 1 - see 
-
-View implementation - ThreatManager refactor 2 - viewified - see 
-
-View implementation - Massive ThreatManager refactor. Is now stateless, getting civInfo and automation cache explicitly from callers - see 
-
-minor perfs
-
-Fix IDEA profiling by reverting to older coroutines version
-
-View implementation - View-ify tryRelocateMissileToNearbyAttackableCities - see 
-
-View implementation - View-ify tryRelocateToCitiesWithEnemyNearBy - see 
-
-View implementation - View-ify MORE automation function inputs 4 - see 
-
-View implementation - View-ify MORE automation function inputs 3 - see 
-
-View implementation - View-ify MORE automation function inputs 2 - see 
-
-View implementation - View-ify MORE automation funtion inputs! MORE! - see 
-
-View implementation - View-ify what we can in NextTurnAutomation - see 
-
-View implementation - View-ify ALL automation functions for gradual migration - see 
-
-View implementation - Convert some automation functions to views - see 
-
-Resolved  - Separate "Spy rank" for translation purposes
-
-Resolved  - Correct civ for hotseat "player ready" screen
-
-Resolved  - Cancelling mapeditor leave popup, allows to to leave later without warning popup
-
-chore: renames
+Fixed cancelling "leave mapeditor" popup, allowing to to leave later without warning popup
 
 By SomeTroglodyte:
-- Help the "Comment" unique translation 
-- Allow wrap with `FormattedLine.centered==true` 
-- Tile info on city screen now looks and behaves like the one on world screen 
+- Tile info on city screen looks and behaves like the world screen one 
 - Allow `[]` / `<>` nesting to support typical UniqueType.Comment usecase 
-- Author exclusion file is a packaged asset and needs to be read from internal 
-- Adapt RulesetValidator and modder wiki to the new tech merging rules 
+- Author exclusion file read correct on Android 
 
 Resigning clears turn time data - By unciv-loof
 
 Fix startup NPE in FasterUIDevelopment - By Kilo-cy
-
-Fix untranslatable strings - By FoxFLANG
 
 ## 4.22.12
 
