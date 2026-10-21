@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.civilization.ThreatManager
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.isAtWar
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
@@ -17,11 +19,11 @@ import yairm210.purity.annotations.Readonly
 
 object AirUnitAutomation {
 
-    fun automateFighter(unitView: MapUnitView) {
+    fun automateFighter(unitView: MapUnitView, cache: AutomationCache) {
         val unit = unitView.getUnit()
         if (unitView.unitHealth < 75) return // Wait and heal
 
-        val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
+        val tilesWithEnemyUnitsInRange = ThreatManager.getTilesWithEnemyUnitsInDistance(unit.civ, cache, unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
         val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
         // Find all visible enemy air units

@@ -84,7 +84,8 @@ object NextTurnAutomation {
             protectCityStates(civView)
             bullyCityStates(civView)
         }
-        automateUnits(civView)  // this is the most expensive part
+        val cache = AutomationCache()
+        automateUnits(civView, cache)  // this is the most expensive part
 
         if (tradeAndChangeState && civInfo.isMajorCiv()) {
             if (civView.isReligionEnabled()) {
@@ -415,7 +416,7 @@ object NextTurnAutomation {
     }
 
 
-    private fun automateUnits(civView: CivView) {
+    private fun automateUnits(civView: CivView, cache: AutomationCache) {
         val civInfo = civView.getCiv()
         val isAtWar = civView.isAtWar()
         // Instances present when the pass starts. addUnit/removeUnit replace UnitManager's list,
@@ -423,7 +424,7 @@ object NextTurnAutomation {
         // capturedBy changes owner on the same object, and an earlier action can do that to a
         // later one, so ownership and destruction are checked at each dispatch, not before the loop.
         val unitsAtStart = civView.getUnits()
-        fun unitsInPriorityOrder() = unitsAtStart.sortedBy { unit -> getUnitPriority(unit, isAtWar) }
+        fun unitsInPriorityOrder() = unitsAtStart.sortedBy { unit -> getUnitPriority(unit, isAtWar, cache) }
 
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
@@ -443,18 +444,18 @@ object NextTurnAutomation {
             // move spaceship parts before that to make sure we're not blocking them
             if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) continue
             if (!isStillOurUnit(unit, civView)) continue
-            UnitAutomation.automateUnitMoves(unit)
+            UnitAutomation.automateUnitMoves(unit, cache)
         }
 
         if (civView.cities().isNotEmpty()) automateSettlerEscorting(civView)
 
-        for (city in citiesRequiringManualPlacement) automateCityConquer(civView, city)
+        for (city in citiesRequiringManualPlacement) automateCityConquer(civView, city, cache)
 
         for (unit in unitsInPriorityOrder()) {
             // spaceship parts and settlers have already moved
             if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) continue
             if (!isStillOurUnit(unit, civView)) continue
-            UnitAutomation.automateUnitMoves(unit)
+            UnitAutomation.automateUnitMoves(unit, cache)
         }
     }
 
@@ -493,7 +494,7 @@ object NextTurnAutomation {
     }
 
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
-    private fun automateCityConquer(civView: CivView, city: City){
+    private fun automateCityConquer(civView: CivView, city: City, cache: AutomationCache){
         val civInfo = civView.getCiv()
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo && (!it.baseUnit.isMelee() || it.health > 30) }.toList()
@@ -508,7 +509,7 @@ object NextTurnAutomation {
         
         // Air units should do their thing before any of this
         for (unit in ourUnitsInRange(7).filter { it.baseUnit.isAirUnit() })
-            UnitAutomation.automateUnitMoves(GameView(civInfo.gameInfo, civInfo).getMapUnitView(unit))
+            UnitAutomation.automateUnitMoves(GameView(civInfo.gameInfo, civInfo).getMapUnitView(unit), cache)
         
         // First off, any siege unit that can attack the city, should - as long as it's not defeated
         if (city.health != 1) {
@@ -570,7 +571,7 @@ object NextTurnAutomation {
     }
 
     /** Returns the priority of the unit, a lower value is higher priority **/
-    fun getUnitPriority(unit: MapUnitView, isAtWar: Boolean): Int {
+    fun getUnitPriority(unit: MapUnitView, isAtWar: Boolean, cache: AutomationCache): Int {
         val mapUnit = unit.getUnit()
         if (unit.hasUnique(UniqueType.SpaceshipPart)) return 0 // Move before everything else so we can swap
         if (unit.isCivilian() && unit.hasUnique(UniqueType.FoundCity)) return 1// Settlers before workers
@@ -581,7 +582,7 @@ object NextTurnAutomation {
             !unit.hasUnique(UniqueType.SelfDestructs) -> 4 // Then Bombers (reusable)
             else -> 5 // Missiles
         }
-        val distance = if (!isAtWar) 0 else mapUnit.civ.threatManager.getDistanceToClosestEnemyUnit(mapUnit.getTile(),6)
+        val distance = if (!isAtWar) 0 else ThreatManager.getDistanceToClosestEnemyUnit(mapUnit.civ, cache, mapUnit.getTile(), 6)
         // Lower health units should move earlier to swap with higher health units
         return distance + (unit.unitHealth / 10) - mapUnit.promotions.numberOfPromotions + when {
             unit.getBaseUnit().isRanged() -> 10

@@ -30,8 +30,6 @@ class TurnManager(val civInfo: Civilization) {
 
         for (city in civInfo.cities) city.hasSoldBuildingThisTurn = false
 
-        civInfo.threatManager.clear()
-
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
 

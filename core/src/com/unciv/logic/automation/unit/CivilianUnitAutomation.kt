@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.civilization.ThreatManager
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.CivView
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile
@@ -23,7 +25,7 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ().getUnits().any { it.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnitView, dangerousTiles: HashSet<Tile>): Unit = timeThis("automateCivilianUnit") {
+    fun automateCivilianUnit(unit: MapUnitView, dangerousTiles: HashSet<Tile>, cache: AutomationCache): Unit = timeThis("automateCivilianUnit") {
         // Temporary - logic-layer automation below still works on MapUnit
         val mapUnit = unit.getUnit()
 
@@ -39,9 +41,9 @@ object CivilianUnitAutomation {
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
         if (hasSettlerUnique && !(unit.civ().isCityState && unit.isMilitary()))
-            return SpecificUnitAutomation.automateSettlerActions(mapUnit, dangerousTiles)
+            return SpecificUnitAutomation.automateSettlerActions(mapUnit, dangerousTiles, cache)
 
-        if (tryRunAwayIfNeccessary(unit)) return
+        if (tryRunAwayIfNeccessary(unit, cache)) return
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.getTile())) {
             // First off get out of the way, then decide if you actually want to do something else
@@ -59,7 +61,7 @@ object CivilianUnitAutomation {
 
         if (unit.hasUniqueToCreateWaterImprovements()) {
             if (!mapUnit.civ.getWorkerAutomation().automateWorkBoats(unit))
-                UnitAutomation.tryExplore(unit)
+                UnitAutomation.tryExplore(unit, cache)
             return
         }
 
@@ -185,23 +187,23 @@ object CivilianUnitAutomation {
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
-    fun tryRunAwayIfNeccessary(unit: MapUnitView): Boolean {
+    fun tryRunAwayIfNeccessary(unit: MapUnitView, cache: AutomationCache): Boolean {
         val mapUnit = unit.getUnit()
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         val enemyUnitsInWalkingDistance = mapUnit.movement.getDistanceToTiles().keys
-            .filter { mapUnit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
+            .filter { ThreatManager.doesTileHaveMilitaryEnemy(mapUnit.civ, it) }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.getBaseUnit().isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
-            runAway(unit)
+            runAway(unit, cache)
             return true
         }
 
         return false
     }
 
-    private fun runAway(unit: MapUnitView) {
+    private fun runAway(unit: MapUnitView, cache: AutomationCache) {
         val mapUnit = unit.getUnit()
         val reachableTiles = mapUnit.movement.getDistanceToTiles()
         val enterableCity = reachableTiles.keys
@@ -220,10 +222,10 @@ object CivilianUnitAutomation {
         }
 
         val unitTile = mapUnit.getTile()
-        val dangerousTiles = mapUnit.civ.threatManager.getDangerousTiles(unit)
+        val dangerousTiles = ThreatManager.getDangerousTiles(cache, unit)
         val tileClosestToDanger = dangerousTiles
             // Priotirize capture threat over ranged attack
-            .sortedByDescending { mapUnit.civ.threatManager.getEnemyUnitsOnTiles(listOf(it)).isNotEmpty() }
+            .sortedByDescending { ThreatManager.getEnemyUnitsOnTiles(mapUnit.civ, listOf(it)).isNotEmpty() }
             .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
         val tileFurthestFromDanger = reachableTiles.keys
             .filter {

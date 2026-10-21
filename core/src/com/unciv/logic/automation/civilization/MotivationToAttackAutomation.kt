@@ -31,7 +31,7 @@ object MotivationToAttackAutomation {
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
         val personality = civInfo.getPersonality()
 
-        val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == targetCiv }.toList()
+        val targetCitiesWithOurCity = ThreatManager.getNeighboringCitiesOfOtherCivs(civInfo).filter { it.second.civ == targetCiv }.toList()
         val targetCities = targetCitiesWithOurCity.map { it.second }
 
         if (targetCitiesWithOurCity.isEmpty()) return 0f
@@ -49,14 +49,14 @@ object MotivationToAttackAutomation {
         // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0)
         modifiers.add(Pair("Base motivation", -(15f * personality.inverseScaledFocus(PersonalityValue.DeclareWar))))
 
-        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
+        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * ThreatManager.getCombinedForceOfWarringCivs(civInfo))))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
         modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20f))
         modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3f))
 
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
-        if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv()
+        if (ThreatManager.getNeighboringCivilizations(civInfo).none { it != targetCiv && it.isMajorCiv()
                         && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10f))
 

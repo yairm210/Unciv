@@ -111,7 +111,7 @@ object DiplomacyAutomation {
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).coerceAtLeast(0f)
 
         // If they are the only non-friendly civ near us then they are the only civ to attack and expand into
-        if (civInfo.threatManager.getNeighboringCivilizations().none {
+        if (ThreatManager.getNeighboringCivilizations(civInfo).none {
                 it.isMajorCiv() && it != otherCiv
                     && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)
             })
@@ -422,7 +422,7 @@ object DiplomacyAutomation {
             if (enemy.cities.any { (it.health.toFloat() / it.getMaxHealth()) < 0.5f }) // We are just about to take their city!
                 continue
 
-            if (civInfo.getStatForRanking(RankingType.Force) - 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs() > 0) {
+            if (civInfo.getStatForRanking(RankingType.Force) - 0.8f * ThreatManager.getCombinedForceOfWarringCivs(civInfo) > 0) {
                 val randomSeed = civInfo.gameInfo.civilizations.indexOf(enemy) + civInfo.getCivsAtWarWith().count() + 123 * civInfo.gameInfo.turns
                 if (Random(randomSeed).nextInt(100) > 80) continue
             }
@@ -465,7 +465,7 @@ object DiplomacyAutomation {
         val enemyCivs = civInfo.getCivsAtWarWith().filter { it.isMajorCiv() }
             .sortedByDescending { it.getStatForRanking(RankingType.Force) }
         for (enemyCiv in enemyCivs) {
-            val potentialAllies = enemyCiv.threatManager.getNeighboringCivilizations()
+            val potentialAllies = ThreatManager.getNeighboringCivilizations(enemyCiv)
                 .filter {
                     civInfo.knows(it) && !it.isAtWarWith(enemyCiv)
                     && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelGE(RelationshipLevel.Friend)

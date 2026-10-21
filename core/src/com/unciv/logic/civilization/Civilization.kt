@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
@@ -91,9 +90,6 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
-
-    @Transient
-    var threatManager = ThreatManager(this)
 
     @Transient
     var diplomacyFunctions = DiplomacyFunctions(this)

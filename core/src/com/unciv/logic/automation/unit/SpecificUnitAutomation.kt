@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
 import com.unciv.logic.battle.GreatGeneralImplementation
@@ -73,7 +74,7 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>, cache: AutomationCache) {
         // City-state starts are predetermined by map gen / editor — trust that tile by default.
         // Mods can opt out via CityStatesSearchForFirstCitySite.
         if (unit.civ.isCityState && unit.civ.cities.isEmpty()
@@ -170,7 +171,7 @@ object SpecificUnitAutomation {
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
-            if (UnitAutomation.tryExplore(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return // try to find new areas
+            if (UnitAutomation.tryExplore(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), cache)) return // try to find new areas
             UnitAutomation.wander(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
@@ -185,7 +186,7 @@ object SpecificUnitAutomation {
         val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
-        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return 
+        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), cache)) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
