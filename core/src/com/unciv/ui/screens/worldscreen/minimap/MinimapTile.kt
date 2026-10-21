@@ -10,7 +10,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.DebugUtils
 import kotlin.math.PI
@@ -18,7 +18,7 @@ import kotlin.math.atan
 
 class MinimapTile(val tile: Tile, tileSize: Float) {
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
-    private var cityCircleImage: IconCircleGroup? = null
+    private var cityCircleImage: IconCircleGroup<Image>? = null
     var owningCiv: Civilization? = null
     private var neighborToBorderImage = HashMap<Tile, Image>()
     val isUnrevealed get() = !image.isVisible
