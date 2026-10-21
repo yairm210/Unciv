@@ -129,8 +129,10 @@ open class UniqueMap() {
     }
     
     @Readonly
-    fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
-        getUniques(uniqueType).any { it.conditionalsApply(state) }
+    fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState): Boolean {
+        val uniques = typedUniqueMap[uniqueType] ?: return false
+        return uniques.any { it.conditionalsApply(state) }
+    }
 
     @Readonly
     fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState): Boolean {

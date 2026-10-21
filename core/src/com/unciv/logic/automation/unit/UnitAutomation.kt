@@ -131,9 +131,9 @@ object UnitAutomation {
         val unit = unitView.getUnit()
         // These should be ordered by increasing computational cost
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
                 && (!unitView.civ().isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
                 && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
                 && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
