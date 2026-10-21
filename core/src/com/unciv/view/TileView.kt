@@ -130,6 +130,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun providesYield(): Boolean = tile.providesYield()
     @Readonly fun isLocked(): Boolean = tile.isLocked()
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
+    @Readonly fun isBarbarianEncampment(): Boolean = tile.isBarbarianEncampment()
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
     @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.unwrap())

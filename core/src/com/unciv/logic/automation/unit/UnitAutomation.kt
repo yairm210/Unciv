@@ -299,8 +299,7 @@ object UnitAutomation {
 
     /** @return true only if the unit has 0 movement left */
     private fun tryAttacking(unitView: MapUnitView, cache: AutomationCache): Boolean {
-        val unit = unitView.getUnit()
-        repeat(unit.maxAttacksPerTurn() - unit.attacksThisTurn) {
+        repeat(unitView.maxAttacksPerTurn() - unitView.attacksThisTurn) {
             if (BattleHelper.tryAttackNearbyEnemy(unitView)) return true
             // Calvary style tctic, attack and then retreat
             if (unitView.unitHealth < 50 && tryRetreat(unitView, cache)) return true
@@ -309,18 +308,16 @@ object UnitAutomation {
     }
 
     private fun tryHeadTowardsEncampment(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
         if (unitView.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
-        val cities = unit.civ.cities
-        val knownEncampments = cities.asSequence()
-            .flatMap { it.getCenterTile().getTilesInDistance(6) }
-                .filter { it.isBarbarianEncampment() && unit.civ.hasExplored(it) }
+        val knownEncampments = unitView.civ().cities().asSequence()
+            .flatMap { it.getCenterTile().getExploredTilesInDistance(6) }
+                .filter { it.isBarbarianEncampment() }
             .distinct()
         val encampmentsCloseToCities = knownEncampments.asSequence()
-            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-        val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
+            .sortedBy { it.aerialDistanceTo(unitView.getTile()) }
+        val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unitView.canReach(it) }
             ?: return false
-        unit.movement.headTowards(encampmentToHeadTowards)
+        unitView.tryHeadTowards(encampmentToHeadTowards)
         return true
     }
 
@@ -573,18 +570,17 @@ object UnitAutomation {
     }
 
     private fun tryAccompanySettlerOrGreatPerson(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        val distanceToTiles = unit.movement.getDistanceToTiles()
-        val settlerOrGreatPersonToAccompany = unit.civ.units.getCivUnits()
+        val distanceToTiles = unitView.getDistanceToTiles()
+        val settlerOrGreatPersonToAccompany = unitView.civ().getUnits()
             .firstOrNull {
-                val tile = it.currentTile
+                val tile = it.getTile()
                 it.isCivilian() &&
-                        (it.hasUnique(UniqueType.FoundCity) || it.isGreatPerson())
+                        (it.hasUnique(UniqueType.FoundCity) || it.getMatchingUniques(UniqueType.GreatPerson).any())
                         && !it.hasUnique(UniqueType.StrengthBonusInRadius) // Exlude great generals, as they move independently after all military units
-                        && (tile == unit.currentTile || tile.militaryUnit == null && unit.movement.canMoveTo(tile))
+                        && (tile == unitView.getTile() || tile.militaryUnit == null && unitView.canMoveTo(tile))
                         && distanceToTiles.containsKey(tile)
             } ?: return false
-        unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
+        unitView.tryHeadTowards(settlerOrGreatPersonToAccompany.getTile())
         return true
     }
 

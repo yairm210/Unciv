@@ -116,6 +116,7 @@ class MapUnitView internal constructor(
         TargetHelper.containsAttackableEnemy(tileView.unwrap(), MapUnitCombatant(unit))
     @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
+    @Readonly fun maxAttacksPerTurn(): Int = unit.maxAttacksPerTurn()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
     @Readonly fun isAutomatingRoadConnection(): Boolean = unit.isAutomatingRoadConnection()
     @Readonly fun rulesetHasRoadImprovement(): Boolean = unit.currentTile.ruleset.roadImprovement != null
