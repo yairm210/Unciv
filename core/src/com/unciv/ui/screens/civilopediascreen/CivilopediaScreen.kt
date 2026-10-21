@@ -17,9 +17,12 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.IconCircleButton
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -77,10 +80,12 @@ class CivilopediaScreen(
     private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     private val entrySelectScroll: ScrollPane
     private val flavourTable = Table()
+    private val flavourScroll: ScrollPane
 
     private var currentCategory: CivilopediaCategories = CivilopediaCategories.Tutorial
-    private var currentEntry: String = ""
+    private val currentEntry get() = currentEntryPerCategory[currentCategory] ?: ""
     private val currentEntryPerCategory = HashMap<CivilopediaCategories, String>()
+    private val backButton: IconCircleButton
 
     private val searchPopup by lazy { CivilopediaSearchPopup(this) {
         selectLink(it)
@@ -115,8 +120,8 @@ class CivilopediaScreen(
      * @param category Category key
      */
     private fun selectCategory(category: CivilopediaCategories) {
+        updateCurrentHistory()
         currentCategory = category
-        lastCategory = category
         entrySelectTable.clear()
         entryIndex.clear()
         flavourTable.clear()
@@ -197,8 +202,9 @@ class CivilopediaScreen(
         selectEntry(entry)
     }
     private fun selectEntry(entry: CivilopediaEntry) {
-        currentEntry = entry.name
-        lastEntryName = entry.name
+        CivilopediaHistory.push(currentCategory, entry.name, 0f)
+        backButton.isDisabled = !CivilopediaHistory.hasBack()
+
         currentEntryPerCategory[currentCategory] = entry.name
         flavourTable.clear()
         if (entry.flavour != null) {
@@ -220,6 +226,17 @@ class CivilopediaScreen(
                 .firstOrNull { it in entryIndex.keys }
                 ?: return
         selectEntry(name , noScrollAnimation = true)
+    }
+
+    private fun selectHistoryEntry(historyEntry: CivilopediaHistory.Entry): Boolean {
+        if (historyEntry.category != currentCategory)
+            selectCategory(historyEntry.category)
+        if (historyEntry.entry !in entryIndex) return false
+        if (historyEntry.entry != currentEntry)
+            selectEntry(historyEntry.entry, noScrollAnimation = true)
+        flavourScroll.scrollY = historyEntry.scroll
+        flavourScroll.updateVisualScroll()
+        return true
     }
 
     init {
@@ -258,6 +275,20 @@ class CivilopediaScreen(
         buttonTableScroll = ScrollPane(buttonTable)
         buttonTableScroll.setScrollingDisabled(x = false, y = true)
 
+        backButton = "OtherIcons/ArrowLeft".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.ROYAL)
+        backButton.onActivation(binding = KeyboardBinding.PediaBack) {
+            CivilopediaHistory.back()?.also { selectHistoryEntry(it) }
+        }
+        fun openHistory() {
+            CivilopediaHistoryMenu(stage, backButton) {
+                updateCurrentHistory()
+                selectHistoryEntry(it)
+            }
+        }
+        backButton.onActivation(ActivationTypes.RightClick, action = ::openHistory)
+        backButton.keyShortcuts.add(KeyboardBinding.PediaHistory, action = ::openHistory)
+        backButton.isDisabled = !CivilopediaHistory.hasBack()
+
         val searchButton = "OtherIcons/Search".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.GOLD)
         searchButton.onActivation(binding = KeyboardBinding.PediaSearch) { searchPopup.open(true) }
 
@@ -265,6 +296,7 @@ class CivilopediaScreen(
 
         val topTable = Table()
         topTable.add(buttonTableScroll).growX()
+        topTable.add(backButton).padLeft(10f)
         topTable.add(searchButton).padLeft(10f)
         topTable.add(closeButton).padLeft(10f).padRight(10f)
         topTable.width = stage.width
@@ -283,7 +315,8 @@ class CivilopediaScreen(
         entrySelectScroll.setOverscroll(false, false)
         val descriptionTable = Table()
         descriptionTable.add(flavourTable).padTop(7f).padBottom(5f).row()  // 2f of that 7f is used up by Portrait painting e.g. a Nation's outer border *outside its bounds*
-        val entrySplitPane = SplitPane(entrySelectScroll, ScrollPane(descriptionTable), false, skin)
+        flavourScroll = ScrollPane(descriptionTable)
+        val entrySplitPane = SplitPane(entrySelectScroll, flavourScroll, false, skin)
         entrySplitPane.splitAmount = 0.3f
         entryTable.addActor(entrySplitPane)
         entrySplitPane.setFillParent(true)
@@ -291,13 +324,11 @@ class CivilopediaScreen(
 
         if (link.isEmpty()) {
             // Generic open (e.g. keyboard shortcut, menu button) - resume where we left off
-            val resumeCategory = lastCategory ?: category
-            val resumeEntry = lastEntryName     // capture before selectCategory overwrites it
-            selectCategory(resumeCategory)
-            if (resumeEntry != null && resumeEntry in entryIndex) {
-                selectEntry(resumeEntry, noScrollAnimation = true)
-            } else if (resumeCategory == CivilopediaCategories.Tutorial) {
-                selectDefaultEntry()
+            val resume = CivilopediaHistory.current()
+            if (resume == null || !selectHistoryEntry(resume)) {
+                selectCategory(category)
+                if (category == CivilopediaCategories.Tutorial)
+                    selectDefaultEntry()
             }
         } else if ('/' in link) {
             selectLink(link)
@@ -335,13 +366,19 @@ class CivilopediaScreen(
         selectEntry(entryIndex.keys.drop(newIndex).first())
     }
 
-    override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
+    private fun updateCurrentHistory() {
+        CivilopediaHistory.updateScroll(currentCategory, currentEntry, flavourScroll.scrollY)
+    }
+    override fun recreate(): BaseScreen {
+        updateCurrentHistory()
+        return CivilopediaScreen(ruleset, currentCategory, currentEntry)
+    }
 
     companion object {
-        /** Remembers the last viewed category/entry so re-opening the Civilopedia without
-         *  an explicit link resumes where the user left off. */
-        private var lastCategory: CivilopediaCategories? = null
-        private var lastEntryName: String? = null
+//         /** Remembers the last viewed category/entry so re-opening the Civilopedia without
+//          *  an explicit link resumes where the user left off. */
+//         private var lastCategory: CivilopediaCategories? = null
+//         private var lastEntryName: String? = null
 
         /** Test whether to show Religion-specific items, does not require a game to be running
          *  - Do not make public - use IHasUniques.isHiddenFromCivilopedia if possible!
