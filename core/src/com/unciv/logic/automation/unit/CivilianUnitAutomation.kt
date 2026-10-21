@@ -188,11 +188,10 @@ object CivilianUnitAutomation {
 
     /** Returns whether the civilian spends its turn hiding and not moving */
     fun tryRunAwayIfNeccessary(unit: MapUnitView, cache: AutomationCache): Boolean {
-        val mapUnit = unit.getUnit()
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
-        val enemyUnitsInWalkingDistance = mapUnit.movement.getDistanceToTiles().keys
-            .filter { ThreatManager.doesTileHaveMilitaryEnemy(unit.civ(), unit.getTile().getTileMap().getTile(it)) }
+        val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
+            .filter { ThreatManager.doesTileHaveMilitaryEnemy(unit.civ(), it) }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.getBaseUnit().isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {

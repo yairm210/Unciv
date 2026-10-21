@@ -20,7 +20,6 @@ import yairm210.purity.annotations.Readonly
 object AirUnitAutomation {
 
     fun automateFighter(unitView: MapUnitView, cache: AutomationCache) {
-        val unit = unitView.getUnit()
         if (unitView.unitHealth < 75) return // Wait and heal
 
         val tilesWithEnemyUnitsInRange = ThreatManager.getTilesWithEnemyUnitsInDistance(unitView.civ(), cache, unitView.getTile(), unitView.getRange())
@@ -38,11 +37,8 @@ object AirUnitAutomation {
         if (friendlyUnusedFighterCount < enemyFighters) return
 
         if (friendlyUsedFighterCount <= enemyFighters) {
-            @Readonly fun airSweepDamagePercentBonus(): Int {
-                var total = 0
-                unit.forEachMatchingUnique(UniqueType.StrengthWhenAirsweep) { total += it.params[0].toInt() }
-                return total
-            }
+            @Readonly fun airSweepDamagePercentBonus(): Int =
+                unitView.getMatchingUniques(UniqueType.StrengthWhenAirsweep).sumOf { it.params[0].toInt() }
 
             // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
             // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
@@ -100,7 +96,6 @@ object AirUnitAutomation {
     }
 
     fun automateBomber(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
         if (unitView.unitHealth < 75) return // Wait and heal
 
         if (BattleHelper.tryAttackNearbyEnemy(unitView)) return

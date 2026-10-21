@@ -185,7 +185,6 @@ object ReligiousUnitAutomation {
     }
 
     fun enhanceReligion(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
         // Try go to a nearby city
         if (!unitView.getTile().isCityCenter())
             UnitAutomation.tryEnterOwnClosestCity(unitView)
