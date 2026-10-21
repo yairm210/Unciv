@@ -14,7 +14,6 @@ import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -70,6 +69,7 @@ class MapUnitView internal constructor(
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
+    val action: String? get() = unit.action
     @Readonly fun isMoving(): Boolean = unit.isMoving()
     @Readonly fun isExploring(): Boolean = unit.isExploring()
     @Readonly fun isEscorting(): Boolean = unit.isEscorting()
@@ -91,11 +91,13 @@ class MapUnitView internal constructor(
     /** @throws com.unciv.logic.map.mapunit.movement.UnitMovement.UnreachableDestinationException if no tile can be reached this turn towards [targetTileView] */
     @Readonly fun getTileToMoveToThisTurn(targetTileView: TileView): TileView =
         gameView.tileMapView.getTile(unit.movement.getTileToMoveToThisTurn(targetTileView.unwrap()))
+    /** Tiles this unit can reach this turn, with the total movement needed to get there. */
+    @Readonly fun getDistanceToTiles(): Map<TileView, Float> =
+        unit.movement.getDistanceToTiles().entries.associate { gameView.tileMapView.getTile(it.key) to it.value.totalMovement }
     @Readonly fun getPathToTile(tileView: TileView): List<TileView> =
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
         unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
-    @Readonly fun getDistanceToTiles(): PathsToTilesWithinTurn = unit.movement.getDistanceToTiles()
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
@@ -103,11 +105,18 @@ class MapUnitView internal constructor(
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
+    @Readonly fun getDamageFromTerrain(tileView: TileView): Int = unit.getDamageFromTerrain(tileView.unwrap())
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
+    /** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
+    @Readonly fun getAirUnitMovementRange(): Int? = if (unit.baseUnit.isAirUnit()) unit.getAirUnitMovementRange() else null
+    /** `true` if [tileView] holds something this unit could attack */
+    @Readonly fun containsAttackableEnemy(tileView: TileView): Boolean =
+        TargetHelper.containsAttackableEnemy(tileView.unwrap(), MapUnitCombatant(unit))
     @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
+    @Readonly fun maxAttacksPerTurn(): Int = unit.maxAttacksPerTurn()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
     @Readonly fun isAutomatingRoadConnection(): Boolean = unit.isAutomatingRoadConnection()
     @Readonly fun rulesetHasRoadImprovement(): Boolean = unit.currentTile.ruleset.roadImprovement != null
@@ -120,12 +129,8 @@ class MapUnitView internal constructor(
             .map { gameView.tileMapView.getTile(it) }
     @Readonly fun getTilesInAttackRange(): List<TileView> =
         unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange())).map { gameView.tileMapView.getTile(it) }.toList()
-    @Readonly fun getAttackableEnemies(
-        unitDistanceToTiles: PathsToTilesWithinTurn,
-        tilesToCheck: List<TileView>? = null,
-        stayOnTile: Boolean = false
-    ): List<AttackableTileView> =
-        TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck?.map { it.unwrap() }, stayOnTile)
+    @Readonly fun getAttackableEnemies(): List<AttackableTileView> =
+        TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
             .map { AttackableTileView(it, viewer, spectatorMode, gameView) }
     /** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
     @Readonly fun getFutureAutomatedRoadConnectionTiles(): List<TileView>? {
@@ -204,6 +209,12 @@ class MapUnitView internal constructor(
     fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
     fun tryMoveToTile(tileView: TileView): Boolean {
         unit.movement.moveToTile(tileView.unwrap())
+        return true
+    }
+
+    /** @return whether [due] was set */
+    fun setDue(value: Boolean): Boolean {
+        unit.due = value
         return true
     }
 

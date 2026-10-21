@@ -209,7 +209,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         initializeResources(newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
-        val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
+        // Don't restore when the viewing player changes (hotseat) - the old selection would point at the previous player's civ
+        val isSameViewingCiv = isLoadingSameGame && worldScreen!!.viewingCiv.civID == newGameInfo.getPlayerToViewAs().civID
+        val worldScreenRestoreState = if (!callFromLoadScreen && isSameViewingCiv) worldScreen!!.getRestoreState() else null
 
         lateinit var loadingScreen: LoadingScreen
 
@@ -496,7 +498,7 @@ private fun logRunningThreads() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.22.11", 1272)
+        val VERSION = Version("4.22.13", 1275)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

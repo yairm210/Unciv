@@ -139,7 +139,7 @@ class CityView(city: City,
     @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
     @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
         tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)
-    @Readonly fun rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, city.civ)
+    @Readonly fun rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, gameView.getCivView(city.civ))
     @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS

@@ -41,12 +41,12 @@ class GameViewMovementHistoryTest {
             player.viewableTiles = pathTiles - foggedTile
             assertTrue("History must stay hidden when ${foggedTile.position} is fogged",
                 playerView.getUnitsWithVisibleMovementHistory().none())
-            assertSame(unit, spectatorView.getUnitsWithVisibleMovementHistory().single().getUnit())
+            assertEquals(unit.id, spectatorView.getUnitsWithVisibleMovementHistory().single().id)
         }
 
         player.viewableTiles = pathTiles
         val visibleUnit = playerView.getUnitsWithVisibleMovementHistory().single()
-        assertSame(unit, visibleUnit.getUnit())
+        assertEquals(unit.id, visibleUnit.id)
         assertSame(playerView, visibleUnit.gameView)
         assertTrue(visibleUnit.spectatorMode)
     }
@@ -62,13 +62,13 @@ class GameViewMovementHistoryTest {
         player.viewableTiles = setOf(origin, current)
 
         assertTrue(playerView.getUnitsWithVisibleMovementHistory().none())
-        assertSame(unit, spectatorView.getUnitsWithVisibleMovementHistory().single().getUnit())
+        assertEquals(unit.id, spectatorView.getUnitsWithVisibleMovementHistory().single().id)
 
         player.viewableInvisibleUnitsTiles = mapOf(origin to setOf(Constants.uppercaseAll))
         assertTrue(playerView.getUnitsWithVisibleMovementHistory().none())
 
         player.viewableInvisibleUnitsTiles = mapOf(current to setOf(Constants.uppercaseAll))
-        assertSame(unit, playerView.getUnitsWithVisibleMovementHistory().single().getUnit())
+        assertEquals(unit.id, playerView.getUnitsWithVisibleMovementHistory().single().id)
     }
 
     @Test
@@ -81,7 +81,7 @@ class GameViewMovementHistoryTest {
         )
         player.viewableTiles = setOf(current)
 
-        assertSame(unit, playerView.getUnitsWithVisibleMovementHistory().single().getUnit())
+        assertEquals(unit.id, playerView.getUnitsWithVisibleMovementHistory().single().id)
     }
 
     @Test

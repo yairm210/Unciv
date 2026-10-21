@@ -45,17 +45,16 @@ open class UnitOverviewTabHelpers {
     protected fun getActionText(unit: MapUnitView): String? {
         val workerText by lazy { getWorkerActionText(unit) }
         return when {
-            unit.getUnit().action == null -> workerText
+            unit.action == null -> workerText
             unit.isFortified() -> UnitActionType.Fortify.value
             unit.isGuarding() -> UnitActionType.Guard.value
             unit.isMoving() -> "Moving"
             unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
-            else -> unit.getUnit().action
+            else -> unit.action
         }
     }
 
     protected fun getUpgradeTable(unitView: MapUnitView, actionContext: UnitOverviewTab): Table? {
-        val unit = unitView.getUnit()
         val table = Table()
         val upgrades = unitView.getPossibleUpgrades().filter { it.isShownToPlayer }
         if (upgrades.isEmpty()) return null
@@ -91,7 +90,6 @@ open class UnitOverviewTabHelpers {
         // That created problems with sorting - and determining when the state would allow minimal updating is complex.
         // But the old way also had the mini-bug that PromotionPicker allows unit rename which wasn't reflected on the grid...
         // Now it always does rebuild all rows (as simple as actionContext.update instead of updatePromotionsTable).
-        val unit = unitView.getUnit()
         val promotionsTable = Table()
         val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
         updatePromotionsTable(promotionsTable, unitView, canEnable)

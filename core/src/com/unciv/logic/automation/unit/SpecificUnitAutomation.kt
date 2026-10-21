@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
 import com.unciv.logic.battle.GreatGeneralImplementation
@@ -53,7 +55,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - owner.getWorkerAutomation().getBasePriority(it, unit).roundToInt()
+                        distance - owner.getWorkerAutomation().getBasePriority(it, GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit)).roundToInt()
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -73,7 +75,7 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<TileView>, cache: AutomationCache) {
         // City-state starts are predetermined by map gen / editor — trust that tile by default.
         // Mods can opt out via CityStatesSearchForFirstCitySite.
         if (unit.civ.isCityState && unit.civ.cities.isEmpty()
@@ -136,7 +138,7 @@ object SpecificUnitAutomation {
             // Find the best tile that is within
             @Readonly
             fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
-                if (it.key in dangerousTiles && it.key != unit.getTile()) return false
+                if (GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit).getTile().getTileMap().getTile(it.key) in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return pathSize in 1..3
             }
@@ -170,8 +172,8 @@ object SpecificUnitAutomation {
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
-            if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit, tilesToAvoid = dangerousTiles) // go around aimlessly
+            if (UnitAutomation.tryExplore(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), cache)) return // try to find new areas
+            UnitAutomation.wander(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
 
@@ -185,7 +187,7 @@ object SpecificUnitAutomation {
         val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
-        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return 
+        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit), cache)) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
@@ -208,7 +210,7 @@ object SpecificUnitAutomation {
 
         val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Land }
-            .map { Automation.rankStatsValue(it, unit.civ) }
+            .map { Automation.rankStatsValue(it, GameView(unit.civ.gameInfo, unit.civ).civView) }
             .average()
 
         for (city in citiesByStatBoost) {
@@ -218,7 +220,7 @@ object SpecificUnitAutomation {
                     // okay if we replace regular improvements by great improvements, but not the other way around
                     && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
                     && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), GameView(unit.civ.gameInfo, unit.civ).civView) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue
@@ -245,7 +247,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
-                    unit.civ,
+                    GameView(unit.civ.gameInfo, unit.civ).civView,
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }

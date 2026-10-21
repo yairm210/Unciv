@@ -1,5 +1,8 @@
 package com.unciv.logic.automation
 
+import com.unciv.view.GameView
+import com.unciv.view.CivView
+import com.unciv.view.ForeignCivView
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
@@ -225,7 +228,7 @@ object Automation {
         val militaryUnits = availableUnits
             .filter { it.isMilitary }
             .filterNot { removeShips && it.isWaterUnit }
-            .filter { allowSpendingResource(city.civ, it) }
+            .filter { allowSpendingResource(GameView(city.civ.gameInfo, city.civ).civView, it) }
             .filterNot {
                 // units that can't attack may be very strong meatshields, but current AI
                 // has trouble using them properly, and this conveniently filters out aircraft carriers
@@ -268,7 +271,8 @@ object Automation {
     }
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
-    fun afraidOfBarbarians(civInfo: Civilization): Boolean {
+    fun afraidOfBarbarians(civView: CivView): Boolean {
+        val civInfo = civView.getCiv()
         if (civInfo.isCityState || civInfo.isBarbarian)
             return false
 
@@ -304,18 +308,19 @@ object Automation {
     /** Checks resource scarcity making a construction undesirable. */
     @Readonly
     fun allowAutomatedConstruction(
-        civInfo: Civilization,
+        civView: CivView,
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return allowSpendingResource(civInfo, construction, city)
+        return allowSpendingResource(civView, construction, city)
     }
 
 
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
     @Readonly
-    fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
+    fun allowSpendingResource(civView: CivView, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
+        val civInfo = civView.getCiv()
         // City states do whatever they want
         if (civInfo.isCityState)
             return true
@@ -384,7 +389,9 @@ object Automation {
     }
 
     @Readonly
-    fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
+    fun threatAssessment(assessorView: CivView, assessedView: ForeignCivView): ThreatLevel {
+        val assessor = assessorView.getCiv()
+        val assessed = assessedView.getCiv()
         val powerLevelComparison =
             assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
         return when {
@@ -407,12 +414,13 @@ object Automation {
     @Readonly
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         val civ = city.civ
+        val civView = GameView(civ.gameInfo, civ).civView
         return city.getTiles().filter {
             (it.tileImprovement == null || improvementIsRemovable(city, it))
                 && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
-            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, it.stats.getTileStats(city, civ)), civ) + (
+            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, it.stats.getTileStats(city, civ)), civView) + (
                 if (improvement.hasUnique(UniqueType.DefensiveBonus)) { 
                     it.aerialDistanceTo(city.getCenterTile()) + it.getDefensiveBonus(false) } 
                 else 0).toFloat()
@@ -421,12 +429,13 @@ object Automation {
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
     @Readonly
-    internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
+    internal fun rankTile(tile: Tile?, civView: CivView): Float {
+        val civInfo = civView.getCiv()
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
         val stats = tile.stats.getTileStats(null, civInfo)
-        var rank = rankStatsValue(stats, civInfo)
+        var rank = rankStatsValue(stats, civView)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f
         val resource = tile.tileResource
@@ -438,70 +447,9 @@ object Automation {
         return rank
     }
 
-    // Ranks a tile for the expansion algorithm of cities
     @Readonly
-    internal fun rankTileForExpansion(tile: Tile, city: City): Int {
-        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
-        // Apparently this is not the full calculation. The exact tiles are also
-        // dependent on which tiles are between the chosen tile and the city center
-        // Exact details are not implemented, but can be found in CvAStar.cpp:2119,
-        // function `InfluenceCost()`.
-        // Implementing these will require an additional variable for each terrainType
-        val distance = tile.aerialDistanceTo(city.getCenterTile())
-
-        // Higher score means tile is less likely to be picked
-        var score = distance * 100
-
-        // Resources are good: less points
-        val resource = tile.tileResource
-        if (city.civ.canSeeResource(resource)) {
-            if (resource.resourceType != ResourceType.Bonus) score -= 105
-            else if (distance <= city.getWorkRange()) score -= 104
-        } else {
-            // Water tiles without resources aren't great unless they're Atolls
-            if (tile.isWater) score += 3
-            // Can't work it anyways
-            if (distance > city.getWorkRange()) score += 100
-        }
-
-        if (tile.naturalWonder != null) score -= 105
-
-        // Straight up take the sum of all yields
-        score -= tile.stats.getTileStats(city, city.civ).sum().toInt()
-
-        // Check if we get access to better tiles from this tile
-        var adjacentNaturalWonder = false
-        var isContested = false
-
-        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() != city.civ  }) {
-            // the neighbor tile is owned by another civ
-            if (adjacentTile.getOwner() != null) {
-                isContested = true
-                continue
-            }
-            // the neighbor tile is not owned by anyone
-            val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
-            val adjacentResource = adjacentTile.tileResource
-            if (city.civ.canSeeResource(adjacentResource) &&
-                (adjacentDistance <= city.getWorkRange() || adjacentResource.resourceType != ResourceType.Bonus)
-            ) score -= 1
-            if (adjacentTile.naturalWonder != null) {
-                if (adjacentDistance <= city.getWorkRange()) adjacentNaturalWonder = true
-                score -= 1
-            }
-        }
-        if (adjacentNaturalWonder) score -= 1
-        if (isContested) score -= 1
-
-        // Tiles not adjacent to owned land are very hard to acquire
-        if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == city.id })
-            score += 1000
-
-        return score
-    }
-
-    @Readonly
-    fun rankStatsValue(stats: Stats, civInfo: Civilization): Float {
+    fun rankStatsValue(stats: Stats, civView: CivView): Float {
+        val civInfo = civView.getCiv()
         var rank = 0.0f
         rank += stats.food * 1.2f //food get more value to keep city growing
 

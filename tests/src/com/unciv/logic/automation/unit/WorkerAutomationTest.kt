@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -50,7 +51,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(mapUnit), hashSetOf())
 
         // Assert
         assertEquals("Worker should have replaced already existing improvement 'Farm' with 'Mine' to enable 'Iron' resource",
@@ -76,7 +77,7 @@ internal class WorkerAutomationTest {
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(mapUnit), hashSetOf())
 
         assertEquals("Worker should begun removing the forest to clear a luxury resource but didn't",
             "Remove Forest", currentTile.improvementInProgress
@@ -103,7 +104,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(mapUnit), hashSetOf())
 
         // Assert
         assertEquals("Worker should be buliding a farm under 'Iron' resource because it can't see it and has nothing else to do",
@@ -131,7 +132,7 @@ internal class WorkerAutomationTest {
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(mapUnit), hashSetOf())
 
         assertEquals("Worker should be buliding a mine on the Gold Ore luxury resource",
             "Mine", currentTile.improvementInProgress
@@ -413,7 +414,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(mapUnit), hashSetOf())
 
         // Assert
         assertEquals("Worker should try to repair the mine",
@@ -436,7 +437,7 @@ internal class WorkerAutomationTest {
         val worker = testGame.addUnit("Worker", civInfo, workerTile)
         worker.currentMovement = 2f
 
-        workerAutomation.automateWorkerAction(worker, hashSetOf())
+        workerAutomation.automateWorkerAction(GameView(civInfo.gameInfo, civInfo).getMapUnitView(worker), hashSetOf())
 
         assertNotEquals(
             "Automated worker should not move onto a CreatesOneImprovement marker",

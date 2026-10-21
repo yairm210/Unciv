@@ -170,7 +170,7 @@ class ImprovementPickerScreen(
             && !improvement.isRoad()
             && stats.max() > 0f
             && !improvement.name.startsWith(Constants.remove)
-            && !tile.getVisibleTilesInDistance(ruleset.modOptions.constants.cityWorkRange)
+            && !tile.getExploredTilesInDistance(ruleset.modOptions.constants.cityWorkRange)
                 .any { it.isCityCenter() && it.getCity()?.isOwnedByViewer() == true }
         )
             labelText += "\n" + "Not in city work range".tr()

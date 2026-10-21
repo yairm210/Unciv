@@ -92,9 +92,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     val units = UnitManager(this)
 
     @Transient
-    var threatManager = ThreatManager(this)
-
-    @Transient
     var diplomacyFunctions = DiplomacyFunctions(this)
 
     @Transient

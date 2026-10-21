@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -732,7 +733,7 @@ object Battle {
     private fun automateCityConquer(civInfo: Civilization, city: City) {
         if (!city.hasDiplomaticMarriage()) {
             val foundingCiv = city.foundingCivObject!!
-            var valueAlliance = NextTurnAutomation.valueCityStateAlliance(civInfo, foundingCiv)
+            var valueAlliance = NextTurnAutomation.valueCityStateAlliance(GameView(civInfo.gameInfo, civInfo).civView, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
             if (foundingCiv.isCityState && city.civ != civInfo && foundingCiv != civInfo

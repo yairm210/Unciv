@@ -17,6 +17,7 @@ import yairm210.purity.annotations.Readonly
  * - Any state-changing function in the UI should be converted to a boolean-returning "try apply state change" function
  *    - In the future these will also check preconditions of applying this state change, not for now
  *    - Only objects under the user's control should have state-changing functions - civ, city, unit
+ *    - This also means "no setters" since they cannot conform to this rule
  * - Inputs to functions should be ID-able ruleset objects and game objects (civ, city, tile, mapunit) - 
  *     We want to enable http-server-like request-response
  * - Retain minimal API - anything the UI can derive from existing calls should not be part of the view
@@ -34,6 +35,7 @@ open class View<T>(protected val wrapped: T,
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
 
+    // Required for equality checks in collections, and for using views as keys in maps
     override fun equals(other: Any?): Boolean = other is View<*> && wrapped == other.wrapped
     override fun hashCode(): Int = wrapped.hashCode()
 }

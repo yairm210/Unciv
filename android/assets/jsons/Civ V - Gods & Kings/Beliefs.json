@@ -28,7 +28,7 @@
         // Preferably I would not have a cityFilter here, but doing so requires no additional implementation
     },
     {
-        "name": "God of Craftsman",
+        "name": "God of craftsmen",
         "type": "Pantheon",
         "uniques": ["[+1 Production] [in cities following this religion] <in cities with at least [3] [Population]>"]
     },

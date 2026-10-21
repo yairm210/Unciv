@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
@@ -14,6 +15,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val civName: String get() = unit.civ.civName
     val unitHealth: Int get() = unit.health
     val religiousStrengthLost: Int get() = unit.religiousStrengthLost
+    val religion: String? get() = unit.religion
     val id: Int get() = unit.id
     val instanceName: String? get() = unit.instanceName
     val currentMovement: Float get() = unit.currentMovement
@@ -39,6 +41,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun isMilitary(): Boolean = unit.isMilitary()
     @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
     @Readonly fun displayName(): String = unit.displayName()
+    @Readonly fun isTransportTypeOf(other: ForeignMapUnitView): Boolean = unit.isTransportTypeOf(other.unit)
     @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
     @Readonly fun getRange(): Int = unit.getRange()
     @Readonly fun getMaxMovement(): Int = unit.getMaxMovement()
@@ -47,6 +50,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun getMovementMemories() = unit.movementMemories
     @Readonly fun getMostRecentMoveType() = unit.mostRecentMoveType
     @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
+    @Readonly fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> = unit.getMatchingUniques(uniqueType)
     @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
         unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
 

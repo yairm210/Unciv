@@ -1,0 +1,7 @@
+Fix city status layout when city resources are shown - by kilo-cy (New contributor!)
+
+By unciv-loof:
+- Sort modifiers in diplomacy screen by their impact on relationship - 
+- Sort pantheons and religions in overview tab by founding turn
+
+Fix "Check this mod" button not selecting the tab and mod in the OptionsPopup on Android - By SomeTroglodyte

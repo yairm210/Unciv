@@ -389,8 +389,7 @@ class WorldScreen(
             bottomUnitTable.update()
 
             minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
-            bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
-            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.update(getGameViewConsideringForOfWar().civView, mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
@@ -502,6 +501,7 @@ class WorldScreen(
     }
 
     fun setSelectedCiv(civ: Civilization) {
+        if (!viewingCiv.isSpectator()) throw Exception("Tried to select a different civ when not spectator!")
         selectedCiv = civ
         selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }
@@ -510,8 +510,8 @@ class WorldScreen(
         // Only spectators/replays follow the selection's owner. For ordinary players selectedCiv must stay viewingCiv:
         // otherwise a selected unit that just changed owner (gifted to a city-state, captured) would switch the
         // whole view to its new owner, defeat UnitPresenter's "no longer ours" deselection, and leave a stale selection.
+        if (!viewingCiv.isSpectator()) return
         setSelectedCiv(when {
-            !viewingCiv.isSpectator() -> viewingCiv
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
@@ -537,13 +537,14 @@ class WorldScreen(
     private fun restore(restoreState: RestoreState) {
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (viewingCiv.civID == restoreState.viewingCivName) {
-            mapHolder.zoom(restoreState.zoom)
-            mapHolder.scrollX = restoreState.scrollX
-            mapHolder.scrollY = restoreState.scrollY
-            mapHolder.updateVisualScroll()
-        }
+        if (viewingCiv.civID != restoreState.viewingCivName) return
+        
+        mapHolder.zoom(restoreState.zoom)
+        mapHolder.scrollX = restoreState.scrollX
+        mapHolder.scrollY = restoreState.scrollY
+        mapHolder.updateVisualScroll()
 
+        if (!viewingCiv.isSpectator()) return
         setSelectedCiv(gameInfo.getCivilization(restoreState.selectedCivName))
         fogOfWar = restoreState.fogOfWar
     }
@@ -644,7 +645,7 @@ class WorldScreen(
     fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
-            bottomUnitTable.selectedUnit!!.getUnit().due = false
+            bottomUnitTable.selectedUnit!!.setDue(false)
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit?.getUnit())
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
@@ -757,7 +758,7 @@ class WorldScreen(
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
-        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.isNotEmpty() }
         displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 

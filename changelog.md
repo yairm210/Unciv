@@ -1,3 +1,28 @@
+## 4.22.13
+
+Correct civ for hotseat "player ready" screen
+
+Fixed cancelling "leave mapeditor" popup, allowing to to leave later without warning popup
+
+By SomeTroglodyte:
+- Tile info on city screen looks and behaves like the world screen one 
+- Allow `[]` / `<>` nesting to support typical UniqueType.Comment usecase 
+- Author exclusion file read correct on Android 
+
+Resigning clears turn time data - By unciv-loof
+
+Fix startup NPE in FasterUIDevelopment - By Kilo-cy
+
+## 4.22.12
+
+Fix city status layout when city resources are shown - by kilo-cy (New contributor!)
+
+By unciv-loof:
+- Sort modifiers in diplomacy screen by their impact on relationship - 
+- Sort pantheons and religions in overview tab by founding turn
+
+Fix "Check this mod" button not selecting the tab and mod in the OptionsPopup on Android - By SomeTroglodyte
+
 ## 4.22.11
 
 Added "Auto" screen size setting

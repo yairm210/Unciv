@@ -4,7 +4,7 @@
 agp = "9.2.0"
 
 kotlin = "2.4.20"
-coroutines = "1.11.0"
+coroutines = "1.10.2" # 1.11.0 causes IDEA profiler to break :( 
 
 gdx = "1.14.2"
 discord = "v2.0.1"

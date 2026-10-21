@@ -207,7 +207,7 @@ class WorldMapHolder(
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = tileView.getVisibleUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
-                    && tileView.getVisibleTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
+                    && tileView.getExploredTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.any()
                     && unitsInTile.first().civ().isAtWarWith(worldScreen.selectedGameView.civView)) {
                 // try to select the closest city to bombard this guy
@@ -245,7 +245,7 @@ class WorldMapHolder(
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
             val attackableTile = unitView
-                    .getAttackableEnemies(unitView.getDistanceToTiles())
+                    .getAttackableEnemies()
                     .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */

@@ -41,7 +41,7 @@ import java.util.BitSet
  * teleportToClosestMoveableTile has something akin to pathing logic as well, iterating over nearby
  * tiles, and calling getPathBetweenTiles to see if the unit can reach them.
  *
- * getAerialPathsToCities is the aerial equivalent of getMovementToTilesAtPosition.
+ * [AirUnitAutomation.getAerialPathsToCities][com.unciv.logic.automation.unit.AirUnitAutomation] is the aerial equivalent of getMovementToTilesAtPosition.
  *
  * getPathBetweenTiles uses {@link com.unciv.logic.map.BFS} for single-turn pathing to a target.
  */
@@ -336,7 +336,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.cache.cannotMove ->
             destination == unit.getTile()
         unit.baseUnit.isAirUnit() ->
-            unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
+            unit.currentTile.aerialDistanceTo(destination) <= unit.getAirUnitMovementRange()
         unit.isPreparingParadrop() ->
             canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
         else ->
@@ -352,7 +352,7 @@ class UnitMovement(val unit: MapUnit) {
         return when {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.isAirUnit() ->
-                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
+                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getAirUnitMovementRange()))
             unit.isPreparingParadrop() -> {
                 unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
                     .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }
@@ -904,46 +904,6 @@ class UnitMovement(val unit: MapUnit) {
         if (UncivGame.Current.settings.useAStarPathfinding)
             roadPathing.getShortestPath(destinationTile)?.let { listOf(unit.currentTile) + it }
         else MapPathing.getRoadPath(unit.civ, unit.getTile(), destinationTile)
-
-    fun getAerialPathsToCities(): HashMap<Tile, ArrayList<Tile>> {
-        var tilesToCheck = ArrayList<Tile>()
-        /** each tile reached points to its parent tile, where we got to it from */
-        val tilesReached = HashMap<Tile, Tile>()
-
-        val startingTile = unit.currentTile
-        tilesToCheck.add(startingTile)
-        tilesReached[startingTile] = startingTile
-
-
-        while (tilesToCheck.isNotEmpty()) {
-            val newTilesToCheck = ArrayList<Tile>()
-            for (currentTileToCheck in tilesToCheck) {
-                currentTileToCheck.forEachTileInDistance(unit.getRange(), { unit.movement.canMoveTo(it) }) { reachableTile ->
-                    if (!tilesReached.containsKey(reachableTile)) {
-                        tilesReached[reachableTile] = currentTileToCheck
-                        newTilesToCheck.add(reachableTile)
-                    }
-                }
-            }
-            tilesToCheck = newTilesToCheck
-        }
-
-        val pathsToCities = HashMap<Tile, ArrayList<Tile>>()
-
-        for (city in tilesReached.keys) {
-            val path = ArrayList<Tile>()
-            var currentCity = city
-            while (currentCity != startingTile) { // we don't add the "starting tile" to the arraylist
-                path.add(currentCity)
-                currentCity = tilesReached[currentCity]!! // go to parent
-            }
-            path.reverse()
-            pathsToCities[city] = path
-        }
-
-        pathsToCities.remove(startingTile)
-        return pathsToCities
-    }
 
     /**
      * @returns the set of [Tile] between [from] and [to] tiles.

@@ -87,7 +87,7 @@ class CivView(civ: Civilization,
     @Readonly fun isFoundingReligion(): Boolean = civ.religionManager.religionState == ReligionState.FoundingReligion
     @Readonly fun isEnhancingReligion(): Boolean = civ.religionManager.religionState == ReligionState.EnhancingReligion
     @Readonly fun hasFreeBeliefs(): Boolean = civ.religionManager.hasFreeBeliefs()
-    @Readonly fun getYourReligion(): Religion? = civ.religionManager.religion
+    @Readonly fun getReligion(): Religion? = civ.religionManager.religion
     @Readonly fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtFounding()
     @Readonly fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtEnhancing()
     @Readonly fun freeBeliefsAsEnums(): Counter<BeliefType> = civ.religionManager.freeBeliefsAsEnums()
@@ -140,4 +140,19 @@ class CivView(civ: Civilization,
     fun tryDismissMoveSpies(): Boolean { civ.espionageManager.dismissedShouldMoveSpies = true; return true }
     fun tryMarkMovedAutomatedUnits(): Boolean { civ.hasMovedAutomatedUnits = true; return true }
     fun tryAutomateAllUnits(): Boolean { civ.units.getCivUnits().forEach { it.doAction() }; return true }
+}
+
+// Helpers built on top of the view API, rather than being part of it
+// This is so we can separate the minimal API, from the helpful API.
+
+/** `true` if we are at war with any known, non-defeated civ */
+@Readonly fun CivView.isAtWar(): Boolean = getKnownCivs().any { !it.isDefeated() && isAtWarWith(it) }
+
+/** Our capital city, or `null` if we have none */
+@Readonly fun CivView.getCapital(): CityView? = cities().firstOrNull { it.isCapital() }
+
+/** `true` if the holy city of our religion has been blocked by another religion's inquisitor, see [ForeignCityView.isBlockedHolyCity] */
+@Readonly fun CivView.isHolyCityBlocked(): Boolean {
+    val religionName = getReligion()?.name ?: return false
+    return cities().any { it.isBlockedHolyCity() && it.getReligionThisIsTheHolyCityOf() == religionName }
 }

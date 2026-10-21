@@ -125,7 +125,7 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
     //region Update
     private fun initSpyHeader() = spySelectionTable.apply {
         add("Spy".toLabel())
-        add("Rank".toLabel())
+        add("Spy rank".toLabel())
         add() // icon column
         add("Location".toLabel()).left()
         add("Action".toLabel())

@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -468,7 +469,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return range
     }
 
-    @Readonly fun getMaxMovementForAirUnits(): Int = getRange() * 2
+
+    /** How many tiles away this air unit can relocate to or reach in one move */
+    @Readonly fun getAirUnitMovementRange(): Int = getRange() * 2
 
     @Readonly
     fun isEmbarked(): Boolean {
@@ -932,9 +935,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return
         }
 
-        if (isAutomated()) UnitAutomation.automateUnitMoves(this)
+        if (isAutomated()) UnitAutomation.automateUnitMoves(GameView(civ.gameInfo, civ).getMapUnitView(this))
 
-        if (isExploring()) UnitAutomation.automatedExplore(this)
+        if (isExploring()) UnitAutomation.automatedExplore(GameView(civ.gameInfo, civ).getMapUnitView(this))
     }
 
     fun healBy(amount: Int) {
@@ -1147,7 +1150,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (unit.currentMovement < Constants.minimumMovementEpsilon)
                 unit.disband()
             // let's find closest city or another carrier where it can be evacuated
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getMaxMovementForAirUnits())
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getAirUnitMovementRange())
                     .filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
 
             if (tileCanMoveTo != null)

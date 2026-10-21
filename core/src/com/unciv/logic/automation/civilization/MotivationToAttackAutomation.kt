@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.GameView
+import com.unciv.view.ForeignCivView
 import com.unciv.UncivGame
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -25,11 +27,15 @@ object MotivationToAttackAutomation {
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
     @Readonly
-    fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCiv: Civilization, atLeast: Float): Float {
+    fun hasAtLeastMotivationToAttack(civInfo: Civilization, targetCivView: ForeignCivView, atLeast: Float): Float {
+        val targetCiv = targetCivView.getCiv()
         val diplomacyManager = civInfo.getDiplomacyManager(targetCiv)!!
         val personality = civInfo.getPersonality()
 
-        val targetCitiesWithOurCity = civInfo.threatManager.getNeighboringCitiesOfOtherCivs().filter { it.second.civ == targetCiv }.toList()
+        val civView = GameView(civInfo.gameInfo, civInfo).civView
+        val targetCitiesWithOurCity = ThreatManager.getNeighboringCitiesOfOtherCivs(civView).filter { it.second.owningCiv().getCiv() == targetCiv }
+            // Temporary - the logic below still works on City
+            .map { pair -> Pair(civInfo.cities.first { it.location == pair.first.location }, targetCiv.cities.first { it.location == pair.second.location }) }.toList()
         val targetCities = targetCitiesWithOurCity.map { it.second }
 
         if (targetCitiesWithOurCity.isEmpty()) return 0f
@@ -47,14 +53,14 @@ object MotivationToAttackAutomation {
         // If our personality is to declare war more then we should have a higher base motivation (a negative number closer to 0)
         modifiers.add(Pair("Base motivation", -(15f * personality.inverseScaledFocus(PersonalityValue.DeclareWar))))
 
-        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * civInfo.threatManager.getCombinedForceOfWarringCivs())))
+        modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * ThreatManager.getCombinedForceOfWarringCivs(civView))))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
         modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20f))
         modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3f))
 
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
-        if (civInfo.threatManager.getNeighboringCivilizations().none { it != targetCiv && it.isMajorCiv()
+        if (ThreatManager.getNeighboringCivilizations(civView).map { it.getCiv() }.none { it != targetCiv && it.isMajorCiv()
                         && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10f))
 

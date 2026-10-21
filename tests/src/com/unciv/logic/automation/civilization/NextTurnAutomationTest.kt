@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.GameView
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
@@ -52,7 +53,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         assertTrue(settler.isEscorting())
 
         // Act
-        NextTurnAutomation.automateSettlerEscorting(civInfo)
+        NextTurnAutomation.automateSettlerEscorting(GameView(civInfo.gameInfo, civInfo).civView)
         assertEquals("settler should not have moved, else test is invalid", testGame.tileMap[0,2], settler.currentTile)
 
         // Assert
@@ -80,7 +81,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         assertEquals(highHpWarrior, settler2.getOtherEscortUnit())
 
         // Act
-        NextTurnAutomation.automateSettlerEscorting(civInfo)
+        NextTurnAutomation.automateSettlerEscorting(GameView(civInfo.gameInfo, civInfo).civView)
         assertEquals("settlers should not have moved, else test is invalid", testGame.tileMap[0,2], settler1.currentTile)
         assertEquals("settlers should not have moved, else test is invalid", testGame.tileMap[0,1], settler2.currentTile)
 
