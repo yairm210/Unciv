@@ -163,6 +163,9 @@ class Multiplayer {
         //Set civ info to AI
         playerCiv.playerType = PlayerType.AI
         playerCiv.playerId = ""
+        
+        playerCiv.turnsPlayedAsHuman = 0
+        playerCiv.totalTurnTimeSeconds = 0
 
         //call next turn so turn gets simulated by AI
         if (gameInfo.currentPlayer == playerCivName) gameInfo.nextTurn()
