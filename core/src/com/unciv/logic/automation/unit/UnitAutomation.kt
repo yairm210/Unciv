@@ -29,6 +29,8 @@ import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
 import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import kotlin.math.ceil
 import com.unciv.view.GameView
+import com.unciv.view.ForeignCityView
+import com.unciv.view.isAtWar
 import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -587,38 +589,34 @@ object UnitAutomation {
     }
 
     private fun tryHeadTowardsOurSiegedCity(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        val siegedCities = unit.civ.cities
+        val siegedCities = unitView.civ().cities()
                 .asSequence()
-                .filter {
-                    unit.civ == it.civ && it.health < it.getMaxHealth()
-                }
+                .filter { it.getHealth() < it.getMaxHealth() }
 
-        if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
+        if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unitView.getTile()) <= 2 })
             return false
 
         val reachableTileNearSiegedCity = siegedCities
-                .flatMap { it.getCenterTile().getTilesAtDistance(2) }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-                        && unit.getDamageFromTerrain(it) <= 0 } // Avoid ending up on damaging terrain
+                .flatMap { it.getCenterTile().getExploredTilesAtDistance(2) }
+                .sortedBy { it.aerialDistanceTo(unitView.getTile()) }
+                .firstOrNull { unitView.canMoveTo(it) && unitView.canReach(it)
+                        && unitView.getDamageFromTerrain(it) <= 0 } // Avoid ending up on damaging terrain
 
         if (reachableTileNearSiegedCity != null) {
-            unit.movement.headTowards(reachableTileNearSiegedCity)
+            unitView.tryHeadTowards(reachableTileNearSiegedCity)
         }
         return !unitView.hasMovement()
     }
 
 
     fun tryEnterOwnClosestCity(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        val closestCity = unit.civ.cities
+        val closestCity = unitView.civ().cities()
             .asSequence()
-            .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
+            .sortedBy { it.getCenterTile().aerialDistanceTo(unitView.getTile()) }
+            .firstOrNull { unitView.canReach(it.getCenterTile()) }
           ?: return false // Panic!
 
-        unit.movement.headTowards(closestCity.getCenterTile())
+        unitView.tryHeadTowards(closestCity.getCenterTile())
         return true
     }
 
@@ -671,20 +669,20 @@ object UnitAutomation {
     }
 
     private fun tryGarrisoningLandUnit(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        if (unit.baseUnit.isWaterUnit) return false // Water units don't count for Garrison bonus
-        val citiesWithoutGarrison = unit.civ.cities.filter {
+        if (unitView.getBaseUnit().isWaterUnit) return false // Water units don't count for Garrison bonus
+        val citiesWithoutGarrison = unitView.civ().cities().filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit == null
-                    && unit.movement.canMoveTo(centerTile)
+                    && unitView.canMoveTo(centerTile)
         }
 
-        val citiesToTry = if (!unit.civ.isAtWar()) {
-            if (unit.getTile().isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
+        val unitTile = unitView.getTile()
+        val citiesToTry = if (!unitView.civ().isAtWar()) {
+            if (unitTile.isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
             citiesWithoutGarrison.asSequence()
         } else {
-            if (unit.getTile().isCityCenter() &&
-                    isCityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
+            if (unitTile.isCityCenter() &&
+                    isCityThatNeedsDefendingInWartime(unitTile.getCity()!!)) return true
             val citiesWithoutGarrisonThatNeedDefending = citiesWithoutGarrison.asSequence()
                     .filter { isCityThatNeedsDefendingInWartime(it) }
             if (citiesWithoutGarrisonThatNeedDefending.any()) citiesWithoutGarrisonThatNeedDefending
@@ -692,18 +690,16 @@ object UnitAutomation {
         }
 
         val closestReachableCityNeedsDefending = citiesToTry
-            .sortedBy { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
+            .sortedBy { it.getCenterTile().aerialDistanceTo(unitTile) }
+            .firstOrNull { unitView.canReach(it.getCenterTile()) }
             ?: return false
-        unit.movement.headTowards(closestReachableCityNeedsDefending.getCenterTile())
+        unitView.tryHeadTowards(closestReachableCityNeedsDefending.getCenterTile())
         return true
     }
     @Readonly
-    private fun isCityThatNeedsDefendingInWartime(city: City): Boolean {
-        if (city.health < city.getMaxHealth()) return true // this city is under attack!
-        for (enemyCivCity in city.civ.diplomacy.values
-            .filter { it.diplomaticStatus == DiplomaticStatus.War }
-            .map { it.otherCiv }.flatMap { it.cities })
+    private fun isCityThatNeedsDefendingInWartime(city: ForeignCityView): Boolean {
+        if (city.getHealth() < city.getMaxHealth()) return true // this city is under attack!
+        for (enemyCivCity in city.owningCiv().getCivsAtWarWith().flatMap { it.cities() })
             if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
         return false
     }
