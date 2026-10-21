@@ -210,6 +210,7 @@ object TranslationFileWriter {
     private fun MutableList<String>.collectUniqueSystemLines() {
         add("\n\n#################### Lines from Unique Types #######################\n")
         for (uniqueType in UniqueType.entries) {
+            if (uniqueType == UniqueType.Comment) continue // We don't want translators messing this up, we'll add it on translation load instead
             val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
             if (deprecationAnnotation != null) continue
             if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
@@ -641,14 +642,15 @@ object TranslationFileWriter {
 
         fun submitTypedUnique(unique: Unique) {
             require(unique.type != null)
+            if (unique.type == UniqueType.Comment) {
+                val subUnique = Unique(unique.params[0])
+                if (subUnique.type != null) submitTypedUnique(subUnique)
+                else resultStrings.add("${unique.params[0]} = ")
+                return // Do NOT add a template for the comment unique itself - TFR adds "Comment [comment] = [comment]"
+            }
             for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
                 if (typeList.none { it in translatableUniqueParameterTypes }) continue
-                // Unknown/Comment parameter contents better be offered to translators too
-                if (unique.type == UniqueType.Comment) {
-                    val subUnique = Unique(unique.params[index])
-                    if (subUnique.type != null)
-                        return submitTypedUnique(subUnique)
-                }
+                // Unknown parameter contents better be offered to translators too
                 resultStrings.add("${unique.params[index]} = ")
             }
             resultStrings.add("${unique.type.getTranslatable()} = ")
