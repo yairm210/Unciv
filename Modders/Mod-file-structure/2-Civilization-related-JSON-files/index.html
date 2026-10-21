@@ -3205,6 +3205,8 @@ outer list of 'columns', which in turn contains one or more tech each.</p>
 </tr>
 </tbody>
 </table>
+<p><code>columnNumber</code> is required to be unique within a mod, and for base rulesets this is stricter - they need to be in order.
+Extension mods are not bound this way because merging will match by <code>columnNumber</code> and re-sort. Mods can even use negative <code>columnNumber</code>s to insert columns before existing ones.</p>
 <h4 id="tech-structure">Tech structure</h4>
 <table>
 <thead>

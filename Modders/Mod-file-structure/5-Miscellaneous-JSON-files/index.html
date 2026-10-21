@@ -2897,12 +2897,13 @@ Incompatibility filtering works so far between extension and base mods, but feel
 </tbody>
 </table>
 <p>Note that removal happens before adding new content from your mod, so an "All" filter won't kill your content too.</p>
-<p>Policies with their branches and Technoligies have more complex removal rules.</p>
+<p>Policies with their branches and Technologies have more complex removal rules.</p>
 <ul>
 <li>Removing Policy Branches removes their member Policies as well.</li>
 <li>Overriding a Policy Branch will remove existing member Policies.</li>
 <li>Removing all techs from a TechColumn will also remove that column.</li>
 <li>Adding techs will merge columns by their <code>columnNumber</code>.</li>
+<li>Adding tech columns outside the existing ones is allowed: Replacing a column that was removed, or placing a column before (using negative <code>columnNumber</code>) or after the existing ones.</li>
 <li>After tech removal and merge is done, TechColumns are resorted and renumbered so <code>columnNumber</code> is monotonous, contiguous ands starts at 0.</li>
 </ul>
 <p>Removing religions will clean those from the preferred religions of nations.</p>
