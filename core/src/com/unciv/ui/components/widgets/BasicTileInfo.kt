@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 /**
  *  A rectangular pane showing Tile information:
  *  - Has a border and is skinnable ([borderWidth], [backgroundTexture], [borderTexture], [borderTint])
- *  - Shows tile yields (clickable for a [breakdown][com.unciv.logic.map.tile.TileStatFunctions.getTerrainStatsBreakdown])
+ *  - Shows tile yields (clickable for a [breakdown][com.unciv.logic.map.tile.TileStatFunctions.getTileStatsBreakdown])
  *  - Shows basic info such as Terrain, Resource, Improvements (Civilopedia linked, see [TileDescription])
  *  - Subclasses can add further content ([addAdditionalContent])
  *  - Needs an external call to [update] to show content
