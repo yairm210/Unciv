@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit
 
+import com.unciv.view.isPreparingAirSweep
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor

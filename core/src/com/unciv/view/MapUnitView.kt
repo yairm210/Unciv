@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.Constants
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -17,7 +18,9 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
+import kotlin.random.Random
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
 class MapUnitView internal constructor(
@@ -65,17 +68,12 @@ class MapUnitView internal constructor(
 
     @Readonly fun getOtherEscortUnit(): MapUnitView? = unit.getOtherEscortUnit()?.let { gameView.getMapUnitView(it) }
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
-    @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
     val action: String? get() = unit.action
-    @Readonly fun isMoving(): Boolean = unit.isMoving()
-    @Readonly fun isExploring(): Boolean = unit.isExploring()
     @Readonly fun isEscorting(): Boolean = unit.isEscorting()
-    @Readonly fun isSleeping(): Boolean = unit.isSleeping()
     @Readonly fun isAutomated(): Boolean = unit.isAutomated()
-    @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
     @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean = unit.canBuildImprovement(improvement)
     @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
     @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
@@ -103,7 +101,6 @@ class MapUnitView internal constructor(
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun canSwapTo(tileView: TileView): Boolean = unit.movement.canUnitSwapTo(tileView.unwrap())
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
-    @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
     @Readonly fun getDamageFromTerrain(tileView: TileView): Int = unit.getDamageFromTerrain(tileView.unwrap())
     // This reads as "logic leaking through to UI"
@@ -118,7 +115,6 @@ class MapUnitView internal constructor(
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun maxAttacksPerTurn(): Int = unit.maxAttacksPerTurn()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
-    @Readonly fun isAutomatingRoadConnection(): Boolean = unit.isAutomatingRoadConnection()
     @Readonly fun rulesetHasRoadImprovement(): Boolean = unit.currentTile.ruleset.roadImprovement != null
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
@@ -220,3 +216,20 @@ class MapUnitView internal constructor(
 
     @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(MapUnitCombatant(unit))
 }
+
+/** Like [com.unciv.models.ruleset.unique.GameContext.stateBasedRandom], but seeded only from what [this] unit can be read as through the view:
+ *  owner, unit type, tile, remaining movement and the current turn. Deterministic for the same state, so reloading a save gives the same choices. */
+@Readonly fun MapUnitView.stateBasedRandom(caller: String, seed: Int = 31): Random {
+    val position = getTile().position()
+    return Random(hashOf(caller.hashCode(), seed, civ().civID.hashCode(), name.hashCode(),
+        position.x, position.y, (17 * currentMovement).hashCode(), gameView.getTurn()))
+}
+
+// Unit state derived from [MapUnitView.action]
+@Readonly fun MapUnitView.isMoving(): Boolean = action?.startsWith("moveTo") == true
+@Readonly fun MapUnitView.isExploring(): Boolean = action == UnitActionType.Explore.value
+@Readonly fun MapUnitView.isSleeping(): Boolean = action?.startsWith(UnitActionType.Sleep.value) == true
+@Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction
+@Readonly fun MapUnitView.isPreparingParadrop(): Boolean = action == UnitActionType.Paradrop.value
+@Readonly fun MapUnitView.isPreparingAirSweep(): Boolean = action == UnitActionType.AirSweep.value
+@Readonly fun MapUnitView.isSetUpForSiege(): Boolean = action == UnitActionType.SetUp.value

@@ -1,5 +1,9 @@
 package com.unciv.ui.screens.worldscreen.worldmap
 
+import com.unciv.view.isAutomatingRoadConnection
+import com.unciv.view.isMoving
+import com.unciv.view.isPreparingAirSweep
+import com.unciv.view.isPreparingParadrop
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker

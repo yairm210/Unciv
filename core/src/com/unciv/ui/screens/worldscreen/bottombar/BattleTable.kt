@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
+import com.unciv.view.isPreparingAirSweep
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable

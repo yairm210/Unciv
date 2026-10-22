@@ -1,5 +1,9 @@
 package com.unciv.ui.components.widgets
 
+import com.unciv.view.isExploring
+import com.unciv.view.isMoving
+import com.unciv.view.isSetUpForSiege
+import com.unciv.view.isSleeping
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group

@@ -31,6 +31,7 @@ import kotlin.math.ceil
 import com.unciv.view.GameView
 import com.unciv.view.ForeignCityView
 import com.unciv.view.isAtWar
+import com.unciv.view.stateBasedRandom
 import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -232,21 +233,21 @@ object UnitAutomation {
     }
 
     fun wander(unitView: MapUnitView, stayInTerritory: Boolean = false, tilesToAvoid: Set<TileView> = setOf()) {
-        val unit = unitView.getUnit()
         if (!unitView.hasMovement()) return // return in case we can't move anyways
-        val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
+        val unitTile = unitView.getTile()
+        val unitDistanceToTiles = unitTile.getExploredTilesAtDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
         val reachableTiles = unitDistanceToTiles
                 .filter {
-                    unitView.viewOf(it) !in tilesToAvoid
-                        && unit.movement.canMoveTo(it)
-                        && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
-                        && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
+                    it !in tilesToAvoid
+                        && unitView.canMoveTo(it)
+                        && unitView.getDistanceToTiles().contains(it) // Yes this is required despite the above line - see #14461
+                        && unitView.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
+                        && (!stayInTerritory || it.getOwner() == unitView.civ() || unitTile.getOwner() != unitView.civ())
                 }
-        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.wander")
-        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random(rng))
+        val rng = unitView.stateBasedRandom("UnitAutomation.wander")
+        if (reachableTiles.any()) unitView.tryMoveToTile(reachableTiles.toList().random(rng))
     }
 
     internal fun tryUpgradeUnit(unitView: MapUnitView): Boolean {
