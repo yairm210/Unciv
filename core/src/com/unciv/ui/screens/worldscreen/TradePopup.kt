@@ -180,7 +180,7 @@ class TradePopup(private val worldScreen: WorldScreen) : Popup(worldScreen) {
     private inner class DeclineAllTutorial : Popup(worldScreen) {
         init {
             addGoodSizedLabel("From now on, for the rest of this game, all trade requests to accept an [Embassy] are declined as if you chose \"Not this time\".").row()
-            addGoodSizedLabel("Simply offer an Embassy trade yourself to show such trade requests again - even if you retract it right away.").row()
+            addGoodSizedLabel("Simply offer an [Embassy] trade yourself to show such trade requests again - even if you retract it right away.").row()
             addCloseButton()
             open()
         }
