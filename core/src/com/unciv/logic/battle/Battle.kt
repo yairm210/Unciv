@@ -649,9 +649,13 @@ object Battle {
         }
 
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
-            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
-                NotificationCategory.Units, thisCombatant.unit.name)
+            if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+                NextTurnAutomation.applyPromotions(thisCombatant.unit)
+            } else {
+                civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
+                    listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
+                    NotificationCategory.Units, thisCombatant.unit.name)
+            }
         }
     }
 

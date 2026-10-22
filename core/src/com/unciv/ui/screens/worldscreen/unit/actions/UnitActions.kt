@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
@@ -251,7 +252,11 @@ object UnitActions {
         yield(UnitAction(UnitActionType.Promote,
             useFrequency = 150f, // We want to show the player that they can promote
             action = {
-                UncivGame.Current.pushScreen { PromotionPickerScreen(unit) }
+                if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+                    NextTurnAutomation.applyPromotions(unit)
+                } else {
+                    UncivGame.Current.pushScreen { PromotionPickerScreen(unit) }
+                }
                 Unit
             }.takeIf { unit.hasMovement() && unit.attacksThisTurn == 0 }
         ))

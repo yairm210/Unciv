@@ -114,7 +114,7 @@ class GameSettings {
     var stopAutomatedWorkersRemoveVegetation = false
     var automatedUnitsMoveOnTurnStart = false
     var automatedUnitsCanUpgrade = false
-    var automatedUnitsChoosePromotions = false
+    var automatedUnitsChoosePromotions = true
     var citiesAutoBombardAtEndOfTurn = false
     var autoAssignSpecialistsInNewCities = true
 
