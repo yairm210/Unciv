@@ -26,7 +26,7 @@ internal class AutomationTab(
         addCheckbox("Stop automated workers from removing vegetation terrain", settings::stopAutomatedWorkersRemoveVegetation)
         addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)
         addCheckbox("Automated units can upgrade", settings::automatedUnitsCanUpgrade)
-        addCheckbox("Automated units choose promotions", settings::automatedUnitsChoosePromotions)
+        addCheckbox("Units automatically choose promotions", settings::automatedUnitsChoosePromotions)
         addCheckbox("Cities auto-bombard at end of turn", settings::citiesAutoBombardAtEndOfTurn)
         addCheckbox("Auto-assign specialists in new cities", settings::autoAssignSpecialistsInNewCities)
 

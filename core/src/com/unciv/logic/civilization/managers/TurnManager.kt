@@ -95,7 +95,10 @@ class TurnManager(val civInfo: Civilization) {
         val promotableUnits = civInfo.units.getCivUnits()
             .filter { it.promotions.canBePromoted() }
             .toList()
-        if (promotableUnits.size <= 3) {
+        if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+            val gameView = GameView(civInfo.gameInfo, civInfo)
+            for (unit in promotableUnits) NextTurnAutomation.applyPromotions(gameView.getMapUnitView(unit))
+        } else if (promotableUnits.size <= 3) {
             for (unit in promotableUnits) {
                 civInfo.addNotification(
                     "[${unit.displayName()}] can be promoted!",
