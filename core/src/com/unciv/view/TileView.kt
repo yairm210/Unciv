@@ -115,6 +115,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     //. that's not really relevant for the API
     // We should see if we can avoid this entirely
     @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
+    /** `true` if this tile borders a tile the viewer hasn't explored, i.e. it is on the edge of the map the viewer knows about */
+    @Readonly fun isMapEdgeTile(): Boolean = viewer != null && tile.neighbors.any { !it.isExplored(viewer) }
     @Readonly fun getExploredTilesAtDistance(distance: Int): Sequence<TileView> =
         tile.getTilesAtDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }

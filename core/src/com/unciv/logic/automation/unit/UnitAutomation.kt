@@ -198,42 +198,44 @@ object UnitAutomation {
 
     // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
     private fun tryFogBust(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        if (!Automation.afraidOfBarbarians(GameView(unit.civ.gameInfo, unit.civ).civView)) return false // Not if we're not afraid
+        if (!Automation.afraidOfBarbarians(unitView.civ())) return false // Not if we're not afraid
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
+        // An unexplored tile within 5 means some explored tile within 4 borders unexplored ground
+        val unitTile = unitView.getTile()
+        if (unitTile.getExploredTilesInDistance(5).all { it.isVisible() }
+            && unitTile.getExploredTilesInDistance(4).none { it.isMapEdgeTile() }) {
             return false
         }
 
-        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.tryFogBust")
+        val rng = unitView.stateBasedRandom("UnitAutomation.tryFogBust")
         val reachableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unitView, it) }
+                unitView.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unitView, it) }
         if (reachableTilesThisTurn.any()) {
-            unit.movement.headTowards(reachableTilesThisTurn.random(rng)) // Just pick one
+            unitView.tryHeadTowards(reachableTilesThisTurn.random(rng)) // Just pick one
             return true
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
+        for (tile in unitTile.getExploredTilesInDistance(5))
             if (isGoodTileForFogBusting(unitView, tile)) {
-                unit.movement.headTowards(tile)
+                unitView.tryHeadTowards(tile)
                 return true
             }
         return false
     }
 
     @Readonly
-    private fun isGoodTileForFogBusting(unitView: MapUnitView, tile: Tile): Boolean {
-        val unit = unitView.getUnit()
-        return unit.movement.canMoveTo(tile)
+    private fun isGoodTileForFogBusting(unitView: MapUnitView, tile: TileView): Boolean {
+        val civ = unitView.civ()
+        return unitView.canMoveTo(tile)
                 && tile.getOwner() == null
-                && tile.neighbors.all { it.getOwner() == null }
-                && unit.civ.hasExplored(tile)
-                && tile.getTilesInDistance(2).any { it.getOwner() == unit.civ }
-                && unit.getDamageFromTerrain(tile) <= 0
-                && unit.movement.canReach(tile) // expensive, evaluate last
+                && tile.getVisibleNeighbors().all { it.getOwner() == null }
+                && civ.hasExplored(tile)
+                && tile.getExploredTilesInDistance(2).any { it.getOwner() == civ }
+                && unitView.getDamageFromTerrain(tile) <= 0
+                && unitView.canReach(tile) // expensive, evaluate last
     }
 
     fun wander(unitView: MapUnitView, stayInTerritory: Boolean = false, tilesToAvoid: Set<TileView> = setOf()) {
@@ -327,54 +329,56 @@ object UnitAutomation {
     }
 
     private fun tryRetreat(unitView: MapUnitView, cache: AutomationCache): Boolean {
-        val unit = unitView.getUnit()
         // Precondition: This must be a military unit
         if (unitView.isCivilian()) return false
         if (unitView.isAirUnit()) return false
+        val civ = unitView.civ()
+        val unitTile = unitView.getTile()
         // Better to do a more healing oriented move then
-        if (ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), 4, true) > 3) return false
+        if (ThreatManager.getDistanceToClosestEnemyUnit(civ, cache, unitTile, 4, true) > 3) return false
 
 
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }?.takeIf { it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20 }
+        val unitDistanceToTiles = unitView.getDistanceToTiles()
+        val closestCity = civ.cities().minByOrNull { it.getCenterTile().aerialDistanceTo(unitTile) }
+            ?.takeIf { it.getCenterTile().aerialDistanceTo(unitTile) < 20 }
 
         // Finding the distance to the closest enemy is expensive, so lets sort the tiles using a cheaper function
-        val sortedTilesToRetreatTo: Sequence<Tile> = if (closestCity != null) {
+        val sortedTilesToRetreatTo: Sequence<TileView> = if (closestCity != null) {
             // If we have a city, lets favor the tiles closer to that city
             unitDistanceToTiles.asSequence().map { it.key }.sortedBy { it.aerialDistanceTo(closestCity.getCenterTile()) }
         } else {
             // Rare case, what if we don't have a city nearby?
             // Lets favor the tiles that don't have enemies close by
             // Ideally we should check in a greater radius but might get way too expensive
-            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(it), 3, false) }
+            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { ThreatManager.getDistanceToClosestEnemyUnit(civ, cache, it, 3, false) }
         }
 
-        val ourDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), 4, false)
+        val ourDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(civ, cache, unitTile, 4, false)
         // Lets check all tiles and swap with the first one
         for (retreatTile in sortedTilesToRetreatTo) {
-            val tileDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(retreatTile), 4, false)
+            val tileDistanceToClosestEnemy = ThreatManager.getDistanceToClosestEnemyUnit(civ, cache, retreatTile, 4, false)
             if (ourDistanceToClosestEnemy >= tileDistanceToClosestEnemy) continue
 
             val otherUnit = retreatTile.militaryUnit
             if (otherUnit == null) {
                 // See if we can retreat to the tile
-                if (!unit.movement.canMoveTo(retreatTile)) continue
-                unit.movement.moveToTile(retreatTile)
+                if (!unitView.canMoveTo(retreatTile)) continue
+                unitView.tryMoveToTile(retreatTile)
                 return true
-            } else if (otherUnit.civ == unit.civ) {
+            } else if (otherUnit.civ() == civ) {
                 // The tile is taken, lets see if we want to swap retreat to it
-                if (otherUnit.health <= 80) continue
-                if (otherUnit.baseUnit.isRanged()) {
+                if (otherUnit.unitHealth <= 80) continue
+                if (otherUnit.getBaseUnit().isRanged()) {
                     // Don't swap ranged units closer than they have to be
-                    val range = otherUnit.baseUnit.range
+                    val range = otherUnit.getBaseUnit().range
                     if (ourDistanceToClosestEnemy < range)
                         continue
                 }
-                if (unit.movement.canUnitSwapTo(retreatTile)) {
-                    unit.movement.headTowards(retreatTile) // we need to move through the intermediate tiles
+                if (unitView.canSwapTo(retreatTile)) {
+                    unitView.tryHeadTowards(retreatTile) // we need to move through the intermediate tiles
                     // if nothing changed
-                    if (unit.currentTile.neighbors.contains(otherUnit.currentTile) && unit.movement.canUnitSwapTo(retreatTile)) {
-                        unit.movement.swapMoveToTile(retreatTile)
+                    if (unitView.getTile().getVisibleNeighbors().contains(otherUnit.getTile()) && unitView.canSwapTo(retreatTile)) {
+                        unitView.trySwapMoveToTile(retreatTile)
                     }
                     return true
                 }
