@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.unit
 
-import com.unciv.view.hasIdleUnits
 import com.unciv.view.isPreparingAirSweep
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -175,7 +174,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         isVisible = presenter != summaryPresenter || worldScreen.selectedGameView.civView.getUnits().isNotEmpty()
 
         // more efficient to do this check once for both
-        if (worldScreen.selectedGameView.civView.hasIdleUnits()) {
+        if (worldScreen.selectedGameView.civView.getUnits().any { it.isIdle() }) {
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         } else {

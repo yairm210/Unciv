@@ -224,6 +224,4 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 }
 
 // Helpers built on top of the view API, rather than being part of it
-@Readonly fun TileView.isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
-val TileView.tileImprovement: TileImprovement? get() = improvement?.let { getRuleset().tileImprovements[it] }
 @Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!

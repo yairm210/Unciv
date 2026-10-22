@@ -1,7 +1,6 @@
 package com.unciv.ui.popups
 
 import com.unciv.view.hasMovement
-import com.unciv.view.isInOwnTerritory
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -53,7 +52,7 @@ class UnitUpgradeMenu(
             .filter {
                 it.getBaseUnit().name == unit.getBaseUnit().name
                     && it.hasMovement()
-                    && it.isInOwnTerritory()
+                    && it.getTile().getOwner() == it.civ()
                     && !it.isEmbarked()
                     && it.canUpgradeTo(unitToUpgradeTo)
             }

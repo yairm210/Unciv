@@ -52,5 +52,4 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
 
 // Helpers built on top of the view API, rather than being part of it
 @Readonly fun CityConstructionsView.isBeingConstructedOrEnqueued(name: String): Boolean = name in constructionQueue
-@Readonly fun CityConstructionsView.isEnqueuedForLater(name: String): Boolean = constructionQueue.indexOf(name) > 0
 @Readonly fun CityConstructionsView.getCurrentConstruction(): IConstruction = getConstruction(currentConstructionName())

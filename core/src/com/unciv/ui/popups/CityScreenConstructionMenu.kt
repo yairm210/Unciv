@@ -1,7 +1,6 @@
 package com.unciv.ui.popups
 
 import com.unciv.view.isBeingConstructedOrEnqueued
-import com.unciv.view.isEnqueuedForLater
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -117,7 +116,7 @@ class CityScreenConstructionMenu(
     private fun canAddAllQueuesTop() = construction !is PerpetualConstruction &&
         allCitiesEntryValid {
             (it.constructions.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding()) ||
-            it.constructions.isEnqueuedForLater(constructionName) }
+            it.constructions.constructionQueue.indexOf(constructionName) > 0 }
 
     private fun addAllQueuesTop() = forAllCities {
         val index = it.constructions.constructionQueue.indexOf(constructionName)

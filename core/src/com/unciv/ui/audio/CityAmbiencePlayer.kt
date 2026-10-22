@@ -1,6 +1,5 @@
 package com.unciv.ui.audio
 
-import com.unciv.view.getCityAmbienceSound
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.view.CityView
@@ -15,7 +14,7 @@ class CityAmbiencePlayer(
         val volume = UncivGame.Current.settings.citySoundsVolume
         if (volume > 0f) {
             UncivGame.Current.musicController
-                .playOverlay(cityView.getCityAmbienceSound(), volume = volume, isLooping = true, fadeIn = true)
+                .playOverlay(cityView.owningCiv().getEra().citySound, volume = volume, isLooping = true, fadeIn = true)
         }
     }
 

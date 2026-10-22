@@ -1,6 +1,5 @@
 package com.unciv.ui.components.tilegroups
 
-import com.unciv.view.isSameCivAs
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
@@ -48,7 +47,7 @@ class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: 
         when {
 
             // Does not belong to us
-            tileView.owningCity()?.isSameCivAs(cityView) != true -> {
+            tileView.owningCity()?.owningCiv() != cityView.owningCiv() -> {
                 setDimmed(0.6f)
                 layerYield.setYieldVisible(UncivGame.Current.settings.showTileYields)
                 layerYield.dimYields(true)

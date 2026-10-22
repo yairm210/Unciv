@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen
 
-import com.unciv.view.hasMetAnyMajorCiv
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -174,7 +173,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateDiplomacyButton(): Boolean {
         return if (viewingCiv.isDefeated() || viewingCiv.isSpectator()
-                || !viewingCiv.hasMetAnyMajorCiv()
+                || viewingCiv.getKnownCivs().none { it != viewingCiv && !it.isBarbarian() }
         ) {
             diplomacyButtonHolder.touchable = Touchable.disabled
             diplomacyButtonHolder.actor = null

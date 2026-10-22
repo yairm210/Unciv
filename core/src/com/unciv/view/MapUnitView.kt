@@ -219,13 +219,10 @@ class MapUnitView internal constructor(
 // Unit state derived from [MapUnitView.action]
 @Readonly fun MapUnitView.isMoving(): Boolean = action?.startsWith("moveTo") == true
 @Readonly fun MapUnitView.isExploring(): Boolean = action == UnitActionType.Explore.value
-@Readonly fun MapUnitView.isSleeping(): Boolean = action?.startsWith(UnitActionType.Sleep.value) == true
 @Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction
 @Readonly fun MapUnitView.isPreparingParadrop(): Boolean = action == UnitActionType.Paradrop.value
 @Readonly fun MapUnitView.isPreparingAirSweep(): Boolean = action == UnitActionType.AirSweep.value
-@Readonly fun MapUnitView.isSetUpForSiege(): Boolean = action == UnitActionType.SetUp.value
 
-@Readonly fun MapUnitView.isInOwnTerritory(): Boolean = getTile().getOwner() == civ()
 @Readonly fun MapUnitView.getImprovementInProgress(): String? = getTile().improvementInProgress
 @Readonly fun MapUnitView.canBuildCurrentImprovement(): Boolean {
     val tile = getTile()
@@ -237,4 +234,3 @@ class MapUnitView internal constructor(
 @Readonly fun MapUnitView.isNuclearWeapon(): Boolean = hasUnique(UniqueType.NuclearWeapon)
 @Readonly fun MapUnitView.getNukeBlastRadius(): Int =
     getMatchingUniques(UniqueType.BlastRadius).firstOrNull()?.params?.get(0)?.toInt() ?: 2
-@Readonly fun MapUnitView.rulesetHasRoadImprovement(): Boolean = getTile().getRuleset().roadImprovement != null

@@ -89,9 +89,6 @@ open class ForeignCityView(protected open val city: City,
 
 // Helpers built on top of the view API, rather than being part of it
 val ForeignCityView.location: HexCoord get() = getCenterTile().position()
-@Readonly fun ForeignCityView.isSameCivAs(other: ForeignCityView): Boolean = owningCiv() == other.owningCiv()
 @Readonly fun ForeignCityView.isCityState(): Boolean = owningCiv().isCityState
-@Readonly fun ForeignCityView.isMajorCiv(): Boolean = owningCiv().getNation().isMajorCiv
-@Readonly fun ForeignCityView.getNationName(): String = owningCiv().getNation().name
 @Readonly fun ForeignCityView.getNationOuterColor(): ImmutableColor = owningCiv().getOuterColor()
 @Readonly fun ForeignCityView.getCivInnerColor(): ImmutableColor = owningCiv().getInnerColor()

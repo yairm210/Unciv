@@ -1,13 +1,12 @@
 package com.unciv.ui.components.widgets
 
+import com.unciv.models.UnitActionType
 import com.unciv.view.canBuildCurrentImprovement
 import com.unciv.view.getImprovementInProgress
 import com.unciv.view.hasMovement
 import com.unciv.view.isCivilian
 import com.unciv.view.isExploring
 import com.unciv.view.isMoving
-import com.unciv.view.isSetUpForSiege
-import com.unciv.view.isSleeping
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -189,14 +188,14 @@ class UnitIconGroup(val unitView: ForeignMapUnitView, val size: Float) : NonTran
     private fun getActionImage(): Image? {
         val unit = unitView.tryGetMapUnitView() ?: return null
         return when {
-            unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
+            unit.action?.startsWith(UnitActionType.Sleep.value) == true -> ImageGetter.getImage("UnitActionIcons/Sleep")
             unit.canBuildCurrentImprovement() ->
                 ImageGetter.getImage("ImprovementIcons/${unit.getImprovementInProgress()}")
             unit.isEscorting() -> ImageGetter.getImage("UnitActionIcons/Escort")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
             unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
-            unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
+            unit.action == UnitActionType.SetUp.value -> ImageGetter.getImage("UnitActionIcons/SetUp")
             else -> null
         }
     }

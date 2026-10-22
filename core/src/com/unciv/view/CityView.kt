@@ -304,5 +304,3 @@ class CityView(city: City,
 @Readonly fun CityView.isStarving(): Boolean = foodForNextTurn() < 0
 @Readonly fun CityView.isGrowing(): Boolean = foodForNextTurn() > 0
 @Readonly fun CityView.currentConstructionName(): String = constructions.currentConstructionName()
-@Readonly fun CityView.getCityAmbienceSound(): String = owningCiv().getEra().citySound
-@Readonly fun CityView.rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, owningCivView)

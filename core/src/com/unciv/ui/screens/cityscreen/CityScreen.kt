@@ -1,8 +1,7 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.logic.automation.Automation
 import com.unciv.view.location
-import com.unciv.view.rankStatsValue
-import com.unciv.view.tileImprovement
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -257,10 +256,10 @@ class CityScreen(
 
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tileView: TileView): Boolean {
-            val improvement = tileView.tileImprovement ?: return false
+            val improvement = tileView.improvement?.let { tileView.getRuleset().tileImprovements[it] } ?: return false
             val statDiffForNewImprovement = cityView.getStatDiffForImprovement(tileView, improvement)
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
-            return cityView.rankStatsValue(statDiffForNewImprovement) <= 0
+            return Automation.rankStatsValue(statDiffForNewImprovement, cityView.owningCivView) <= 0
         }
 
         fun getPickImprovementColor(tileView: TileView): Pair<Color, Float> {

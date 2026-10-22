@@ -137,13 +137,8 @@ class CivView(civ: Civilization,
 // Helpers built on top of the view API, rather than being part of it
 // This is so we can separate the minimal API, from the helpful API.
 
-@Readonly fun CivView.hasMetAnyMajorCiv(): Boolean = getKnownCivs().any { it != this && !it.isBarbarian() }
-@Readonly fun CivView.hasIdleUnits(): Boolean = getUnits().any { it.isIdle() }
 @Readonly fun CivView.idleUnitsCount(due: Boolean): Int = getUnits().count { it.isIdle() && it.due == due }
 @Readonly fun CivView.dueUnitsCount(): Int = getUnits().count { it.due && it.isIdle() }
-@Readonly fun CivView.hasUnitsReadyToAutomate(): Boolean = getUnits().any {
-    it.currentMovement > Constants.minimumMovementEpsilon && (it.isAutomated() || it.isExploring() || it.isMoving())
-}
 
 /** `true` if we are at war with any known, non-defeated civ */
 @Readonly fun CivView.isAtWar(): Boolean = getKnownCivs().any { !it.isDefeated() && isAtWarWith(it) }

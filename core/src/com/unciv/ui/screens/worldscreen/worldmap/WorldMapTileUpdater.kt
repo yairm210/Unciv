@@ -4,7 +4,6 @@ import com.unciv.view.getNukeBlastRadius
 import com.unciv.view.isAirUnit
 import com.unciv.view.isMilitary
 import com.unciv.view.isNuclearWeapon
-import com.unciv.view.rulesetHasRoadImprovement
 import com.unciv.view.isAutomatingRoadConnection
 import com.unciv.view.isMoving
 import com.unciv.view.isPreparingAirSweep
@@ -100,7 +99,7 @@ object WorldMapTileUpdater {
         // Z-Layer: 0
         // Highlight suitable tiles in road connecting mode
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
-            if (!unitView.rulesetHasRoadImprovement()) return
+            if (unitView.getTile().getRuleset().roadImprovement == null) return
             val connectRoadTileOverlayColor = Color.RED
             for (tileView in unitView.getValidRoadConnectionTiles())  {
                 tileGroups[tileView]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
