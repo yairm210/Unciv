@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.isCivilian
 import com.unciv.view.GameView
 import com.unciv.view.isAtWar
 import com.unciv.view.getCapital

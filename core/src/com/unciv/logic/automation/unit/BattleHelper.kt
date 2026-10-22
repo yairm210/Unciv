@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.hasMovement
 import com.unciv.view.MapUnitView
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle

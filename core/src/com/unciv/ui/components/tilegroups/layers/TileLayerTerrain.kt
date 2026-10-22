@@ -1,5 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.unciv.view.getBaseTerrain
+import com.unciv.view.isPillaged
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame

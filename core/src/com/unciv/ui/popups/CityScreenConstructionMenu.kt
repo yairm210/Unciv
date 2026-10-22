@@ -1,5 +1,7 @@
 package com.unciv.ui.popups
 
+import com.unciv.view.isBeingConstructedOrEnqueued
+import com.unciv.view.isEnqueuedForLater
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table

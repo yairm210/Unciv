@@ -1,5 +1,9 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
+import com.unciv.view.getCivInnerColor
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
+import com.unciv.view.isCityState
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation

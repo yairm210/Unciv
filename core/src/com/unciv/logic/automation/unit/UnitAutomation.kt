@@ -1,5 +1,9 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
+import com.unciv.view.isCivilian
+import com.unciv.view.isNuclearWeapon
 import com.unciv.view.TileView
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache

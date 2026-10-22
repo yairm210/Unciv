@@ -1,5 +1,9 @@
 package com.unciv.ui.components.widgets
 
+import com.unciv.view.canBuildCurrentImprovement
+import com.unciv.view.getImprovementInProgress
+import com.unciv.view.hasMovement
+import com.unciv.view.isCivilian
 import com.unciv.view.isExploring
 import com.unciv.view.isMoving
 import com.unciv.view.isSetUpForSiege

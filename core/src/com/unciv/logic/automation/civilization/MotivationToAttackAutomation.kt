@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.location
 import com.unciv.view.GameView
 import com.unciv.view.ForeignCivView
 import com.unciv.UncivGame

@@ -48,7 +48,6 @@ class CityView(city: City,
     // Data retrieval
     @Readonly fun isInRange(tileView: TileView): Boolean = tileView.unwrap() in city.tilesInRange
 
-    @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
     @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
     @Deprecated("Scheduled for removal")
     @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
@@ -71,8 +70,6 @@ class CityView(city: City,
     @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
-    @Readonly fun isStarving(): Boolean = city.isStarving()
-    @Readonly fun isGrowing(): Boolean = city.isGrowing()
     val demandedResource: String get() = city.demandedResource
     @Readonly fun getFlag(flag: CityFlags): Int = city.getFlag(flag)
     @Readonly fun getCityFocus(): CityFocus = city.getCityFocus()
@@ -93,7 +90,6 @@ class CityView(city: City,
 
     // Constructions
     val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView, viewer, spectatorMode)
-    @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
     @Readonly fun hasMatchingUnique(uniqueType: UniqueType): Boolean = city.getMatchingUniques(uniqueType).any()
     @Readonly fun getDisabledConstructions(): Set<String> = city.disabledConstructions
@@ -113,7 +109,6 @@ class CityView(city: City,
     @Readonly fun hasSoldBuildingThisTurn(): Boolean = city.hasSoldBuildingThisTurn
     @Readonly fun isGodModeEnabled(): Boolean = city.civ.gameInfo.gameParameters.godMode
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
-    @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { gameView.getMapUnitView(it) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
@@ -139,7 +134,6 @@ class CityView(city: City,
     @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
     @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
         tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)
-    @Readonly fun rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, gameView.getCivView(city.civ))
     @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
@@ -305,3 +299,10 @@ class CityView(city: City,
         Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
 
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun CityView.isStarving(): Boolean = foodForNextTurn() < 0
+@Readonly fun CityView.isGrowing(): Boolean = foodForNextTurn() > 0
+@Readonly fun CityView.currentConstructionName(): String = constructions.currentConstructionName()
+@Readonly fun CityView.getCityAmbienceSound(): String = owningCiv().getEra().citySound
+@Readonly fun CityView.rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, owningCivView)

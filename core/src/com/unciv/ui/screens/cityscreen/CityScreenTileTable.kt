@@ -110,7 +110,7 @@ class CityScreenTileTable(
         }
 
         @Readonly private fun getRing(ring: Int) =
-            cityView.centerTile().getExploredTilesInDistance(ring)
+            cityView.getCenterTile().getExploredTilesInDistance(ring)
                 .filter { cityView.canBuyTile(it) } // This respects the requirement that **this** city must already own a neighbor
         @Readonly private fun countBuyableInRing(ring: Int) =
             getRing(ring).count()

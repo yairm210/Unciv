@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
+import com.unciv.view.getNukeBlastRadius
+import com.unciv.view.isCivilian
+import com.unciv.view.isNuclearWeapon
 import com.unciv.view.isPreparingAirSweep
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation

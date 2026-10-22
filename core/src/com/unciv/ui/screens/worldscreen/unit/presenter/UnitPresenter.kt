@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
+import com.unciv.view.isCivilian
 import com.unciv.view.isPreparingAirSweep
 import com.unciv.view.isPreparingParadrop
 import com.badlogic.gdx.utils.Align

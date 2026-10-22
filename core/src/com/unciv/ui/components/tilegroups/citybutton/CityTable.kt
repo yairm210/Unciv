@@ -1,5 +1,13 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
+import com.unciv.view.getCivInnerColor
+import com.unciv.view.getCurrentConstruction
+import com.unciv.view.getNationName
+import com.unciv.view.getNationOuterColor
+import com.unciv.view.isCityState
+import com.unciv.view.isGrowing
+import com.unciv.view.isMajorCiv
+import com.unciv.view.isStarving
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table

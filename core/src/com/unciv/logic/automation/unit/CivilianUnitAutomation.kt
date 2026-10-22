@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.isMilitary
 import com.unciv.view.isAutomatingRoadConnection
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache
@@ -145,20 +146,20 @@ object CivilianUnitAutomation {
             // Choose the city that is closest in distance and does not have the building constructed.
             val cityToGainBuilding = unit.civ().cities().filter {
                 !it.constructions.getCityConstructions().containsBuildingOrEquivalent(buildingName)
-                    && (unit.canMoveTo(it.centerTile()) || unit.getTile() == it.centerTile())
+                    && (unit.canMoveTo(it.getCenterTile()) || unit.getTile() == it.getCenterTile())
             }.map {
-                val path = unit.getShortestPath(it.centerTile())
+                val path = unit.getShortestPath(it.getCenterTile())
                 // We want to calc path once, but still filter out unreachable cities
                 it to path.size
             }.filter { it.second > 0 }.minByOrNull { it.second }?.first
 
             if (cityToGainBuilding != null) {
-                if (unit.getTile() == cityToGainBuilding.centerTile()) {
+                if (unit.getTile() == cityToGainBuilding.getCenterTile()) {
                     UniqueTriggerActivation.triggerUnique(unique, mapUnit.civ, unit = mapUnit, tile = mapUnit.currentTile)
                     UnitActionModifiers.activateSideEffects(mapUnit, unique)
                     return
                 }
-                else unit.tryHeadTowards(cityToGainBuilding.centerTile())
+                else unit.tryHeadTowards(cityToGainBuilding.getCenterTile())
             }
             return
         }

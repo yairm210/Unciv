@@ -1,5 +1,10 @@
 package com.unciv.ui.screens.worldscreen.worldmap
 
+import com.unciv.view.getNukeBlastRadius
+import com.unciv.view.isAirUnit
+import com.unciv.view.isMilitary
+import com.unciv.view.isNuclearWeapon
+import com.unciv.view.rulesetHasRoadImprovement
 import com.unciv.view.isAutomatingRoadConnection
 import com.unciv.view.isMoving
 import com.unciv.view.isPreparingAirSweep

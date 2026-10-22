@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.Constants
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
@@ -51,7 +52,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
     @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
     @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
@@ -78,11 +78,6 @@ class MapUnitView internal constructor(
     @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
     @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
         improvement.getStockpiledResourceRequirements(unit.cache.state)
-    @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
-    @Readonly fun canBuildCurrentImprovement(): Boolean {
-        val tile = unit.getTile()
-        return tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
-    }
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 
@@ -107,15 +102,11 @@ class MapUnitView internal constructor(
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
     /** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
-    @Readonly fun getAirUnitMovementRange(): Int? = if (unit.baseUnit.isAirUnit()) unit.getAirUnitMovementRange() else null
     /** `true` if [tileView] holds something this unit could attack */
     @Readonly fun containsAttackableEnemy(tileView: TileView): Boolean =
         TargetHelper.containsAttackableEnemy(tileView.unwrap(), MapUnitCombatant(unit))
-    @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
-    @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun maxAttacksPerTurn(): Int = unit.maxAttacksPerTurn()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
-    @Readonly fun rulesetHasRoadImprovement(): Boolean = unit.currentTile.ruleset.roadImprovement != null
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
     @Readonly fun getUnitSwappableTiles(): List<TileView> =
@@ -233,3 +224,17 @@ class MapUnitView internal constructor(
 @Readonly fun MapUnitView.isPreparingParadrop(): Boolean = action == UnitActionType.Paradrop.value
 @Readonly fun MapUnitView.isPreparingAirSweep(): Boolean = action == UnitActionType.AirSweep.value
 @Readonly fun MapUnitView.isSetUpForSiege(): Boolean = action == UnitActionType.SetUp.value
+
+@Readonly fun MapUnitView.isInOwnTerritory(): Boolean = getTile().getOwner() == civ()
+@Readonly fun MapUnitView.getImprovementInProgress(): String? = getTile().improvementInProgress
+@Readonly fun MapUnitView.canBuildCurrentImprovement(): Boolean {
+    val tile = getTile()
+    val improvementInProgress = tile.improvementInProgress ?: return false
+    return canBuildImprovement(tile.getRuleset().tileImprovements[improvementInProgress]!!)
+}
+/** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
+@Readonly fun MapUnitView.getAirUnitMovementRange(): Int? = if (isAirUnit()) getRange() * 2 else null
+@Readonly fun MapUnitView.isNuclearWeapon(): Boolean = hasUnique(UniqueType.NuclearWeapon)
+@Readonly fun MapUnitView.getNukeBlastRadius(): Int =
+    getMatchingUniques(UniqueType.BlastRadius).firstOrNull()?.params?.get(0)?.toInt() ?: 2
+@Readonly fun MapUnitView.rulesetHasRoadImprovement(): Boolean = getTile().getRuleset().roadImprovement != null

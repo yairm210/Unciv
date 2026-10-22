@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.worldscreen.status
 
+import com.unciv.view.currentConstructionName
+import com.unciv.view.dueUnitsCount
+import com.unciv.view.hasUnitsReadyToAutomate
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.Counter

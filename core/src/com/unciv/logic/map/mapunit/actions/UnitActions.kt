@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit.actions
 
+import com.unciv.view.isAirUnit
 import com.unciv.view.GameView
 import com.unciv.GUI
 import com.unciv.UncivGame

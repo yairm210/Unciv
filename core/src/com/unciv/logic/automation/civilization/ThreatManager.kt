@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.isMilitary
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.view.CivView
 import com.unciv.view.ForeignCityView

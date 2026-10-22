@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
+import com.unciv.view.location
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.onClick

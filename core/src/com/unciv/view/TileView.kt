@@ -150,7 +150,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val improvement: String? get() = tile.improvement
-    val tileImprovement: TileImprovement? get() = tile.tileImprovement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
@@ -158,8 +157,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
-    @Readonly fun isPillaged(): Boolean = tile.isPillaged()
-    @Readonly fun getBaseTerrain(): Terrain = tile.getBaseTerrain()
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
@@ -225,3 +222,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         }
     }
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun TileView.isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
+val TileView.tileImprovement: TileImprovement? get() = improvement?.let { getRuleset().tileImprovements[it] }
+@Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!

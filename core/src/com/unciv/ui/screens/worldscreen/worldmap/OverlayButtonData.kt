@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.worldmap
 
+import com.unciv.view.hasMovement
 import com.unciv.view.isPreparingParadrop
 import com.unciv.view.GameView
 import com.badlogic.gdx.graphics.Color

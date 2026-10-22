@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.overviewscreen
 
+import com.unciv.view.canBuildCurrentImprovement
+import com.unciv.view.getImprovementInProgress
+import com.unciv.view.hasMovement
 import com.unciv.view.isMoving
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table

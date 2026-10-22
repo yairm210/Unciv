@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.view.location
+import com.unciv.view.rankStatsValue
+import com.unciv.view.tileImprovement
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -365,7 +368,7 @@ class CityScreen(
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
-        val cityTileGroups = cityView.centerTile().getExploredTilesInDistance(viewRange)
+        val cityTileGroups = cityView.getCenterTile().getExploredTilesInDistance(viewRange)
                 .filter { viewingCiv.hasExplored(it) }
                 .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
@@ -381,8 +384,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().position().x - tileGroup.tileView.position().x
-            val yDifference = cityView.centerTile().position().y - tileGroup.tileView.position().y
+            val xDifference = cityView.getCenterTile().position().x - tileGroup.tileView.position().x
+            val yDifference = cityView.getCenterTile().position().y - tileGroup.tileView.position().y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position

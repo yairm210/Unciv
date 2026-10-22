@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.view.isBeingConstructedOrEnqueued
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group

@@ -346,7 +346,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateAddInCapital(unit: MapUnitView) {
-        val capitalTile = unit.civ().cities().firstOrNull { it.isCapital() }?.centerTile() ?: return // safeguard
+        val capitalTile = unit.civ().cities().firstOrNull { it.isCapital() }?.getCenterTile() ?: return // safeguard
         if (unit.canReach(capitalTile))
             unit.tryHeadTowards(capitalTile)
         if (unit.canSwapTo(capitalTile))

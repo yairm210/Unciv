@@ -1,5 +1,9 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.isAirUnit
+import com.unciv.view.isCivilian
+import com.unciv.view.isMilitary
+import com.unciv.view.isNuclearWeapon
 import com.unciv.view.isAtWar
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
