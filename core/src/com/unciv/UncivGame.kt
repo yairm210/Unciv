@@ -18,6 +18,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.InputDisabling
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -144,6 +145,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
     
     private fun initialize() {
+        FontRulesetIcons.reset()  // Recreate GL resources
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
 
