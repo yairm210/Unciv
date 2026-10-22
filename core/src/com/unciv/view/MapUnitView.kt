@@ -33,6 +33,7 @@ class MapUnitView internal constructor(
     val due: Boolean get() = unit.due
 
     val xp: Int get() = unit.promotions.XP
+    @Readonly fun isDestroyed(): Boolean = unit.isDestroyed
     @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
     @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
     @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions

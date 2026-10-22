@@ -22,7 +22,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
 
     private fun automateUnit(unit: MapUnitView) {
         if (unit.isCivilian()) automateCapturedCivilian(unit)
-        else if (unit.getUnit().currentTile.isBarbarianEncampment()) automateUnitOnEncampment(unit)
+        else if (unit.getTile().isBarbarianEncampment()) automateUnitOnEncampment(unit)
         else automateCombatUnit(unit)
     }
 

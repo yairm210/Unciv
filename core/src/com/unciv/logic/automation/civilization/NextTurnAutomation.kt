@@ -109,7 +109,6 @@ object NextTurnAutomation {
     }
 
     fun automateGoldToSciencePercentage(civView: CivView) {
-        val civInfo = civView.getCiv()
         // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
         val estimatedIncome = civView.getGoldPerTurn()
         val projectedGold = civView.gold + estimatedIncome
@@ -117,11 +116,11 @@ object NextTurnAutomation {
         val pissPoor = civView.getEra().baseUnitBuyCost
         val stinkingRich = civView.getEra().startingGold * 10 + civView.cities().size * 2 * pissPoor
         val maxPercent = 0.8f
-        civInfo.tech.goldPercentConvertedToScience = when {
+        civView.trySetGoldPercentConvertedToScience(when {
             civView.gold <= 0 -> 0f
             projectedGold <= pissPoor -> 0f
             else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
-        }
+        })
     }
     
     private fun respondToPopupAlerts(civView: CivView) {
@@ -466,8 +465,7 @@ object NextTurnAutomation {
     /** False once an earlier action in this pass has captured or destroyed [unit]. */
     @Readonly
     private fun isStillOurUnit(unit: MapUnitView, civView: CivView): Boolean {
-        val mapUnit = unit.getUnit()
-        return !mapUnit.isDestroyed && mapUnit.civ == civView.getCiv()
+        return !unit.isDestroyed() && unit.civ() == civView
     }
 
     internal fun applyPromotions(unitView: MapUnitView) {
