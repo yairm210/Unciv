@@ -20,7 +20,6 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.view.CivView
 
@@ -371,7 +370,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private fun getHeaderElement(column: CT): IHeaderElement {
         return when (val headerActor = column.getHeaderActor(iconSize)) {
             null -> EmptyHeaderElement()
-            is Image, is IconCircleGroup -> IconHeaderElement(column, headerActor) // They're also `is Layout`, but we want the overlaid header version
+            is Image, is IconCircleGroup<*> -> IconHeaderElement(column, headerActor) // They're also `is Layout`, but we want the overlaid header version
             is Layout -> LayoutHeaderElement(column, headerActor)
             else -> IconHeaderElement(column, headerActor)  // We haven't got a better implementation for other non-Layout Actors.
         }

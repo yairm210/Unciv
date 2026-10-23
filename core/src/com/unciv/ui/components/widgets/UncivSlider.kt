@@ -32,7 +32,6 @@ import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider.Companion.formatPercent
-import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.popups.AskNumberPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
@@ -93,8 +92,8 @@ class UncivSlider (
 
     // component widgets
     private val slider = Slider(min, max, step, vertical, BaseScreen.skin)
-    private val minusButton: IconCircleGroup?
-    private val plusButton: IconCircleGroup?
+    private val minusButton: IconCircleGroup<Label>?
+    private val plusButton: IconCircleGroup<Label>?
     private val tipLabel = "".toLabel(Color.LIGHT_GRAY)
     private val tipContainer: Container<Label> = Container(tipLabel)
     private val tipHideTask = object : Timer.Task() {
@@ -198,7 +197,7 @@ class UncivSlider (
 
         stepChanged()   // Initialize tip formatting
 
-        fun addPlusOrMinusButton(text: String, isMinus: Boolean, onClick: ()->Unit): IconCircleGroup? {
+        fun addPlusOrMinusButton(text: String, isMinus: Boolean, onClick: ()->Unit): IconCircleGroup<Label>? {
             if (!plusMinus) return null
             if (vertical && !isMinus) row()
             val button = text.toLabel(Color.WHITE, plusMinusFontSize)
@@ -293,7 +292,7 @@ class UncivSlider (
 
     private fun showSnapDisabled() = !snapEnabled && snapToValues != null
 
-    private fun IconCircleGroup.setEnabled(enabled: Boolean) {
+    private fun IconCircleGroup<Label>.setEnabled(enabled: Boolean) {
         touchable = if (enabled) Touchable.enabled else Touchable.disabled
         circle.color = when {
             !enabled -> buttonCircleColorDisabled

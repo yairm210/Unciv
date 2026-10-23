@@ -22,10 +22,9 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import java.text.DecimalFormat
 import kotlin.math.max
 
 class DetailedStatsPopup(
@@ -182,7 +181,7 @@ class DetailedStatsPopup(
         totalTable.invalidate()
     }
 
-    private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
+    private fun getToggleButton(showDetails: Boolean): IconCircleGroup<IconCircleGroup<Label>> {
         val label = (if (showDetails) "-" else "+").toLabel()
         label.setAlignment(Align.center)
         val button = label
