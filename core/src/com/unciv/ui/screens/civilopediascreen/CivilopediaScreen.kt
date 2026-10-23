@@ -426,8 +426,6 @@ class CivilopediaScreen private constructor(
     }
 
     companion object {
-        private const val DEFAULT_WELCOME_MARKER = "\u0000"
-
         /** Test whether to show Religion-specific items, does not require a game to be running
          *  - Do not make public - use IHasUniques.isHiddenFromCivilopedia if possible!
          */
