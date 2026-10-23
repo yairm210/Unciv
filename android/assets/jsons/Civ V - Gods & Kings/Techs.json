@@ -25,27 +25,27 @@
 				"name": "Pottery",
 				"row": 2,
 				"prerequisites": ["Agriculture"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9"
 			},
 			{
 				"name": "Animal Husbandry",
 				"row": 5,
 				"prerequisites": ["Agriculture"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Pottery]>"],
 				"quote": "'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4"
 			},
 			{
 				"name": "Archery",
 				"row": 7,
 				"prerequisites": ["Agriculture"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Masonry]>"],
 				"quote": "'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop"
 			},
 			{
 				"name": "Mining",
 				"row": 9,
 				"prerequisites": ["Agriculture"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Calendar]>"],
 				"quote": "'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
 
@@ -62,48 +62,54 @@
 				"name": "Sailing",
 				"row": 1,
 				"prerequisites": ["Pottery"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[+100]% weight to this choice for AI decisions",
+                    "[-100]% weight to this choice for AI decisions <before discovering [Calendar]>",
+                    "[-100]% weight to this choice for AI decisions <when number of [Owned [Water] Tiles] is less than [5]>"],
 				"quote": "'He who commands the sea has command of everything.' - Themistocles"
 			},
 			{
 				"name": "Calendar",
 				"row": 2,
 				"prerequisites": ["Pottery"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Animal Husbandry]>",
+                    "[-100]% weight to this choice for AI decisions <for [Babylon] Civilizations> <before discovering [Writing]>"],
 				"quote": "'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12"
 			},
 			{
 				"name": "Writing",
 				"row": 3,
 				"prerequisites": ["Pottery"],
-                "uniques": ["Enables establishment of embassies <Civilopedia link [Tutorials/Embassies]>"],
+                "uniques": ["Enables establishment of embassies",
+                    "[-100]% weight to this choice for AI decisions <for [{non-[Babylon]} {non-[Egypt]}] Civilizations> <before discovering [Construction]>",
+                    "[-100]% weight to this choice for AI decisions <for [Egypt] Civilizations> <before discovering [Bronze Working]>",
+                    "[-100]% weight to this choice for AI decisions <for [The Maya] Civilizations> <before discovering [Construction]>"],
 				"quote": "'He who destroys a good book kills reason itself.' - John Milton"
 			},
 			{
 				"name": "Trapping",
 				"row": 5,
 				"prerequisites": ["Animal Husbandry"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Mining]>"],
 				"quote": "'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome"
 			},
 			{
 				"name": "The Wheel",
 				"row": 7,
 				"prerequisites": ["Animal Husbandry", "Archery"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb"
 			},
 			{
 				"name": "Masonry",
 				"row": 9,
 				"prerequisites": ["Mining"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Trapping]>"],
 				"quote": "'How happy are those whose walls already rise!' - Virgil"
 			},
 			{
 				"name": "Bronze Working",
 				"row": 10,
 				"prerequisites": ["Mining"],
-                "uniques": ["[+50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Masonry]>"],
 				"quote": "'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
 			}
 		]
@@ -127,20 +133,26 @@
 				"name": "Horseback Riding",
 				"row": 5,
 				"prerequisites": ["Trapping","The Wheel"],
-                "uniques": ["[+50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <for [The Maya] Civilizations> <before discovering [Theology]>",
+                    "[-100]% weight to this choice for AI decisions <for [Denmark] Civilizations> <before discovering [Metal Casting]>",
+                    "[-100]% weight to this choice for AI decisions <for [Egypt] Civilizations> <before discovering [Philosophy]>",
+                    "[-100]% weight to this choice for AI decisions <for [Rome] Civilizations> <before discovering [Iron Working]>",
+                    "[-100]% weight to this choice for AI decisions <for [Russia] Civilizations> <before discovering [Iron Working]>"],
 				"quote": "'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)"
 			},
 			{
 				"name": "Mathematics",
 				"row": 7,
 				"prerequisites": ["The Wheel"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Writing]>",
+                    "[-100]% weight to this choice for AI decisions <for [non-[Denmark]] Civilizations> <before discovering [Horseback Riding]>"],
 				"quote": "'Mathematics is the gate and key to the sciences.' - Roger Bacon"
 			},
 			{
 				"name": "Construction",
 				"row": 9,
 				"prerequisites": ["Masonry","The Wheel"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <for [Egypt] Civilizations> <before discovering [Philosophy]>"],
 				"quote": "'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfully executed.' - Johann Wolfgang von Goethe"
 			}
 		]
@@ -156,33 +168,38 @@
 				"name": "Philosophy",
 				"row": 2,
 				"prerequisites": ["Writing","Calendar"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <for [{non-[Egypt]} {non-[Songhai]} {non-[The Maya]}] Civilizations> <before discovering [Machinery]>"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
 				"name": "Drama and Poetry",
 				"row": 3,
 				"prerequisites": ["Writing"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Currency]>"],
 				"quote": "'What is drama but life with the dull bits cut out.' - Alfred Hitchcock"
 			},
 			{
 				"name": "Currency",
 				"row": 7,
 				"prerequisites": ["Mathematics"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <for [Denmark] Civilizations> <before discovering [Metal Casting]>"],
 				"quote": "'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
 				"name": "Engineering",
 				"row": 8,
 				"prerequisites": ["Mathematics","Construction"],
-				"uniques": ["Roads connect tiles across rivers","[+100]% weight to this choice for AI decisions"],
+                "uniques": ["Roads connect tiles across rivers",
+                    "[-100]% weight to this choice for AI decisions <for [non-[Denmark]] Civilizations> <before discovering [Civil Service]>",
+                    "[-100]% weight to this choice for AI decisions <for [Denmark] Civilizations> <before discovering [Iron Working]>"],
 				"quote": "'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{
 				"name": "Iron Working",
 				"row": 10,
 				"prerequisites": ["Bronze Working"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Construction]>",
+                    "[-100]% weight to this choice for AI decisions <for [{non-[Denmark]} {non-[Rome]} {non-[Russia]}] Civilizations> <before discovering [Engineering]>"],
 				"quote": "'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
 		]
@@ -198,27 +215,27 @@
 				"name": "Theology",
 				"row": 2,
 				"prerequisites": ["Philosophy", "Drama and Poetry"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <for [non-[The Maya]] Civilizations> <before discovering [Machinery]>"],
 				"quote": "'Three things are necessary for the salvation of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas"
 			},
 			{
 				"name": "Civil Service",
 				"row": 5,
 				"prerequisites": ["Currency","Horseback Riding","Drama and Poetry"],
-				"uniques": ["Enables Open Borders agreements <Civilopedia link [Tutorials/Open Borders]>","[+100]% weight to this choice for AI decisions"],
+				"uniques": ["Enables Open Borders agreements <Civilopedia link [Tutorials/Open Borders]>"],
 				"quote": "'The only thing that saves us from the bureaucracy is its inefficiency' - Eugene McCarthy"
 			},
 			{
 				"name": "Guilds",
 				"row": 7,
 				"prerequisites": ["Currency"],
-				"uniques": ["Enables conversion of city production to [Gold]"],
+				"uniques": ["Enables conversion of city production to [Gold]", "[-100]% weight to this choice for AI decisions <before discovering [Metal Casting]>"],
 				"quote": "'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib"
 			},
 			{
 				"name": "Metal Casting",
 				"row": 9,
 				"prerequisites": ["Engineering","Iron Working"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib"
 			}
 		]
@@ -235,7 +252,7 @@
 				"cost": 375,
 				"row": 1,
 				"prerequisites": ["Optics","Theology"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Printing Press]>"],
 				"quote": "'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes"
 			},
 			{
@@ -244,8 +261,7 @@
 				"prerequisites": ["Theology","Civil Service"],
 				"uniques": [
                     "Enables conversion of city production to [Science]",
-                    "Enables Research agreements <Civilopedia link [Tutorials/Research Agreements]>",
-                    "[+100]% weight to this choice for AI decisions"
+                    "Enables Research agreements <Civilopedia link [Tutorials/Research Agreements]>"
                 ],
 				"quote": "'Education is the best provision for old age.' - Aristotle"
 			},
@@ -253,7 +269,7 @@
 				"name": "Chivalry",
 				"row": 6,
 				"prerequisites": ["Civil Service","Guilds"],
-                "uniques": ["Enables Defensive Pacts <Civilopedia link [Tutorials/Defensive Pacts]>"],
+                "uniques": ["Enables Defensive Pacts", "[-100]% weight to this choice for AI decisions <before discovering [Physics]>"],
                 "quote": "'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
 			},
 			{
@@ -267,13 +283,14 @@
 				"name": "Physics",
 				"row": 9,
 				"prerequisites": ["Metal Casting"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Steel]>"],
 				"quote": "'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei"
 			},
 			{
 				"name": "Steel",
 				"row": 10,
 				"prerequisites": ["Metal Casting"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Acoustics]>"],
 				"quote": "'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
 		]
@@ -288,7 +305,7 @@
 			{
 				"name": "Astronomy",
 				"row": 2,
-				"uniques": ["[+1] Movement <for [Embarked] units>","Enables [Embarked] units to enter ocean tiles","[+50]% weight to this choice for AI decisions"],
+				"uniques": ["[+1] Movement <for [Embarked] units>","Enables [Embarked] units to enter ocean tiles", "[-100]% weight to this choice for AI decisions <before discovering [Banking]>"],
 				"prerequisites": ["Compass","Education"],
 				"quote": "'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},
@@ -296,28 +313,26 @@
 				"name": "Acoustics",
 				"row": 4,
 				"prerequisites": ["Education"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Their rising all at once was as the sound of thunder heard remote' - Milton"
 			},
 			{
 				"name": "Banking",
 				"row": 6,
 				"prerequisites": ["Chivalry", "Education"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Printing Press]>"],
 				"quote": "'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau"
 			},
 			{
 				"name": "Printing Press",
 				"row": 8,
 				"prerequisites": ["Machinery","Physics","Chivalry"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times"
 			},
 			{
 				"name": "Gunpowder",
 				"row": 10,
 				"prerequisites": ["Physics","Steel"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Scientific Theory]>"],
 				"quote": "'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
 		]
@@ -333,33 +348,34 @@
 				"name": "Navigation",
 				"row": 2,
 				"prerequisites": ["Astronomy"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Fertilizer]>"],
 				"quote": "'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon"
 			},
 			{
 				"name": "Architecture",
 				"row": 4,
 				"prerequisites": ["Acoustics","Banking"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Industrialization]>"],
 				"quote": "'Architecture begins where engineering ends.' - Walter Gropius"
 			},
 			{
 				"name": "Economics",
 				"row": 6,
 				"prerequisites": ["Banking","Printing Press"],
-                "uniques": ["[+50]% weight to this choice for AI decisions"],
+                "uniques": [ "[-100]% weight to this choice for AI decisions <before discovering [Astronomy]>"],
 				"quote": "'Compound interest is the most powerful force in the universe.' - Albert Einstein"
 			},
 			{
 				"name": "Metallurgy",
 				"row": 9,
 				"prerequisites": ["Printing Press","Gunpowder"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Electricity]>"],
 				"quote": "'There never was a good knife made of bad steel.' - Benjamin Franklin"
 			},
 			{
 				"name": "Chemistry",
 				"row": 10,
 				"prerequisites": ["Gunpowder"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
 		]
@@ -375,28 +391,26 @@
 				"name": "Archaeology",
 				"row": 2,
 				"prerequisites": ["Navigation","Architecture"],
-                "uniques": ["[+50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Military Science]>"],
 				"quote": "'Those who cannot remember the past are condemned to repeat it.' - George Santayana"
 			},
 			{
 				"name": "Scientific Theory",
 				"row": 4,
 				"prerequisites": ["Architecture","Economics"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Every great advance in science has issued from a new audacity of imagination.' - John Dewey"
 			},
 			{
 				"name": "Industrialization",
 				"row": 6,
 				"prerequisites": ["Economics"],
-                "uniques": ["[+50]% weight to this choice for AI decisions"],
 				"quote": "'Industrialization based on machinery, already referred to as a characteristic of our age, is but one aspect of the revolution that is being wrought by technology.' - Emily Greene Balch"
 			},
 			{
 				"name": "Rifling",
 				"row": 7,
 				"prerequisites": ["Economics","Metallurgy"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Radio]>"],
 				"quote": "'It is well that war is so terrible, or we should grow too fond of it.' - Robert E. Lee"
 			},
 			{
@@ -409,7 +423,6 @@
 				"name": "Fertilizer",
 				"row": 10,
 				"prerequisites": ["Chemistry"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt"
 			}
 		]
@@ -425,14 +438,14 @@
 				"name": "Biology",
 				"row": 2,
 				"prerequisites": ["Archaeology","Scientific Theory"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Railroads]>"],
 				"quote": "'If the brain were so simple we could understand it, we would be so simple we couldn't.' - Lyall Watson"
 			},
 			{
 				"name": "Electricity",
 				"row": 3,
 				"prerequisites": ["Scientific Theory"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Navigation]>"],
 				"quote": "'Is it a fact - or have I dreamt it - that, by means of electricity, the world of matter has become a great nerve, vibrating thousands of miles in a breathless point of time?' - Nathaniel Hawthorne"
 			},
 			{
@@ -446,6 +459,7 @@
 				"name": "Dynamite",
 				"row": 9,
 				"prerequisites": ["Fertilizer","Military Science"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Plastics]>"],
 				"quote": "'As soon as men decide that all means are permitted to fight an evil, then their good becomes indistinguishable from the evil that they set out to destroy.' - Christopher Dawson"
 			}
 		]
@@ -461,34 +475,33 @@
 				"name": "Refrigeration",
 				"row": 2,
 				"prerequisites": ["Biology", "Electricity"], //todo: offshore platform should need this
-                "uniques": ["[-75]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Flight]>"],
 				"quote": "'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth"
 			},
 			{
 				"name": "Radio",
 				"row": 3,
 				"prerequisites": ["Electricity"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Archaeology]>"],
 				"quote": "'The whole country was tied together by radio. We all experienced the same heroes and comedians and singers. They were giants.' - Woody Allen"
 			},
 			{
 				"name": "Replaceable Parts",
 				"row": 4,
 				"prerequisites": ["Electricity","Steam Power"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'Nothing is particularly hard if you divide it into small jobs.' - Henry Ford"
 			},
 			{
 				"name": "Flight",
 				"row": 6,
 				"prerequisites": ["Steam Power"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Biology]>"],
 				"quote": "'Aeronautics was neither an industry nor a science. It was a miracle.' - Igor Sikorsky"
 			},
 			{
 				"name": "Railroads",
 				"row": 8,
 				"prerequisites": ["Steam Power","Dynamite"],
-                "uniques": ["[+100]% weight to this choice for AI decisions"],
 				"quote": "'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson"
 			}
 		]
@@ -504,26 +517,27 @@
 				"name": "Plastics",
 				"row": 3,
 				"prerequisites": ["Radio","Replaceable Parts"],
-                "uniques": ["[+200]% weight to this choice for AI decisions"],
 				"quote": "'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate"
 			},
 			{
 				"name": "Electronics",
 				"row": 5,
 				"prerequisites": ["Replaceable Parts", "Flight"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Ballistics]>"],
 				"quote": "'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins"
 			},
 			{
 				"name": "Ballistics",
 				"row": 6,
 				"prerequisites": ["Flight"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Pharmaceuticals]>"],
 				"quote": "'Men, like bullets, go farthest when they are smoothest.' - Jean Paul"
 			},
 			{
 				"name": "Combustion",
 				"row": 8,
 				"prerequisites": ["Railroads"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Radar]>"],
 				"quote": "'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein"
 			}
 		]
