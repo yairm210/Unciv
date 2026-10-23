@@ -12,6 +12,7 @@ import com.unciv.ui.popups.ScrollableAnimatedMenuPopup
 class CivilopediaHistoryMenu(
     stage: Stage,
     button: Actor,
+    private val isValid: (CivilopediaHistory.Entry) -> Boolean = { true },
     private val action: (CivilopediaHistory.Entry) -> Unit
 ) : ScrollableAnimatedMenuPopup(stage, button, Align.bottomRight) {
     override fun createFixedContent(): Table? = null
@@ -29,6 +30,7 @@ class CivilopediaHistoryMenu(
                 button.style = currentStyle
                 button.isDisabled = true
             }
+            if (!isValid(entry)) button.isDisabled = true
             add(button).row()
         }
     }

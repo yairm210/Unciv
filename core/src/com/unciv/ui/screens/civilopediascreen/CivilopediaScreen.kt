@@ -95,6 +95,7 @@ class CivilopediaScreen private constructor(
     //endregion
 
     init {
+        CivilopediaHistory.setContext(ruleset.mods.toList().ifEmpty { listOf(ruleset.name) })
         val imageSize = 50f
 
         val religionEnabled = showReligionInCivilopedia(ruleset) // To filter the Belief Category only
@@ -132,19 +133,22 @@ class CivilopediaScreen private constructor(
 
         backButton = "OtherIcons/ArrowLeft".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.ROYAL)
         backButton.onActivation(binding = KeyboardBinding.PediaBack) {
-            CivilopediaHistory.back { navigateToHistoryEntry(it) }
+            CivilopediaHistory.back(::isValidHistoryEntry) { navigateToHistoryEntry(it) }
         }
         fun openHistory() {
-            CivilopediaHistoryMenu(stage, backButton) { navigateToHistoryEntry(it) }
+            CivilopediaHistoryMenu(stage, backButton, ::isValidHistoryEntry) { navigateToHistoryEntry(it) }
         }
         backButton.onActivation(ActivationTypes.RightClick, action = ::openHistory)
         backButton.keyShortcuts.add(KeyboardBinding.PediaHistory, action = ::openHistory)
-        backButton.isDisabled = !CivilopediaHistory.hasBack()
+        updateNavigationState()
 
         val searchButton = "OtherIcons/Search".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.GOLD)
         searchButton.onActivation(binding = KeyboardBinding.PediaSearch) { searchPopup.open(true) }
 
-        val closeButton = getCloseButton(imageSize) { game.popScreen() }
+        val closeButton = getCloseButton(imageSize) {
+            updateCurrentHistoryScrollY()
+            game.popScreen()
+        }
 
         val topTable = Table()
         topTable.add(buttonTableScroll).growX()
@@ -183,6 +187,8 @@ class CivilopediaScreen private constructor(
         globalShortcuts.add(Input.Keys.HOME) { navigateEntries(Int.MIN_VALUE) }
         globalShortcuts.add(Input.Keys.END) { navigateEntries(Int.MAX_VALUE) }
 
+        splitPane.validate()
+        entrySplitPane.validate()
         navigateToHistoryEntry(historyEntry)
     }
 
@@ -192,6 +198,13 @@ class CivilopediaScreen private constructor(
     }
 
     //region Navigation helpers
+    private fun isValidHistoryEntry(entry: CivilopediaHistory.Entry): Boolean =
+        categoryToEntries[entry.category]?.any { it.name == entry.entry } == true
+
+    private fun updateNavigationState() {
+        backButton.isDisabled = !CivilopediaHistory.hasBack(::isValidHistoryEntry)
+    }
+
     private fun navigateToHistoryEntry(historyEntry: CivilopediaHistory.Entry?): Boolean {
         if (historyEntry == null) return false
         return navigateTo(historyEntry.category, historyEntry.entry, historyEntry.scroll, updateHistory = false)
@@ -203,6 +216,10 @@ class CivilopediaScreen private constructor(
             // Generic open (e.g. keyboard shortcut, menu button) - resume where we left off
             val resume = CivilopediaHistory.current()
             if (resume != null && navigateToHistoryEntry(resume)) return
+            if (CivilopediaHistory.hasBack(::isValidHistoryEntry)) {
+                CivilopediaHistory.back(::isValidHistoryEntry) { navigateToHistoryEntry(it) }
+                return
+            }
             if (category == CivilopediaCategories.Tutorial) chooseDefaultTutorial() else ""
         }
         navigateTo(category, entry, 0f, updateHistory = true)
@@ -244,6 +261,7 @@ class CivilopediaScreen private constructor(
     private fun navigateTo(category: CivilopediaCategories, entry: String, scrollY: Float, updateHistory: Boolean): Boolean {
         updateCurrentHistoryScrollY()
         val categoryEntries = categoryToEntries[category] ?: return false // defense, allowing buggy panes to remain empty while others work
+        if (categoryEntries.isEmpty()) return false
         if (entry.isNotEmpty() && categoryEntries.none { it.name == entry }) return false
 
         val noEntryScrollAnimation = category != currentCategory
@@ -262,8 +280,8 @@ class CivilopediaScreen private constructor(
 
         if (updateHistory) {
             CivilopediaHistory.push(category, entry, flavourScroll.scrollY) // scrollY may have been clamped
-            backButton.isDisabled = !CivilopediaHistory.hasBack()
         }
+        updateNavigationState()
         return true
     }
 
@@ -365,23 +383,25 @@ class CivilopediaScreen private constructor(
     }
 
     private fun navigateCategories(direction: Int) {
-        val categoryKeys = categoryToEntries.keys
+        val categoryKeys = categoryToButtons.keys
         val currentIndex = categoryKeys.indexOf(currentCategory)
         val newIndex = (currentIndex + categoryKeys.size + direction) % categoryKeys.size
         navigateCategory(categoryKeys.elementAt(newIndex))
     }
 
     private fun navigateEntry(entry: CivilopediaEntry, noScrollAnimation: Boolean = false) {
+        if (entry.name == currentEntry) return
         updateCurrentHistoryScrollY()
-        // fails: entrySelectScroll.scrollTo(0f, entry.y, 0f, entry.h, false, true)
-        entrySelectScroll.scrollY = (entry.y + (entry.height - entrySelectScroll.height) / 2)
-        if (noScrollAnimation)
-            entrySelectScroll.updateVisualScroll()     // snap without animation on fresh pedia open
-        updateEntry(entry)
+        selectEntry(entry.name, noScrollAnimation)
+        flavourScroll.validate()
+        flavourScroll.scrollY = 0f
+        flavourScroll.updateVisualScroll()
         CivilopediaHistory.push(currentCategory, entry.name, flavourScroll.scrollY)
+        updateNavigationState()
     }
 
     private fun navigateEntries(direction: Int) {
+        if (entryIndex.isEmpty()) return
         val index = entryIndex.indexOfKey(currentEntry)
         if (index < 0) return navigateEntry(entryIndex.values.first(), true)
         val newIndex = when (direction) {

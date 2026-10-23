@@ -15,8 +15,22 @@ object CivilopediaHistory : Iterable<Entry> {
     var position = 0
         private set
     private var navigatingAwayFrom: Int = -1
+    private var context: List<String>? = null
 
     override fun iterator() = stack.iterator()
+
+    fun setContext(rulesets: List<String>) {
+        if (context == rulesets) return
+        clear()
+        context = rulesets.toList()
+    }
+
+    fun clear() {
+        stack.clear()
+        position = 0
+        navigatingAwayFrom = -1
+        context = null
+    }
 
     fun push(category: CivilopediaCategories, entry: String, scroll: Float) {
         check(navigatingAwayFrom == -1) { "CivilopediaHistory.push called while navigating inside history" }
@@ -34,20 +48,31 @@ object CivilopediaHistory : Iterable<Entry> {
         val index = if (navigatingAwayFrom < 0) position else navigatingAwayFrom
         if (index !in stack.indices) return
         if (stack[index].sameEntry(category, entry))
-            updateScroll(position, scroll)
+            updateScroll(index, scroll)
     }
 
-    fun back(action: (Entry) -> Unit) {
-        if (!hasBack()) return
-        navigateTo(position - 1, stack[position - 1], action)
+    fun back(isValid: (Entry) -> Boolean = { true }, action: (Entry) -> Unit) {
+        val index = findPosition(-1, isValid)
+        if (index < 0) return
+        navigateTo(index, stack[index], action)
     }
-    fun hasBack() = position > 0
+    fun hasBack(isValid: (Entry) -> Boolean = { true }) = findPosition(-1, isValid) >= 0
 
-    fun forward(action: (Entry) -> Unit) {
-        if (!hasForward()) return
-        navigateTo(position - 1, stack[position - 1], action)
+    fun forward(isValid: (Entry) -> Boolean = { true }, action: (Entry) -> Unit) {
+        val index = findPosition(1, isValid)
+        if (index < 0) return
+        navigateTo(index, stack[index], action)
     }
-    fun hasForward() = position < stack.size - 1
+    fun hasForward(isValid: (Entry) -> Boolean = { true }) = findPosition(1, isValid) >= 0
+
+    private fun findPosition(direction: Int, isValid: (Entry) -> Boolean): Int {
+        var index = position + direction
+        while (index in stack.indices) {
+            if (isValid(stack[index])) return index
+            index += direction
+        }
+        return -1
+    }
 
     fun current(): Entry? =
         if (position in stack.indices) stack[position] else null
@@ -71,7 +96,7 @@ object CivilopediaHistory : Iterable<Entry> {
     private fun updateScroll(index: Int, scroll: Float) {
         val old = stack[index]
         if (old.scroll == scroll) return
-        stack[position] = old.copy(scroll = scroll)
+        stack[index] = old.copy(scroll = scroll)
     }
 
     /** Non-allocating version of `for ((index, entry) in CivilopediaHistory.withIndex().reversed())` */
