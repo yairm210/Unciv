@@ -157,7 +157,7 @@ object FasterUIDevelopment {
                 val text = test.testGetLabel() ?: continue
                 val button = TextButton(text, buttonStyle)
                 button.onClick {
-                    game.pushScreen{ UIDevScreen(test) }
+                    game.pushScreen { test.testLaunchScreen?.invoke() ?: UIDevScreen(test) }
                 }
                 table.add(button).colspan(2).row()
             }

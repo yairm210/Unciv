@@ -43,13 +43,13 @@ import kotlin.random.Random
 internal enum class FasterUIDevTesters : IFasterUITester {
 
     Civilopedia {
-        override fun testCreateExample(screen: BaseScreen): Actor {
-            val game = TestGame(forUITesting = true)
-            TileSetCache.loadTileSetConfigs()
-            return TextButton("Civilopedia", BaseScreen.skin).onClick {
-                screen.game.pushScreen { CivilopediaScreen(game.ruleset) }
+        override fun testCreateExample(screen: BaseScreen) = Actor()
+        override val testLaunchScreen: (() -> BaseScreen)
+            get() = {
+                val game = TestGame(forUITesting = true)
+                TileSetCache.loadTileSetConfigs()
+                CivilopediaScreen(game.ruleset)
             }
-        }
     },
 
     GlobalPoliticsDiagram {
