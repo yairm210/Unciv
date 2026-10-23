@@ -52,8 +52,6 @@ class CivilopediaScreen private constructor(
      * @property name From [Ruleset] object [INamed.name]
      * @property image Icon for button
      * @property flavour Original [ICivilopediaText] reference allowing to render its [ICivilopediaText.civilopediaText]
-     * @property y Y coordinate for scrolling to
-     * @property height Cell height for scrolling to
      * @property sortBy Optional, enables overriding alphabetical order. Ususally supplied by [ICivilopediaText.getSortGroup]
      * @property subCategory Optional, enablesg grouping with sub-category labels. Ususally supplied by [ICivilopediaText.getSubCategory]
      */
@@ -61,8 +59,6 @@ class CivilopediaScreen private constructor(
         val name: String,
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
-        val y: Float = 0f,
-        val height: Float = 0f,
         val sortBy: Int = 0,
         val subCategory: String? = null
     ) {
@@ -73,8 +69,6 @@ class CivilopediaScreen private constructor(
             sortBy = item.getSortGroup(ruleset),
             subCategory = item.getSubCategory(ruleset)
         )
-
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy, subCategory)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -299,7 +293,6 @@ class CivilopediaScreen private constructor(
                 }
             )
 
-        var currentY = -1f
         var currentSubCategory: String? = null
 
         for (entry in entries) {
@@ -325,15 +318,13 @@ class CivilopediaScreen private constructor(
                 currentSubCategory = entry.subCategory
             }
 
-            val cell = entrySelectTable.add(entryButton).height(75f).growX()
+            entrySelectTable.add(entryButton).height(75f).growX()
             entrySelectTable.row()
-            if (currentY < 0f) currentY = cell.padTop
-            newEntryIndex[entry.name] = entry.withCoordinates(currentY, cell.prefHeight)
-            currentY += cell.padBottom + cell.prefHeight + cell.padTop
+            newEntryIndex[entry.name] = entry
         }
 
         entryIndex = IndexedMap(newEntryIndex)
-        entrySelectScroll.layout()          // necessary for positioning in selectRow to work
+        entrySelectScroll.layout()
     }
 
     /** Select a specified entry within the current category. Unknown strings are ignored!
@@ -342,8 +333,10 @@ class CivilopediaScreen private constructor(
      */
     private fun selectEntry(name: String, noScrollAnimation: Boolean = false) {
         val entry = entryIndex[name] ?: return
-        // fails: entrySelectScroll.scrollTo(0f, entry.y, 0f, entry.h, false, true)
-        entrySelectScroll.scrollY = (entry.y + (entry.height - entrySelectScroll.height) / 2)
+        entrySelectScroll.validate()
+        entrySelectTable.validate()
+        val row = entrySelectTable.children.first { it.name == name }
+        entrySelectScroll.scrollTo(row.x, row.y, row.width, row.height, false, true)
         if (noScrollAnimation)
             entrySelectScroll.updateVisualScroll()     // snap without animation on fresh pedia open
         updateEntry(entry)
