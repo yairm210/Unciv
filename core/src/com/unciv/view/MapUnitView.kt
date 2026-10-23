@@ -110,6 +110,9 @@ class MapUnitView internal constructor(
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
+    @Readonly fun getViewableTiles(): List<TileView> = unit.viewableTiles.map { gameView.tileMapView.getTile(it) }
+    /** Health points this unit would receive if healing on [tile] */
+    @Readonly fun healingAmountForTile(tile: TileView, noTerrainDamage: Boolean = false): Int = unit.healingAmountForTile(tile.unwrap(), noTerrainDamage)
     @Readonly fun getUnitSwappableTiles(): List<TileView> =
         unit.movement.getUnitSwappableTiles().map { gameView.tileMapView.getTile(it) }.toList()
     @Readonly fun getValidRoadConnectionTiles(): List<TileView> =

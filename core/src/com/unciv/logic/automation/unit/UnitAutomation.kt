@@ -21,8 +21,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UpgradeUnitAction
@@ -184,15 +182,15 @@ object UnitAutomation {
     }
 
     private fun tryGoToRuin(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        if (!unit.civ.isMajorCiv()) return false // barbs don't have anything to do in ruins
+        if (!unitView.civ().isMajorCiv()) return false // barbs don't have anything to do in ruins
 
-        val tileWithRuin = unit.viewableTiles
+        val tileWithRuin = unitView.getViewableTiles()
             .firstOrNull {
-                (it.tileImprovement?.isAncientRuinsEquivalent(unit.cache.state) == true)
-                        && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-            } ?: return false
-        unit.movement.headTowards(tileWithRuin)
+                it.getRuleset().tileImprovements[it.improvement]?.isAncientRuinsEquivalent() == true
+                    && unitView.canMoveTo(it) && unitView.canReach(it)
+            }
+            ?: return false
+        unitView.tryHeadTowards(tileWithRuin)
         return true
     }
 
@@ -412,7 +410,7 @@ object UnitAutomation {
 
         val viableTilesForHealing = unitDistanceToTiles.keys
                 .filter { unitView.viewOf(it) !in dangerousTiles && unit.movement.canMoveTo(it) }
-        val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
+        val tilesByHealingRate = viableTilesForHealing.groupBy { unit.healingAmountForTile(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
             if (!unitView.isAirUnit()) {
@@ -444,10 +442,10 @@ object UnitAutomation {
 
         val bestTilesForHealing = tilesByHealingRate.maxByOrNull { it.key }!!.value
         val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus(unit = unit) }!!
-        val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
+        val bestTileForHealingRank = unit.healingAmountForTile(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
-                && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile) - unit.getDamageFromTerrain())
+                && bestTileForHealingRank > unit.healingAmountForTile(currentUnitTile) - unit.getDamageFromTerrain())
             unit.movement.moveToTile(bestTileForHealing)
 
         unit.fortifyIfCan()
@@ -459,15 +457,15 @@ object UnitAutomation {
      */
     @Readonly
     private fun canUnitHealInTurnsOnCurrentTile(unitView: MapUnitView, cache: AutomationCache, turns: Int, noEnemyDistance: Int = 3): Boolean {
-        val unit = unitView.getUnit()
         if (unitView.hasUnique(UniqueType.HealsEvenAfterAction)) return false // We can keep on moving
+        val unitTile = unitView.getTile()
         // Check if we are not in a safe city and there is an enemy nearby this isn't a good tile to heal on
-        if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50)
+        if (!(unitTile.isCityCenter() && unitTile.getCity()!!.getHealth() > 50)
             && ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.getTile(), noEnemyDistance) <= noEnemyDistance) return false
 
         // Round up, otherwise e.g. 99 health over 2 turns would give 0 required healing per turn
         val healthRequiredPerTurn = ceil((100 - unitView.unitHealth).toFloat() / turns).toInt()
-        return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
+        return healthRequiredPerTurn <= unitView.healingAmountForTile(unitTile)
     }
 
     @Readonly
