@@ -312,7 +312,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
                     && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= it.religion.getSpreadRange()
                 }
 
-        val adjacentUnitsThatLimitNaturalReligionSpread = city.getCenterTile().getTilesInDistance(1)
+        val adjacentUnitsThatLimitNaturalSpread = city.getCenterTile().getTilesInDistance(1)
             .flatMap { sequenceOf(it.civilianUnit, it.militaryUnit) }
             .filterNotNull()
             .filter { it.hasUnique(UniqueType.PreventNautralReligionSpread) }
@@ -320,7 +320,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         for (nearbyCity in allCitiesWithinNaturalSpreadRange) {
             val majorityReligionOfNearbyCity = nearbyCity.religion.getMajorityReligion() ?: continue
             if (!majorityReligionOfNearbyCity.isMajorReligion()) continue
-            if (adjacentUnitsThatLimitNaturalReligionSpread
+            if (adjacentUnitsThatLimitNaturalSpread
                 .any { it.religion != majorityReligionOfNearbyCity.name })
                 continue
             addedPressure.add(
