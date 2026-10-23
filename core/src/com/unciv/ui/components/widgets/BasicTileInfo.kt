@@ -2,6 +2,7 @@ package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.extensions.darken
@@ -41,6 +42,9 @@ open class BasicTileInfo(
 ) : Table(BaseScreen.skin) {
     private val innerTable = Table()
 
+    /** The Cell the stats are in, to allow tweaks in [addAdditionalContent] */
+    protected lateinit var statsCell: Cell<Table>
+
     init {
         name = this::class.simpleName
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -65,7 +69,8 @@ open class BasicTileInfo(
             return
         }
         isVisible = true
-        innerTable.add(getStatsTable(tileView)).fillX().row()
+        statsCell = innerTable.add(getStatsTable(tileView)).fillX()
+        innerTable.row()
         innerTable.add(getDescription(tileView)).row()
         innerTable.addAdditionalContent(tileView)
         pack()

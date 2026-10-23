@@ -111,6 +111,6 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
             resourcesWrapper.add(label).padTop(resourceAmountDescentTweak)  // digits don't have descenders, so push them down a little
         }
 
-        scaleTo(worldScreen.stage.width)
+        scaleToWidth(worldScreen.stage.width)
     }
 }
