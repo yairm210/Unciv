@@ -59,7 +59,6 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
                 voicesVolume = 0f
             }
         }
-        UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         if (RulesetCache.isEmpty())
@@ -84,6 +83,10 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
 
         for (baseUnit in ruleset.units.values)
             baseUnit.setRuleset(ruleset)
+
+        // This is important: Don't write it into UncivGame.Current earlier, otherwise we get a race condition in FasterUIDevelopment's
+        // click handler which delays the click sound - SoundPlayer might die on `modList.addAll(gameInfo.ruleset.mods)`
+        UncivGame.Current.gameInfo = gameInfo
     }
 
     fun setSpeed(speed: String) {

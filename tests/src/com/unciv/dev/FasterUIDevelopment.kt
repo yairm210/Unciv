@@ -106,7 +106,7 @@ object FasterUIDevelopment {
                 1 -> UIDevScreen(tests[0])
                 else -> UIDevTestPicker(game, tests)
             }
-            game.pushScreen{ screen }
+            game.pushScreen { screen }
 
             Gdx.graphics.requestRendering()
         }
