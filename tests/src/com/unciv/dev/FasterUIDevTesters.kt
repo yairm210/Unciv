@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.input.ActivationTypes
@@ -28,6 +29,7 @@ import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import kotlin.random.Random
 
@@ -39,6 +41,16 @@ import kotlin.random.Random
  *  This was tested and works when one moves the interface to the core project.
  */
 internal enum class FasterUIDevTesters : IFasterUITester {
+
+    Civilopedia {
+        override fun testCreateExample(screen: BaseScreen): Actor {
+            val game = TestGame(forUITesting = true)
+            TileSetCache.loadTileSetConfigs()
+            return TextButton("Civilopedia", BaseScreen.skin).onClick {
+                screen.game.pushScreen { CivilopediaScreen(game.ruleset) }
+            }
+        }
+    },
 
     GlobalPoliticsDiagram {
         override fun testCreateExample(screen: BaseScreen): Actor {
