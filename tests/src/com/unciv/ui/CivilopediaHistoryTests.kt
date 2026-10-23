@@ -1,15 +1,19 @@
 package com.unciv.ui
 
+import com.unciv.testing.BaseTestRunner
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaHistory
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(BaseTestRunner::class)
 class CivilopediaHistoryTests {
     private val history = CivilopediaHistory
     private val category = CivilopediaCategories.Technology
@@ -209,16 +213,12 @@ class CivilopediaHistoryTests {
     fun aFailedCallbackDoesNotLeaveHistoryInNavigationMode() {
         history.push(category, "Agriculture", 0f)
         history.push(category, "Pottery", 0f)
-        val failure = IllegalStateException("Callback failed")
-        try {
-            history.back { throw failure }
-            error("Expected callback failure")
-        } catch (exception: IllegalStateException) {
-            assertEquals(failure, exception)
+        class CallbackFailedException : IllegalStateException("Callback failed")
+        assertThrows("Expected callback failure", CallbackFailedException::class.java) {
+            history.back { throw CallbackFailedException() }
         }
 
         history.push(category, "Mining", 0f)
-
         assertEquals(listOf("Agriculture", "Mining"), history.map { it.entry })
     }
 }
