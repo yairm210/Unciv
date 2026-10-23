@@ -21,7 +21,7 @@ class CivilopediaHistoryMenu(
         val currentStyle = SmallButtonStyle().apply {
             disabledFontColor = Color.FOREST
         }
-        for ((index, entry) in CivilopediaHistory.withIndex().reversed()) {
+        CivilopediaHistory.forEachIndexedReversed { index, entry ->
             val button = getButton("{${entry.category.label}} - {${entry.entry}}", KeyboardBinding.None) {
                 CivilopediaHistory.navigateTo(index, entry, action)
             }

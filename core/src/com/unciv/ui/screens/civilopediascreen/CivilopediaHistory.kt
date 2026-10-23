@@ -19,11 +19,7 @@ object CivilopediaHistory : Iterable<Entry> {
     override fun iterator() = stack.iterator()
 
     fun push(category: CivilopediaCategories, entry: String, scroll: Float) {
-        if (navigatingAwayFrom in stack.indices) {
-            if (stack[navigatingAwayFrom].sameEntry(category, entry))
-                updateScroll(navigatingAwayFrom, scroll)
-            return
-        }
+        check(navigatingAwayFrom == -1) { "CivilopediaHistory.push called while navigating inside history" }
         if (position in stack.indices && stack[position].sameEntry(category, entry))
             return updateScroll(position, scroll)
         if (position + 1 < stack.size)
@@ -41,17 +37,15 @@ object CivilopediaHistory : Iterable<Entry> {
             updateScroll(position, scroll)
     }
 
-    fun back(): Entry? {
-        if (!hasBack()) return null
-        position--
-        return stack[position]
+    fun back(action: (Entry) -> Unit) {
+        if (!hasBack()) return
+        navigateTo(position - 1, stack[position - 1], action)
     }
     fun hasBack() = position > 0
 
-    fun forward(): Entry? {
-        if (!hasForward()) return null
-        position++
-        return stack[position]
+    fun forward(action: (Entry) -> Unit) {
+        if (!hasForward()) return
+        navigateTo(position - 1, stack[position - 1], action)
     }
     fun hasForward() = position < stack.size - 1
 
@@ -78,5 +72,21 @@ object CivilopediaHistory : Iterable<Entry> {
         val old = stack[index]
         if (old.scroll == scroll) return
         stack[position] = old.copy(scroll = scroll)
+    }
+
+    /** Non-allocating version of `for ((index, entry) in CivilopediaHistory.withIndex().reversed())` */
+    fun forEachIndexedReversed(action: (Int, Entry) -> Unit) {
+        for (index in stack.indices.reversed())
+            action(index, stack[index])
+    }
+
+    override fun toString(): String {
+        return buildString {
+            appendLine(CivilopediaHistory::class.simpleName)
+            forEachIndexedReversed { index, entry ->
+                if (index == position) append("*")
+                appendLine("\t${entry.category.label} - ${entry.entry} (${entry.scroll})")
+            }
+        }
     }
 }
