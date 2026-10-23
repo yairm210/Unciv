@@ -120,6 +120,35 @@ class UniqueErrorTests {
     }
 
     @Test
+    fun testBuildImprovementsRejectsEachActionModifier() {
+        val base = "Can build [Land] improvements on tiles"
+        val consume = "by consuming this unit"
+        val times = "[3] times"
+
+        Assert.assertEquals(RulesetErrorSeverity.OK, validateUnique(base).getFinalSeverity())
+        assertOnlyUnacceptableModifier("$base <$consume>", consume)
+        assertOnlyUnacceptableModifier("$base <$times>", times)
+
+        val both = unacceptableModifierErrors("$base <$consume> <$times>")
+        Assert.assertEquals(listOf(consume, times), both)
+    }
+
+    @Test
+    fun testInstantImprovementAcceptsActionModifiers() {
+        val errors = validateUnique(
+            "Can instantly construct a [Farm] improvement <by consuming this unit> <[3] times>"
+        )
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
+    }
+
+    @Test
+    fun testMetaModifierOnUnitUniqueIsAccepted() {
+        val errors = validateUnique("Can build [Land] improvements on tiles <with [3] priority>")
+        Assert.assertFalse(errors.any { it.text.contains("not an acceptable modifier") })
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
+    }
+
+    @Test
     fun testEducatedEliteGreatPersonGifting() {
         // set up game
         var failures = 0
@@ -179,6 +208,22 @@ class UniqueErrorTests {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
         UniqueValidator(ruleset).checkUnique(Unique(uniqueText), null)
+    }
+
+    /** Modifier name quoted by [UniqueValidator] in an unacceptable-modifier warning, in unique order. */
+    private fun unacceptableModifierErrors(uniqueText: String): List<String> =
+        validateUnique(uniqueText)
+            .filter { it.errorSeverityToReport == RulesetErrorSeverity.Warning && it.text.contains("not an acceptable modifier") }
+            .map { error ->
+                val marker = "contains the modifier \""
+                val start = error.text.indexOf(marker)
+                Assert.assertTrue(error.text, start >= 0)
+                val nameStart = start + marker.length
+                error.text.substring(nameStart, error.text.indexOf('"', nameStart))
+            }
+
+    private fun assertOnlyUnacceptableModifier(uniqueText: String, modifier: String) {
+        Assert.assertEquals(listOf(modifier), unacceptableModifierErrors(uniqueText))
     }
 
     private fun assertOnlyCivWideStatsError(uniqueText: String, statName: String) {
