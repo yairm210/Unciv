@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.AttackRecorder
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -948,7 +949,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         cache.updateUniques()
     }
 
-    fun takeDamage(amount: Int) {
+    fun takeDamage(amount: Int, recorder: AttackRecorder? = null) {
+        recorder?.recordDamage(combatantId = id.toString(), actualDamage = amount.coerceIn(0, health))
         health -= amount
         if (health > 100) health = 100 // For cheating modders, e.g. negative tile damage
         if (health < 0) health = 0

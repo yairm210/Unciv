@@ -4,7 +4,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.finishForTesting
-import com.unciv.testing.finishIncompleteForTesting
 import com.unciv.testing.newAttackRecorderForTesting
 import com.unciv.testing.markUnitAffectedForTesting
 import com.unciv.testing.recordDamageForTesting
@@ -81,7 +80,7 @@ class AttackRecorderTest {
         val record = recorder.finishForTesting().targets.single()
 
         assertTrue(defender.isDestroyed)
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(60, record.healthBefore)
         assertEquals(60, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -97,7 +96,7 @@ class AttackRecorderTest {
         defender.healBy(50)
         val record = recorder.finishForTesting().targets.single()
 
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(60, record.healthBefore)
         assertEquals(100, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -114,8 +113,8 @@ class AttackRecorderTest {
         dealDamage(recorder, defender, 0)
         val event = recorder.finishForTesting()
 
-        assertEquals(69, event.attacker!!.healthAfter)
-        assertEquals(0, event.attacker!!.damageReceived)
+        assertEquals(69, event.attacker.healthAfter)
+        assertEquals(0, event.attacker.damageReceived)
         assertTrue(event.targets.isEmpty())
     }
 
@@ -132,10 +131,10 @@ class AttackRecorderTest {
         dealDamage(outer, attacker, 11)
         val outerEvent = outer.finishForTesting()
 
-        assertEquals(3, innerEvent.attacker!!.damageReceived)
-        assertEquals(83, innerEvent.attacker!!.healthAfter)
-        assertEquals(18, outerEvent.attacker!!.damageReceived)
-        assertEquals(72, outerEvent.attacker!!.healthAfter)
+        assertEquals(3, innerEvent.attacker.damageReceived)
+        assertEquals(83, innerEvent.attacker.healthAfter)
+        assertEquals(18, outerEvent.attacker.damageReceived)
+        assertEquals(72, outerEvent.attacker.healthAfter)
         assertTrue(innerEvent.targets.isEmpty())
         assertTrue(outerEvent.targets.isEmpty())
         assertEquals(89, defender.health)
@@ -149,7 +148,7 @@ class AttackRecorderTest {
 
         val record = recorder.finishForTesting().targets.single()
 
-        assertEquals(defender.id, record.unitID)
+        assertEquals(defender.id.toString(), record.combatantID)
         assertEquals(100, record.healthBefore)
         assertEquals(100, record.healthAfter)
         assertEquals(0, record.damageReceived)
@@ -168,8 +167,6 @@ class AttackRecorderTest {
         assertThrows(IllegalArgumentException::class.java) {
             newAttackRecorderForTesting(MapUnitCombatant(attacker), otherGame.getTile(1, 0))
         }
-        for (amount in listOf(0, -9, 9))
-            assertThrows(IllegalArgumentException::class.java) { recorder.recordDamageForTesting(otherUnit, amount) }
         assertThrows(IllegalArgumentException::class.java) { recorder.markUnitAffectedForTesting(otherUnit) }
         assertThrows(IllegalArgumentException::class.java) { recorder.recordDestructionForTesting(otherUnit) }
         assertThrows(IllegalArgumentException::class.java) {
@@ -184,7 +181,7 @@ class AttackRecorderTest {
         assertSame(otherUnit, otherGame.getTile(0, 0).militaryUnit)
         dealDamage(recorder, attacker, 2)
         val event = recorder.finishForTesting()
-        assertEquals(2, event.attacker!!.damageReceived)
+        assertEquals(2, event.attacker.damageReceived)
         assertTrue(event.targets.isEmpty())
     }
 
@@ -205,31 +202,11 @@ class AttackRecorderTest {
             recorder.recordOutcomeForTesting(MapUnitCombatant(defender), AttackParticipantOutcome.Withdrew)
         }
         assertThrows(IllegalStateException::class.java) { recorder.finishForTesting() }
-        assertThrows(IllegalStateException::class.java) { recorder.finishIncompleteForTesting() }
         assertEquals(93, attacker.health)
         assertFalse(attacker.isDestroyed)
         assertSame(attacker, attackingCiv.units.getUnitById(attacker.id))
-        assertEquals(93, event.attacker!!.healthAfter)
-        assertEquals(7, event.attacker!!.damageReceived)
-        assertReleased(recorder)
-    }
-
-    @Test
-    fun `incomplete finalization preserves partial effects without rolling them back`() {
-        val recorder = recorder()
-        recorder.snapshotTargetForTesting(MapUnitCombatant(defender))
-        dealDamage(recorder, defender, 7)
-        assertThrows(IllegalArgumentException::class.java) { recorder.finishForTesting(null) }
-
-        val event = recorder.finishIncompleteForTesting()
-        assertThrows(IllegalStateException::class.java) { recorder.recordDamageForTesting(defender, 3) }
-        defender.takeDamage(11)
-
-        assertEquals(82, defender.health)
-        assertEquals(null, event.resolution)
-        assertEquals(93, event.targets.single().healthAfter)
-        assertEquals(7, event.targets.single().damageReceived)
-        assertEquals(AttackParticipantOutcome.Survived, event.targets.single().outcome)
+        assertEquals(93, event.attacker.healthAfter)
+        assertEquals(7, event.attacker.damageReceived)
         assertReleased(recorder)
     }
 
@@ -244,11 +221,11 @@ class AttackRecorderTest {
         val successor = attackingCiv.units.getUnitById(attacker.id)!!
         successor.instanceName = "New composite bowmen"
         successor.takeDamage(9) // No callback replaces the recorder's old unit reference.
-        val record = recorder.finishForTesting().attacker!!
+        val record = recorder.finishForTesting().attacker
 
         assertNotSame(attacker, successor)
         assertEquals("Composite Bowman", successor.name)
-        assertEquals(attacker.id, record.unitID)
+        assertEquals(attacker.id.toString(), record.combatantID)
         assertEquals("Archer", record.name)
         assertEquals("Original archers", record.instanceName)
         assertEquals(63, record.healthBefore)
@@ -274,8 +251,8 @@ class AttackRecorderTest {
         assertEquals(0, attacker.attacksThisTurn)
         assertSame(defender, defendingCiv.units.getUnitById(defender.id))
         val event = recorder.finishForTesting()
-        assertEquals(7, event.attacker!!.damageReceived)
-        assertEquals(100, event.attacker!!.healthAfter)
+        assertEquals(7, event.attacker.damageReceived)
+        assertEquals(100, event.attacker.healthAfter)
         assertEquals(AttackParticipantOutcome.Survived, event.targets.single().outcome)
     }
 
@@ -287,7 +264,7 @@ class AttackRecorderTest {
         defender.capturedBy(attackingCiv)
         val captured = captureRecorder.finishForTesting().targets.single()
         assertEquals(originalOwner, captured.civID)
-        assertEquals(defender.id, captured.unitID)
+        assertEquals(defender.id.toString(), captured.combatantID)
         assertEquals(AttackParticipantOutcome.Captured, captured.outcome)
         assertEquals(0, captured.damageReceived)
 

@@ -125,11 +125,13 @@ object Battle {
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
-        val extraRangedAttackDamage = tryExtraRangedAttack(attacker, defender, attackedTile)
+        val recorder = AttackRecorder.create(attacker, defender)
+
+        val extraRangedAttackDamage = tryExtraRangedAttack(attacker, defender, attackedTile, recorder)
 
         triggerCombatUniques(attacker, defender, attackedTile)
 
-        val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
+        val damageDealt = takeDamage(attacker, defender, recorder) + extraRangedAttackDamage
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
@@ -180,6 +182,8 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
 
+        attacker.getCivInfo().gameInfo.attackEvents.add(recorder.finish(resolution = AttackResolution.Completed))
+        
         return damageDealt + interceptDamage
     }
 
@@ -373,7 +377,7 @@ object Battle {
         }
     }
 
-    internal fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
+    internal fun takeDamage(attacker: ICombatant, defender: ICombatant, recorder: AttackRecorder? = null): DamageDealt {
         val attackerContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
         val defenderContext = GameContext(defender, attacker, defender.getTile(), CombatAction.Defend)
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
@@ -386,7 +390,7 @@ object Battle {
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
             BattleUnitCapture.captureCivilianUnit(attacker, defender)
         } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
-            defender.takeDamage(potentialDamageToDefender) // straight up
+            defender.takeDamage(potentialDamageToDefender, recorder) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
@@ -394,11 +398,11 @@ object Battle {
             while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
                 if (rng.nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
                     potentialDamageToDefender--
-                    defender.takeDamage(1)
+                    defender.takeDamage(1, recorder)
                     if (defender.isDefeated()) break
                 } else {
                     potentialDamageToAttacker--
-                    attacker.takeDamage(1)
+                    attacker.takeDamage(1, recorder)
                     if (attacker.isDefeated()) break
                 }
             }
@@ -841,14 +845,14 @@ object Battle {
         }
     }
 
-    private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+    private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile, recorder: AttackRecorder?): DamageDealt {
         if (attacker !is MapUnitCombatant) return DamageDealt.None
         if (defender !is MapUnitCombatant) return DamageDealt.None
         if (defender.isCivilian()) return DamageDealt.None
 
         var damageDealt = DamageDealt.None
         for (fakeAttacker in getExtraRangedAttackFakeUnits(attacker)) {
-            damageDealt += takeDamage(fakeAttacker, defender)
+            damageDealt += takeDamage(attacker = fakeAttacker, defender = defender, recorder = recorder)
         }
         return damageDealt
     }
