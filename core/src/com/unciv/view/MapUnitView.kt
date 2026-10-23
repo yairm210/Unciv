@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.Constants
 import com.unciv.logic.battle.AirInterception
@@ -111,7 +112,8 @@ class MapUnitView internal constructor(
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
     /** Defensive bonus of [tile] as seen by this unit - unit-specific uniques of the improvement are taken into account */
-    @Readonly fun getDefensiveBonusOn(tile: TileView): Float = tile.unwrap().getDefensiveBonus(unit = unit)
+    @Readonly fun getDefensiveBonusOn(tile: TileView, includeImprovementBonus: Boolean = true): Float =
+        tile.unwrap().getDefensiveBonus(includeImprovementBonus, unit)
     @Readonly fun getVisibilityRange(): Int = unit.getVisibilityRange()
     @Readonly fun getViewableTiles(): List<TileView> = unit.viewableTiles.map { gameView.tileMapView.getTile(it) }
     /** Health points this unit would receive if healing on [tile] */
@@ -200,7 +202,13 @@ class MapUnitView internal constructor(
         AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
+    /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType] */
+    fun canInvokeUnitAction(unitActionType: UnitActionType): Boolean =
+        UnitActions.getUnitActions(unit, unitActionType).any { it.action != null }
+    /** Invokes the first enabled action of type [unitActionType]
+     *  @return whether an action was invoked */
     fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
+    @Readonly fun canPillage(tile: TileView): Boolean = UnitActionsPillage.canPillage(unit, tile.unwrap())
     fun tryFortifyIfCan(): Boolean {
         unit.fortifyIfCan()
         return true

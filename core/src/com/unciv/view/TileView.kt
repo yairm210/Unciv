@@ -134,6 +134,13 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun providesYield(): Boolean = tile.providesYield()
     @Readonly fun isLocked(): Boolean = tile.isLocked()
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
+    @Readonly fun canPillageTileImprovement(): Boolean = tile.canPillageTileImprovement()
+    @Readonly fun canPillageRoad(): Boolean = tile.canPillageRoad()
+    @Readonly fun getRoadOwner(): ForeignCivView? {
+        val owner = tile.getRoadOwner() ?: return null
+        if (viewer == null) return null
+        return tileMapView.gameView?.getForeignCivView(owner)
+    }
     @Readonly fun isBarbarianEncampment(): Boolean = tile.isBarbarianEncampment()
     @Readonly fun isFriendlyTerritory(): Boolean = viewer != null && tile.isFriendlyTerritory(viewer)
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)

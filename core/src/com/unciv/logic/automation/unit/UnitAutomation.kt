@@ -23,6 +23,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -449,26 +450,22 @@ object UnitAutomation {
      * @return true if the unit was able to pillage a tile, false otherwise
      */
     fun tryPillageImprovement(unitView: MapUnitView, onlyPillageToHeal: Boolean = false): Boolean {
-        val unit = unitView.getUnit()
         if (unitView.isCivilian()) return false
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-            .filter { it.value.totalMovement < unit.currentMovement }.keys
-            .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
+        val civ = unitView.civ()
+        val tilesThatCanWalkToAndThenPillage = unitView.getDistanceToTiles()
+            .filter { it.value < unitView.currentMovement }.keys
+            .filter { unitView.canMoveTo(it) && unitView.canPillage(it)
                     && (it.canPillageTileImprovement()
-                    || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
+                    || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && civ.isAtWarWith(it.getRoadOwner()!!))) }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false, unit) }!!
-        if (unit.getTile() != tileToPillage)
-            unit.movement.moveToTile(tileToPillage)
+        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxBy { unitView.getDefensiveBonusOn(it, includeImprovementBonus = false) }
+        if (unitView.getTile() != tileToPillage)
+            unitView.tryMoveToTile(tileToPillage)
 
-        if (unit.currentTile != tileToPillage) return false
+        if (unitView.getTile() != tileToPillage) return false
 
-        // We CANNOT use invokeUnitAction, since the default unit action contains a popup, which - when automated -
-        //  runs a UI action on a side thread leading to crash!
-        UnitActionsPillage.getPillageAction(unit, unit.currentTile)?.action?.invoke()
-        return true
+        return unitView.tryInvokeUnitAction(UnitActionType.Pillage)
     }
 
     /** Move towards the closest attackable enemy of the [unit].
