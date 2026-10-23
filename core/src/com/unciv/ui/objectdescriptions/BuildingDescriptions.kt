@@ -20,14 +20,17 @@ import yairm210.purity.annotations.Mutated
 import yairm210.purity.annotations.Readonly
 
 object BuildingDescriptions {
-    // Note: These are not extension functions for receiver Building because that would mean renaming getCivilopediaTextLines
-    // here, otherwise there is no override syntax for Building.getCivilopediaTextLines that can access the helper.
-    // To stay consistent, all take the Building as normal parameter instead.
+    // Note: Many methods are not extension functions for receiver Building and take the Building as normal parameter instead.
+    // This allows using the same name as overrides delegating to them.
+    // With the builder approach @SomeTroglodyte decided to name getCivilopediaTextLines helpers get<class>CivilopediaTextLines instead,
+    // also enabling serving more than one class in one helper file.
 
-    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
+    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions
+     *  @return **Pretranslated** list of selected properties, separated by semicola or newlines depending on [multiline]
+     */
     fun getShortDescription(building: Building, multiline: Boolean = false, uniqueInclusionFilter: ((Unique) -> Boolean)? = null): String = building.run {
         val infoList = mutableListOf<String>()
-        this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
+        this.cloneStats().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
             infoList += "+${value.toInt()}% ${key.name.tr()}"
 
@@ -40,7 +43,7 @@ object BuildingDescriptions {
         if (cityStrength != 0.0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
         val separator = if (multiline) "\n" else "; "
-        return infoList.joinToString(separator) { it.tr() }
+        return infoList.joinToString(separator) { it.tr() } //TODO double translation of some substrings
     }
 
     /** used in CityScreen (ConstructionInfoTable) */

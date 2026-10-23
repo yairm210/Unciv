@@ -24,7 +24,13 @@ import yairm210.purity.annotations.Readonly
 
 object BaseUnitDescriptions {
 
-    /** Generate short description as comma-separated string for Technology description "Units enabled" and GreatPersonPickerScreen */
+    /** Generate a short description for Technology description "Units enabled" and GreatPersonPickerScreen.
+     *
+     *  Includes: [strength][BaseUnit.strength], [rangedStrength][BaseUnit.rangedStrength], [movement][BaseUnit.movement] if any reviates from default,
+     *  free [promotions][BaseUnit.promotions] and [uniques][BaseUnit.uniques].
+     *  Uniques are superseded by [replacementTextForUniques][BaseUnit.replacementTextForUniques] or filtered by [uniqueExclusionFilter].
+     *  @return **Pretranslated**, comma-separated list of selected properties
+     */
     @Readonly
     fun getShortDescription(baseUnit: BaseUnit, uniqueExclusionFilter: Unique.() -> Boolean = {false}): String {
         val infoList = mutableListOf<String>()
@@ -33,7 +39,7 @@ object BaseUnitDescriptions {
         if (baseUnit.movement != 2) infoList += "${baseUnit.movement.tr()}${Fonts.movement}"
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
-        if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
+        if (baseUnit.replacementTextForUniques.isNotEmpty()) infoList += baseUnit.replacementTextForUniques.tr()
         else baseUnit.uniquesToDescription(infoList, uniqueExclusionFilter)
         return infoList.joinToString()
     }
