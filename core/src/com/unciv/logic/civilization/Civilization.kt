@@ -276,6 +276,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     var statsHistory = CivRankingHistory()
 
+    /** To avoid reusing a city name when the user renames them */
+    var cityNameIndex = 0
+
     constructor()
 
     constructor(civName: String) {
@@ -352,6 +355,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.cityNameIndex = cityNameIndex
         return toReturn
     }
 
