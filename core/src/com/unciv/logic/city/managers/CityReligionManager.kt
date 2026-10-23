@@ -323,9 +323,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             if (adjacentUnitsThatLimitNaturalReligionSpread
                 .any { it.religion != majorityReligionOfNearbyCity.name })
                 continue
-            addedPressure.add(majorityReligionOfNearbyCity.name, nearbyCity.religion.pressureAmountToAdjacentCities(
-                this.city
-            ))
+            addedPressure.add(
+                majorityReligionOfNearbyCity.name,
+                nearbyCity.religion.pressureAmountToAdjacentCities(this.city)
+            )
         }
         return addedPressure
     }
