@@ -15,6 +15,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.ActivationTypes
@@ -354,7 +355,7 @@ class CivilopediaScreen private constructor(
         entrySelectScroll.validate()
         entrySelectTable.validate()
         val row = entrySelectTable.children.first { it.name == name }
-        entrySelectScroll.scrollTo(row.x, row.y, row.width, row.height, false, true)
+        entrySelectScroll.scrollTo(row, center = true)
         if (noScrollAnimation)
             entrySelectScroll.updateVisualScroll()     // snap without animation on fresh pedia open
         updateEntry(entry)
