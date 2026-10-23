@@ -44,9 +44,6 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-    /** Temporary bridge: the [TileView] of a raw [Tile], as seen by [unitView]'s civ */
-    @Readonly
-    private fun MapUnitView.viewOf(tile: Tile): TileView = getTile().getTileMap().getTile(tile)
 
     fun automateUnitMoves(unitView: MapUnitView, cache: AutomationCache = AutomationCache()):Unit = timeThis("automateUnitMoves") {
         val unit = unitView.getUnit()
@@ -350,7 +347,6 @@ object UnitAutomation {
     }
 
     private fun tryHealUnit(unitView: MapUnitView, cache: AutomationCache): Boolean {
-        val unit = unitView.getUnit()
         if (unitView.getBaseUnit().isRanged() && unitView.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
@@ -360,7 +356,7 @@ object UnitAutomation {
             if (!unitView.hasMovement() || unitView.unitHealth == 100) return !unitView.hasMovement()
         }
 
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val unitDistanceToTiles = unitView.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
         val dangerousTiles = ThreatManager.getDangerousTiles(cache, unitView, 3)
@@ -369,50 +365,48 @@ object UnitAutomation {
         if (unitView.getTile() !in dangerousTiles 
             && canUnitHealInTurnsOnCurrentTile(unitView, cache, 3)) return true
 
-        val currentUnitTile = unit.getTile()
-
+        val currentUnitTile = unitView.getTile()
 
         val viableTilesForHealing = unitDistanceToTiles.keys
-                .filter { unitView.viewOf(it) !in dangerousTiles && unit.movement.canMoveTo(it) }
-        val tilesByHealingRate = viableTilesForHealing.groupBy { unit.healingAmountForTile(it) }
+                .filter { it !in dangerousTiles && unitView.canMoveTo(it) }
+        val tilesByHealingRate = viableTilesForHealing.groupBy { unitView.healingAmountForTile(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
             if (!unitView.isAirUnit()) {
-                val reachableCityTile = unit.civ.cities.asSequence()
+                val reachableCityTile = unitView.civ().cities().asSequence()
                     .map { it.getCenterTile() }
-                    .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movement.canReach(it) }
-                if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
+                    .sortedBy { it.aerialDistanceTo(currentUnitTile) }
+                    .firstOrNull { unitView.canReach(it) }
+                if (reachableCityTile != null) unitView.tryHeadTowards(reachableCityTile)
                 else wander(unitView)
                 return true
             }
             // Try to get closer to an empty city
-            val emptyCities = unit.civ.cities.asSequence()
+            val emptyCities = unitView.civ().cities().asSequence()
                 .map { it.getCenterTile() }
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unitView.canMoveTo(it) }
             if (emptyCities.none()) return false // Nowhere to move to heal
 
             val nextTileToMove = unitDistanceToTiles.keys
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unitView.canMoveTo(it) }
                 .minByOrNull { tile ->
                     emptyCities.minOf { city ->
                         city.aerialDistanceTo(tile)
                     }
                 } ?: return false
 
-            unit.movement.moveToTile(nextTileToMove)
-            return true
+            return unitView.tryMoveToTile(nextTileToMove)
         }
 
         val bestTilesForHealing = tilesByHealingRate.maxByOrNull { it.key }!!.value
-        val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus(unit = unit) }!!
-        val bestTileForHealingRank = unit.healingAmountForTile(bestTileForHealing)
+        val bestTileForHealing = bestTilesForHealing.maxByOrNull { unitView.getDefensiveBonusOn(it) }!!
+        val bestTileForHealingRank = unitView.healingAmountForTile(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
-                && bestTileForHealingRank > unit.healingAmountForTile(currentUnitTile) - unit.getDamageFromTerrain())
-            unit.movement.moveToTile(bestTileForHealing)
+                && bestTileForHealingRank > unitView.healingAmountForTile(currentUnitTile) - unitView.getDamageFromTerrain(currentUnitTile))
+            unitView.tryMoveToTile(bestTileForHealing)
 
-        unit.fortifyIfCan()
+        unitView.tryFortifyIfCan()
         return true
     }
 

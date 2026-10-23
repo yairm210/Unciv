@@ -110,6 +110,8 @@ class MapUnitView internal constructor(
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
+    /** Defensive bonus of [tile] as seen by this unit - unit-specific uniques of the improvement are taken into account */
+    @Readonly fun getDefensiveBonusOn(tile: TileView): Float = tile.unwrap().getDefensiveBonus(unit = unit)
     @Readonly fun getVisibilityRange(): Int = unit.getVisibilityRange()
     @Readonly fun getViewableTiles(): List<TileView> = unit.viewableTiles.map { gameView.tileMapView.getTile(it) }
     /** Health points this unit would receive if healing on [tile] */
@@ -199,6 +201,10 @@ class MapUnitView internal constructor(
         return true
     }
     fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
+    fun tryFortifyIfCan(): Boolean {
+        unit.fortifyIfCan()
+        return true
+    }
     fun tryMoveToTile(tileView: TileView): Boolean {
         unit.movement.moveToTile(tileView.unwrap())
         return true
