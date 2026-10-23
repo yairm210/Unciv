@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.civilopediascreen
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.screens.civilopediascreen.CivilopediaHistory.Entry
+import org.jetbrains.annotations.VisibleForTesting
 
 object CivilopediaHistory : Iterable<Entry> {
     private const val MAX_DEPTH = 50
@@ -19,6 +21,11 @@ object CivilopediaHistory : Iterable<Entry> {
 
     override fun iterator() = stack.iterator()
 
+    fun setContext(ruleset: Ruleset) {
+        setContext(ruleset.mods.toList().ifEmpty { listOf(ruleset.name) })
+    }
+
+    @VisibleForTesting
     fun setContext(rulesets: List<String>) {
         if (context == rulesets) return
         clear()

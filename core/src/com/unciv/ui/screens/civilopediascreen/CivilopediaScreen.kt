@@ -95,7 +95,7 @@ class CivilopediaScreen private constructor(
     //endregion
 
     init {
-        CivilopediaHistory.setContext(ruleset.mods.toList().ifEmpty { listOf(ruleset.name) })
+        CivilopediaHistory.setContext(ruleset)
         val imageSize = 50f
 
         val religionEnabled = showReligionInCivilopedia(ruleset) // To filter the Belief Category only
