@@ -1,6 +1,12 @@
 package com.unciv
 
-import com.badlogic.gdx.*
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Game
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.Screen
+import com.unciv.UncivGame.Companion.Current
+import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.Version
@@ -13,6 +19,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.ui.audio.MiniAudioFactory
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -33,7 +40,16 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
-import com.unciv.utils.*
+import com.unciv.utils.Concurrency
+import com.unciv.utils.DebugUtils
+import com.unciv.utils.Display
+import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
+import com.unciv.utils.debug
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withGLContext
+import com.unciv.utils.withThreadPoolContext
+import games.rednblack.miniaudio.MiniAudio
 import kotlinx.coroutines.CancellationException
 import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
@@ -66,6 +82,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: Multiplayer
     lateinit var files: UncivFiles
+    /** MiniAudio instance to use exclusively instead of Gdx.audio */
+    lateinit var miniAudio: MiniAudio
 
     var isTutorialTaskCollapsed = false
 
@@ -117,8 +135,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        musicController = MusicController()  // early, but at this point does only copy volume from settings
-        installAudioHooks()
+        miniAudio = MiniAudioFactory.create(files)
+        musicController = MusicController(miniAudio)  // early, but at this point does only copy volume from settings
+        initAudio(miniAudio)  // Currently only Android connects the asset manager
 
         onlineMultiplayer = Multiplayer()
 
@@ -149,7 +168,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
 
-
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
             Concurrency.parallelize(listOf(
@@ -158,7 +176,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 { TileSetCache.loadTileSetConfigs() },
                 { SkinCache.loadSkinConfigs() }
             ))
-
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
@@ -420,6 +437,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        miniAudio.startEngine()
         musicController.resumeFromShutdown()
 
         // This is also needed in resume to open links and notifications
@@ -432,6 +450,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // Needs to go ASAP - on Android, there's a tiny race condition: The OS will stop our playback forcibly, it likely
         // already has, but if we do _our_ pause before the MusicController timer notices, it will at least remember the current track.
         if (::musicController.isInitialized) musicController.pause()
+        if (::miniAudio.isInitialized) miniAudio.stopEngine()
         val curGameInfo = gameInfo
         // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
         if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
@@ -448,7 +467,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
-        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out... for a few ms
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
@@ -465,6 +484,10 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 autoSaveJob.join()
             }
         }
+
+        if (::musicController.isInitialized) musicController.dispose()
+        if (::miniAudio.isInitialized) miniAudio.dispose()
+
         Concurrency.stopThreadPools()
 
         // On desktop this should only be this one and "DestroyJavaVM"
@@ -473,7 +496,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
-private fun logRunningThreads() {
+    private fun logRunningThreads() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
