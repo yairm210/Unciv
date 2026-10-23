@@ -206,6 +206,7 @@
       "May enhance a religion",
       "Can be added to [comment] in the Capital",
       "Prevents spreading of religion to the city it is next to",
+      "Prevents natural spreading of religion to the city is is next to",
       "Removes other religions when spreading religion",
       "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away",
       "Can perform Air Sweep",
