@@ -138,46 +138,43 @@ object UnitAutomation {
             wander(unitView, stayInTerritory = true)
     }
 
+    /** Number of tiles within [radius] of a tile on an unbounded hex map, including the tile itself */
+    @Readonly private fun tilesInHexRadius(radius: Int) = 1 + 3 * radius * (radius + 1)
+
     @Readonly
-    private fun isGoodTileToExplore(unitView: MapUnitView, cache: AutomationCache, tile: Tile, unitVisibilityRange: Int): Boolean {
-        val unit = unitView.getUnit()
+    private fun isGoodTileToExplore(unitView: MapUnitView, cache: AutomationCache, tile: TileView, unitVisibilityRange: Int): Boolean {
+        val civ = unitView.civ()
         // These should be ordered by increasing computational cost
-        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && (!unitView.civ().isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
-                && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
-                && ThreatManager.getDistanceToClosestEnemyUnit(unitView.civ(), cache, unitView.viewOf(tile), 3) > 3 // don't walk in range of enemy units
-                && unit.movement.canMoveTo(tile) // expensive, evaluate last
-                && unit.movement.canReach(tile) // expensive, evaluate last
+        return tile.getOwner()?.isCityState != true
+                && (!civ.isCityState || tile.getExploredTilesAtDistance(1).any { it.getOwner() == civ }) // Don't want city-states exploring far outside their borders
+                && unitView.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                // Some tile in range is unexplored. Since we can't know what tiles exist that we don't know about, this is a guess.
+                //   On map edges this will be wrong... Units may "hug edges". In practice this is not a big deal. 
+                && tile.getExploredTilesInDistance(unitVisibilityRange).count() < tilesInHexRadius(unitVisibilityRange)
+                && ThreatManager.getDistanceToClosestEnemyUnit(civ, cache, tile, 3) > 3 // don't walk in range of enemy units
+                && unitView.canMoveTo(tile) // expensive, evaluate last
+                && unitView.canReach(tile) // expensive, evaluate last
     }
 
     internal fun tryExplore(unitView: MapUnitView, cache: AutomationCache): Boolean = timeThis("tryExplore") {
-        val unit = unitView.getUnit()
-        if (tryGoToRuin(unitView) && (!unitView.hasMovement() || unit.isDestroyed)) return true
+        if (tryGoToRuin(unitView) && (!unitView.hasMovement() || unitView.isDestroyed())) return true
 
-        val unitVisibilityRange = unit.getVisibilityRange()
+        val unitVisibilityRange = unitView.getVisibilityRange()
         val explorableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unitView, cache, it, unitVisibilityRange) }
+                unitView.getDistanceToTiles().keys.filter { isGoodTileToExplore(unitView, cache, it, unitVisibilityRange) }
         if (explorableTilesThisTurn.any()) {
-            val bestTile = explorableTilesThisTurn
-                .maxBy { tile ->
-                    var unexploredCount = 0
-                    tile.forEachTileAtDistance(unit.getVisibilityRange()) { nearbyTile -> if (!nearbyTile.isExplored(unit.civ)) unexploredCount++ }
-                    tile.tileHeight + unexploredCount
-                }
             // Assign each tile a score for "explore value"
             // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
             // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
-            unit.movement.headTowards(bestTile)
-            return true
+            val bestTile = explorableTilesThisTurn
+                .maxBy { it.tileHeight + it.estimateUnexploredTilesAtDistance(unitVisibilityRange) }
+            return unitView.tryHeadTowards(bestTile)
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileToExplore(unitView, cache, tile, unitVisibilityRange)) {
-                unit.movement.headTowards(tile)
-                return true
-            }
+        for (tile in unitView.getTile().getExploredTilesInDistance(5))
+            if (isGoodTileToExplore(unitView, cache, tile, unitVisibilityRange))
+                return unitView.tryHeadTowards(tile)
         return false
     }
 
@@ -200,12 +197,9 @@ object UnitAutomation {
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        // An unexplored tile within 5 means some explored tile within 4 borders unexplored ground
         val unitTile = unitView.getTile()
-        if (unitTile.getExploredTilesInDistance(5).all { it.isVisible() }
-            && unitTile.getExploredTilesInDistance(4).none { it.isMapEdgeTile() }) {
-            return false
-        }
+        val tilesInRange = unitTile.getExploredTilesInDistance(5).toList()
+        if (tilesInRange.size == tilesInHexRadius(5) && tilesInRange.all { it.isVisible() }) return false
 
         val rng = unitView.stateBasedRandom("UnitAutomation.tryFogBust")
         val reachableTilesThisTurn =

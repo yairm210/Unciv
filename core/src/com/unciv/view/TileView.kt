@@ -115,12 +115,14 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     //. that's not really relevant for the API
     // We should see if we can avoid this entirely
     @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
-    /** `true` if this tile borders a tile the viewer hasn't explored, i.e. it is on the edge of the map the viewer knows about */
-    @Readonly fun isMapEdgeTile(): Boolean = viewer != null && tile.neighbors.any { !it.isExplored(viewer) }
     @Readonly fun getExploredTilesAtDistance(distance: Int): Sequence<TileView> =
         tile.getTilesAtDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
+    /** Views only expose explored tiles, so unexplored tiles at [distance] are estimated as a full hex ring (6 * [distance]) minus the explored ones.
+     * Overestimates near the true map edge, where tiles beyond the edge are counted as unexplored. */
+    @Readonly fun estimateUnexploredTilesAtDistance(distance: Int): Int =
+        (6 * distance - getExploredTilesAtDistance(distance).count()).coerceAtLeast(0)
     @Readonly fun getExploredTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
@@ -154,6 +156,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementInProgress: String? get() = tile.improvementInProgress
     val improvement: String? get() = tile.improvement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
+    val tileHeight: Int get() = tile.tileHeight
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
