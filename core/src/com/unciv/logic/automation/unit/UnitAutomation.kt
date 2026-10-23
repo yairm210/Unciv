@@ -249,50 +249,20 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        if (unit.civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
+        val civ = unitView.civ()
+        if (civ.isHuman() && !UncivGame.Current.settings.automatedUnitsCanUpgrade
             && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) return false
 
-        val upgradeUnits = getUnitsToUpgradeTo(unitView)
-        if (upgradeUnits.none()) return false // for resource reasons, usually
-        val upgradedUnit = upgradeUnits.minBy { it.cost }
+        val upgrade = unitView.getPossibleUpgrades()
+            .filter { it.availability == UpgradeAvailability.Available // for resource reasons, usually
+                && !(civ.isBarbarian() && it.upgradedUnit.hasUnique(UniqueType.CannotBeBarbarian)) }
+            .minByOrNull { it.upgradedUnit.cost } ?: return false
 
-        if (upgradedUnit.getResourceRequirementsPerTurn(unit.cache.state).keys.any { !unit.requiresResource(it) }) {
-            // The upgrade requires new resource types, so check if we are willing to invest them
-            if (!Automation.allowSpendingResource(GameView(unit.civ.gameInfo, unit.civ).civView, upgradedUnit)) return false
-        }
+        // The upgrade requires new resource types, so check if we are willing to invest them
+        if (upgrade.newResourceRequirements.any { it.value > 0 }
+            && !Automation.allowSpendingResource(civ, upgrade.upgradedUnit)) return false
 
-        val upgradeActions = UnitActionsUpgrade.getUpgradeActions(unit)
-
-        upgradeActions.firstOrNull{ (it as UpgradeUnitAction).unitToUpgradeTo == upgradedUnit }?.action?.invoke() ?: return false
-        //todo Incorrect - an _unsuccessful_ upgrade might have _resurrected_ the original in which case it's a new clone, and unit.isDestroyed is still true
-        return unit.isDestroyed // a successful upgrade action will destroy this unit
-    }
-
-    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
-     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
-     */
-    @Readonly
-    private fun getUnitsToUpgradeTo(unitView: MapUnitView): Sequence<BaseUnit> {
-        val unit = unitView.getUnit()
-
-        @Readonly
-        fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean {
-            if (!unit.civ.tech.isResearched(baseUnit))
-                return true
-            if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
-                return true
-            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .any { !it.conditionalsApply(unit.cache.state) })
-                return true
-            if (baseUnit.getMatchingUniques(UniqueType.Unavailable, unit.cache.state).any())
-                return true
-            return false
-        }
-
-        return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)
-            .map { unit.civ.getEquivalentUnit(it) }
-            .filter { !isInvalidUpgradeDestination(it) && unit.upgrade.canUpgrade(it) == UpgradeAvailability.Available }
+        return unitView.tryUpgradeTo(upgrade.upgradedUnit)
     }
 
 
