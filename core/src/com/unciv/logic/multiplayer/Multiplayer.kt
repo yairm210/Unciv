@@ -166,6 +166,7 @@ class Multiplayer {
         
         playerCiv.turnsPlayedAsHuman = 0
         playerCiv.totalTurnTimeSeconds = 0
+        playerCiv.declineAllEmbassyRequests = false
 
         //call next turn so turn gets simulated by AI
         if (gameInfo.currentPlayer == playerCivName) gameInfo.nextTurn()
