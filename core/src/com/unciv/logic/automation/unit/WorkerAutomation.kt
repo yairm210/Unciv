@@ -169,7 +169,7 @@ class WorkerAutomation(
         val tileRanking = tileRankings[currentTile]!!
         if (tileRanking.repairImprovment == true) {
             debug("WorkerAutomation: $unit -> repairs $currentTile")
-            UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
+            unitView.tryInvokeUnitAction(UnitActionType.Repair)
             return
         }
         

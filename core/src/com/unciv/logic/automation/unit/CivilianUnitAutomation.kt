@@ -43,7 +43,7 @@ object CivilianUnitAutomation {
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
         if (hasSettlerUnique && !(unit.civ().isCityState && unit.isMilitary()))
-            return SpecificUnitAutomation.automateSettlerActions(mapUnit, dangerousTiles, cache)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles, cache)
 
         if (tryRunAwayIfNeccessary(unit, cache)) return
 
