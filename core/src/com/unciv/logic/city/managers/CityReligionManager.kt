@@ -313,8 +313,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
                 }
 
         val adjacentUnitsThatLimitNaturalSpread = city.getCenterTile().getTilesInDistance(1)
-            .flatMap { sequenceOf(it.civilianUnit, it.militaryUnit) }
-            .filterNotNull()
+            .flatMap { it.getUnits() }
             .filter { it.hasUnique(UniqueType.PreventNautralReligionSpread) }
 
         for (nearbyCity in allCitiesWithinNaturalSpreadRange) {
