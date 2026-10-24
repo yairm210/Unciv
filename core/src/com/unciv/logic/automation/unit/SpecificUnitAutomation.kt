@@ -22,12 +22,12 @@ import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
 
-    fun automateGreatGeneral(unit: MapUnit): Boolean {
+    fun automateGreatGeneral(unitView: MapUnitView): Boolean {
         //try to follow nearby units. Do not garrison in city if possible
-        val maxAffectedTroopsTile = getBestAffectedTroopsTile(unit)
+        val maxAffectedTroopsTile = getBestAffectedTroopsTile(unitView)
             ?: return false
 
-        unit.movement.headTowards(maxAffectedTroopsTile)
+        unitView.tryHeadTowards(maxAffectedTroopsTile)
         return true
     }
 
@@ -35,28 +35,30 @@ object SpecificUnitAutomation {
      * Find a tile for accompanying a military unit where the total bonus for all affected units is maximized.
      */
     @Readonly
-    private fun getBestAffectedTroopsTile(general: MapUnit): Tile? {
+    private fun getBestAffectedTroopsTile(general: MapUnitView): TileView? {
         // Normally we have only one Unique here. But a mix is not forbidden,
         // (imagine several GreatGeneralAura uniques - +50% at radius 1, +25% at radius 2, +5% at radius 3 - possibly learnable from promotions via buildings or natural wonders?)
         // However, rang-1 generals are difficult to use fully without getting it killed, so it's probably best placed to support 2nd and 3rd row ranged units
         // a 3 or more range generals are less sensitive to positioning, and thus probably suffice with 2-range general logic
 
-        val  militaryUnitTilesInDistance = general.movement.getDistanceToTiles().asSequence()
-            .map { it.key }
+        val civ = general.civ()
+        val militaryUnitTilesInDistance = general.getDistanceToTiles().keys
             .filter { tile ->
-                val militaryUnit = tile.militaryUnit
-                militaryUnit != null && militaryUnit.civ == general.civ
+                tile.militaryUnit?.civ() == civ
                     && (tile.civilianUnit == null || tile.civilianUnit == general)
             }
 
-        val closestReachableEnemyCity = HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority(GameView(general.civ.gameInfo, general.civ).getMapUnitView(general))
-            .firstOrNull { general.movement.canReach(it.getCenterTile()) } 
+        // Temporary bridge: getEnemyCitiesByPriority still returns raw cities
+        val closestReachableEnemyCityTile = HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority(general)
+            .map { general.getTile().getTileMap().getTile(it.getCenterTile()) }
+            .firstOrNull { general.canReach(it) }
         // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 
         val militaryUnitTile = militaryUnitTilesInDistance.maxByOrNull { unitTile ->
-            (2 * unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ == general.civ }
-                - unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ != general.civ }
-                - if (closestReachableEnemyCity != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCity.getCenterTile()) else 0)
+            val nearbyTiles = unitTile.getExploredTilesInDistance(2).toList()
+            (2 * nearbyTiles.count { it.militaryUnit?.civ() == civ }
+                - nearbyTiles.count { it.militaryUnit?.civ() != civ }
+                - if (closestReachableEnemyCityTile != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCityTile) else 0)
             // Scoring here is found to help AI defeat former AI,
             // a more robust scoring may be necessary to avoid leaving generals en-prise,
             // and improve handling of multiple generals, e.g. use one to support bomber stacks and the other for frontline troops.
@@ -295,34 +297,30 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in conducting the trade mission. A return value of
      * `false` can be interpreted as: the unit doesn't know where to go or there are no city
      * states. */
-    fun conductTradeMission(unit: MapUnit): Boolean {
-        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
-        if (conductedTradeMission) return true
-        
-        val relevantTiles = 
-                unit.civ.gameInfo.civilizations
-                    .filter {
-                        it != unit.civ
-                            && !unit.civ.isAtWarWith(it)
-                            && it.isCityState
-                            && it.cities.isNotEmpty()
-                    }
-                    .flatMap { it.cities[0].getTiles() }
-                    .filter { unit.civ.hasExplored(it) }
-                    .sortedBy { unit.currentTile.aerialDistanceTo(it) }
+    fun conductTradeMission(unitView: MapUnitView): Boolean {
+        if (unitView.tryInvokeUnitAction(UnitActionType.ConductTradeMission)) return true
+
+        val civ = unitView.civ()
+        val unitTile = unitView.getTile()
+        val relevantTiles = civ.getKnownCivs().asSequence()
+            .filter { it.isCityState && !it.isAtWarWith(civ) }
+            .mapNotNull { it.cities().firstOrNull() }
+            .flatMap { it.getTiles() }
+            .filter { it.isExplored() }
+            .sortedBy { unitTile.aerialDistanceTo(it) }
+            .toList()
 
         val closestCityStateTile = relevantTiles.firstOrNull { tile ->
-            if (!unit.movement.canPassThrough(tile)) return@firstOrNull false
-            val path = unit.movement.getShortestPath(tile)
+            if (!unitView.canPassThrough(tile)) return@firstOrNull false
+            val path = unitView.getShortestPath(tile)
             // 0 is unreachable, 10 is too far away
             path.size in 1..10
         }
         if (closestCityStateTile == null) return false
 
-        val unitTileBeforeMovement = unit.currentTile
-        unit.movement.headTowards(closestCityStateTile)
+        unitView.tryHeadTowards(closestCityStateTile)
 
-        return unitTileBeforeMovement != unit.currentTile
+        return unitTile != unitView.getTile()
     }
 
     /**
@@ -367,7 +365,7 @@ object SpecificUnitAutomation {
         return city.cityConstructions.getBuildableBuildings().filter { building ->
             building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
                     && city.cityConstructions.turnsToConstruction(building.name) >= 5
-        }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
+        }.minByOrNull { -city.cityConstructions.getRemainingWork(it.name) }
     }
 
     fun automateAddInCapital(unit: MapUnitView) {

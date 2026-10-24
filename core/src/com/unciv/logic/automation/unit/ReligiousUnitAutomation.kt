@@ -2,6 +2,7 @@ package com.unciv.logic.automation.unit
 
 import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
+import com.unciv.view.ForeignCityView
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
@@ -15,64 +16,76 @@ import yairm210.purity.annotations.Readonly
 object ReligiousUnitAutomation {
 
     fun automateMissionary(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
         if (unitView.religion != unitView.civ().getReligion()?.name || unitView.religion == null) {
             unitView.tryDisband()
             return
         }
 
-        val ourCitiesWithoutReligion = unit.civ.cities.filter {
-            it.religion.getMajorityReligion() != unitView.civ().getReligion()
-        }
-        
+        val civ = unitView.civ()
+        val ourCitiesWithoutReligion = civ.cities().filter { it.getMajorityReligion() != civ.getReligion() }
+
         @Readonly
-        fun isValidSpreadReligionTarget(city: City): Boolean {
-            val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
+        fun isValidSpreadReligionTarget(city: ForeignCityView): Boolean {
+            val diplomacyManager = civ.getDiplomacyManagerWith(city.owningCiv())
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
                 // See NextTurnAutomation - these are the conditions under which AI agrees to religious demands
                 // If they still hold, keep the agreement, otherwise we can renege
                 if (diplomacyManager.relationshipLevel() == RelationshipLevel.Ally) return false
-                if (Automation.threatAssessment(unitView.civ(), GameView(unit.civ.gameInfo, unit.civ).getForeignCivView(city.civ)) >= ThreatLevel.High) return false
+                if (Automation.threatAssessment(civ, city.owningCiv()) >= ThreatLevel.High) return false
             }
             return true
         }
 
         /** Lowest value will be chosen */
         @Readonly
-        fun rankCityForReligionSpread(city: City): Int {
-            var rank = city.getCenterTile().aerialDistanceTo(unit.getTile())
-            
-            val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
+        fun rankCityForReligionSpread(city: ForeignCityView): Int {
+            var rank = city.getCenterTile().aerialDistanceTo(unitView.getTile())
+
+            val diplomacyManager = civ.getDiplomacyManagerWith(city.owningCiv())
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
                 rank += 10 // Greatly discourage, but if the other options are too far away we'll take it anyway
             }
-                
+
             return rank
         }
-        
-        
-        val city =
+
+
+        val city: ForeignCityView? =
             if (ourCitiesWithoutReligion.any())
-                ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            else unit.civ.gameInfo.getCities()
-                .filter { it.religion.getMajorityReligion() != unitView.civ().getReligion() }
-                .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
-                .filterNot { it.religion.isProtectedByInquisitor(unitView.religion) }
+                ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unitView.getTile()) }
+            else civ.getKnownCivs().asSequence()
+                .filterNot { it.isAtWarWith(civ) }
+                .flatMap { it.cities() }
+                .filter { it.getMajorityReligion() != civ.getReligion() }
+                .filterNot { isProbablyProtectedByInquisitor(it, unitView.religion) }
                 .filter { isValidSpreadReligionTarget(it) }
                 .minByOrNull { rankCityForReligionSpread(it) }
 
         if (city == null) return
+        val unitTile = unitView.getTile()
         val destination = city.getTiles()
-            .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
-            .sortedBy { it.aerialDistanceTo(unit.getTile()) }
-            .firstOrNull { unit.movement.canReach(it) } ?: return
+            .filter { unitView.canMoveTo(it) || it == unitTile }
+            .sortedBy { it.aerialDistanceTo(unitTile) }
+            .firstOrNull { unitView.canReach(it) } ?: return
 
-        unit.movement.headTowards(destination)
+        unitView.tryHeadTowards(destination)
 
-        if (unit.getTile() in city.getTiles() && unit.civ.religionManager.maySpreadReligionNow(unit)) {
+        // The action is only enabled if the unit may spread religion in the city it's standing in
+        if (unitView.getTile() in city.getTiles()) {
             unitView.tryInvokeUnitAction(UnitActionType.SpreadReligion)
         }
     }
+
+    /** Estimate of [com.unciv.logic.city.managers.CityReligionManager.isProtectedByInquisitor] using data available */
+    @Readonly
+    private fun isProbablyProtectedByInquisitor(city: ForeignCityView, fromReligion: String?): Boolean =
+        city.getCenterTile().getExploredTilesInDistance(1)
+            .flatMap { tile -> tile.getVisibleUnits() }
+            .any { unit ->
+                unit.religion != null
+                    && (fromReligion == null || unit.religion != fromReligion)
+                    && unit.hasUnique(UniqueType.PreventSpreadingReligion)
+            }
 
     fun automateInquisitor(unitView: MapUnitView) {
         val unit = unitView.getUnit()

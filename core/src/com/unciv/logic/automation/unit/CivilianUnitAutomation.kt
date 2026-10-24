@@ -94,7 +94,7 @@ object CivilianUnitAutomation {
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two
         if (unit.hasStrengthBonusInRadiusUnique()
-            && SpecificUnitAutomation.automateGreatGeneral(mapUnit))
+            && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
         if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(mapUnit))
             return
@@ -127,7 +127,7 @@ object CivilianUnitAutomation {
             && isLateGame
         ) {
             val tradeMissionCanBeConductedEventually =
-                SpecificUnitAutomation.conductTradeMission(mapUnit)
+                SpecificUnitAutomation.conductTradeMission(unit)
             if (tradeMissionCanBeConductedEventually)
                 return
         }

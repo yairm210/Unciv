@@ -48,7 +48,6 @@ class CityView(city: City,
     // Data retrieval
     @Readonly fun isInRange(tileView: TileView): Boolean = tileView.unwrap() in city.tilesInRange
 
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
     @Deprecated("Scheduled for removal")
     @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 

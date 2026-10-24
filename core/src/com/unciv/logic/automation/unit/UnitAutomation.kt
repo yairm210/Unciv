@@ -36,6 +36,8 @@ import com.unciv.view.ForeignCityView
 import com.unciv.view.isAtWar
 import com.unciv.view.stateBasedRandom
 import com.unciv.view.MapUnitView
+import com.unciv.view.CityView
+import com.unciv.view.MapUnitCombatantView
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -578,21 +580,16 @@ object UnitAutomation {
         return true
     }
 
-    fun tryBombardEnemy(city: City): Boolean {
+    fun tryBombardEnemy(city: CityView): Boolean {
         if (!city.canBombard()) return false
-        val enemy = chooseBombardTarget(city)
-            ?: return false
-        Battle.attack(CityCombatant(city), enemy)
-        return true
-    }
-
-    @Readonly
-    private fun chooseBombardTarget(city: City): ICombatant? {
-        val targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
-            .filterNot { it is MapUnitCombatant && it.isCivilian() }
+        val cityCombatant = city.asCombatant()
+        val targets = city.getBombardableTiles().mapNotNull { it.getCombatant() }
             // Don't bombard civilians (they're more efficiently captured/killed by military units if they're indeed this close)
-        if (targets.none()) return null
-        return targets.maxByOrNull { BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }
+            .filterNot { it is MapUnitCombatantView && it.getUnitView().isCivilian() }
+        val target = targets.maxByOrNull { cityCombatant.calculateDamageToDefender(it) }
+            ?: return false
+        city.tryBombard(cityCombatant.buildBombardAttackableTile(target.getTile(), target))
+        return true
     }
 
     private fun tryTakeBackCapturedCity(unitView: MapUnitView): Boolean {

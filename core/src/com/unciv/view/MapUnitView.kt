@@ -93,6 +93,7 @@ class MapUnitView internal constructor(
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
         unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
+    @Readonly fun canPassThrough(tileView: TileView): Boolean = unit.movement.canPassThrough(tileView.unwrap())
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
