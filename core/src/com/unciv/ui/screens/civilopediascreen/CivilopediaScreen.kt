@@ -217,10 +217,8 @@ class CivilopediaScreen private constructor(
             // Generic open (e.g. keyboard shortcut, menu button) - resume where we left off
             val resume = CivilopediaHistory.current()
             if (resume != null && navigateToHistoryEntry(resume)) return
-            if (CivilopediaHistory.hasBack(::isValidHistoryEntry)) {
-                CivilopediaHistory.back(::isValidHistoryEntry) { navigateToHistoryEntry(it) }
+            if (CivilopediaHistory.back(::isValidHistoryEntry) { navigateToHistoryEntry(it) })
                 return
-            }
             if (category == CivilopediaCategories.Tutorial) chooseDefaultTutorial() else ""
         }
         navigateTo(category, entry, 0f, updateHistory = true)
