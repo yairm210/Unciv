@@ -424,6 +424,7 @@ enum class UniqueType(
 
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
+    PreventNaturalReligionSpread("Prevents natural spreading of religion to the city it is next to", UniqueTarget.Unit),
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
     MayParadrop("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
