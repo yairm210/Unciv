@@ -284,8 +284,13 @@ fun Image.setSize(size: Float) {
 }
 
 /** Proxy for [ScrollPane.scrollTo] using the [bounds][Actor.setBounds] of a given [actor] for its parameters */
-fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) =
-    scrollTo(actor.x, actor.y, actor.width, actor.height, center, center)
+fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) {
+    if (!center)
+        return scrollTo(actor.x, actor.y, actor.width, actor.height, false, false)
+    // According to @Kilo-cy, the logical call to pass the centering to the method
+    // suffers a regression in Gdx 1.14.2 which deplaces the actor by its height upwards
+    scrollTo(actor.x + actor.width / 2, actor.y + actor.height / 2, 0f, 0f, true, true)
+}
 
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
