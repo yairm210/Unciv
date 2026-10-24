@@ -1,0 +1,32 @@
+package com.unciv.ui.screens.worldscreen.status
+
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.popups.AnimatedMenuPopup
+import com.unciv.ui.screens.worldscreen.WorldScreen
+
+class NextTurnMenu(
+    stage: Stage,
+    nextTurnButton: NextTurnButton,
+    private val worldScreen: WorldScreen
+) : AnimatedMenuPopup(stage, nextTurnButton) {
+
+    init {
+        // We need to activate the end turn button again after the menu closes
+        afterCloseCallback = { worldScreen.shouldUpdate = true }
+    }
+
+    override fun createContentTable(): Table {
+        val table = super.createContentTable()!!
+        table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) {
+            worldScreen.nextTurn()
+        }).row()
+        if (NextTurnAction.MoveAutomatedUnits.isChoice(worldScreen))
+            table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) {
+                NextTurnAction.MoveAutomatedUnits.action(worldScreen)
+            }).row()
+        return table
+    }
+}

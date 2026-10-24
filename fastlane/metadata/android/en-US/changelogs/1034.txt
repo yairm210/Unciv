@@ -1,0 +1,13 @@
+Modding:
+- More unit uniques applicable globally
+- Recognize Tutorials.json file in ruleset validation
+
+"Unavailable" promotions are unavailable in UI as well
+
+Can go to war with no warmongering penalties if allied or protected city-states have been attacked
+
+City states no longer gift units that push us over resource limits 
+
+Allow unitset and tileset overrides for base ruleset mods
+
+Enhance modding freedom for Natural Wonders  - By SomeTroglodyte

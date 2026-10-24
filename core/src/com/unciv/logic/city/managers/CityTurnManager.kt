@@ -1,0 +1,202 @@
+package com.unciv.logic.city.managers
+
+import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
+import com.unciv.logic.civilization.CityAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.OverviewAction
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import kotlin.math.roundToInt
+
+class CityTurnManager(val city: City) {
+
+
+    fun startTurn():Unit = timeThis("CityTurnManager.startTurn") {
+        city.clearCaches()
+        
+        for (resource in city.getResourcesGeneratedByCity()) {
+            if (resource.resource.isStockpiled && resource.resource.isCityWide)
+                city.gainStockpiledResource(resource.resource, resource.amount)
+        }
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnStart, includeCivUniques = false).toList()) {
+            UniqueTriggerActivation.triggerUnique(unique, city)
+        }
+
+        // Construct units at the beginning of the turn,
+        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
+        city.cityConstructions.constructIfEnough()
+
+        city.tryUpdateRoadStatus()
+        city.attackedThisTurn = false
+
+        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
+        // Also resolve end of resistance before updateCitizens
+        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+            tryWeLoveTheKing()
+        nextTurnFlags()
+
+        if (city.isPuppet) {
+            city.setCityFocus(CityFocus.GoldFocus)
+            city.reassignAllPopulation()
+        } else if (city.shouldReassignPopulation || city.civ.isAI()) {
+            if (city.civ.isAI())
+                city.setCityFocus(chooseCityFocus())
+            city.reassignPopulation()  // includes cityStats.update
+        } else
+            city.cityStats.update()
+
+        // Seed resource demand countdown
+        if (city.demandedResource == "" && !city.hasFlag(CityFlags.ResourceDemand)) {
+            setWltkResourceDemandCooldown(true)
+        }
+    }
+    
+    private fun chooseCityFocus(): CityFocus {
+        // Small cities focus on growing, following Vox Populi.
+        if (city.population.population <= 3) return CityFocus.NoFocus
+        val construction = city.cityConstructions.getCurrentConstruction()
+        // Focus citizens on production while the city builds a world wonder or spaceship part.
+        if (construction is Building && construction.isWonder) return CityFocus.ProductionFocus
+        if (construction is INonPerpetualConstruction && construction.hasUnique(UniqueType.SpaceshipPart))
+            return CityFocus.ProductionFocus
+        return CityFocus.NoFocus
+    }
+
+    private fun setWltkResourceDemandCooldown(isNewCity: Boolean) {
+        val rng = city.state.stateBasedRandom("CityTurnManager.setWltkResourceDemandCooldown")
+        // Demand a new resource in ~20 turns on Standard speed
+        var duration = 15 + rng.nextInt(10)
+        if (isNewCity && city.isCapital())
+            duration += 10
+        city.setFlag(CityFlags.ResourceDemand, duration, true)
+    }
+
+    private fun tryWeLoveTheKing() {
+        if (city.demandedResource == "") return
+        if (city.getAvailableResourceAmount(city.demandedResource) <= 0) return
+
+        // manually adjust with game speed because of the +1 at the end
+        val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
+        city.setFlag(CityFlags.WeLoveTheKing, duration)
+        // Otherwise ResourceDemand can expire mid-celebration, rewrite demandedResource,
+        // and the Resources overview mislabels the active WLTKD (celebration is flag-based).
+        city.removeFlag(CityFlags.ResourceDemand)
+        city.civ.addNotification(
+            "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
+            CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
+    }
+
+    // cf DiplomacyManager nextTurnFlags
+    private fun nextTurnFlags() {
+        for (flag in city.flagsCountdown.keys.toList()) {
+            if (city.flagsCountdown[flag]!! > 0)
+                city.flagsCountdown[flag] = city.flagsCountdown[flag]!! - 1
+
+            if (city.flagsCountdown[flag] == 0) {
+                city.flagsCountdown.remove(flag)
+
+                when (flag) {
+                    CityFlags.ResourceDemand.name -> {
+                        // WLTKD end already demands the next resource; demanding while celebrating
+                        // overwrites demandedResource and mislabels the active celebration in the UI
+                        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+                            demandNewResource()
+                    }
+                    CityFlags.WeLoveTheKing.name -> {
+                        city.civ.addNotification(
+                            "We Love The King Day in [${city.name}] has ended.",
+                            CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City)
+                        demandNewResource()
+                    }
+                    CityFlags.Resistance.name -> {
+                        city.shouldReassignPopulation = true
+                        city.civ.addNotification(
+                            "The resistance in [${city.name}] has ended!",
+                            CityAction.withLocation(city), NotificationCategory.General, "StatIcons/Resistance")
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun demandNewResource() {
+        val rng = city.state.stateBasedRandom("CityTurnManager.demandNewResource")
+        val candidates = city.getRuleset().tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury && // Must be luxury
+                    !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
+                    it.name != city.demandedResource && // Not same as last time
+                    it in city.tileMap.resourceObjects && // Must exist somewhere on the map
+                    city.getCenterTile().getTilesInDistance(city.getWorkRange()).none { nearTile -> nearTile.tileResource == it } // Not in this city's radius
+        }
+        val missingResources = candidates.filter { !city.civ.hasResource(it) }
+        
+        if (missingResources.isEmpty()) { // hooray happpy day forever!
+            city.demandedResource = candidates.randomOrNull(rng)?.name ?: ""
+            return // actually triggering "wtlk" is done in tryWeLoveTheKing(), *next turn*
+        }
+
+        val chosenResource = missingResources.randomOrNull(rng)
+        
+        city.demandedResource = chosenResource?.name ?: "" // mods may have no resources as candidates even
+        setWltkResourceDemandCooldown(false)
+        
+        if (city.demandedResource != "") // Failed to get a valid resource, try again some time later
+            city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
+                listOf(LocationAction(city.location), OverviewAction(EmpireOverviewCategories.Resources)),
+                NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
+    }
+
+
+    fun endTurn():Unit = timeThis("CityTurnManager.endTurn") {
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
+            UniqueTriggerActivation.triggerUnique(unique, city)
+        }
+        val stats = city.cityStats.currentCityStats
+
+        city.cityConstructions.endTurn(stats)
+        city.expansion.nextTurn(stats.culture)
+        if (city.isBeingRazed) {
+            var removedPopulation = 1
+            city.civ.forEachMatchingUnique(UniqueType.CitiesAreRazedXTimesFaster) {
+                removedPopulation += it.params[0].toInt() - 1
+            }
+
+            if (city.population.population <= removedPopulation) {
+                city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
+                city.civ.addNotification(
+                    "[${city.name}] has been razed to the ground!",
+                    city.location, NotificationCategory.General,
+                    "OtherIcons/Fire"
+                )
+                city.destroyCity()
+            } else { //if not razed yet:
+                city.population.addPopulation(-removedPopulation)
+                if (city.population.foodStored >= city.population.getFoodToNextPopulation()) { //if surplus in the granary...
+                    city.population.foodStored =
+                            city.population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
+                }
+            }
+        } else city.population.nextTurn(city.foodForNextTurn())
+
+        // This should go after the population change, as that might impact the amount of followers in this city
+        if (city.civ.gameInfo.isReligionEnabled()) city.religion.endTurn()
+
+        if (city in city.civ.cities) { // city was not destroyed
+            city.health = (city.health + 20).coerceAtMost(city.getMaxHealth())
+            city.population.unassignExtraPopulation()
+        }
+        
+        city.clearCaches()
+    }
+
+}

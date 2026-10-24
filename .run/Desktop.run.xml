@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Desktop" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.unciv.app.desktop.DesktopLauncher" />
+    <module name="unciv.desktop.main" />
+    <option name="VM_PARAMETERS" value="-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/android/assets" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

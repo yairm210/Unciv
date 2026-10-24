@@ -1,0 +1,32 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/UnitTypes.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unit Types",
+  "description": "A list of unit types, including their movement type and associated uniques.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the unit type.",
+        "examples": ["Civilian", "Archery", "Mounted", "Armored", "Siege"]
+      },
+      "movementType": {
+        "enum": ["Land", "Water", "Air"],
+        "default": "Land",
+        "title": "Movement Type",
+        "description": "How the unit should traverse through the world."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name", "movementType"],
+    "additionalProperties": false
+  }
+}

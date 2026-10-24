@@ -1,0 +1,9 @@
+Fixed white blocks on new game from new game screen
+
+Added stat categories for buildings in the construction list
+
+Spy randomness is different for different spies in same city
+
+Resize map with drag gesture - By sulai
+
+Add info about adding project - By itanasi

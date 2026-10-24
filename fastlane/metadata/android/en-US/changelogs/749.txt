@@ -1,0 +1,17 @@
+By JackRainy:
+- Suggest to adopt policy when the game starts with some culture
+
+Removed legacy tileset code  - By GGGuenni
+
+Improved options to rename units  - By huckdogg
+
+By xlenstra:
+- Fixed a crash when marrying a city-state without cities
+
+By Ouaz:
+- Translation and Tutorial improvements
+- Add an icon for "Wait" unit action
+
+Notificiations scroll fix in empire overview  - By MindaugasRumsa51
+
+Fix infinite city-state tribute bug  - By OptimizedForDensity

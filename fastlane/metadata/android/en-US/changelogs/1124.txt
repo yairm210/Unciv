@@ -1,0 +1,18 @@
+Unit triggerables with triggers, no longer trigger on new units
+
+Clicking on statuses opens promotion screen
+
+AI: 
+- City states disband great prophets
+- Don't offer peace when we're just about to take a city
+
+Multiplayer:
+- Better, less buggy resign/skip
+
+Modding:
+- Fix global unique validation
+- Validation catches 'global triggers attached to unit triggerables', which will have no effect
+
+By SomeTroglodyte:
+- Fix Resources Overview to work as intended 
+- Add an 'XP' column to Units Overview

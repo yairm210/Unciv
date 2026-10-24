@@ -1,0 +1,15 @@
+[{
+    // This tells Android OS that the "com.unciv" apk that is signed with this certifcate is allowed
+    // to intercept "https://yairm210.github.io/Unciv/..." links from any Android app. Only the release
+    // (Play Store) Unciv has the right certificate. Android OS will not allow debug/dev binaries to
+    // intercept the links because they don't have the right certificate.
+    // https://developer.android.com/training/app-links/about has details
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": { 
+        "namespace": "android_app",
+        "package_name": "com.unciv",
+        "sha256_cert_fingerprints": [
+            "32:57:D5:99:A4:9D:2C:96:1A:47:1C:A9:84:3F:59:D3:41:A4:05:88:45:83:FC:08:7D:F4:23:7B:73:3B:BD:6D"
+        ]
+    }
+}]

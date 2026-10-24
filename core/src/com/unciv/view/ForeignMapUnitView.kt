@@ -1,0 +1,64 @@
+package com.unciv.view
+
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import yairm210.purity.annotations.Readonly
+
+/** Should contain information that should be knowable to us about foreign units. Superclass of [MapUnitView]. */
+open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : OwnedView<MapUnit>(unit, viewer, spectatorMode, gameView) {
+    @Readonly internal override fun owner(): Civilization = unit.civ
+
+    val name: String get() = unit.name
+    val civName: String get() = unit.civ.civName
+    val unitHealth: Int get() = unit.health
+    val religiousStrengthLost: Int get() = unit.religiousStrengthLost
+    val religion: String? get() = unit.religion
+    val id: Int get() = unit.id
+    val instanceName: String? get() = unit.instanceName
+    val currentMovement: Float get() = unit.currentMovement
+    val attacksThisTurn: Int get() = unit.attacksThisTurn
+
+    // Navigation
+    @Deprecated("Scheduled for removal - views should unwrap() instead")
+    @Readonly fun getUnit(): MapUnit = unit
+    @Readonly open fun civ(): ForeignCivView = gameView.getForeignCivView(unit.civ)
+    /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */
+    @Readonly fun tryGetMapUnitView(): MapUnitView? {
+        if (unit.civ != viewer && !viewer.isSpectator()) return null
+        return gameView.getMapUnitView(unit)
+    }
+    @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
+    /** Wraps [unit] as a [MapUnitCombatantView] for battle purposes. */
+    @Readonly fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(this, unit, viewer, spectatorMode, gameView)
+
+    // Data retrieval
+    @Readonly fun canAttack(): Boolean = unit.canAttack()
+    @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
+    @Readonly fun displayName(): String = unit.displayName()
+    @Readonly fun isTransportTypeOf(other: ForeignMapUnitView): Boolean = unit.isTransportTypeOf(other.unit)
+    @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
+    @Readonly fun getRange(): Int = unit.getRange()
+    @Readonly fun getMaxMovement(): Int = unit.getMaxMovement()
+    @Readonly fun getInterceptionRange(): Int = unit.getInterceptionRange()
+    @Readonly fun getStatusMap() = unit.statusMap
+    @Readonly fun getMovementMemories() = unit.movementMemories
+    @Readonly fun getMostRecentMoveType() = unit.mostRecentMoveType
+    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
+    @Readonly fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> = unit.getMatchingUniques(uniqueType)
+    @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
+        unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
+
+    // Rendering (icons/flags) - visible regardless of whether [unit] is ours
+    @Readonly fun isIdle(): Boolean = unit.isIdle()
+    @Readonly fun isFortified(): Boolean = unit.isFortified()
+    @Readonly fun isGuarding(): Boolean = unit.isGuarding()
+}
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun ForeignMapUnitView.isAirUnit(): Boolean = getBaseUnit().isAirUnit()
+@Readonly fun ForeignMapUnitView.isCivilian(): Boolean = getBaseUnit().isCivilian()
+@Readonly fun ForeignMapUnitView.isMilitary(): Boolean = getBaseUnit().isMilitary
+@Readonly fun ForeignMapUnitView.hasMovement(): Boolean = currentMovement > 0

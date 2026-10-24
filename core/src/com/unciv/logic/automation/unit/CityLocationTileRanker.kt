@@ -1,0 +1,227 @@
+package com.unciv.logic.automation.unit
+
+import com.unciv.view.GameView
+import com.unciv.Constants
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.Readonly
+
+object CityLocationTileRanker {
+
+    class BestTilesToFoundCity {
+        var tileRankMap: HashMap<Tile, Float> = HashMap()
+        var bestTile: Tile? = null
+        var bestTileRank: Float = 0f
+    }
+
+    /**
+     * Returns a hashmap of tiles to their ranking plus the a the highest value tile and its value
+     */
+    fun getBestTilesToFoundCity(unit: MapUnit, distanceToSearch: Int? = null, minimumValue: Float): BestTilesToFoundCity {
+        val distanceModifier = 3f // percentage penalty per aerial distance from unit (Settler)
+        val range = if (distanceToSearch != null) distanceToSearch else {
+            val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
+            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+            (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
+        }
+        val nearbyCities = unit.civ.gameInfo.getCities()
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 7 + range }
+
+        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
+        val possibleCityLocations = unit.getTile().getTilesInDistance(range)
+            // Filter out tiles that we can't actually found on
+            .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
+            .filter { unit.civ.hasExplored(it) }
+            .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
+        val bestTilesToFoundCity = BestTilesToFoundCity()
+        val baseTileMap = HashMap<Tile, Float>()
+
+        // Assume unexplored tiles are worth the average of the explored tiles around us
+        val throwawayLuxuries = HashSet<TileResource>()
+        // onCoast doesn't matter here, it does not change baseTileMap
+        unit.getTile().forEachTileInDistance(range + 2) { tile ->
+            if (unit.civ.hasExplored(tile)) rankTile(tile, unit.civ, false, throwawayLuxuries, baseTileMap, 0f)
+        }
+        val unexploredTilePrior = if (baseTileMap.isEmpty()) 0f else baseTileMap.values.average().toFloat()
+
+        val possibleTileLocationsWithRank = possibleCityLocations
+            .map {
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, unexploredTilePrior)
+                val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
+                tileValue *= (100 - distanceScore) / 100
+                if (tileValue >= minimumValue)
+                    bestTilesToFoundCity.tileRankMap[it] = tileValue
+
+                Pair(it, tileValue)
+            }.filter { it.second >= minimumValue }
+            .sortedByDescending { it.second }
+
+        val bestReachableTile = possibleTileLocationsWithRank.firstOrNull { unit.movement.canReach(it.first) }
+        if (bestReachableTile != null){
+            bestTilesToFoundCity.bestTile = bestReachableTile.first
+            bestTilesToFoundCity.bestTileRank = bestReachableTile.second
+        }
+
+        if (DebugUtils.SHOW_SETTLER_SCORES)
+            DebugUtils.SETTLER_SCORES = bestTilesToFoundCity.tileRankMap.entries.associate { it.key.position to it.value }
+
+        return bestTilesToFoundCity
+    }
+
+    @Readonly
+    private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
+        val modConstants = civ.gameInfo.ruleset.modOptions.constants
+        if (!tile.isLand || tile.isImpassible()) return false
+        if (tile.getOwner() != null && tile.getOwner() != civ) return false
+        for (city in nearbyCities) {
+            val distance = city.getCenterTile().aerialDistanceTo(tile)
+            // todo: AgreedToNotSettleNearUs is hardcoded for now but it may be better to softcode it below in getDistanceToCityModifier
+            if (distance <= 6 && civ.knows(city.civ)
+                && !civ.isAtWarWith(city.civ)
+                // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                && city.civ.getDiplomacyManager(civ)!!
+                    .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
+                return false
+            if (tile.getContinent() == city.getCenterTile().getContinent()) {
+                if (distance <= modConstants.minimalCityDistance) return false
+            } else {
+                if (distance <= modConstants.minimalCityDistanceOnDifferentContinents) return false
+            }
+        }
+        return true
+    }
+
+    private fun rankTileToSettle(newCityTile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
+                                 baseTileMap: HashMap<Tile, Float>, unexploredTilePrior: Float = 0f): Float {
+        var tileValue = 0f
+        tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
+
+        val onCoast = newCityTile.isAdjacentToCoast()
+        val onHill = newCityTile.isHill()
+        val isNextToMountain = newCityTile.isAdjacentTo(Constants.mountain)
+        val unImprovable = newCityTile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements)
+            .any { it.params[0] == Constants.allRoad }
+
+        // Only count a luxury resource that we don't have yet as unique once
+        val newUniqueLuxuryResources = HashSet<TileResource>()
+
+        if (onCoast) tileValue += 3
+        // Hills are free production and defence
+        if (onHill) tileValue += 14
+        // Observatories are good, but current implementation not mod-friendly
+        if (isNextToMountain) tileValue += 5
+        // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
+        if (newCityTile.isAdjacentToRiver()) tileValue += 20
+        // We want to found the city on an oasis because it can't be improved otherwise
+        if (unImprovable) tileValue += 3
+
+        val resource = newCityTile.tileResource
+        if (civ.canSeeResource(resource)) {
+            tileValue -= 4
+            // Settling on bonus resources tends to waste a food
+            if (resource.resourceType == ResourceType.Bonus) tileValue -= 8
+            // Build on jungle luxuries for tempo
+            if (resource.resourceType == ResourceType.Luxury &&
+                newCityTile.lastTerrain.hasUnique(UniqueType.Vegetation) &&
+                !newCityTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)
+                ) tileValue += 10
+        }
+
+        var tiles = 0
+        for (i in 0..2) {
+            //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
+            newCityTile.forEachTileAtDistance(i) { nearbyTile ->
+                tiles++
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, unexploredTilePrior) * (3f / (i + 1))
+                //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
+            }
+        }
+
+        // Placing cities on the edge of the map is bad, we can't even build improvements on them!
+        tileValue -= (HexMath.getNumberOfTilesInHexagon(2) - tiles) * 2.4f
+        return tileValue
+    }
+
+    @Readonly
+    private fun getDistanceToCityModifier(newCityTile: Tile,nearbyCities: Sequence<City>, civ: Civilization): Float {
+        var modifier = 0f
+        for (city in nearbyCities) {
+            val distanceToCity = newCityTile.aerialDistanceTo(city.getCenterTile())
+            var distanceToCityModifier = when {
+                // NOTE: the line it.getCenterTile().aerialDistanceTo(unit.getTile()) <= X + range
+                // above MUST have the constant X that is added to the range be higher or equal to the highest distance here + 1
+                // If it is not higher the settler may get stuck when it ranks the same tile differently
+                // as it moves away from the city and doesn't include it in the calculation
+                // and values it higher than when it moves closer to the city
+                distanceToCity == 7 -> 2f
+                distanceToCity == 6 -> 4f
+                distanceToCity == 5 -> 8f // Settling further away sacrifices tempo
+                distanceToCity == 4 -> 6f
+                distanceToCity == 3 -> -25f
+                distanceToCity < 3 -> -30f // Even if it is a mod that lets us settle closer, lets still not do it
+                else -> 0f
+            }
+            // We want a defensive ring around our capital
+             if (city.civ == civ) { 
+                distanceToCityModifier *= if (city.isCapital()) 2 else 1
+                modifier += distanceToCityModifier
+            }
+        }
+        return modifier
+    }
+
+    private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<TileResource>,
+                         baseTileMap: HashMap<Tile, Float>, unexploredTilePrior: Float = 0f): Float {
+        // Unexplored tiles are unknown - estimate them as an average tile instead of reading the actual map
+        if (!civ.hasExplored(rankTile)) return unexploredTilePrior
+        if (rankTile.getCity() != null) return -1f
+        var locationSpecificTileValue = 0f
+        // Don't settle near but not on the coast
+        if (rankTile.isWater && !onCoast) locationSpecificTileValue -= 1
+        // Check if there are any new unique luxury resources
+        val resource = rankTile.tileResource
+        if (civ.canSeeResource(resource) &&
+            resource.resourceType == ResourceType.Luxury &&
+            !civ.hasResource(resource) &&
+            !newUniqueLuxuryResources.contains(resource)
+        ) {
+            locationSpecificTileValue += 10
+            newUniqueLuxuryResources.add(resource)
+        }
+
+        // Check if everything else has been calculated, if so return it
+        if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
+        if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
+
+        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ), GameView(civ.gameInfo, civ).civView)
+
+        if (civ.canSeeResource(resource)) {
+            rankTileValue += when (resource.resourceType) {
+                ResourceType.Bonus -> 1f
+                ResourceType.Strategic -> 2f
+                ResourceType.Luxury -> 10f //very important for humans who might want to conquer the AI
+            }
+        }
+        if (rankTile.terrainHasUnique(UniqueType.FreshWater)) rankTileValue += 0.5f 
+        //Taking into account freshwater farm food, maybe less important in baseruleset mods
+        if (rankTile.terrainFeatures.isNotEmpty() && rankTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) rankTileValue += 0.7f
+        //Taking into account yields from forest chopping
+
+        if (rankTile.isNaturalWonder()) rankTileValue += 4
+
+        baseTileMap[rankTile] = rankTileValue
+
+        return rankTileValue + locationSpecificTileValue
+    }
+
+}

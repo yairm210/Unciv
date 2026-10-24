@@ -1,0 +1,13 @@
+AI battle automation vastly improved for taking over cities
+
+AI automation: Don't nuke cities that we're already winning against
+
+By vegeta1k95:
+- Rework of TileGroup: split into dedicated layers, initial preparation for slot-mechanics
+- Optimized BorderedTable, refactored CityButton, new air table for units + misc
+
+Better check for inquisitors blocking religion
+
+Modding: Allow unique ruins stat gain notifications
+
+Wonder overview uses viewing civ, not current player

@@ -1,0 +1,113 @@
+package com.unciv.models.ruleset.unique.expressions
+
+import yairm210.purity.annotations.Immutable
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
+import kotlin.math.*
+
+internal sealed interface Operator : Tokenizer.Token {
+    val symbol: String
+
+    // All elements below are not members, they're nested for namespace notation and common visibility
+    // All toString() are for use in exception messages only
+
+    interface Unary : Operator {
+        val implementation: (Double) -> Double
+    }
+
+    interface Binary : Operator {
+        /** Higher numbers are evaluated *first* */
+        val precedence: Int
+        val isLeftAssociative: Boolean
+        val implementation: (Double, Double) -> Double
+    }
+
+    interface UnaryOrBinary : Operator {
+        val unary: Unary
+        val binary: Binary
+    }
+
+    interface Function : Operator {
+        /** Number of arguments the function accepts - can be a range for variadic functions */
+        val arityRange: IntRange
+        val implementation: (List<Double>) -> Double
+    }
+
+    enum class UnaryOperators(
+        override val symbol: String,
+        override val implementation: (Double) -> Double,
+        val description: String
+    ) : Unary {
+        Negation("-", { operand -> -operand }, "negation"),
+        Ciel("√", ::sqrt, "square root"),
+        Abs("abs", ::abs, "absolute value - turns negative into positive"),
+        Sqrt2("sqrt", ::sqrt, "square root"),
+        Floor("floor", ::floor, "round down"),
+        Ceil("ceil", ::ceil, "round up"),
+        ;
+        override fun toString() = symbol
+    }
+
+    enum class BinaryOperators(
+        override val symbol: String,
+        override val precedence: Int,
+        override val isLeftAssociative: Boolean,
+        override val implementation: (Double, Double) -> Double
+    ) : Binary {
+        Addition("+", 2, true, { left, right -> left + right }),
+        Subtraction("-", 2, true, { left, right -> left - right }),
+        Multiplication("*", 3, true, { left, right -> left * right }),
+        Division("/", 3, true, { left, right -> if (right == 0.0) 0.0 else left / right }),
+        Remainder("%", 3, true, { left, right -> ((left % right) + right) % right }), // true modulo, always non-negative
+        Exponent("^", 4, false, { left, right -> left.pow(right) }),
+        ;
+        override fun toString() = symbol
+    }
+
+    enum class UnaryOrBinaryOperators(
+        override val symbol: String,
+        override val unary: Unary,
+        override val binary: Binary
+    ) : UnaryOrBinary {
+        Minus("-", UnaryOperators.Negation, BinaryOperators.Subtraction),
+        ;
+        override fun toString() = symbol
+    }
+
+    enum class Functions(
+        override val symbol: String,
+        override val arityRange: IntRange,
+        override val implementation: (List<Double>) -> Double
+    ) : Function {
+        Max("max", 2..Int.MAX_VALUE, { args -> args.maxOrNull() ?: 0.0 }),
+        Min("min", 2..Int.MAX_VALUE, { args -> args.minOrNull() ?: 0.0 }),
+        ;
+        override fun toString() = symbol
+    }
+
+    enum class NamedConstants(override val symbol: String, override val value: Double) : Node.Constant, Operator {
+        Pi("pi", PI),
+        Pi2("π", PI),
+        Euler("e", E),
+        ;
+        override fun toString() = symbol
+    }
+
+    enum class Parentheses(override val symbol: String) : Operator {
+        Opening("("), Closing(")")
+        ;
+        override fun toString() = symbol
+    }
+
+    companion object {
+        @Readonly private fun allEntries(): Sequence<Operator> =
+            UnaryOperators.entries.asSequence() +
+            BinaryOperators.entries +
+            UnaryOrBinaryOperators.entries + // Will overwrite the previous entries in the map
+            Functions.entries +
+            NamedConstants.entries +
+            Parentheses.entries
+        @Immutable private val cache = allEntries().associateBy { it.symbol }
+        @Pure fun of(symbol: String): Operator? = cache[symbol]
+    }
+}

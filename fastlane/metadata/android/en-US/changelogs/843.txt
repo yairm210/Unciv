@@ -1,0 +1,16 @@
+Battle table bonuses according to tile to attack from
+
+AI cannot buy tiles not contiguous to city
+
+By SomeTroglodyte:
+- Notifications can be hidden
+- "Random Nations" fixes
+- Victory screen reorg/cleanup
+- MapEditor 'pinch zoom' painting fix
+
+By WhoIsJohannes:
+- Victory screen score charts!
+- AI: Don't buy tiles in the very early game.
+- AI: Military production when under stress
+
+AbsoluteUnits - Mandekalu Cavalry, Conquistador, Inquisitor (Post-Industrial)  - By letstalkaboutdune

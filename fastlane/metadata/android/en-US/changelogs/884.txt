@@ -1,0 +1,13 @@
+Solved concurrency crashes due to players keypress-activating disabled buttons
+
+'liberate city and resurrect civ' no longer crashes
+
+AI no longer purchases non-contiguous tiles
+
+City name translation for conquered popup does not get icon
+
+Promotion picker allowing picking chains in one go - By SomeTroglodyte
+
+Fixing workers dying in mountains bug for Carthage - By random271
+
+Check for trigger uniques when starting and recaluating population - By SeventhM

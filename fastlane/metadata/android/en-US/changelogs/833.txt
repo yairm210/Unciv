@@ -1,0 +1,17 @@
+UI: Mod checker tab aligns mods
+
+Modding:
+- Units from triggers respect "limited to [amount] per civilization"
+- Added notification for several unit triggers
+- 'upon being defeated' applies to destroyed civilians as well
+
+By SomeTroglodyte:
+- Show garrison in City overview
+- Harden and improve "Download Mod from Url" parser
+- Future tech fix
+
+By Gualdimar:
+- Trade ending notification
+- Fixed popup positioning after changing screen orientation
+
+Improved Minimap colors  - By Caballero-Arepa

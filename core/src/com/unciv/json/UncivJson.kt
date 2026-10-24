@@ -1,0 +1,64 @@
+package com.unciv.json
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
+import com.badlogic.gdx.utils.JsonWriter
+import com.badlogic.gdx.utils.SerializationException
+import com.unciv.logic.map.HexCoord
+import com.unciv.ui.components.input.KeyCharAndCode
+import java.time.Duration
+
+
+/**
+ * [Json] is not thread-safe. Use a new one for each parse.
+ */
+fun json() = Json(JsonWriter.OutputType.json).apply {
+    // Gdx default output type is JsonWriter.OutputType.minimal, which generates invalid Json - e.g. most quotes removed.
+    // The constructor parameter above changes that to valid Json
+    // Note an instance set to json can read minimal and vice versa
+
+    setIgnoreDeprecated(true)
+    ignoreUnknownFields = true
+
+    setSerializer(Duration::class.java, DurationSerializer())
+    setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
+    setSerializer(HexCoord::class.java, HexCoord.Serializer())
+    setSerializer(String::class.java, StringInterningSerializer())
+}
+
+/**
+ *  Load a json file by [filePath] from Gdx.files.internal
+ *  (meaning from jar/apk for packaged release code, and not appropriate for mod files)
+ *  @throws SerializationException
+ */
+fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(tClass, Gdx.files.internal(filePath))
+
+/**
+ *  Load a json [file] - by handle, so internal/external/local is caller's decision.
+ *
+ *  Reminder:
+ *  * `internal` for Unciv-packaged assets, loaded from jar/apk, e.g. Built-in ruleset files.
+ *  * `local` for mods and settings - Android will place that under /data/data/com.unciv.app/files.
+ *  * `external` for saves - Android will place that under /sdcard/Android/data/com.unciv.app/files.
+ *  @throws SerializationException
+ */
+fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
+    try {
+        return fromJson(tClass, file)
+    } catch (exception: Exception) {
+        val jsonText = file.readString(Charsets.UTF_8.name())
+        throw Exception("Could not parse json of file ${file.name()}", exception)
+    }
+}
+
+private class StringInterningSerializer : Json.Serializer<String> {
+    override fun write(json: Json, key: String, knownType: Class<*>?) = json.writeValue(key as Any?, String::class.java, null)
+
+    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = when {
+        jsonData.isNull -> null
+        jsonData.type() == JsonValue.ValueType.`object` -> json.readValue("value", type, jsonData) as String
+        else -> jsonData.asString().intern()
+    }
+}

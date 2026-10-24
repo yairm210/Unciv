@@ -1,0 +1,9 @@
+"(modified by game speed)" modifier
+
+Fixed "Promotes all spies [amount] time(s)" crash
+
+By SomeTroglodyte:
+- UX: Dev Console easier to use without installing keyboard apps
+- Improve update of "Last seen improvement"
+
+Reworked AI war evaluation and plans  - By tuvus

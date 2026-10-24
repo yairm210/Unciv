@@ -1,0 +1,14 @@
+World wrap available by default for all players
+
+Units are no longer double-added to construction when clicking the 'add unit' button
+
+Units passed with 'next unit' are not returned to
+
+By vegeta1k95:
+- Corrected some Civilization colors
+- Fix perpetual constructions info  ()
+- Civ 5-style unit selection and cycling behaviour, "Wait" action
+
+fix translation problem in policy screen  - By CrispyXYZ
+
+fixed screens displaying yourself as an unknown civilization  - By alexban011

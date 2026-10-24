@@ -1,0 +1,42 @@
+site_name: Unciv
+theme:
+  name: material
+  logo: assets/Icon.png
+  favicon: assets/favicon.png
+
+  palette:
+    - scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
+  icon:
+    repo: fontawesome/brands/github
+
+repo_name: yairm210/unciv
+repo_url: https://github.com/yairm210/unciv
+site_url: https://yairm210.github.io/Unciv
+
+markdown_extensions:
+  # For adminitions
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.details # For collapsable admonitions - see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
+
+  # For Abbreviations
+  - abbr
+  - pymdownx.snippets
+
+plugins:
+  - search
+  - awesome-pages # For reordering pages so modders have a clear progression for understanding
+

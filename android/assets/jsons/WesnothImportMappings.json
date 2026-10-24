@@ -1,0 +1,69 @@
+// Definitions how to map Wesnoth map terrain codes to Unciv Terrains and/or TileImprovements.
+// The parts before and after "^" are matched individually, and a search is done for the most
+// specific partial string from the start, e.g. "Wwf" will look for "Wwf", then "Ww", then "W"
+// See https://wiki.wesnoth.org/TerrainCodesWML
+{
+    "Aa":["Snow"],
+    "Ai":["Coast","Ice"],
+    "Br":["Railroad"],
+    "C":["Plains"], // Most Castle variants look dark
+    "Cd":["Desert"], // Desert Castle
+    "Cea":["Plains"], // Snowy Encampment
+    "Cfa":["Tundra"], // Winter Dwarven Castle
+    "Cha":["Plains"], // Snowy Human Castle
+    "Chs":["Marsh"], // Swamp Human Ruin
+    "Chw":["Coast"], // Sunken Human Ruin
+    "Cm":["Coast"], // Aquatic Castle
+    "Coa":["Plains"], // Snowy Orcish Castle
+    "Cv":["Grassland"], // Elven Castle
+    "Cva":["Tundra"], // Winter Elven Castle
+    "D":["Desert"],
+    // "Dc":["Mountain","Barringer Crater"], // "Crater" - Nope can have many
+    "Do":["Desert","Oasis"],
+    "F":["Forest"],
+    "Fda":["Tundra","Forest"], // Snowy Deciduous Forest
+    "Feta":["Tundra","Forest"], // Snowy Great Tree
+    "Fma":["Tundra","Forest"], // Snowy Mixed Forest
+    "Fpa":["Tundra","Forest"], // Snowy Pine Forest
+    "Ft":["Jungle"], // Tropical Forest, Rainforest
+    "G":["Grassland"],
+    "Gd":["Plains"], // Dry Grass
+    "Gll":["Plains"], // Leaf Litter
+    "Gvs":["Grassland","Farm"],
+    "H":["Hill"],
+    "Hhd":["Plains","Hill"], // Dry Hills
+    "Hd":["Desert","Hill"], // Dunes
+    "Ha":["Snow","Hill"], // Snow Hills
+    "K":["Plains"], // Most Keep variants look brownish
+    "Kd":["Desert","Hill"], // Desert Keep
+    "Kea":["Tundra"], // Snowy Encampment Keep
+    "Kfa":["Tundra"], // Winter Dwarven Keep
+    "Kha":["Plains"], // Snowy Human Castle Keep
+    "Khr":["Plains","City ruins"], // Ruined Human Castle Keep
+    "Khw":["Plains","Hill"], // Sunken Human Castle Keep - let's make such a start...
+    "Km":["Plains","Hill"], // Aquatic Keep - ...a tiny island w/2 prod
+    "Koa":["Tundra","Hill"], // Snowy Orcish Keep
+    "Kv":["Forest"], // Elvish Keep
+    "Kva":["Tundra","Forest"], // Winter Elven Keep
+    "M":["Mountain"],
+    "Q":["Ocean"], // "Unwalkable" (fliers can enter), e.g. underground chasms - or make them Lakes?
+    "R":["Plains"], // All their "R" actually means roads - but they mean full-tile low-movement and brownish so..
+    "Rd":["Desert"], // Dry Dirt Road
+    "Rra":["Tundra"], // Icy Cobbles
+    "S":["Grassland","Marsh"],
+    "T":["Plains"], // Fungus
+    "U":["Plains"], // Underground
+    "V":["Ancient ruins"], // let's convert all other villages into ancient ruins too
+    "Vdr":["Ancient ruins"], // Ruined Adobe Village
+    "Vhr":["Ancient ruins"], // Ruined Cottage
+    "Vhcr":["City ruins"], // Ruined Human City
+    "Vhhr":["Ancient ruins"], // Ruined Hill Stone Village
+    "Vm":["Coast"], // Mermaid village:?
+    "Vo":["Barbarian encampment"], // Orcish Village: Will not function as spawner in game
+    "Wo":["Ocean"],
+    "Ww":["Coast"],
+    "Wwrt":["Coast","Atoll"], // Tropical Coastal Reef, may be too many
+    "X":["Mountain"], // Cave walls and obstacles
+    // Special, allows defining the fallback for the required Base Terrain: If this does not contain one, the importer can crash
+    "fallback":["Grassland"]
+}

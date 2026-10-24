@@ -1,0 +1,29 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/GlobalUniques.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GlobalUniques",
+  "description": "GlobalUniques defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "default": "Global Uniques",
+      "description": "The name field is not used, but still must be set (the Ruleset validator might display it)."
+    },
+    "uniques": {
+      "$ref": "refs/Uniques.schema.json",
+      "description": "List of unique abilities that apply globally."
+    },
+    "unitUniques": {
+      "$ref": "refs/Uniques.schema.json",
+      "title": "Unit Uniques",
+      "description": "List of unique abilities that apply to each unit."
+    },
+    "civilopediaText": {
+      "$ref": "refs/CivilopediaText.schema.json"
+    }
+  },
+  "required": ["name"],
+  "additionalProperties": false
+}

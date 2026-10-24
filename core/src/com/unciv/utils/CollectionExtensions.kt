@@ -1,0 +1,183 @@
+package com.unciv.utils
+
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.IntArray as GdxIntArray
+import com.badlogic.gdx.utils.LongArray as GdxLongArray
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
+import java.util.BitSet
+import kotlin.random.Random
+
+/** Get one random element of a given List.
+ *
+ * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
+ */
+@Readonly 
+fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random): T {
+    if (this.isEmpty()) throw NoSuchElementException("Empty list.")
+    if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
+
+    val totalWeight = weights.sum()
+    val randDouble = random.nextDouble()
+    var sum = 0f
+
+    for (i in weights.indices) {
+        sum += weights[i] / totalWeight
+        if (randDouble <= sum)
+            return this[i]
+    }
+    return this.last()
+}
+
+/** Get one random element of a given List.
+ *
+ * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
+ */
+@Readonly
+fun <T> List<T>.randomWeighted(random: Random, getWeight: (T) -> Float): T =
+    randomWeighted(map(getWeight), random)
+
+/** Gets a clone of any [List] as [ArrayList] with an additional item
+ *
+ * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
+ */
+@Readonly
+fun <T> List<T>.withItem(item: T): ArrayList<T> {
+    val newArrayList = ArrayList(this)
+    newArrayList.add(item)
+    return newArrayList
+}
+
+/** Gets a clone of any [Set] as [HashSet] with an additional item
+ *
+ * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
+ */
+@Readonly
+fun <T> Set<T>.withItem(item: T): HashSet<T> {
+    val newHashSet = HashSet(this)
+    newHashSet.add(item)
+    return newHashSet
+}
+
+/** Gets a clone of any [List] as [ArrayList] without a given item
+ *
+ * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
+ */
+@Readonly
+fun <T> List<T>.withoutItem(item: T): ArrayList<T> {
+    val newArrayList = ArrayList(this)
+    newArrayList.remove(item)
+    return newArrayList
+}
+
+/** Gets a clone of any [Set] as [HashSet] without a given item
+ *
+ * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
+ */
+@Readonly
+fun <T> Set<T>.withoutItem(item: T): HashSet<T> {
+    val newHashSet = HashSet(this)
+    newHashSet.remove(item)
+    return newHashSet
+}
+
+fun <T> Iterable<T>.toGdxArray(): Array<T> {
+    val arr = if (this is Collection) Array<T>(size) else Array<T>()
+    for (it in this) arr.add(it)
+    return arr
+}
+fun <T> Sequence<T>.toGdxArray(): Array<T> {
+    val arr = Array<T>()
+    for (it in this) arr.add(it)
+    return arr
+}
+
+/** [yield][SequenceScope.yield]s [element] if it's not null */
+@Pure
+suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {
+    if (element != null) yield(element)
+}
+/** [yield][SequenceScope.yield]s all elements of [elements] if it's not null */
+@Pure
+suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T>?) {
+    if (elements != null) yieldAll(elements)
+}
+
+/**
+ *  Simplifies adding to a map of sets where the map entry where the new element belongs is not
+ *  guaranteed to be already present in the map (sparse map).
+ *
+ *  @param key The key identifying the Set to add [element] to
+ *  @param element The new element to be added to the Set for [key]
+ *  @return `false` if the element was already present, `true` if it was new (same as `Set.add()`)
+ */
+fun <KT, ET> HashMap<KT, HashSet<ET>>.addToMapOfSets(key: KT, element: ET) =
+    getOrPut(key) { hashSetOf() }.add(element)
+
+/** Simplifies testing whether in a sparse map of sets the [element] exists for [key]. */
+@Readonly
+fun <KT, ET> HashMap<KT, HashSet<ET>>.contains(key: KT, element: ET) =
+    get(key)?.contains(element) == true
+
+
+/** This is for arraylists that replace hashmaps - they contain nulls where we don't know the answer yet */
+fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
+    val currentValue = getOrNull(index)
+    if (currentValue != null) return currentValue
+
+    val value = getValue()
+
+    // grow the arraylist if required - if not, these are no-ops
+    ensureCapacity(index + 1) // So we don't need to copy the array multiple times if adding a lot
+    while (size <= index) add(null) // Fill with nulls until we reach the index
+
+    this[index] = value // Now we can safely set the value
+    return value
+}
+
+@Readonly
+inline fun BitSet.forEachSetBit(action: (Int) -> Unit) {
+    var bit = nextSetBit(0)
+    while (bit >= 0) {
+        action(bit)
+        bit = nextSetBit(bit + 1)
+    }
+}
+
+inline fun GdxIntArray.forEach(op: (Int) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxIntArray.fold(initial: T, op: (T, Int) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
+}
+inline fun GdxLongArray.forEach(op: (Long) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxLongArray.fold(initial: T, op: (T, Long) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
+}
+
+/**
+ * Removes all elements in the range `[start]..<[endExclusive].`
+ *
+ * This is an in-place operation that modifies the list without re-allocation.
+ * It works by leveraging the fact that [subList] returns a live view of the original list, clearing the view truncates the original.
+ *
+ * @param start start index (inclusive)
+ * @param endExclusive end index (exclusive)
+ * @throws IndexOutOfBoundsException if the range is invalid
+ * @see java.util.ArrayList.removeRange (the protected method this mimics)
+ */
+fun <T> ArrayList<T>.removeRange(start: Int, endExclusive: Int) = subList(start, endExclusive).clear()

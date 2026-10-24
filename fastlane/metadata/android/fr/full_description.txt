@@ -1,0 +1,17 @@
+Une réinterprétation open-source du plus célèbre jeu de gestion de civilisation - rapide, léger, sans pubs, et gratuit à jamais!
+
+Bâtissez votre empire, recherchez des technologies, étendez vos villes et éliminez vos adversaires!
+
+Des suggestions? Des bugs? Envie de contribuer? La liste des sujets ouverts se trouve sur https://github.com/yairm210/Unciv/issues .
+
+Des questions? Des commentaires? Rejoignez-nous sur le Discord d'Unciv https://discord.gg/bjrB4Xw ;)
+
+Vous souhaitez participer à la traduction du jeu dans votre langue? Suivez les instructions sur https://yairm210.github.io/Unciv/Translating/Translating/ .
+
+Le monde n'attend plus que vous! Bâtirez-vous une civilisation capable de résister au passage du temps?
+
+L'autorisation 'bénéficier d'un accès complet au réseau' est requise pour les fonctionnalités suivantes:
+- Lister et télécharger les mods disponibles
+- Télécharger la musique
+- Envoyer et télécharger l'état des parties en mode multijoueur en ligne
+Toutes les autres autorisations répertoriées sont gérées automatiquement par l'API pour la fonction de notification des tours en mode multijoueur.

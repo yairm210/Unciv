@@ -1,0 +1,295 @@
+package com.unciv.ui.screens.worldscreen.unit
+
+import com.unciv.view.isPreparingAirSweep
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.map.HexCoord
+import com.unciv.ui.components.extensions.addRoundCloseButton
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.isShiftKeyPressed
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.images.padTopDescent
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.unit.presenter.CityPresenter
+import com.unciv.ui.screens.worldscreen.unit.presenter.SpyPresenter
+import com.unciv.ui.screens.worldscreen.unit.presenter.SummaryPresenter
+import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
+import com.unciv.view.ForeignCityView
+import com.unciv.view.ForeignMapUnitView
+import com.unciv.view.MapUnitView
+import com.unciv.view.SpyView
+import com.unciv.view.TileView
+import yairm210.purity.annotations.Readonly
+import java.awt.Label
+
+class UnitTable(val worldScreen: WorldScreen) : Table() {
+    private val prevIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, true, KeyboardBinding.PrevIdleButton)
+    private val nextIdleUnitButton =
+        IdleUnitButton(this, worldScreen.mapHolder, false, KeyboardBinding.NextIdleButton)
+    internal val unitIconHolder = Table()
+    internal val unitNameLabel = "".toLabel(fontSize = 24).apply { setAlignment(Label.CENTER) }
+    internal val unitIconNameGroup = Table()
+    internal val promotionsTable = Table().apply { defaults().padRight(5f) }
+    internal val descriptionTable = Table(BaseScreen.skin)
+    internal val closeButton: Actor
+    internal val separator: Actor
+
+    /**
+     * The unit table shows infos of selected units, cities, spies, and a summary if none of these
+     * are selected. Each one of them have their own presenters to show their data.
+     */
+    private var presenter: Presenter
+
+    private val unitPresenter = UnitPresenter(this, worldScreen)
+    private val cityPresenter = CityPresenter(this, unitPresenter)
+    private val spyPresenter = SpyPresenter(this)
+    private val summaryPresenter = SummaryPresenter(this)
+
+
+    // This is so that not on every update(), we will update the unit table.
+    // Most of the time it's the same unit with the same stats so why waste precious time?
+    var shouldUpdate = false
+
+    private var bg = Image(
+        BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/UnitTable",
+            BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
+            BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
+    )
+
+    val selectedUnit: MapUnitView?
+        get() = (presenter as? UnitPresenter)?.selectedUnit
+    val selectedCity: ForeignCityView?
+        get() = (presenter as? CityPresenter)?.selectedCity
+
+    val selectedSpy: SpyView?
+        get() = (presenter as? SpyPresenter)?.selectedSpy
+
+    val selectedUnits: List<MapUnitView> by unitPresenter::selectedUnits
+
+    var selectedUnitIsSwapping by unitPresenter::selectedUnitIsSwapping
+
+    var selectedUnitIsConnectingRoad by unitPresenter::selectedUnitIsConnectingRoad
+
+    var nameLabelText: String
+        get() = unitNameLabel.text.toString()
+        set(value) {
+            if (nameLabelText != value) {
+                unitNameLabel.setText(value)
+                // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+                shouldUpdate = true
+            }
+        }
+
+    init {
+        presenter = summaryPresenter
+
+        pad(5f)
+        touchable = Touchable.enabled
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/UnitTable", BaseScreen.skinStrings.roundedEdgeRectangleMidShape
+        )
+        addActor(bg)
+
+        promotionsTable.touchable = Touchable.enabled
+
+        closeButton = addRoundCloseButton(this) {
+            selectUnit()
+            worldScreen.shouldUpdate = true
+        }
+        closeButton.keyShortcuts.clear() // This is the only place we don't want the BACK keyshortcut getCloseButton assigns
+
+        add(Table().apply {
+            val moveBetweenUnitsTable = Table().apply {
+                add(prevIdleUnitButton)
+                unitIconNameGroup.add(unitIconHolder)
+                unitIconNameGroup.add(unitNameLabel).padTopDescent()
+                unitIconHolder.touchable = Touchable.enabled
+                unitNameLabel.touchable = Touchable.enabled
+                add(unitIconNameGroup)
+                add(nextIdleUnitButton)
+            }
+            add(moveBetweenUnitsTable).fill().row()
+
+            separator = addSeparator().padBottom(5f).actor!!
+            add(promotionsTable).row()
+            add(descriptionTable)
+            touchable = Touchable.enabled
+            onClick {
+                presenter.position?.let {
+                    worldScreen.mapHolder.setCenterPosition(
+                        it.toHexCoord(),
+                        immediately = false,
+                        selectUnit = false
+                    )
+                }
+            }
+        }).expand()
+
+    }
+
+
+    /** Sending no unit clears the selected units entirely */
+    fun selectUnit(unitView: MapUnitView? = null, append: Boolean = false) {
+        presenter = if (unitView != null) unitPresenter else summaryPresenter
+        unitPresenter.selectUnit(unitView, append)
+        resetUnitTable()
+    }
+
+    fun selectSpy(spyView: SpyView?) {
+        presenter = spyPresenter
+        spyPresenter.selectSpy(spyView)
+        resetUnitTable()
+    }
+
+    fun citySelected(city: ForeignCityView): Boolean {
+        presenter = cityPresenter
+        return cityPresenter.selectCity(city).also {
+            resetUnitTable()
+            worldScreen.shouldUpdate = true
+        }
+    }
+
+
+    fun update() {
+        closeButton.isVisible = true
+
+        if (!presenter.shouldBeShown()) presenter = summaryPresenter
+        presenter.update()
+
+        // With no units of our own (e.g. spectators, or a civ that lost all units), the summary
+        // (idle/skipping units) is meaningless - hide the whole table instead of showing an empty round artifact.
+        isVisible = presenter != summaryPresenter || worldScreen.selectedGameView.civView.getUnits().isNotEmpty()
+
+        // more efficient to do this check once for both
+        if (worldScreen.selectedGameView.civView.getUnits().any { it.isIdle() }) {
+            prevIdleUnitButton.enable()
+            nextIdleUnitButton.enable()
+        } else {
+            prevIdleUnitButton.disable()
+            nextIdleUnitButton.disable()
+        }
+        
+        if (!shouldUpdate) return
+
+        resetUnitTable()
+
+        presenter.updateWhenNeeded()
+        
+        pack()
+        closeButton.setPosition(
+            width - closeButton.width * 3 / 4,
+            height - closeButton.height * 3 / 4
+        )
+        closeButton.toFront()
+        bg.setSize(width - 3f, height - 3f)
+        bg.center(this)
+        shouldUpdate = false
+    }
+
+    private fun resetUnitTable() {
+        unitIconHolder.clear()
+        promotionsTable.clear()
+        descriptionTable.clearListeners()
+        // ImageWithCustomSize remembers width and returns if when Table asks for prefWidth
+        separator.width = 0f
+        shouldUpdate = true
+    }
+
+    fun tileSelected(selectedTileView: TileView, forceSelectUnitView: MapUnitView? = null) {
+        if (!selectedTileView.isExplored()) return // We don't know anything that exists here!
+
+        val previouslySelectedUnit = selectedUnit
+        val previousNumberOfSelectedUnits = selectedUnits.size
+        val curUnit = selectedUnit
+
+        // Do not select a different unit or city center if we click on it to swap our current unit to it
+        if (selectedUnitIsSwapping && curUnit != null && curUnit.canSwapTo(selectedTileView)) return
+        // Do no select a different unit while in Air Sweep mode
+        if (curUnit != null && curUnit.isPreparingAirSweep()) return
+
+        val civView = worldScreen.selectedGameView.civView
+
+        @Readonly
+        fun ForeignMapUnitView.isEligible(): Boolean = (this.isOwnedByViewer() || civView.isSpectator())
+                && this !in selectedUnits
+
+        // This is the Civ 5 Order of selection:
+        // 1. City
+        // 2. GP + Settlers
+        // 3. Military
+        // 4. Other civilian (Workers)
+        // 5. None (Deselect)
+        // However we deviate from it because there was a poll on Discord that clearly showed that
+        // people would prefer the military unit to always be preferred over GP, so we use this:
+        // 1. City
+        // 2. Military
+        // 3. GP + Settlers
+        // 4. Other civilian (Workers)
+        // 5. None (Deselect)
+
+        val civUnit = selectedTileView.civilianUnit
+        val milUnit = selectedTileView.militaryUnit
+
+        val nextUnitView: ForeignMapUnitView?
+        val priorityUnit = when {
+            milUnit != null && milUnit.isEligible() -> milUnit
+            civUnit != null && civUnit.isEligible() -> civUnit
+            else -> null
+        }
+
+        nextUnitView = when {
+            curUnit == null -> priorityUnit
+            curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
+            curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
+            else -> priorityUnit
+        }
+
+        // Cache the city once - the underlying tile is live, shared state that can be mutated by
+        // the next-turn thread (e.g. city razed) between the isCityCenter() check and its use
+        val selectedTileCity = selectedTileView.owningCity()
+        val isCitySelected = selectedTileView.isCityCenter()
+            && selectedTileCity != null
+            && (selectedTileCity.isOwnedByViewer() || civView.isSpectator())
+            && !selectedUnitIsConnectingRoad
+        when {
+            forceSelectUnitView != null -> selectUnit(forceSelectUnitView)
+            isCitySelected -> citySelected(selectedTileCity)
+            nextUnitView != null -> selectUnit(nextUnitView.tryGetMapUnitView()!!, Gdx.input.isShiftKeyPressed())
+            // toggle selection if same unit is clicked again by player
+            selectedTileView == previouslySelectedUnit?.getTile() -> {
+                selectUnit()
+                shouldUpdate = true
+            }
+        }
+
+        if (selectedUnit != previouslySelectedUnit || selectedUnits.size != previousNumberOfSelectedUnits)
+            shouldUpdate = true
+    }
+
+    interface Presenter {
+        /** map position of the selected entity */
+        val position: HexCoord?
+        /** called every time [WorldScreen] is updated */
+        fun update() {}
+        /** only called when [UnitTable.shouldUpdate] is true */
+        fun updateWhenNeeded() {}
+        fun shouldBeShown(): Boolean { return true}
+    }
+
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
+}

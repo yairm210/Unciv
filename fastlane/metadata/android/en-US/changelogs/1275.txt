@@ -1,0 +1,12 @@
+Correct civ for hotseat "player ready" screen
+
+Fixed cancelling "leave mapeditor" popup, allowing to to leave later without warning popup
+
+By SomeTroglodyte:
+- Tile info on city screen looks and behaves like the world screen one 
+- Allow `[]` / `<>` nesting to support typical UniqueType.Comment usecase 
+- Author exclusion file read correct on Android 
+
+Resigning clears turn time data - By unciv-loof
+
+Fix startup NPE in FasterUIDevelopment - By Kilo-cy

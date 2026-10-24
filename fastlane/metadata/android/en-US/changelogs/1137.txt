@@ -1,0 +1,9 @@
+AI performance optimization
+
+By RobLoach:
+- Fix number popup with commas in the number 
+- Add `Gain control over [positiveAmount] tiles [cityFilter]` Triggerable 
+
+AI: update getStatDifferenceFromBuilding - By EmperorPinguin
+
+Improve ruleset validator - By SomeTroglodyte

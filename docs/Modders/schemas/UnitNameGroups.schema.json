@@ -1,0 +1,54 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/UnitNameGroups.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unit Name Groups",
+  "description": "A list of unit name groups, each with a name and associated unit names.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the unit name group.",
+        "examples": [
+          "General",
+          "Admiral",
+          "Artist",
+          "Merchant",
+          "Engineer",
+          "Scientist"
+        ]
+      },
+      "unitNames": {
+        "type": "array",
+        "title": "Unit Names",
+        "description": "A list of names that apply to the group.",
+        "items": {
+          "type": "string",
+          "title": "Unit Name",
+          "description": "A unit name that can be assigned to applicable units.",
+          "examples": [
+            "Alan Turing",
+            "Isaac Newton",
+            "Albert Einstein",
+            "Aristotle",
+            "Johannes Gutenberg",
+            "Charles Darwin",
+            "Galileo Galilei",
+            "Nelson Mandela"
+          ]
+        },
+        "default": []
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

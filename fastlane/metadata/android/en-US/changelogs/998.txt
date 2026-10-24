@@ -1,0 +1,14 @@
+Allow rulesets to forgo capital city indicators entirely!
+
+Default city for hexarealm does NOT have a question mark
+
+Added ruleset validation for preferred victory type
+
+By SomeTroglodyte:
+- Mod checker reports some problems with texture atlases or their source images
+- ImagePacker detects changed settings file
+- Make random conditionals depend on turn
+
+By tuvus:
+- Fixed gold ruin not displaying notification
+- AI worker build roads improvement

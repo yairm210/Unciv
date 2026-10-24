@@ -1,0 +1,135 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Eras.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Eras",
+  "description": "A list of available Eras.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the era."
+      },
+      "researchAgreementCost": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 300,
+        "title": "Research Agreement Cost",
+        "description": "Cost of a research agreement in this era."
+      },
+      "iconRGB": {
+        "$ref": "refs/Color.schema.json",
+        "title": "Icon RGB",
+        "description": "RGB color value for the era's icon."
+      },
+      "startingSettlerCount": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1,
+        "title": "Starting Settler Count",
+        "description": "Number of settler units the player starts with."
+      },
+      "startingSettlerUnit": {
+        "type": "string",
+        "default": "Settler",
+        "title": "Starting Settler Unit",
+        "description": "The unit used as the starting settler."
+      },
+      "startingWorkerCount": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0,
+        "title": "Starting Worker Count",
+        "description": "Number of worker units the player starts with."
+      },
+      "startingWorkerUnit": {
+        "type": "string",
+        "default": "Worker",
+        "title": "Starting Worker Unit",
+        "description": "The unit used as the starting worker."
+      },
+      "startingMilitaryUnitCount": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1,
+        "title": "Starting Military Unit Count",
+        "description": "Number of military units the player starts with."
+      },
+      "startingMilitaryUnit": {
+        "type": "string",
+        "default": "Warrior",
+        "title": "Starting Military Unit",
+        "description": "The unit used as the starting military unit."
+      },
+      "startingGold": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0,
+        "title": "Starting Gold",
+        "description": "Amount of gold the player starts with."
+      },
+      "startingCulture": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0,
+        "title": "Starting Culture",
+        "description": "Amount of culture the player starts with."
+      },
+      "settlerPopulation": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "title": "Settler Population",
+        "description": "Population of the city founded by the settler."
+      },
+      "settlerBuildings": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "title": "Settler Building",
+          "description": "The name of a building that is present in the city founded by the settler."
+        },
+        "title": "Settler Buildings",
+        "description": "List of buildings present in the city founded by the settler."
+      },
+      "startingObsoleteWonders": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "title": "Starting Obsolete Wonders",
+        "description": "List of wonders that are obsolete at the start of the era."
+      },
+      "baseUnitBuyCost": {
+        "type": "integer",
+        "default": 200,
+        "title": "Base Unit Buy Cost",
+        "description": "Base cost to buy a unit in this era."
+      },
+      "embarkDefense": {
+        "type": "integer",
+        "default": 3,
+        "title": "Embark Defense",
+        "description": "Defense value for embarked units in this era."
+      },
+      "startPercent": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 0,
+        "title": "Start Percent",
+        "description": "When starting, percentage (0%-100%) of turns skipped in total turns specified in Speed.json."
+      },
+      "citySound": {
+        "type": "string",
+        "default": "cityClassical",
+        "title": "City Sound",
+        "description": "Sound theme for cities in this era."
+      }
+    },
+    "required": ["name"]
+  }
+}

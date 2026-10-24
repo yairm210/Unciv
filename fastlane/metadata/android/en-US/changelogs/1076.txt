@@ -1,0 +1,12 @@
+Added Github + Discord icon links on main menu
+
+City construction progress is reset when puppeting, not when annexing
+
+Mods:
+- Allow loading games where a buildings' "replaces" has been removed
+- Allow loading games with natural wonders that have been removed from mods
+- Only add city ruins improvements if they exist in the ruleset
+
+Added lake-land edge tiles - by legacymtgsalvationuser69544
+
+Move Capital building function from city to civ  - By SeventhM

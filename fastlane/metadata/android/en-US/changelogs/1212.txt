@@ -1,0 +1,17 @@
+Drastically reduced memory consumption
+
+Barbarian encampments removed when tile enters civ territory
+
+Peace/war declarations on a third civ not considered trade "gifts"
+
+Fixed rare crash in cities when purchasing
+
+Buildings with "Moves to new capital when capital changes" not destroyed on city capture
+
+Desktop executables: Max JVM RAM *actually* increased to 4GB  
+
+Notifications shown in UI in order
+
+By unciv-loof:
+- Denouncement popups with moddable messages and audio 
+- turn 0 Autosave

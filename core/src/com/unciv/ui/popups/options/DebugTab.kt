@@ -1,0 +1,137 @@
+package com.unciv.ui.popups.options
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
+import com.unciv.GUI
+import com.unciv.logic.GameInfo
+import com.unciv.logic.UncivShowableException
+import com.unciv.logic.files.MapSaver
+import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.SceneDebugMode
+import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.utils.Concurrency
+import com.unciv.utils.DebugUtils
+
+internal class DebugTab(
+    optionsPopup: OptionsPopup
+): OptionsPopupTab(optionsPopup) {
+    override fun lateInitialize() {
+        if (GUI.isWorldLoaded()) addSimulationControls()
+
+        addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
+        addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
+        addCheckbox("Show coordinates on tiles", DebugUtils::SHOW_TILE_COORDS, updateWorld = true)
+        addCheckbox("Show settler scores on tiles", DebugUtils::SHOW_SETTLER_SCORES, updateWorld = true)
+        addCheckbox("Show tile image locations", DebugUtils::SHOW_TILE_IMAGE_LOCATIONS, updateWorld = true)
+        addCheckbox("Show FPS", DebugUtils::SHOW_FPS, updateWorld = true)
+
+        val curGameInfo = game.gameInfo
+        if (curGameInfo != null) {
+            addCheckbox("God mode (current game)", curGameInfo.gameParameters::godMode)
+        }
+
+        addCheckbox("Save games compressed", UncivFiles::saveZipped)
+        addCheckbox("Save maps compressed", MapSaver::saveZipped)
+
+        addSelectBox("Gdx Scene2D debug", BaseScreen::enableSceneDebug, SceneDebugMode.entries) { _, _ ->
+            (stage as UncivStage).setSceneDebugMode()
+        }
+        addSelectBox("Show long-press indicators", settings::showLongPressIndicators, GameSettings.LongPressIndicatorSetting.entries)
+
+        //TODO This was wrapped then colspan(2) before - look
+        addSlider("Unique misspelling threshold", RulesetCache.uniqueMisspellingThreshold, 0.0, 0.5, 0.05) { value, _ ->
+            RulesetCache.uniqueMisspellingThreshold = value.toDouble()
+        }
+
+        if (curGameInfo != null) {
+            val unlockTechsButton = "Unlock all techs".toTextButton()
+            unlockTechsButton.onClick { curGameInfo.unlockAllTechs() }
+            add(unlockTechsButton).colspan(2).row()
+
+            val giveResourcesButton = "Get all strategic resources".toTextButton()
+            giveResourcesButton.onClick { curGameInfo.giveResources() }
+            add(giveResourcesButton).colspan(2).row()
+        }
+
+        val loadAsHotseatFromClipboardButton = "Load online multiplayer game as hotseat from clipboard".toTextButton()
+        loadAsHotseatFromClipboardButton.onClick(::loadAsHotseatFromClipboard)
+        add(loadAsHotseatFromClipboardButton).colspan(2).row()
+
+        addSeparator()
+        add("* Crash Unciv! *".toTextButton(skin.get("negative", TextButtonStyle::class.java)).onClick {
+            throw UncivShowableException("Intentional crash")
+        }).colspan(2).row()
+        addSeparator()
+
+        super.lateInitialize()
+    }
+
+    private fun addSimulationControls() {
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.value?.toInt()
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            GUI.getWorldScreen().nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
+    }
+
+    private fun GameInfo.unlockAllTechs() {
+        for (tech in ruleset.technologies.keys) {
+            if (tech !in getCurrentPlayerCivilization().tech.techsResearched) {
+                getCurrentPlayerCivilization().tech.addTechnology(tech)
+                getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
+            }
+        }
+        getCurrentPlayerCivilization().cache.updateSightAndResources()
+        GUI.setUpdateWorldOnNextRender()
+    }
+
+    private fun GameInfo.giveResources() {
+        val ownedTiles = tileMap.values.asSequence().filter { it.getOwner() == getCurrentPlayerCivilization() }
+        val resourceTypes = ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
+        for ((tile, resource) in ownedTiles zip resourceTypes) {
+            tile.tileResource = resource
+            tile.resourceAmount = 999
+            // Debug option, so if it crashes on this that's relatively fine
+            // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
+            tile.setImprovement(resource.getImprovements().first())
+        }
+        getCurrentPlayerCivilization().cache.updateSightAndResources()
+        GUI.setUpdateWorldOnNextRender()
+    }
+
+    private fun loadAsHotseatFromClipboard() {
+        // Code duplication : LoadGameScreen.getLoadFromClipboardButton
+        Concurrency.run {
+            try {
+                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
+                val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
+                loadedGame.gameParameters.isOnlineMultiplayer = false
+                game.loadGame(loadedGame, callFromLoadScreen = true)
+                optionsPopup.close()
+            } catch (ex: Exception) {
+                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
+            }
+        }
+    }
+}

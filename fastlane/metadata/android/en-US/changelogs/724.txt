@@ -1,0 +1,16 @@
+Fixed translation order
+
+Added cutout support  - By alexban011
+
+By OptimizedForDensity:
+- Improvements to AI military unit usage
+- Fix spectator's fog of war toggle
+- Stop AI puppets from building settlers and military
+
+By Azzurite:
+- Fix scroll to wonder in the map editor
+- Fix unit being captured two times
+- Fix NPE in Nation selection & editor mods popup
+- Add more extensive multiplayer documentation
+
+UI: Do not enter city while performing air strikes - By JackRainy

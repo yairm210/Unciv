@@ -1,0 +1,13 @@
+Allow multifilter uniques to count for filtering
+
+By tuvus:
+- Skip next unit button (right-click option)
+- Better Unit Actions Sorting
+
+By SomeTroglodyte:
+- City filters for cities in resistance and being razed
+- Competition quests in progress display tied leaders (and your place if you're behind)
+
+AI consider production bonuses when building  - By SeventhM
+
+Added ConditionalWhenBetweenStatResource unique  - By woo1127 (new contributor!)

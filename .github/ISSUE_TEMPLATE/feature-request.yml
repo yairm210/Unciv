@@ -1,0 +1,50 @@
+name: Feature request
+description: UI issue, Quality-of-life improvement, user experience or development issue
+labels: [feature]
+title: "Feature request: "
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a feature request! This project has been around for quite a while, so it is quite common for ideas to have come up before.
+        To help save everyone's time, you are required to search for related issues and address any comments and concerns that arose previously.
+        Otherwise, your issue will be closed--it is not fair to ask maintainers and collaborators to do background research for *your* feature request.
+  - type: checkboxes
+    attributes:
+      label: Before creating
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+      - label: This is NOT a gameplay feature from Civ VI, BNW, or outside - see Roadmap
+        required: true
+      - label: This is NOT a gameplay feature from Vanilla Civ V or from G&K - If so, it should be a comment in https://github.com/yairm210/Unciv/issues/4697
+        required: true
+  - type: textarea
+    attributes:
+      label: Problem Description
+      description: Provide a clear and concise description of what underlying issue is addressed by your feature request.
+      placeholder: I'm always frustrated when [...]
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Related Issue Links
+      description: |
+        Provide links to other topics that have sought to address the same issue, or discussed this same idea. Include links to GitHub or Discord.
+        (You can also address these related issues, to help differentiate your idea from those that have been dismissed in the past.)
+  - type: textarea
+    attributes:
+      label: Desired Solution
+      description: Provide a clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternative Approaches
+      description: Provide a clear and concise description of any alternative solutions or features you've considered that would also address the underlying issue.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots about the feature request here. If you're proposing new UI features, creating a mock-up can really go a long way in conveying your intent.

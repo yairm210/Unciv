@@ -1,0 +1,12 @@
+[Desktop Entry]
+Comment=Open-source Android/Desktop remake of Civ V, Multiplayer Server
+Exec=UncivServer
+GenericName=4X Game
+Icon=unciv
+Name=Unciv
+NoDisplay=false
+StartupNotify=true
+Terminal=true
+Type=Application
+Categories=Game
+Name[en_US]=uncivserver.desktop

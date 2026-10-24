@@ -1,0 +1,233 @@
+package com.unciv.logic
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Json
+import com.unciv.Constants
+import com.unciv.UncivGame
+import com.unciv.json.json
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapSize
+import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.metadata.Player
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.testing.BaseTestRunner
+import com.unciv.utils.debug
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.File
+import java.io.StringWriter
+import java.io.Writer
+import java.nio.file.Files
+
+
+@RunWith(BaseTestRunner::class)
+class GameSerializationTests {
+
+    private var game = GameInfo()
+    private var settingsBackup = GameSettings()
+    private var saveZippedBackup = false
+
+    /** A runtime Class object for [kotlin.SynchronizedLazyImpl] to enable helping Gdx.Json to
+     * not StackOverflow on them, as a direct compile time retrieval is forbidden */
+    private val classSynchronizedLazyImpl: Class<*> by lazy {
+        // I hope you get the irony...
+        @Suppress("unused") // No, test is not _directly_ used, only reflected on
+        class TestWithLazy { val test: Int by lazy { 0 } }
+        val badInstance = TestWithLazy()
+        val badField = badInstance::class.java.declaredFields[0]
+        badField.isAccessible = true
+        badField.get(badInstance)::class.java
+    }
+
+    @Before
+    fun prepareGame() {
+        saveZippedBackup = UncivFiles.saveZipped
+        RulesetCache.loadRulesets(noMods = true)
+
+        // Create a tiny game with just 1 human player and the barbarians
+        // Must be 1 human otherwise GameInfo.setTransients crashes on the `if (currentPlayer == "")` line
+        val param = GameParameters().apply {
+            numberOfCityStates = 0
+            players.clear()
+            players.add(Player("Rome", PlayerType.Human))
+            players.add(Player("Greece"))
+        }
+        val mapParameters = MapParameters().apply {
+            mapSize = MapSize.Tiny
+            seed = 42L
+        }
+        val setup = GameSetupInfo(param, mapParameters)
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.files = UncivFiles(Gdx.files)
+
+        // Both startNewGame and makeCivilizationsMeet will cause a save to storage of our empty settings
+        settingsBackup = UncivGame.Current.files.getGeneralSettings()
+
+        UncivGame.Current.settings = GameSettings()
+        game = GameStarter.startNewGame(setup)
+        UncivGame.Current.gameInfo = game
+
+        // Found a city otherwise too many classes have no instance and are not tested
+        val civ = game.getCurrentPlayerCivilization()
+        val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
+        val tile = unit.getTile()
+        unit.civ.addCity(tile.position)
+        if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.setImprovement(Constants.cityCenter)
+        unit.destroy()
+
+        // Ensure some diplomacy objects are instantiated
+        val otherCiv = game.getCivilization("Greece")
+        civ.diplomacyFunctions.makeCivilizationsMeet(otherCiv)
+
+        // Ensure a barbarian encampment is included
+        game.barbarians.placeBarbarianEncampment(forTesting = true)
+    }
+
+    @Test
+    fun canSerializeGame() {
+        val json = json().toJson(game)
+        Assert.assertTrue("This test will only pass when a game can be serialized", json.isNotEmpty())
+    }
+
+    @Test
+    fun canSaveAndLoadUncompressedGame() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = false
+            game.turns = 123
+            game.version = CompatibilityVersion.FIRST_WITHOUT
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
+            val loadedGame = UncivGame.Current.files.loadGameFromFile(FileHandle(saveFile))
+
+            Assert.assertTrue(saveFile.readText().startsWith('{'))
+            Assert.assertEquals(game.gameId, loadedGame.gameId)
+            Assert.assertEquals(game.turns, loadedGame.turns)
+            Assert.assertEquals(CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION, loadedGame.version)
+            Assert.assertEquals(
+                game.getCivilization("Rome").cities.size,
+                loadedGame.getCivilization("Rome").cities.size
+            )
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun canSaveAndLoadCompressedGame() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = true
+            game.turns = 123
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
+            val loadedGame = UncivGame.Current.files.loadGameFromFile(FileHandle(saveFile))
+
+            Assert.assertFalse(saveFile.readText().startsWith('{'))
+            Assert.assertEquals(game.gameId, loadedGame.gameId)
+            Assert.assertEquals(game.turns, loadedGame.turns)
+            Assert.assertEquals(
+                game.getCivilization("Rome").cities.size,
+                loadedGame.getCivilization("Rome").cities.size
+            )
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun uncompressedSaveWritesDirectlyToFile() {
+        UncivFiles.saveZipped = false
+        val saveFile = WriterOnlyFileHandle()
+
+        UncivGame.Current.files.saveGame(game, saveFile)
+        val loadedGame = UncivFiles.gameInfoFromString(saveFile.output.toString())
+
+        Assert.assertEquals(game.gameId, loadedGame.gameId)
+    }
+
+    @Test
+    fun successfulSaveReportsCompletion() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = false
+            var callbackCount = 0
+            var callbackException: Exception? = null
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile)) {
+                callbackCount++
+                callbackException = it
+            }
+
+            Assert.assertEquals(1, callbackCount)
+            Assert.assertNull(callbackException)
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun failedSaveReportsException() {
+        val saveDirectory = Files.createTempDirectory("unciv-save-").toFile()
+        try {
+            UncivFiles.saveZipped = false
+            var callbackCount = 0
+            var callbackException: Exception? = null
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveDirectory)) {
+                callbackCount++
+                callbackException = it
+            }
+
+            Assert.assertEquals(1, callbackCount)
+            Assert.assertNotNull(callbackException)
+        } finally {
+            saveDirectory.delete()
+        }
+    }
+
+    @Test
+    fun serializedLaziesTest() {
+        val jsonSerializer = Json().apply {
+            setIgnoreDeprecated(true)
+            setDeprecated(classSynchronizedLazyImpl, "initializer", true)
+            setDeprecated(classSynchronizedLazyImpl, "lock", true)  // this is the culprit as kotlin initializes it to `this@SynchronizedLazyImpl`
+        }
+
+        val json =  jsonSerializer.toJson(game)
+
+        val pattern = """\{(\w+)\\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
+        val matches = Regex(pattern).findAll(json)
+        matches.forEach {
+            debug("Lazy missing `@delegate:Transient` annotation: %s", it.groups[1]!!.value)
+        }
+        val result = matches.any()
+        Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)
+    }
+
+    @After
+    fun cleanup() {
+        UncivFiles.saveZipped = saveZippedBackup
+        settingsBackup.save()
+    }
+
+    private class WriterOnlyFileHandle : FileHandle("writer-only") {
+        val output = StringWriter()
+
+        override fun writer(append: Boolean, charset: String): Writer = output
+
+        override fun writeString(string: String, append: Boolean, charset: String) {
+            throw AssertionError("Uncompressed saves must not allocate a complete JSON string")
+        }
+    }
+}

@@ -1,0 +1,300 @@
+package com.unciv.models.stats
+
+import com.unciv.models.translations.tr
+import yairm210.purity.annotations.*
+
+/**
+ * A container for the seven basic ["currencies"][Stat] in Unciv,
+ * **Mutable**, allowing for easy merging of sources and applying bonuses.
+ *
+ * Supports e.g. `for ((key,value) in <Stats>)` - the [iterator] will skip zero values automatically.
+ *
+ * Use [sum], [min], [max] for fast aggregates.
+ */
+@ModifiesInternalStateOnly
+open class Stats(
+    var production: Float = 0f,
+    var food: Float = 0f,
+    var gold: Float = 0f,
+    var science: Float = 0f,
+    var culture: Float = 0f,
+    var happiness: Float = 0f,
+    var faith: Float = 0f
+): Iterable<Stats.StatValuePair> {
+
+    /** Indexed read of a value for a given [Stat], e.g. `this.gold == this[Stat.Gold]` */
+    @Readonly
+    operator fun get(stat: Stat): Float {
+        return when(stat) {
+            Stat.Production -> production
+            Stat.Food -> food
+            Stat.Gold -> gold
+            Stat.Science -> science
+            Stat.Culture -> culture
+            Stat.Happiness -> happiness
+            Stat.Faith -> faith
+        }
+    }
+    /** Indexed write of a value for a given [Stat], e.g. `this.gold += 1f` is equivalent to `this[Stat.Gold] += 1f` */
+    operator fun set(stat: Stat, value: Float) {
+        when(stat) {
+            Stat.Production -> production = value
+            Stat.Food -> food = value
+            Stat.Gold -> gold = value
+            Stat.Science -> science = value
+            Stat.Culture -> culture = value
+            Stat.Happiness -> happiness = value
+            Stat.Faith -> faith = value
+        }
+    }
+
+    /** Compares two instances. Not callable via `==`. */
+    // This is an overload, not an override conforming to the kotlin conventions of `equals(Any?)`,
+    // so do not rely on it to be called for the `==` operator! A tad more efficient, though.
+    @Suppress("CovariantEquals", "WrongEqualsTypeParameter")    // historical reasons to keep this function signature
+    @Readonly
+    fun equals(otherStats: Stats): Boolean {
+        return production == otherStats.production
+                && food == otherStats.food
+                && gold == otherStats.gold
+                && science == otherStats.science
+                && culture == otherStats.culture
+                && happiness == otherStats.happiness
+                && faith == otherStats.faith
+    }
+
+    /** **Non-Mutating function**
+     * @return a new instance containing the same values as `this` */
+    @Readonly @ReturnsNewInstance fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+
+    /** @return `true` if all values are zero */
+    @Readonly
+    fun isEmpty() = (
+            production == 0f
+            && food == 0f
+            && gold == 0f
+            && science == 0f
+            && culture == 0f
+            && happiness == 0f
+            && faith == 0f )
+
+    /** Reset all values to zero (in place) */
+    fun clear() {
+        production = 0f
+        food = 0f
+        gold = 0f
+        science = 0f
+        culture = 0f
+        happiness = 0f
+        faith = 0f
+    }
+
+    /** **Mutating function** (but does **not** mutate [other])
+     * Adds each value of another [Stats] instance to this one in place
+     * @return this for chaining */
+    fun add(other: Stats): Stats {
+        production += other.production
+        food += other.food
+        gold += other.gold
+        science += other.science
+        culture += other.culture
+        happiness += other.happiness
+        faith += other.faith
+        return this
+    }
+
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
+    operator fun plus(stats: Stats): Stats {
+        val clone = clone()
+        clone.add(stats)
+        return clone
+    }
+
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
+    operator fun minus(stats: Stats): Stats {
+        val clone = clone()
+        clone.add(stats.times(-1))
+        return clone
+    }
+
+    /** **Mutating function**
+     * Adds the [value] parameter to the instance value specified by [stat] in place
+     * @return `this` to allow chaining */
+    fun add(stat: Stat, value: Float): Stats {
+        set(stat, value + get(stat))
+        return this
+    }
+
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
+    @Readonly operator fun times(number: Int) = times(number.toFloat())
+
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
+    @Readonly
+    operator fun times(number: Float) = Stats(
+        production * number,
+        food * number,
+        gold * number,
+        science * number,
+        culture * number,
+        happiness * number,
+        faith * number
+    )
+
+    /** **Mutating function**
+     * Multiplies each value of this instance by [number] in place */
+    fun timesInPlace(number: Float) {
+        production *= number
+        food *= number
+        gold *= number
+        science *= number
+        culture *= number
+        happiness *= number
+        faith *= number
+    }
+
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance */
+    @Readonly operator fun div(number: Float) = times(1/number)
+
+    /** **Mutating function**
+     * Apply weighting for Production Ranking */
+    fun applyRankingWeights() {
+        food *= 14
+        production *= 12.01f // tie break Production vs gold
+        gold *= 6 // 2 gold worth about 1 production
+        science *= 9.01f // 4 Science better than 3 Production
+        culture *= 8
+        happiness *= 10 // base
+        faith *= 7
+    }
+
+    /** Common stringification logic shared by [toString], [toStringForNotifications],
+     * [toStringWithoutIcons] and [toStringOnlyIcons] - see those for semantics of the parameters. */
+    @Readonly
+    private fun stringify(showSign: Boolean = true, showName: Boolean = true, showIcon: Boolean = true, translate: Boolean = true): String {
+        return this.joinToString {
+            val sign = if (showSign && it.value > 0) "+" else ""
+            val amount = if (translate) it.value.toInt().tr() else it.value.toInt().toString()
+            val label = when {
+                !showName -> it.key.character.toString()
+                translate -> it.key.name.tr(hideStats = !showIcon)
+                else -> (if (showIcon) it.key.character.toString() else "") + it.key.name
+            }
+            "$sign$amount $label"
+        }
+    }
+
+    /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
+     *
+     * Example output: `+1 Production, -1 Food`.
+     */
+    @Readonly
+    override fun toString() = stringify()
+
+    /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
+    fun toStringForNotifications() = stringify(showIcon = false, translate = false)
+
+    /** Same as [toString], but without the leading [Stat] icon character and without the sign. */
+    @Readonly
+    fun toStringWithoutIcons() = stringify(showIcon = false)
+
+    /** Return a string of just +/- value and Stat symbol*/
+    @Readonly
+    fun toStringOnlyIcons(addPlusSign: Boolean = true) = stringify(showSign = addPlusSign, showName = false, translate = false)
+
+    /** Represents one [key][Stat]/[value][Float] pair returned by the [iterator] */
+    data class StatValuePair (val key: Stat, val value: Float)
+
+    /** Enables iteration over the non-zero [Stat]/value [pairs][StatValuePair].
+     * Explicit use unnecessary - [Stats] is [iterable][Iterable] directly.
+     * @see iterator */
+    @Readonly
+    fun asSequence() = sequence {
+        if (production != 0f) yield(StatValuePair(Stat.Production, production))
+        if (food != 0f) yield(StatValuePair(Stat.Food, food))
+        if (gold != 0f) yield(StatValuePair(Stat.Gold, gold))
+        if (science != 0f) yield(StatValuePair(Stat.Science, science))
+        if (culture != 0f) yield(StatValuePair(Stat.Culture, culture))
+        if (happiness != 0f) yield(StatValuePair(Stat.Happiness, happiness))
+        if (faith != 0f) yield(StatValuePair(Stat.Faith, faith))
+    }
+
+    @Readonly
+    /** Fast aggregate: Sum over all seven stats */
+    fun sum() = production + food + gold + science + culture + happiness + faith
+    @Readonly
+    /** Fast aggregate: Min of all seven stats */
+    fun min() = production.coerceAtMost(food).coerceAtMost(gold)
+        .coerceAtMost(science).coerceAtMost(culture)
+        .coerceAtMost(happiness).coerceAtMost(faith)
+    @Readonly
+    /** Fast aggregate: Max of all seven stats */
+    fun max() = production.coerceAtLeast(food).coerceAtLeast(gold)
+        .coerceAtLeast(science).coerceAtLeast(culture)
+        .coerceAtLeast(happiness).coerceAtLeast(faith)
+
+    /** Returns an iterator over the elements of this object, wrapped as [StatValuePair]s */
+    override fun iterator(): Iterator<StatValuePair> = asSequence().iterator()
+
+
+    companion object {
+        private val allStatNames = Stat.entries.joinToString("|") { it.name }
+        private val statRegexPattern = "([+-])(\\d+) ($allStatNames)"
+        private val statRegex = Regex(statRegexPattern)
+        private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")
+
+        /** Tests a given string whether it is a valid representation of [Stats],
+         * close to what [toString] would produce.
+         * - Values _must_ carry a sign - "1 Gold" tests `false`, "+1 Gold" is OK.
+         * - Separator is ", " - comma space - the space is _not_ optional.
+         * - Stat names must be untranslated and match case.
+         * - Order is not important.
+         * @see [parse]
+         */
+        @Pure
+        fun isStats(string: String): Boolean {
+            if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
+            return entireStringRegexPattern.matches(string)
+        }
+
+        /** Parses a string to a [Stats] instance
+         * - Values _must_ carry a sign - "1 Gold" will not parse, "+1 Gold" is OK.
+         * - Separator is ", " - comma space - the space is _not_ optional.
+         * - Stat names must be untranslated and match case.
+         * - Order is not important.
+         * @see [isStats]
+         */
+        @Pure
+        fun parse(string: String): Stats {
+            val toReturn = Stats()
+            val statsWithBonuses = string.split(", ")
+            statsWithBonuses.forEach { statWithBonuses ->
+                val match = statRegex.matchEntire(statWithBonuses)!!
+                @Immutable val groupValues = match.groupValues
+                val statName = groupValues[3]
+                val statAmount = groupValues[2].toFloat() * (if (groupValues[1] == "-") -1 else 1)
+                toReturn.add(Stat.valueOf(statName), statAmount)
+            }
+            return toReturn
+        }
+
+        val ZERO = Stats()
+        val DefaultCityCenterMinimum = Stats(food = 2f, production = 1f)
+    }
+}
+
+@ModifiesInternalStateOnly
+class StatMap : LinkedHashMap<String,Stats>() {
+    fun add(source: String, stats: Stats) {
+        // We always clone to avoid touching the mutable stats of uniques
+        if (!containsKey(source)) put(source, stats.clone())
+        else {
+            @LocalState val existingStats = get(source)!! 
+            existingStats.add(stats)
+        }
+    }
+}

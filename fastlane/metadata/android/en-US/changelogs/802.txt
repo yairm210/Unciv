@@ -1,0 +1,12 @@
+Modding:
+- Added "upon discovering a Natural Wonder", "upon founding a city" triggers
+- Added conditionals for above and below resource amounts
+- Great general unique accepts conditionals - @SpacedOutChicken
+
+Allow placing Barbarian encampments in map editor
+
+Added option to allow players to choose randomly selected civs  - By alexban011
+
+Fix crash in Tactical Analysis Map  - By OptimizedForDensity
+
+AbsoluteUnits - Mohawk Warrior, Swordsman v2 - By letstalkaboutdune

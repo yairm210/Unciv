@@ -1,0 +1,7 @@
+Cannot have 2 research agreements at once due to counteroffers
+
+Modding: Added "upon losing/gaining the [promotion] status" unit triggers
+
+Mod branch parsing (downloading from user input url) can now handle branch names containing "/"
+
+Fixed "Top" edge tiles not showing - kudos @legacymtgsalvationuser69544

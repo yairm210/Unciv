@@ -1,0 +1,7 @@
+"Triggers a global alert upon build start" works for units
+
+UX:
+- Added generated map type preview in New Game screen :D
+- Better panel sizing in New Game screen
+
+Fixed multiple buy buttons in construction info table

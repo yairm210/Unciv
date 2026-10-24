@@ -1,0 +1,13 @@
+Added "Auto" screen size setting
+
+Spaceship parts buildable again
+
+Selecting random map after custom no longer generates land-only
+
+MP preview displays number of players and estimated time until player's turn - By unciv-loof
+
+By SomeTroglodyte:
+- Improve espionage screen and spy movement handling via map 
+- Fix broken keyboard binding for "Create [improvement]" 
+- Extension Mods allow more removals via ModOptions 
+- Fix loading games with invalid speed or difficulty entry crashes

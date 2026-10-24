@@ -1,0 +1,207 @@
+package com.unciv.logic.map
+
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
+import com.unciv.models.metadata.BaseRuleset
+import yairm210.purity.annotations.Readonly
+
+
+object MapShape {
+    const val rectangular = "Rectangular"
+    const val hexagonal = "Hexagonal"
+    const val flatEarth = "Flat Earth Hexagonal"
+    
+    val allValues = listOf(rectangular, hexagonal, flatEarth)
+}
+
+object MapGeneratedMainType {
+    const val generated = "Generated"
+    // Randomly choose a generated map type
+    const val randomGenerated = "Random Generated"
+    // Non-generated maps
+    const val custom = "Custom"
+    const val scenario = "Scenario"
+
+}
+
+object MapType {
+    const val pangaea = "Pangaea"
+    const val smallContinents = "Small Continents"
+    const val perlin = "Perlin"
+    const val fractal = "Fractal"
+    const val continentAndIslands = "Continent and Islands"
+    const val archipelago = "Archipelago"
+    const val twoContinents = "Two Continents"
+    const val threeContinents = "Three Continents"
+    const val innerSea = "Inner Sea"
+    const val lakes = "Lakes"
+    const val fourCorners = "Four Corners"
+    const val boreal = "Boreal"
+    const val spiral = "Spiral"
+    
+    // ordered based on popularity poll
+    val allValues = listOf(
+        pangaea,
+        smallContinents,
+        perlin,
+        fractal,
+        continentAndIslands,
+        archipelago,
+        twoContinents,
+        threeContinents,
+        innerSea,
+        lakes,
+        fourCorners,
+        spiral,
+        boreal
+    )
+
+    // All ocean tiles
+    const val empty = "Empty"
+}
+
+object MirroringType {
+    const val none = "None"
+    const val leftright = "Left-right"
+    const val topbottom = "Top-bottom"
+    const val fourway = "Four-way"
+    const val aroundCenterTile = "Around center tile"
+}
+
+class MapParameters : IsPartOfGameInfoSerialization {
+    var name = ""
+    var type = MapType.pangaea
+    // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
+    var shape = MapShape.hexagonal
+    var mapSize = MapSize.Medium
+    var mapResources = MapResourceSetting.default.label
+    var mirroring: String = MirroringType.none
+    var noRuins = false
+    var noNaturalWonders = false
+    // DO NOT CHANGE DEFAULTS since that changes all existing games to new default!
+    var worldWrap = false
+    var strategicBalance = false
+    var legendaryStart = false
+
+    /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
+    var mods = LinkedHashSet<String>()
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the RulesetCache is not yet initialized when starting up
+
+    /** Unciv Version of creation for support cases */
+    var createdWithVersion = ""
+
+    var seed: Long = System.currentTimeMillis()
+    var tilesPerBiomeArea = 6
+    var maxCoastExtension = 3
+    var elevationExponent = 0.7f
+    var temperatureintensity = 0.6f
+    var vegetationRichness = 0.4f
+    var rareFeaturesRichness = 0.05f
+    var resourceRichness = 0.1f
+    var waterThreshold = 0.0f
+
+    /** Shifts temperature (after random, latitude and temperatureintensity).*/
+    var temperatureShift = 0f
+
+    fun clone(): MapParameters {
+        val toReturn = MapParameters()
+        toReturn.name = name
+        toReturn.type = type
+        toReturn.shape = shape
+        toReturn.mapSize = mapSize.clone()
+        toReturn.mapResources = mapResources
+        toReturn.noRuins = noRuins
+        toReturn.noNaturalWonders = noNaturalWonders
+        toReturn.worldWrap = worldWrap
+        toReturn.strategicBalance = strategicBalance
+        toReturn.legendaryStart = legendaryStart
+        toReturn.mods = LinkedHashSet(mods)
+        toReturn.baseRuleset = baseRuleset
+        toReturn.seed = seed
+        toReturn.tilesPerBiomeArea = tilesPerBiomeArea
+        toReturn.maxCoastExtension = maxCoastExtension
+        toReturn.elevationExponent = elevationExponent
+        toReturn.temperatureintensity = temperatureintensity
+        toReturn.temperatureShift = temperatureShift
+        toReturn.vegetationRichness = vegetationRichness
+        toReturn.rareFeaturesRichness = rareFeaturesRichness
+        toReturn.resourceRichness = resourceRichness
+        toReturn.waterThreshold = waterThreshold
+        toReturn.mirroring = mirroring
+        toReturn.createdWithVersion = createdWithVersion
+        return toReturn
+    }
+
+    fun reseed() {
+        seed = System.currentTimeMillis()
+    }
+
+    fun resetAdvancedSettings() {
+        reseed()
+        tilesPerBiomeArea = 6
+        maxCoastExtension = 3
+        elevationExponent = 0.7f
+        temperatureintensity = 0.6f
+        temperatureShift = 0.0f
+        vegetationRichness = 0.4f
+        rareFeaturesRichness = 0.05f
+        resourceRichness = 0.1f
+        waterThreshold = 0f
+    }
+
+    fun getMapResources() = MapResourceSetting.safeValueOf(mapResources)
+    @Suppress("DEPRECATION") // This IS the legacy support
+    @JvmName("strategicBalanceGetter")
+    fun getStrategicBalance() = strategicBalance || mapResources == MapResourceSetting.strategicBalance.label
+    @Suppress("DEPRECATION") // This IS the legacy support
+    @JvmName("legendaryStartGetter")
+    fun getLegendaryStart() = legendaryStart || mapResources == MapResourceSetting.legendaryStart.label
+
+    fun getArea() = when {
+        shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
+        worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
+        else -> mapSize.width * mapSize.height
+    }
+    private fun displayMapDimensions() = mapSize.run {
+        (if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) "R$radius" else "${width}x$height") +
+        (if (worldWrap) "w" else "")
+    }
+
+    // Human readable float representation akin to .net "0.###" - round to N digits but without redundant trailing zeroes
+    private fun Float.niceToString(maxPrecision: Int) =
+        "%.${maxPrecision}f".format(this).trimEnd('0').trimEnd('.')
+
+    // For debugging and MapGenerator console output
+    override fun toString() = sequence {
+        if (name.isNotEmpty()) yield("\"$name\" ")
+        yield("(")
+        if (mapSize.name != MapSize.custom) yield("{${mapSize.name}} ")
+        if (worldWrap) yield("{World Wrap} ")
+        yield("{$shape}")
+        yield(" " + displayMapDimensions() + ")")
+        if (mapResources != MapResourceSetting.default.label) yield(" {Resource Setting}: {$mapResources}")
+        if (strategicBalance) yield(" {Strategic Balance}")
+        if (legendaryStart) yield(" {Legendary Start}")
+        if (name.isEmpty()) return@sequence
+        yield("\n")
+        if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        yield("{RNG Seed} $seed")
+        yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
+        yield(", {Temperature intensity}=" + temperatureintensity.niceToString(2))
+        yield(", {Resource richness}=" + resourceRichness.niceToString(3))
+        yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
+        yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))
+        yield(", {Max Coast extension}=$maxCoastExtension")
+        yield(", {Biome size}=$tilesPerBiomeArea")
+        yield(", {Water level}=" + waterThreshold.niceToString(2))
+    }.joinToString("")
+
+    @Readonly
+    fun numberOfTiles() =
+        if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) {
+            1 + 3 * mapSize.radius * (mapSize.radius - 1)
+        } else {
+            mapSize.width * mapSize.height
+        }
+}

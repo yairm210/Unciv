@@ -1,0 +1,9 @@
+Countable can accept arbitrary mathematical Expressions - Kudos AutumnPizazz for kicking this off, SomeTroglodyte for parser implementation!
+
+Added 'search mods' in new game screen and mod checker
+
+Fixed bugs in unique validation and in countable validation
+
+Allow automation for settlers with conditional settling uniques
+
+Add "Cannot embark" unit unique - By PLynx01

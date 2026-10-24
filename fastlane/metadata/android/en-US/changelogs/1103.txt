@@ -1,0 +1,11 @@
+UI: Fixed edges for edge tiles on word wrap maps
+
+Fixed automated road connections attempting to go through impassible tiles
+
+Modding: Changed stockpile names to be human readable
+
+Units with logistics that attacked but did not move, no longer heal
+
+Added feature to save unitType promotion - By Emandac
+
+Add "Will be destroyed when pillaged" unique - By PLynx01

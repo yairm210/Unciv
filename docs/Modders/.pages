@@ -1,0 +1,13 @@
+nav:
+    - Mods.md
+    - Making-a-new-Civilization.md
+    - Images-and-Audio.md
+    - Mod-file-structure
+    - Special Mods:
+        - Creating-a-custom-tileset.md
+        - Creating-a-UI-skin.md
+    - Unique-parameters.md
+    - uniques.md
+    - Type-checking.md
+    - Scenarios.md
+    - Autoupdates.md

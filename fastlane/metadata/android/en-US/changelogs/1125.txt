@@ -1,0 +1,11 @@
+AI: Don't choose one-time-action promotions
+
+Display city-state bonuses per relationship level
+
+Conditional city-state bonuses colored green only when conditional applies
+
+By RobLoach:
+- Add ability to remove entire policy branches 
+- Gods & Kings: Great Generals cannot enter a golden age 
+
+Netherlands trade bugfix - By EmperorPinguin

@@ -1,0 +1,10 @@
+By nacro711072:
+- Better Mac support for running JARs
+
+Fixed unit not giftable in one-sided open borders agreement - By huckdogg
+
+Added game option to disable unwanted spectators from a multiplayer game  - By alexban011
+
+Close app completely when clicked 'Exit' button  - By CrispyXYZ
+
+Lots of background work for future features :)

@@ -1,0 +1,119 @@
+@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
+
+package com.unciv.logic.map
+
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.testing.BaseTestRunner
+import com.unciv.testing.TestGame
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(BaseTestRunner::class)
+class UpgradeTests {
+
+    val testGame = TestGame()
+
+    @Before
+    fun initTest() {
+        testGame.makeHexagonalMap(5)
+    }
+
+    @Test
+    fun ruinsUpgradeToSpecialUnit() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit(uniques = arrayOf("May upgrade to [${unitToUpgradeTo.name}] through ruins-like effects"))
+        testUnit.upgradesTo = "Warrior"
+
+        val civ = testGame.addCiv()
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
+        val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
+
+        Assert.assertTrue("Unit should upgrade to special unit, not warrior", unit1.baseUnit == unitToUpgradeTo)
+    }
+
+    @Test
+    fun ruinsUpgradeToNormalUnitWithoutUnique() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit()
+        testUnit.upgradesTo = "Warrior"
+
+        val civ = testGame.addCiv()
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
+        val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
+
+        Assert.assertEquals("Unit should upgrade to Warrior without unique", "Warrior", unit1.baseUnit.name)
+    }
+
+    @Test
+    fun regularUpgradeCannotUpgradeToSpecialUnit() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit(uniques = arrayOf("May upgrade to [${unitToUpgradeTo.name}] through ruins-like effects"))
+        testUnit.upgradesTo = "Warrior"
+
+        val civ = testGame.addCiv()
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
+
+        Assert.assertEquals(1, upgrades.size)
+        Assert.assertFalse("Unit should not be able to upgrade to special unit",
+            upgrades.any { it.upgradedUnit == unitToUpgradeTo })
+
+        val triggerUnique = Unique("[This Unit] upgrades for free")
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
+
+        Assert.assertTrue(unit1.baseUnit.name == "Warrior")
+    }
+
+    @Test
+    fun canUpgradeToMultipleWithUnique() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit(uniques = arrayOf(
+            "Can upgrade to [${unitToUpgradeTo.name}]",
+            "Can upgrade to [Warrior]",
+        ))
+
+        val civ = testGame.addCiv()
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
+
+        Assert.assertEquals(2, upgrades.size)
+
+        val triggerUnique = Unique("[This Unit] upgrades for free")
+        UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
+
+        Assert.assertFalse(unit1.baseUnit == testUnit)
+    }
+
+    @Test
+    fun cannotUpgradeWithoutGold() {
+        val unitToUpgradeTo = testGame.createBaseUnit()
+        val testUnit = testGame.createBaseUnit()
+        testUnit.upgradesTo = unitToUpgradeTo.name
+
+        val civ = testGame.addCiv()
+        testGame.addCity(civ, testGame.getTile(HexCoord.Zero)) // We need to own the tile to be able to upgrade here
+
+        val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
+        var upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+
+        Assert.assertTrue("We should need gold to upgrade here", upgrades.none { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
+
+        civ.addGold(unit1.upgrade.getCostOfUpgrade(unitToUpgradeTo))
+
+        upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+
+        Assert.assertEquals(1, upgrades.size)
+        Assert.assertTrue(upgrades.all { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
+    }
+}

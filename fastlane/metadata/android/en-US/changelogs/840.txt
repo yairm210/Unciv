@@ -1,0 +1,13 @@
+Automated units don't try and conquer the same city twice
+
+Constructed units that can't be placed are put on hold till the next turn
+
+Solve 'desktop tries to create window of size 0/0' bug
+
+Make AI buy city tiles.  - By WhoIsJohannes
+
+By SomeTroglodyte:
+- Untinted stat symbols in tinted text
+- Moddable Civilopedia Welcome
+- Fix disbanding units a civ cannot afford
+- Main menu cancels background map creation when obsolete

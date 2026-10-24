@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unciv</string>
+    <string name="Notify_YourTurn_Short">Unciv - Du bist am Zug!</string>
+    <string name="Notify_YourTurn_Long">Deine Freunde warten auf deinen Zug in [gameName].</string>
+    <string name="Notify_Error_Short">Ein Fehler ist aufgetreten</string>
+    <string name="Notify_Error_Long">Multiplayer Zug Benachrichtigungsdienst wurde beendet.</string>
+    <string name="Notify_Persist_Short">Letzter online Zugcheck:</string>
+    <string name="Notify_Persist_Long_P1">Unciv wird dich benachrichtigen, wenn du im Multiplayer am Zug bist.</string>
+    <string name="Notify_Persist_Long_P2">Prüft etwa alle</string>
+    <string name="Notify_Persist_Long_P3">Minute(n) wenn Internet vorhanden.</string>
+    <string name="Notify_Persist_Long_P4">Konfigurierbar im Unciv Optionsmenü.</string>
+    <string name="Notify_ChannelInfo_Short">Unciv Multiplayer Zugprüfer Ereignis</string>
+    <string name="Notify_ChannelInfo_Long">Informiert dich, wenn du im Multiplayer am Zug bist.</string>
+    <string name="Notify_ChannelService_Short">Unciv Multiplayer Zugprüfer Persistenter Status</string>
+    <string name="Notify_ChannelService_Long">Permanent angezeigte Benachrichtigung, welche dich über die Hintergrundaktivität des Dienstes informiert.</string>
+    <string name="Notify_Error_StackTrace_Toast">Stacktraces in Zwischenablage kopiert.</string>
+    <string name="Notify_Error_CopyAction">Kopiere Stacktraces in Zwischenablage</string>
+    <string name="Notify_Error_Retrying">Fehler, wiederhole…</string>
+</resources>

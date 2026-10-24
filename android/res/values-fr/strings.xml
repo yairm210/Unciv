@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unciv</string>
+    <string name="Notify_YourTurn_Short">Unciv - C\'est à vous !</string>
+    <string name="Notify_YourTurn_Long">Vos amis attendent votre action dans [gameName].</string>
+    <string name="Notify_Error_Long">Service de notification du tour multijoueur terminé</string>
+    <string name="Notify_Error_Short">Une erreur est survenue</string>
+    <string name="Notify_Persist_Long_P4">Configurable dans le menu des options de Unciv</string>
+</resources>

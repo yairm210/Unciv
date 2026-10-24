@@ -1,0 +1,7 @@
+Used in GlobalPoliticsOverviewTable.DiagramLegendPopup as "easter egg" background.
+
+Uses 256x256 pixels in its atlas - at the time of adding it, there was ample leftover room,
+but once the main atlas fill up, please move to another or even its own little atlas,
+and maybe drop this file.
+
+Will be seldom used!

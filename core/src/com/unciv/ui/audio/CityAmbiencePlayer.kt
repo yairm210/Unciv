@@ -1,0 +1,24 @@
+package com.unciv.ui.audio
+
+import com.badlogic.gdx.utils.Disposable
+import com.unciv.UncivGame
+import com.unciv.view.CityView
+
+/** Must be [disposed][dispose].
+ *  Starts playing an ambience sound for the city when created.
+ *  Stops playing the ambience sound when [disposed][dispose]. */
+class CityAmbiencePlayer(
+    cityView: CityView
+) : Disposable {
+    init {
+        val volume = UncivGame.Current.settings.citySoundsVolume
+        if (volume > 0f) {
+            UncivGame.Current.musicController
+                .playOverlay(cityView.owningCiv().getEra().citySound, volume = volume, isLooping = true, fadeIn = true)
+        }
+    }
+
+    override fun dispose() {
+        UncivGame.Current.musicController.stopOverlay()
+    }
+}

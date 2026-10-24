@@ -1,0 +1,15 @@
+UNIT MOVEMENT ANIMATION!
+
+New uniques:
+- "Can only start games from the starting era" mod option
+- "if [buildingFilter] is not constructed" unique
+
+AI no longer declares war against defeated civs
+
+Unified AI and Human gold purchase logic
+
+Ruleset validation: Catch "building required for victory milestone but does not exist" errors
+
+"Will not be replaced by automated units" unique fix
+
+Fix cases where Numbers Translations does not work properly  - By touhidurrr

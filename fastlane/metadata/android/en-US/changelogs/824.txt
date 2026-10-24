@@ -1,0 +1,14 @@
+Show death symbol next to actions that expend the unit
+
+Modding:
+- 'create improvement' action, <consuming this unit> and <as an action> modifiers
+
+- gifting cities no longer causes crash
+
+By GGGuenni:
+- Fixed wrong implementation of Basic auth
+- Fixed TurnChecker can not authenticate
+
+Fix missing desert for flood plains in hexarealm tileset  - By AdityaMH
+
+Fix random nations pool popup  - By SomeTroglodyte

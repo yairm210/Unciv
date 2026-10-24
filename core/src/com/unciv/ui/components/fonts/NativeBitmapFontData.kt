@@ -1,0 +1,179 @@
+package com.unciv.ui.components.fonts
+
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Disposable
+import com.unciv.Constants
+import com.unciv.ui.images.ImageGetter
+import kotlin.math.roundToInt
+
+// This class is loosely based on libgdx's FreeTypeBitmapFontData
+class NativeBitmapFontData(
+    private val fontImplementation: FontImplementation
+) : BitmapFont.BitmapFontData(), Disposable {
+
+    val regions: Array<TextureRegion>
+
+    private val packer: PixmapPacker
+
+    // Trilinear minification smooths both within and between mip levels. Magnification
+    // must use a non-mipmap filter, since mip levels only help when shrinking text.
+    private val minFilter = Texture.TextureFilter.MipMapLinearLinear
+    private val magFilter = Texture.TextureFilter.Linear
+
+    private companion object {
+        /** How to get the alpha channel in a Pixmap.getPixel return value (Int) - it's the LSB */
+        const val alphaChannelMask = 255
+        /** Where to test circle for transparency */
+        // The center of a squared circle's corner wedge would be at (1-PI/4)/2 ≈ 0.1073
+        const val nearCornerRelativeOffset = 0.1f
+        /** Where to test circle for opacity */
+        // arbitrary choice just off-center
+        const val nearCenterRelativeOffset = 0.4f
+        /** Width multiplier to get extra advance after a ruleset icon, empiric */
+        const val relativeAdvanceExtra = 0.039f
+        /** Multiplier to get default kerning between a ruleset icon and 'open' characters */
+        const val relativeKerning = -0.055f
+        /** Which follower characters receive how much kerning relative to [relativeKerning] */
+        val kerningMap = mapOf('A' to 1f, 'T' to 0.6f, 'V' to 1f, 'Y' to 1.2f)
+    }
+
+    init {
+        // set general font data
+        flipped = false
+        lineHeight = fontImplementation.getFontSize().toFloat()
+        capHeight = lineHeight
+        ascent = -lineHeight
+        down = -lineHeight
+
+        // Create a packer.
+        val size = 1024
+        val packStrategy = PixmapPacker.GuillotineStrategy()
+        // Leave room between glyphs for the wider sampling footprint of mipmaps at UI sizes.
+        val padding = 16
+        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, padding, false, packStrategy)
+        // Only use the packer for CPU images and glyph placement. Our textures handle
+        // incremental uploads and defer mipmap regeneration until drawing.
+        packer.packToTexture = false
+        packer.transparentColor = Color.WHITE
+        packer.transparentColor.a = 0f
+
+        // Generate texture regions.
+        regions = Array()
+        updateTextureRegions()
+
+        // Set space glyph.
+        val spaceGlyph = getGlyph(' ')
+        spaceXadvance = spaceGlyph.xadvance.toFloat()
+
+        setScale(Constants.defaultFontSize / Fonts.ORIGINAL_FONT_SIZE)
+    }
+
+    override fun getGlyph(ch: Char): BitmapFont.Glyph = super.getGlyph(ch) ?: createAndCacheGlyph(ch)
+
+    private fun createAndCacheGlyph(ch: Char): BitmapFont.Glyph {
+        val charPixmap = getPixmapFromChar(ch)
+
+        val glyph = BitmapFont.Glyph()
+        glyph.id = ch.code
+        glyph.width = charPixmap.width
+        glyph.height = charPixmap.height
+        glyph.xadvance = glyph.width
+
+        // Check alpha to guess whether this is a round icon
+        // Needs to be done before disposing charPixmap, and we want to do that soon
+        val isFontRulesetIcon = ch.code >= FontRulesetIcons.UNUSED_CHARACTER_CODES_START && ch <= DiacriticSupport.getCurrentFreeCode()
+        val assumeRoundIcon = isFontRulesetIcon && charPixmap.guessIsRoundSurroundedByTransparency()
+
+        val rect = packer.pack(charPixmap)
+        glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
+        glyph.srcX = rect.x
+        glyph.srcY = rect.y
+
+        if (isFontRulesetIcon)
+            glyph.setRulesetIconGeometry(assumeRoundIcon)
+
+        // If a page was added, create a new texture region for the incrementally added glyph.
+        if (regions.size <= glyph.page)
+            updateTextureRegions()
+        else
+            (regions[glyph.page].texture as MipmappedFontTexture).uploadGlyph(charPixmap, rect.x, rect.y)
+        charPixmap.dispose()
+
+        setGlyphRegion(glyph, regions.get(glyph.page))
+        setGlyph(ch.code, glyph)
+
+        return glyph
+    }
+
+    private fun Pixmap.guessIsRoundSurroundedByTransparency(): Boolean {
+        // If a pixel near the center is opaque...
+        val nearCenterOffset = (width * nearCenterRelativeOffset).toInt()
+        if ((getPixel(nearCenterOffset, nearCenterOffset) and alphaChannelMask) == 0) return false
+        // ... and one near a corner is transparent ...
+        val nearCornerOffset = (width * nearCornerRelativeOffset).toInt()
+        return (getPixel(nearCornerOffset, nearCornerOffset) and alphaChannelMask) == 0
+        // ... then assume it's a circular icon surrounded by transparency - for kerning
+    }
+
+    private fun BitmapFont.Glyph.setRulesetIconGeometry(assumeRoundIcon: Boolean) {
+        // This is a Ruleset object icon - first avoid "glue"'ing them to the next char..
+        // ends up 2px for default font scale, 1px for min, 3px for max
+        xadvance += (width * relativeAdvanceExtra).roundToInt()
+
+        if (!assumeRoundIcon) return
+
+        // Now, if we guessed it's round, do some kerning, only for the most conspicuous combos.
+        // Will look ugly for very unusual Fonts - should we limit this to only default fonts?
+
+        // Kerning is a sparse 2D array of up to 2^16 hints, each stored as byte, so this is
+        // costly: kerningMap.size * Fonts.charToRulesetImageActor.size * 512 bytes
+        // Which is 1.76MB for vanilla G&K rules.
+
+        // Ends up -3px for default font scale, -2px for minimum, -4px for max
+        val defaultKerning = (width * relativeKerning)
+        for ((char, kerning) in kerningMap)
+            setKerning(char.code, (defaultKerning * kerning).roundToInt())
+    }
+
+    private fun getPixmapForTextureName(regionName: String) =
+        Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(regionName).region)
+
+    private fun getPixmapFromChar(ch: Char): Pixmap {
+        val textureName = Fonts.allSymbols[ch]
+        if (textureName != null && ImageGetter.imageExists(textureName))
+            return getPixmapForTextureName(textureName)
+        val actor = FontRulesetIcons.charToRulesetImageActor[ch]
+        if (actor != null)
+            return try {
+                    // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
+                    FontRulesetIcons.getPixmapFromActor(actor)
+                } catch (_: Exception) {
+                    Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
+                }
+        if (DiacriticSupport.isEmpty())
+            return fontImplementation.getCharPixmap(ch)
+        return fontImplementation.getCharPixmap(DiacriticSupport.getStringFor(ch))
+    }
+
+    private fun updateTextureRegions() {
+        while (regions.size < packer.pages.size) {
+            val texture = MipmappedFontTexture(packer.pages[regions.size].pixmap)
+            texture.setFilter(minFilter, magFilter)
+            regions.add(TextureRegion(texture))
+        }
+    }
+
+    override fun dispose() {
+        // Mipmapped textures own their CPU pages, just like PixmapPacker's textures.
+        // Calling packer.dispose() for those pages would dispose their pixmaps twice,
+        // since the packer itself has no reference to our custom textures.
+        regions.forEach { it.texture.dispose() }
+    }
+
+}

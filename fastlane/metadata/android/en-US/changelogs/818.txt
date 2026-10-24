@@ -1,0 +1,16 @@
+By Gualdimar:
+- Limit camera movement within explored region
+
+modding:
+- Added "upon gaining a [unitFilter] unit" trigger condition
+- Added religion state conditionals
+
+Reload world screen after tileset/unitset change from in main menu screen - Ryg-git
+
+Android: use best possible device frame rate  - By vegeta1k95
+
+Allow filters in the ModOptions "ToRemove" lists  - By SomeTroglodyte
+
+Play city-state music if available  - By Skekdog
+
+Add 'neutral' Flood plains  - By Caballero-Arepa

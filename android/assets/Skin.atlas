@@ -1,0 +1,98 @@
+
+Skin.png
+size: 512, 64
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Skins/Minimal/checkbox
+  rotate: false
+  xy: 291, 23
+  size: 31, 31
+  split: 0, 0, 0, 0
+  orig: 31, 31
+  offset: 0, 0
+  index: -1
+Skins/Minimal/checkbox-pressed
+  rotate: false
+  xy: 252, 23
+  size: 31, 31
+  split: 0, 0, 0, 0
+  orig: 31, 31
+  offset: 0, 0
+  index: -1
+Skins/Minimal/rectangleWithOutline
+  rotate: false
+  xy: 64, 5
+  size: 3, 3
+  split: 0, 0, 0, 0
+  orig: 3, 3
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedEdgeRectangle
+  rotate: false
+  xy: 4, 4
+  size: 52, 50
+  split: 19, 20, 19, 21
+  pad: 12, 13, 7, 7
+  orig: 52, 50
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedEdgeRectangle-mid
+  rotate: false
+  xy: 110, 16
+  size: 38, 38
+  split: 17, 17, 15, 15
+  pad: 17, 17, -1, -1
+  orig: 38, 38
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedEdgeRectangle-mid-border
+  rotate: false
+  xy: 64, 16
+  size: 38, 38
+  split: 18, 18, 18, 18
+  orig: 38, 38
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedEdgeRectangle-small
+  rotate: false
+  xy: 330, 30
+  size: 24, 24
+  split: 10, 10, 10, 10
+  pad: 10, 10, 2, 2
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedTopEdgeRectangle-small
+  rotate: false
+  xy: 394, 42
+  size: 24, 12
+  split: 10, 10, 10, 0
+  pad: 10, 10, -1, -1
+  orig: 24, 12
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedTopEdgeRectangle-small-border
+  rotate: false
+  xy: 362, 42
+  size: 24, 12
+  split: 10, 10, 10, 0
+  orig: 24, 12
+  offset: 0, 0
+  index: -1
+Skins/Minimal/select-box
+  rotate: false
+  xy: 204, 24
+  size: 40, 30
+  split: 7, 9, 7, 7
+  orig: 40, 30
+  offset: 0, 0
+  index: -1
+Skins/Minimal/select-box-pressed
+  rotate: false
+  xy: 156, 24
+  size: 40, 30
+  split: 7, 9, 7, 7
+  orig: 40, 30
+  offset: 0, 0
+  index: -1

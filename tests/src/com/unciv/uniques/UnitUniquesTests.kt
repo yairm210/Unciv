@@ -1,0 +1,252 @@
+package com.unciv.uniques
+
+import com.unciv.Constants
+import com.unciv.json.json
+import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.mapunit.UnitTurnManager
+import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
+import com.unciv.testing.BaseTestRunner
+import com.unciv.testing.TestGame
+import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.screens.pickerscreens.PromotionTree
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import kotlin.math.roundToInt
+
+@RunWith(BaseTestRunner::class)
+class UnitUniquesTests {
+    private lateinit var game: TestGame
+
+    @Before
+    fun initTheWorld() {
+        game = TestGame()
+    }
+
+    @Test
+    fun `Sweden can gift Great Persons to City States`() {
+        // when
+        game.makeHexagonalMap(1)
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
+
+        val mainCiv = game.addCiv("Gain [90] Influence with a [Great Person] gift to a City-State",
+            isPlayer = true
+        )
+
+        val unitTile = game.getTile(1,0)
+        cityStateCapital.expansion.takeOwnership(unitTile)
+
+        val greatPerson = game.addUnit("Great Scientist", mainCiv, unitTile)
+
+        // then
+        val giftAction = UnitActions.getUnitActions(greatPerson, UnitActionType.GiftUnit)
+            .firstOrNull { it.action != null } // This tests that the action should be enabled, too
+
+        Assert.assertNotNull("Great Person should have a gift action", giftAction)
+    }
+
+    @Test
+    fun canConstructResourceRequiringImprovement() {
+        // Do this early so the uniqueObjects lazy is still un-triggered
+        val requireUnique = UniqueType.ConsumesResources.text.fillPlaceholders("3", "Iron")
+        // Get a clone with lazies un-tripped
+        val oldImprovement = game.ruleset.tileImprovements["Manufactory"]!!
+        val improvement = json().run { fromJson(TileImprovement::class.java, toJson(oldImprovement)) }
+        improvement.uniques.add(requireUnique)
+        Assert.assertFalse("Test preparation failed to add ConsumesResources to Manufactory",
+            improvement.uniqueObjects.none { it.type == UniqueType.ConsumesResources })
+        game.ruleset.tileImprovements["Manufactory"] = improvement
+
+        game.makeHexagonalMap(1)
+        val civ = game.addCiv(isPlayer = true)
+        val centerTile = game.getTile(HexCoord.Zero)
+        val capital = game.addCity(civ, centerTile)
+
+        // Place an Engineer and see if he could create a Manufactory
+        val unitTile = game.getTile(HexCoord(1,0))
+        val unit = game.addUnit("Great Engineer", civ, unitTile)
+        unit.currentMovement = unit.baseUnit.movement.toFloat()  // Required!
+        val actionsWithoutIron = try {
+            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unitTile)
+        } catch (ex: Throwable) {
+            // Give that IndexOutOfBoundsException a nicer name
+            Assert.fail("getImprovementConstructionActions throws Exception ${ex.javaClass.simpleName}")
+            game.ruleset.tileImprovements["Manufactory"] = oldImprovement
+            return
+        }.filter { it.action != null }
+        Assert.assertTrue("Great Engineer should NOT be able to create a Manufactory modded to require Iron with 0 Iron",
+            actionsWithoutIron.none())
+
+        // Supply Iron
+        val ironTile = game.getTile(HexCoord(0,1))
+        ironTile.setTileResource("Iron")
+        ironTile.resourceAmount = 3
+        ironTile.setImprovementBasic("Mine")
+        civ.tech.addTechnology("Mining")
+        civ.tech.addTechnology("Iron Working")
+        // capital already owns tile, but this relinquishes first - shouldn't require manual setTerrainTransients, updateCivResources called automatically
+        capital.expansion.takeOwnership(ironTile)
+        val ironAvailable = civ.getResourceAmount("Iron")
+        Assert.assertTrue("Test preparation failed to add Iron to Civ resources", ironAvailable >= 3)
+
+        // See if that same Engineer could create a Manufactory NOW
+        val actionsWithIron = UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unitTile)
+            .filter { it.action != null }
+        Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
+            actionsWithIron.none())
+        game.ruleset.tileImprovements["Manufactory"] = oldImprovement
+    }
+
+    @Test
+    fun `Check Hakkapeliitta TransferMovement ability`() {
+        val civ = game.addCiv(isPlayer = true)
+        val centerTile = game.getTile(HexCoord.Zero)
+
+        // Hardcoded names mean test *must* run under G&K ruleset, not Vanilla, which the TestGame class ensures
+        val general = game.addUnit("Great General", civ, centerTile)
+        val boostingUnit = game.addUnit("Hakkapeliitta", civ, centerTile)
+        boostingUnit.baseUnit.promotions.forEach { boostingUnit.promotions.addPromotion(it, true) }
+        boostingUnit.updateUniques()
+
+        val baseMovement = general.baseUnit.movement
+        UnitTurnManager(general).startTurn()
+        val actualMovement = general.currentMovement.roundToInt()
+        val boosterMovement = boostingUnit.baseUnit.movement
+
+        Assert.assertEquals("Great General stacked with a Hakkapeliitta should have increased movement points.", boosterMovement, actualMovement)
+        // This effectively tests whether the G&K rules have not been tampered with, but won't hurt
+        Assert.assertNotEquals("Great General stacked with a Hakkapeliitta should NOT have its normal movement points.", baseMovement, actualMovement)
+    }
+
+    @Test
+    fun testCanGetPromotionsWithXP() {
+        val civ = game.addCiv(isPlayer = true)
+
+        val centerTile = game.getTile(HexCoord.Zero)
+        val unit = game.addUnit("Scout", civ, centerTile)
+        val tree = PromotionTree(unit)
+
+        Assert.assertFalse(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
+        unit.promotions.XP += 10
+        Assert.assertTrue(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
+    }
+
+    /**
+     * Ensures units are assigned instance names.
+     *
+     * @see unciv.models.ruleset.unique.UniqueType.OneTimeUnitGetsName
+     */
+    @Test
+    fun testOneTimeUnitGetsName() {
+        val unit = game.addDefaultMeleeUnitWithUniques(
+            game.addCiv(),
+            game.getTile(HexCoord.Zero),
+            "[This Unit] gets a name from the [Scientist] group <upon turn start>")
+        UnitTurnManager(unit).startTurn()
+
+        Assert.assertTrue(unit.instanceName != null)
+        Assert.assertTrue(game.ruleset.unitNameGroups["Scientist"]?.unitNames?.contains(unit.instanceName) ?: false)
+    }
+
+    @Test
+    fun testPromotionTreeSetUp() {
+        val civ = game.addCiv(isPlayer = true)
+
+        //Creating the promotions
+        val promotionBranch1 = game.createUnitPromotion()
+        promotionBranch1.unitTypes = listOf("Scout")
+
+        val promotionBranch2 = game.createUnitPromotion()
+        promotionBranch2.unitTypes = listOf("Scout")
+
+        val promotionTestBranchA = game.createUnitPromotion()
+        promotionTestBranchA.unitTypes = listOf("Scout")
+        // intentional lists a promotion twice
+        promotionTestBranchA.prerequisites = listOf(promotionBranch1.name, promotionBranch2.name, promotionBranch1.name)
+
+        val promotionTestBranchB = game.createUnitPromotion()
+        promotionTestBranchB.unitTypes = listOf("Scout")
+        // intentional lists a promotion twice
+        promotionTestBranchB.prerequisites = listOf(promotionBranch1.name, promotionTestBranchA.name, promotionBranch2.name, promotionBranch1.name)
+
+        // add unit
+        val centerTile = game.tileMap[0,0]
+        val unit = game.addUnit("Scout", civ, centerTile)
+        val tree = PromotionTree(unit)
+        Assert.assertFalse("We shouldn't be able to get the promotion without XP",
+            tree.canBuyUpTo(promotionTestBranchB))
+
+        unit.promotions.XP += 30
+        unit.promotions.addPromotion(promotionBranch1.name)
+
+        // The Promotion tree needs to be refreshed to check it after gaining a promotion
+        tree.update()
+
+        Assert.assertTrue("Check if we can buy the Promotion now",
+            tree.canBuyUpTo(promotionTestBranchB))
+
+        // Make sure we only have the prerequisite promotions and that it's only listed once each
+        val promotionNode1 = tree.getNode(promotionTestBranchA)!!
+        Assert.assertEquals(promotionNode1.parents.size, 2)
+        Assert.assertTrue(
+            promotionNode1.parents.any { it.promotion == promotionBranch1 } &&
+            promotionNode1.parents.any { it.promotion == promotionBranch2 }
+        )
+        val promotionNode2 = tree.getNode(promotionTestBranchB)!!
+        Assert.assertEquals(promotionNode2.parents.size, 3)
+        Assert.assertTrue(
+            promotionNode2.parents.any { it.promotion == promotionBranch1 } &&
+            promotionNode2.parents.any { it.promotion == promotionTestBranchA } &&
+            promotionNode2.parents.any { it.promotion == promotionBranch2 }
+        )
+    }
+
+    @Test
+    fun `transforming carrier keeps payload`() {
+        game.makeHexagonalMap(1)
+        val tile = game.getTile(HexCoord.Zero)
+        tile.baseTerrain = Constants.coast
+        tile.setTransients()
+        val civ = game.addCiv()
+        val transformedBaseUnit = game.createBaseUnit(
+            "Melee",
+            "Can carry [2] [Aircraft] units"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val originalBaseUnit = game.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [2] [Aircraft] units",
+            "Can transform to [${transformedBaseUnit.name}]"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val original = game.addUnit(originalBaseUnit.name, civ, tile)
+        val payload = game.addUnit("Fighter", civ, tile)
+        val secondPayload = game.addUnit("Fighter", civ, tile)
+
+        Assert.assertTrue(UnitActions.invokeUnitAction(original, UnitActionType.Transform))
+
+        val transformed = civ.units.getCivUnits().single { it.baseUnit == transformedBaseUnit }
+        Assert.assertTrue(original.isDestroyed)
+        Assert.assertFalse(payload.isDestroyed)
+        Assert.assertTrue(payload.isTransported)
+        Assert.assertNotEquals(tile, transformed.currentTile)
+        Assert.assertEquals(transformed.currentTile, payload.currentTile)
+        Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, payload.mostRecentMoveType)
+        Assert.assertFalse(secondPayload.isDestroyed)
+        Assert.assertTrue(secondPayload.isTransported)
+        Assert.assertEquals(transformed.currentTile, secondPayload.currentTile)
+        Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
+    }
+}

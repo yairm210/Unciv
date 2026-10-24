@@ -1,0 +1,12 @@
+Many performance improvements!
+
+By SomeTroglodyte: 
+- Support for languages using Diacritics (e.g. Bangla)  
+
+By tuvus:
+- Improved unit automation for defending cities 
+- Warmongering doesn't apply to civs that are angry at the target civ 
+
+Optimize screen orientation  - By HChenX - *NEW CONTRIBUTOR!*
+
+AI behaviour changes  - By EmperorPinguin - *NEW CONTRIBUTOR!*

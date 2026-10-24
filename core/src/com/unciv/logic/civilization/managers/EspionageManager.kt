@@ -1,0 +1,124 @@
+package com.unciv.logic.civilization.managers
+
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
+import com.unciv.logic.city.managers.CityEspionageManager
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Spy
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.devconsole.ConsoleCivCommands
+import yairm210.purity.annotations.Readonly
+
+
+class EspionageManager : IsPartOfGameInfoSerialization {
+
+    var spyList = ArrayList<Spy>()
+    val erasSpyEarnedFor = LinkedHashSet<String>()
+
+    @Transient
+    lateinit var civInfo: Civilization
+
+    /**
+     * Part of the nextTurnAction of MoveSpies.
+     * We need to store if the player has clicked the button already
+     */
+    @Transient
+    var dismissedShouldMoveSpies = false
+
+    fun clone(): EspionageManager {
+        val toReturn = EspionageManager()
+        spyList.mapTo(toReturn.spyList) { it.clone() }
+        toReturn.erasSpyEarnedFor.addAll(erasSpyEarnedFor)
+        return toReturn
+    }
+
+    fun setTransients(civInfo: Civilization) {
+        this.civInfo = civInfo
+        for (spy in spyList) {
+            spy.setTransients(civInfo)
+        }
+    }
+
+    fun endTurn() {
+        for (spy in spyList.toList())
+            spy.endTurn()
+    }
+
+    @Readonly
+    fun getSpyName(): String {
+        val rng = civInfo.state.stateBasedRandom("EspianageManager.getSpyName")
+        val usedSpyNames = spyList.map { it.name }.toHashSet()
+        val validSpyNames = civInfo.nation.spyNames.filter { it !in usedSpyNames }
+        return validSpyNames.randomOrNull(rng)
+            ?: "Spy ${spyList.size + 1}" // +1 as non-programmers count from 1
+    }
+
+    fun addSpy(): Spy {
+        val spyName = getSpyName()
+        val newSpy = Spy(spyName, getStartingSpyRank())
+        newSpy.setTransients(civInfo)
+        spyList.add(newSpy)
+        return newSpy
+    }
+
+    @Readonly
+    fun getTilesVisibleViaSpies(): Sequence<Tile> {
+        return spyList.asSequence()
+            .filter { it.isSetUp() }
+            .mapNotNull { it.getCityOrNull() }
+            .flatMap { it.getCenterTile().getTilesInDistance(1) }
+    }
+
+    @Readonly
+    fun getTechsToSteal(otherCiv: Civilization): Set<String> {
+        val techsToSteal = mutableSetOf<String>()
+        for (tech in otherCiv.tech.techsResearched) {
+            if (civInfo.tech.isResearched(tech)) continue
+            if (!civInfo.tech.canBeResearched(tech)) continue
+            techsToSteal.add(tech)
+        }
+        return techsToSteal
+    }
+
+    @Readonly fun getSpiesInCity(city: City): List<Spy> = spyList.filter { it.getCityOrNull() == city }
+
+    @Readonly fun getStartingSpyRank(): Int = 1 + civInfo.getMatchingUniques(UniqueType.SpyStartingLevel).sumOf { it.params[0].toInt() }
+
+    /**
+     * Returns a list of all cities with our spies in them.
+     * The list needs to be stable across calls on the same turn.
+     */
+    @Readonly fun getCitiesWithOurSpies(): List<City> = spyList.filter { it.isSetUp() }.mapNotNull { it.getCityOrNull() }
+
+    @Readonly fun getSpyAssignedToCity(city: City): Spy? = spyList.firstOrNull { it.getCityOrNull() == city }
+
+    /**
+     * Determines whether the NextTurnAction MoveSpies should be shown or not
+     * @return true if there are spies waiting to be moved
+     */
+    @Readonly fun shouldShowMoveSpies(): Boolean = !dismissedShouldMoveSpies && spyList.any { it.isIdle() }
+            && civInfo.gameInfo.getCities().any { civInfo.hasExplored(it.getCenterTile()) && getSpyAssignedToCity(it) == null }
+
+    @Readonly fun getIdleSpies(): List<Spy> = spyList.filter { it.isIdle() }
+
+    /**
+     * Takes all spies away from their cities.
+     * Called when the civ is destroyed.
+     */
+    fun removeAllSpies() {
+        spyList.forEach { it.moveTo(null) }
+    }
+
+    /**
+     * Recalls all spies stationed in any of [otherCiv]'s cities to the hideout.
+     *
+     * Called when [otherCiv] is destroyed via console [`civ remove`][ConsoleCivCommands].
+     * Not using [CityEspionageManager.removeAllPresentSpies], so no notifications.
+     */
+    internal fun recallAllSpiesFrom(otherCiv: Civilization) {
+        val toRecall = spyList.filter { it.getCityOrNull() in otherCiv.cities }
+        for (spy in toRecall)
+            spy.moveTo(null)
+    }
+}

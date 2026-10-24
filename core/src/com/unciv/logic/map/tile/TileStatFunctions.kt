@@ -1,0 +1,330 @@
+package com.unciv.logic.map.tile
+
+import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
+import com.unciv.ui.components.extensions.toPercent
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Readonly
+import java.util.EnumMap
+
+@Readonly
+fun List<Pair<String, Stats>>.toStats(): Stats {
+    val stats = Stats()
+    for ((_, statsToAdd) in this)
+        stats.add(statsToAdd)
+    return stats
+}
+
+class TileStatFunctions(val tile: Tile) {
+    private val riverTerrain by lazy { tile.ruleset.terrains[Constants.river] }
+
+    @Readonly
+    fun getTileStats(
+        observingCiv: Civilization?,
+    ): Stats = getTileStats(tile.getCity(), observingCiv)
+
+    @Readonly
+    fun getTileStats(city: City?, observingCiv: Civilization?): Stats = timeThis("getTileStats") {
+        val statsBreakdown = getTileStatsBreakdown(city, observingCiv)
+
+        val improvement = tile.getUnpillagedImprovement()
+        val road = tile.getUnpillagedRoad()
+
+        val percentageStats = getTilePercentageStats(observingCiv, city)
+        for ((cause, @LocalState stats) in statsBreakdown) {
+            val tileType = when (cause) {
+                improvement -> TilePercentageCategory.Improvement
+                road.name -> TilePercentageCategory.Road
+                else -> TilePercentageCategory.Terrain
+            }
+            for ((stat, value) in percentageStats[tileType]!!)
+                stats[stat] *= value.toPercent()
+        }
+
+        return statsBreakdown.toStats()
+    }
+
+    @Readonly
+    fun getTileStatsBreakdown(city: City?, observingCiv: Civilization?): List<Pair<String, Stats>> {
+        val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
+        @LocalState val listOfStats = getTerrainStatsBreakdown(gameContext)
+
+        val otherYieldsIgnored = tile.allTerrains.any { it.hasUnique(UniqueType.NullifyYields, gameContext) }
+
+        val improvement = if (otherYieldsIgnored) null // Treat it as if there is no improvement
+            else tile.getUnpillagedTileImprovement()
+        @LocalState val improvementStats = improvement?.cloneStats() ?: Stats.ZERO // If improvement==null, will never be added to
+
+        val road = if (otherYieldsIgnored) null
+            else tile.getUnpillagedRoadImprovement()
+        @LocalState val roadStats = road?.cloneStats() ?: Stats.ZERO
+
+        if (city != null) {
+            val addStats: (Unique) -> Unit = { unique: Unique ->
+                val tileType = unique.params[1]
+                if (improvement != null && improvement.matchesFilter(tileType, gameContext))
+                    improvementStats.add(unique.stats)
+                else if (tile.matchesFilter(tileType, observingCiv))
+                    listOfStats.add("{${unique.sourceObjectName}} ({${unique.getDisplayText()}})" to unique.stats)
+                else if (road != null && road.matchesFilter(tileType, gameContext))
+                    roadStats.add(unique.stats)
+            }
+            city.forEachMatchingUnique(UniqueType.StatsFromTiles, gameContext) { unique: Unique ->
+                if (city.matchesFilter(unique.params[2])) addStats(unique)
+            }
+            city.forEachMatchingUnique(UniqueType.StatsFromObject, gameContext, addStats)
+            city.forEachMatchingUnique(UniqueType.StatsFromTilesWithout, gameContext) { unique: Unique ->
+                if (city.matchesFilter(unique.params[3]) && !tile.matchesFilter(unique.params[2]))
+                    addStats(unique)
+            }
+        }
+
+        if (tile.isAdjacentToRiver()) {
+            if (riverTerrain == null)
+                listOfStats.add("River" to Stats(gold = 1f))  // Fallback for legacy mods
+            else
+                //TODO this is one approach to get these stats in - supporting only the Stats UniqueType.
+                //     Alternatives: append riverTerrain to allTerrains, or append riverTerrain.uniques to
+                //     the Tile's UniqueObjects/UniqueMap (while copying onl<e> base Stats directly here)
+                listOfStats += getSingleTerrainStats(riverTerrain!!, gameContext)
+        }
+
+        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
+        if (observingCiv != null) {
+            // resource base
+            val resource = tile.tileResource
+            if (observingCiv.canSeeResource(resource)) listOfStats.add(resource.name to resource)
+
+            if (improvement != null)
+                improvementStats.add(getExtraImprovementStats(improvement, observingCiv, city))
+
+            if (road != null)
+                roadStats.add(getExtraImprovementStats(road, observingCiv, city))
+
+            if (improvement != null) {
+                val ensureMinUnique = improvement
+                    .getMatchingUniques(UniqueType.EnsureMinimumStats, gameContext)
+                    .firstOrNull()
+                if (ensureMinUnique != null) minimumStats = ensureMinUnique.stats
+            }
+        }
+
+        if (road != null) listOfStats.add(road.name to roadStats)
+        if (improvement != null) listOfStats.add(improvement.name to improvementStats)
+
+        val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
+        listOfStats.add("Minimum" to statsFromMinimum)
+
+        if (observingCiv != null && observingCiv.goldenAges.isGoldenAge() && listOfStats.toStats().gold != 0f)
+            listOfStats.add("Golden Age" to Stats(gold = 1f))
+
+        // To ensure that the original stats (in uniques, terrains, etc) are not modified in getTileStats, we clone them all
+        return listOfStats.mapNotNull { if (it.second.isEmpty()) null else it.first to it.second.clone() }
+    }
+
+    /** Ensures each stat is >= [minimumStats].stat - modifies in place */
+    @Readonly
+    private fun missingFromMinimum(current: Stats, minimumStats: Stats): Stats {
+        // Note: Not `for ((stat, value) in other)` - that would skip zero values
+        val missingStats = Stats()
+        for (stat in Stat.entries) {
+            if (current[stat] < minimumStats[stat])
+                missingStats[stat] = minimumStats[stat] - current[stat]
+        }
+        return missingStats
+    }
+
+    /** Gets stats of a single Terrain, unifying the Stats class a Terrain inherits and the Stats Unique
+     *  @return A Stats reference, must not be mutated
+     */
+    @Readonly
+    private fun getSingleTerrainStats(terrain: Terrain, gameContext: GameContext): ArrayList<Pair<String, Stats>> {
+        val list = ArrayList<Pair<String,Stats>>()
+        list.add(terrain.name to (terrain as Stats))
+
+        terrain.forEachMatchingUnique(UniqueType.Stats, gameContext) { unique ->
+            list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)
+        }
+        return list
+    }
+
+    /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
+    @Readonly
+    fun getTerrainStatsBreakdown(gameContext: GameContext = GameContext()): ArrayList<Pair<String, Stats>> {
+        // needs to be marked, because it's a var
+        @LocalState var list = ArrayList<Pair<String, Stats>>()
+
+        // allTerrains iterates over base, natural wonder, then features
+        for (terrain in tile.allTerrains) {
+            val terrainStats = getSingleTerrainStats(terrain, gameContext)
+            when {
+                terrain.hasUnique(UniqueType.NullifyYields, gameContext) ->
+                    return terrainStats
+                terrain.overrideStats ->
+                    list = terrainStats
+                else ->
+                    list += terrainStats
+            }
+        }
+        return list
+    }
+    
+    enum class TilePercentageCategory{
+        Terrain,
+        Improvement,
+        Road
+    }
+
+    // Only gets the tile percentage bonus, not the improvement percentage bonus
+    @Suppress("MemberVisibilityCanBePrivate")
+    @Readonly
+    fun getTilePercentageStats(observingCiv: Civilization?, city: City?): EnumMap<TilePercentageCategory, Stats>
+    = timeThis("TileStatFunctions.getTilePercentageStats") {
+        val terrainStats = Stats()
+        val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
+
+        val improvement = tile.getUnpillagedTileImprovement()
+        val improvementStats = Stats()
+
+        val road = tile.getUnpillagedRoadImprovement()
+        val roadStats = Stats()
+
+        fun addStats(filter: String, stat: Stat, amount: Float) {
+            if (improvement != null && improvement.matchesFilter(filter, gameContext))
+                improvementStats.add(stat, amount)
+            else if (tile.matchesFilter(filter, observingCiv))
+                terrainStats.add(stat, amount)
+            else if (road != null && road.matchesFilter(filter, gameContext))
+                roadStats.add(stat, amount)
+        }
+
+        if (city != null) {
+            city.forEachMatchingUnique(UniqueType.StatPercentFromObject, gameContext) { unique: Unique ->
+                addStats(unique.params[2], Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+            city.forEachMatchingUnique(UniqueType.AllStatsPercentFromObject, gameContext) { unique: Unique ->
+                for (stat in Stat.entries)
+                    addStats(unique.params[1], stat, unique.params[0].toFloat())
+            }
+
+        } else if (observingCiv != null) {
+            observingCiv.forEachMatchingUnique(UniqueType.StatPercentFromObject, gameContext) { unique: Unique ->
+                addStats(unique.params[2], Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+
+            observingCiv.forEachMatchingUnique(UniqueType.AllStatsPercentFromObject, gameContext) { unique: Unique ->
+                for (stat in Stat.entries)
+                    addStats(unique.params[1], stat, unique.params[0].toFloat())
+            }
+        }
+        
+        val enumMap = EnumMap<TilePercentageCategory, Stats>(TilePercentageCategory::class.java)
+        enumMap[TilePercentageCategory.Terrain] = terrainStats
+        enumMap[TilePercentageCategory.Improvement] = improvementStats
+        enumMap[TilePercentageCategory.Road] = roadStats
+        return enumMap
+    }
+
+    fun getTileStartScore(cityCenterMinStats: Stats): Float {
+        var sum = 0f
+        tile.forEachTileInDistance(2) { closeTile ->
+            val tileYield = closeTile.stats.getTileStartYield(
+                if (closeTile == tile) cityCenterMinStats else Stats.ZERO
+            )
+            sum += tileYield
+            if (closeTile in tile.neighbors)
+                sum += tileYield
+        }
+
+        if (tile.isHill())
+            sum -= 2f
+        if (tile.isAdjacentToRiver())
+            sum += 2f
+        if (tile.neighbors.any { it.getBaseTerrain().isMountain })
+            sum += 2f
+        if (tile.isAdjacentToCoast())
+            sum += 3f
+        if (!tile.isAdjacentToCoast() && tile.neighbors.any { it.isAdjacentToCoast() })
+            sum -= 7f
+
+        return sum
+    }
+
+    private fun getTileStartYield(minimumStats: Stats) =
+        getTerrainStatsBreakdown().toStats().run {
+            if (tile.tileResource != null) add(tile.tileResource!!)
+            add(missingFromMinimum(this, minimumStats))
+            food + production + gold
+        }
+
+    /** Returns the extra stats that we would get if we switched to this improvement
+     * Can be negative if we're switching to a worse improvement */
+    @Readonly
+    fun getStatDiffForImprovement(
+        improvement: TileImprovement,
+        observingCiv: Civilization,
+        city: City?,
+        /** Provide this for performance */
+        currentTileStats: Stats? = null
+    ): Stats {
+        val currentStats = currentTileStats ?: getTileStats(city, observingCiv)
+
+        @LocalState val tileClone = tile.clone(addUnits = false)
+        tileClone.setTerrainTransients()
+
+        tileClone.setImprovement(improvement.name)
+        @LocalState val futureStats = tileClone.stats.getTileStats(city, observingCiv)
+
+        return futureStats.minus(currentStats)
+    }
+
+    // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
+    @Readonly
+    private fun getExtraImprovementStats(
+        improvement: TileImprovement,
+        observingCiv: Civilization,
+        city: City?
+    ): Stats = timeThis("TileStatFunctions.getExtraImprovementStats"){
+        val stats = Stats()
+
+        val resource = tile.tileResource
+        if (observingCiv.canSeeResource(resource) && resource.isImprovedBy(improvement.name)
+                && resource.improvementStats != null
+        )
+            stats.add(resource.improvementStats!!) // resource-specific improvement
+
+        val conditionalState = GameContext(civInfo = observingCiv, city = city, tile = tile)
+        improvement.forEachMatchingUnique(UniqueType.Stats, conditionalState) { unique ->
+            stats.add(unique.stats)
+        }
+
+        improvement.forEachMatchingUnique(UniqueType.ImprovementStatsForAdjacencies, conditionalState) { unique ->
+            val adjacent = unique.params[1]
+            val numberOfBonuses = tile.neighbors.count {
+                it.matchesFilter(adjacent, observingCiv)
+                        || it.getUnpillagedRoad().name == adjacent
+            }
+            stats.add(unique.stats.times(numberOfBonuses.toFloat()))
+        }
+
+        improvement.forEachMatchingUnique(UniqueType.ImprovementStatsOnTile, conditionalState) { unique ->
+            if (tile.matchesFilter(unique.params[1])
+                || unique.params[1] == Constants.freshWater && tile.isAdjacentTo(Constants.freshWater)
+                || unique.params[1] == "non-fresh water" && !tile.isAdjacentTo(Constants.freshWater)
+            )
+                stats.add(unique.stats)
+        }
+
+        return stats
+    }
+
+}

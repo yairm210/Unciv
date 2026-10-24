@@ -1,0 +1,125 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Terrains.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Terrains",
+  "description": "A list of terrain types, including their stats and movement properties.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the Terrain."
+      },
+      "type": {
+        "enum": ["Land", "Water", "TerrainFeature", "NaturalWonder"],
+        "default": "Land",
+        "title": "Type",
+        "description": "The category of terrain."
+      },
+      "production": {
+        "type": "number",
+        "title": "Production",
+        "description": "Production per-turn yield provided by this terrain.",
+        "default": 0
+      },
+      "food": {
+        "type": "number",
+        "title": "Food",
+        "description": "Food yield per-turn provided by this terrain.",
+        "default": 0
+      },
+      "gold": {
+        "type": "number",
+        "title": "Gold",
+        "description": "Gold yield per-turn provided by this terrain.",
+        "default": 0
+      },
+      "science": {
+        "type": "number",
+        "title": "Science",
+        "description": "Science per-turn yield provided by this terrain.",
+        "default": 0
+      },
+      "culture": {
+        "type": "number",
+        "title": "Culture",
+        "description": "Culture per-turn yield provided by this terrain.",
+        "default": 0
+      },
+      "happiness": {
+        "type": "number",
+        "title": "Happiness",
+        "description": "Happiness per-turn yield provided by this terrain.",
+        "default": 0
+      },
+      "faith": {
+        "type": "number",
+        "title": "Faith",
+        "description": "Faith per-turn yield provided by this terrain.",
+        "default": 0
+      },
+      "movementCost": {
+        "type": "integer",
+        "title": "Movement Cost",
+        "description": "Base movement cost.",
+        "default": 1
+      },
+      "impassable": {
+        "type": "boolean",
+        "title": "Impassable",
+        "description": "When true, no unit can enter unless it has a special unique.",
+        "default": false
+      },
+      "defenceBonus": {
+        "type": "number",
+        "title": "Defence Bonus",
+        "description": "In percentages - so 0.1 is 10% bonus.",
+        "default": 0
+      },
+      "unbuildable": {
+        "type": "boolean",
+        "title": "Unbuildable",
+        "description": "If true, nothing can be built here - not even resource improvements.",
+        "default": false
+      },
+      "RGB": {
+        "$ref": "refs/Color.schema.json",
+        "title": "RGB",
+        "description": "RGB color for 'Default' tileset display."
+      },
+      "occursOn": {
+        "type": "array",
+        "items": { "type": "string" },
+        "title": "Occurs On",
+        "description": "For terrain features - List of terrains that this feature can appear on."
+      },
+      "overrideStats": {
+        "type": "boolean",
+        "title": "Override Stats",
+        "description": "For terrain features - indicates the stats of this terrain override those of all previous layers."
+      },
+      "turnsInto": {
+        "type": "string",
+        "title": "Turns Into",
+        "description": "Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed."
+      },
+      "weight": {
+        "type": "number",
+        "title": "Weight",
+        "description": "Only for NaturalWonder: relative weight of being picked by the map generator."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "description": "Unique properties or effects of this terrain."
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json",
+        "description": "Civilopedia entry describing this terrain."
+      }
+    },
+    "required": ["name", "type"],
+    "additionalProperties": false
+  }
+}

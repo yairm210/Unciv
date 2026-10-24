@@ -1,0 +1,269 @@
+package com.unciv.logic.city.managers
+
+import com.unciv.Constants
+import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFocus
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
+import com.unciv.testing.BaseTestRunner
+import com.unciv.testing.TestGame
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(BaseTestRunner::class)
+class CityPopulationManagerTest {
+
+    private lateinit var civ: Civilization
+    private lateinit var city: City
+
+    private val testGame = TestGame()
+
+    @Before
+    fun setUp() {
+        testGame.makeHexagonalMap(3)
+        civ = testGame.addCiv()
+        city = testGame.addCity(civ, testGame.getTile(HexCoord.Zero), initialPopulation = 1)
+    }
+
+    @Test
+    fun `should increase food requirements for next pop`() {
+        // given
+        val biggerCity = testGame.addCity(civ, testGame.getTile(HexCoord(1,0)), initialPopulation = 2)
+
+        // when
+        val smallerCityFoodRequirements = city.population.getFoodToNextPopulation()
+        val greaterCityFoodRequirements = biggerCity.population.getFoodToNextPopulation()
+
+        // then
+        assertTrue(smallerCityFoodRequirements < greaterCityFoodRequirements)
+    }
+
+    @Test
+    fun `should change food requirements for different gamespeeds`() {
+        // given
+        val quickSpeedGame = TestGame().apply { setSpeed("Quick") }
+        val quickSpeedCity = quickSpeedGame.addCity(quickSpeedGame.addCiv(), quickSpeedGame.getTile(HexCoord.Zero), initialPopulation = 1)
+
+        val epicSpeedGame = TestGame().apply { setSpeed("Epic") }
+        val epicSpeedCity = epicSpeedGame.addCity(epicSpeedGame.addCiv(), epicSpeedGame.getTile(HexCoord.Zero), initialPopulation = 1)
+
+        // when
+        val quickFoodRequirements = quickSpeedCity.population.getFoodToNextPopulation()
+        val standardCityFoodRequirements = city.population.getFoodToNextPopulation()
+        val epicCityFoodRequirements = epicSpeedCity.population.getFoodToNextPopulation()
+
+        // then
+        assertTrue(quickFoodRequirements < standardCityFoodRequirements)
+        assertTrue(standardCityFoodRequirements < epicCityFoodRequirements)
+    }
+
+    @Test
+    fun `should increase food requirements for city states`() {
+        // given
+        val cityState = testGame.addCiv(cityStateType = "Militaristic")
+        val cityStateCity = testGame.addCity(cityState, testGame.getTile(HexCoord(1,0)), initialPopulation = 1)
+
+        // when
+        val cityFoodRequirements = city.population.getFoodToNextPopulation()
+        val cityStateCityFoodRequirements = cityStateCity.population.getFoodToNextPopulation()
+
+        // then
+        assertTrue(cityFoodRequirements < cityStateCityFoodRequirements)
+    }
+
+    @Test
+    fun `should increase food requirements for AI on easier difficulties`() {
+        // given
+        val easierDifficultyGame = TestGame().apply { setDifficulty("Chieftain") }
+        val easierCity = easierDifficultyGame.addCity(easierDifficultyGame.addCiv(), easierDifficultyGame.getTile(HexCoord.Zero), initialPopulation = 1)
+
+        // when
+        val cityFoodRequirements = city.population.getFoodToNextPopulation()
+        val easierCityFoodRequirements = easierCity.population.getFoodToNextPopulation()
+
+        // then
+        assertTrue(easierCityFoodRequirements > cityFoodRequirements)
+    }
+
+    @Test
+    fun `should decrease food requirements for AI on higher difficulties`() {
+        // given
+        val harderDifficultyGame = TestGame().apply { setDifficulty("Deity") }
+        val harderCity = harderDifficultyGame.addCity(harderDifficultyGame.addCiv(), harderDifficultyGame.getTile(HexCoord.Zero), initialPopulation = 1)
+
+        // when
+        val cityFoodRequirements = city.population.getFoodToNextPopulation()
+        val harderCityFoodRequirements = harderCity.population.getFoodToNextPopulation()
+
+        // then
+        assertTrue(harderCityFoodRequirements < cityFoodRequirements)
+    }
+
+    @Test
+    fun `should remove one pop when on starvation and no food reserves`() {
+        // given
+        city.population.setPopulation(2)
+        city.population.foodStored = 0
+
+        // when
+        city.population.nextTurn(-1)
+
+        // then
+        assertEquals(1, city.population.population)
+    }
+
+    @Test
+    fun `should not remove one pop when on starvation but with enough food reserves`() {
+        // given
+        city.population.setPopulation(2)
+        city.population.foodStored = 5
+
+        // when
+        city.population.nextTurn(-1)
+
+        // then
+        assertEquals(2, city.population.population)
+    }
+
+    @Test
+    fun `should not remove one pop when on starvation but with 1 pop`() {
+        // given
+        city.population.foodStored = 0
+
+        // when
+        city.population.nextTurn(-1)
+
+        // then
+        assertEquals(1, city.population.population)
+    }
+
+    @Test
+    fun `should increase pop when enough food is stored`() {
+        // given
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertEquals(0, city.population.foodStored)
+    }
+
+    @Test
+    fun `should carry over excess food when new pop is born`() {
+        // given
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(4)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertEquals(3, city.population.foodStored)
+    }
+
+    @Test
+    fun `should start with food stored when new pop is born and uniques`() {
+        // given
+        val building = testGame.createBuilding("[50]% Food is carried over after population increases [in this city]")
+        city.cityConstructions.addBuilding(building)
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertEquals(7, city.population.foodStored)
+    }
+
+    @Test
+    fun `should automatically assign new pop to job`() {
+        // given
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertEquals(0, city.population.getFreePopulation())
+    }
+
+
+    @Test
+    fun `should automatically assign new pop to best job`() {
+        // given
+        city.clearWorkedTiles()
+        val anchorTile = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile)
+        city.lockTile(anchorTile) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
+        goodTile.setImprovementBasic("Farm")
+
+        assertFalse(city.isWorked(goodTile))
+
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertTrue(city.isWorked(goodTile))
+    }
+
+    @Test
+    fun `should automatically assign new pop to best job according to city focus`() {
+        // given
+        city.setCityFocus(CityFocus.GoldFocus)
+        city.clearWorkedTiles()
+        val anchorTile2 = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile2)
+        city.lockTile(anchorTile2) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodFoodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
+        goodFoodTile.setImprovementBasic("Farm")
+        assertFalse(city.isWorked(goodFoodTile))
+
+        val goodGoldTile = testGame.setTileTerrain(HexCoord(0,1), Constants.grassland)
+        val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
+        goodGoldTile.setImprovementBasic(goldImprovement)
+        assertFalse(city.isWorked(goodGoldTile))
+
+        city.population.foodStored = 14
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertTrue(city.isWorked(goodGoldTile))
+        assertFalse(city.isWorked(goodFoodTile))
+    }
+
+    @Test
+    fun `should automatically assign new pop to best job with specialists`() {
+        // given
+        city.setCityFocus(CityFocus.GoldFocus)
+        city.clearWorkedTiles()
+        val anchorTile3 = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile3)
+        city.lockTile(anchorTile3) // force the first pop to work on a specific tile to avoid being reassigned
+        val specialistBuilding = testGame.createBuilding()
+        specialistBuilding.specialistSlots.add("Merchant", 1)
+        city.cityConstructions.addBuilding(specialistBuilding)
+
+        city.population.foodStored = 14
+        assertTrue(city.population.specialistAllocations.isEmpty())
+
+        // when
+        city.population.nextTurn(1)
+
+        // then
+        assertEquals(2, city.population.population)
+        assertTrue(city.population.specialistAllocations.containsKey("Merchant"))
+    }
+}

@@ -1,0 +1,15 @@
+Big rework of Policy Picker UI - By vegeta1k95
+
+G&K Neutral Tile Road Maintenance - By itanasi
+
+Unknown civs displayed as `Unknown civilization` in GP and Diplomacy screens - By alexban011
+
+Fix: tech screen zooms to current tech when opened
+
+Get correct civ-wide stats from City-States for Siam bonuses
+
+By letstalkaboutdune:
+- ctrl+U toggles World Screen UI elements
+- Trim Nuke SFX
+
+Add new game option: No City Razing - By FiretronP75

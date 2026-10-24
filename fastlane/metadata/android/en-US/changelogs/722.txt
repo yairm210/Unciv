@@ -1,0 +1,13 @@
+Resolved crashes when centering on a city-state with no cities
+
+By OptimizedForDensity:
+- Certain projects cannot be hurried by great engineer
+- Fix scout not upgrading through ruins
+- Fix rare case where ruins would delete an AI unit while trying to upgrade it
+- Prevent duplicate ruin reward
+
+WordScreenTopBar reworked, portrait-friendlier  - By SomeTroglodyte
+
+Fixed minimap fog of war for spectators - By alexban011
+
+Fix "Free technology" allowing restricted techs - By MindaugasRumsa

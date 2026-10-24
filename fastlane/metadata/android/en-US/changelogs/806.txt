@@ -1,0 +1,16 @@
+By vegeta1k95:
+- Better World-Wrap
+- Performance optimization: don't draw empty tile layers
+- Fix promotion screen buttons clickhandler
+- Fix city table selection
+
+By OptimizedForDensity:
+- Performance Improvements to Construction Automation
+- Refactor Construction Rejection Reasons
+
+By Gualdimar:
+- Select next unit after closing the improvement screen
+- Add Reset tutorials button
+- City rename popup from world screen
+
+Fixed 5hex image issues

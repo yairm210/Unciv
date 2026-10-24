@@ -1,0 +1,11 @@
+Added Undo button for unit moves!
+
+Better trade screen for portrait mode
+
+"Gift" trades to AI civs make them more friendly towards you
+
+Add improvement action image to workers actively building improvement
+
+Replace settlers with modded worker-like units in mods
+
+Removed zoom limit for world-wrap maps - By Gualdimar

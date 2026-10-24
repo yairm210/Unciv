@@ -1,0 +1,9 @@
+Allow city filters to be multifilters and not throw ruleset errors
+
+Korean science boost only applies for buildings *in capital*
+
+By SeventhM:
+- Avoid crash from city combantants with combatant conditional
+- Split Strat Balance and Legend Start into their own checkboxes
+
+ThreatManager improvement  - By tuvus
