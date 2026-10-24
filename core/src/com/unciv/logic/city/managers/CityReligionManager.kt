@@ -314,7 +314,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
         val adjacentUnitsThatLimitNaturalSpread = city.getCenterTile().getTilesInDistance(1)
             .flatMap { it.getUnits() }
-            .filter { it.hasUnique(UniqueType.PreventNautralReligionSpread) }
+            .filter { it.hasUnique(UniqueType.PreventNaturalReligionSpread) }
 
         for (nearbyCity in allCitiesWithinNaturalSpreadRange) {
             val majorityReligionOfNearbyCity = nearbyCity.religion.getMajorityReligion() ?: continue
