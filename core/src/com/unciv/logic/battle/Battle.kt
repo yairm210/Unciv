@@ -504,7 +504,7 @@ object Battle {
             if (plunderedAmount == 0) continue
             civ.addStat(key, plunderedAmount)
             civ.addNotification(
-                "${plunderingUnit.getNotificationDisplay("your ")} plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
+                "${plunderingUnit.getNotificationDisplay("Your ")} plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
                 NotificationCategory.War,
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
