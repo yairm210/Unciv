@@ -21,6 +21,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.UpgradeAvailability
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -36,6 +37,7 @@ import com.unciv.view.ForeignCityView
 import com.unciv.view.isAtWar
 import com.unciv.view.stateBasedRandom
 import com.unciv.view.MapUnitView
+import com.unciv.view.ForeignCivView
 import com.unciv.view.CityView
 import com.unciv.view.MapUnitCombatantView
 import yairm210.purity.annotations.Readonly
@@ -500,20 +502,24 @@ object UnitAutomation {
      * Tries to move the unit to the closest city that is close to a target civilization
      */
     private fun tryPrepare(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        val civInfo = unit.civ
+        val civ = unitView.civ()
 
+        // Only our own side of the diplomacy is known to us - we can't see their flags,
+        //  but if they denounced us we'll have the resulting opinion modifier
         @Readonly
-        fun hasPreparationFlag(targetCiv: Civilization): Boolean {
-            val diploManager = civInfo.getDiplomacyManager(targetCiv)!!
+        fun hasPreparationFlag(targetCiv: ForeignCivView): Boolean {
+            val diploManager = civ.getDiplomacyManagerWith(targetCiv)!!
             if (diploManager.hasFlag(DiplomacyFlags.Denunciation)
-                    || diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) return true
+                || diploManager.hasModifier(DiplomaticModifiers.Denunciation)) return true
             if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) return true
             return false
         }
 
-        val hostileCivs = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) || hasPreparationFlag(it) }.toSet()
-        val closeCities = ThreatManager.getNeighboringCitiesOfOtherCivs(unitView.civ()).filter { it.second.owningCiv().getCiv() in hostileCivs }
+        // Prepare against the civs we're actually at war with - only if there are none, against the ones we might go to war with
+        val knownCivs = civ.getKnownCivs()
+        val hostileCivs = knownCivs.filter { civ.isAtWarWith(it) }.toSet()
+            .ifEmpty { knownCivs.filter { hasPreparationFlag(it) }.toSet() }
+        val closeCities = ThreatManager.getNeighboringCitiesOfOtherCivs(unitView.civ()).filter { it.second.owningCiv() in hostileCivs }
         val closestDistance = closeCities.minOfOrNull { it.first.getCenterTile().aerialDistanceTo(it.second.getCenterTile()) }
             ?: return false
         val citiesToDefend = closeCities
