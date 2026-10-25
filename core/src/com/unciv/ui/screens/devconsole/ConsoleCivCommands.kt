@@ -25,7 +25,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
 
         "setplayertype" to ConsoleAction("civ setplayertype <civName> <ai/human>") { console, params ->
             val civ = console.getCivByName(params[0])
-            if (!civ.isMajorCiv())
+            if (!civ.isMajorCiv)
                 throw ConsoleErrorException("Can only change player type for major civs")
             civ.playerType = params[1].enumValue<PlayerType>()
             DevConsoleResponse.OK
@@ -109,7 +109,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 ?: throw ConsoleErrorException("No allowed Settler units in the ruleset")
             val civ = Civilization(nation)
             if (nation.isCityState) {
-                val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv() }.map { it.nation }
+                val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv }.map { it.nation }
                 val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("DevConsole civ add")
                 if (!civ.cityStateFunctions.initCityState(ruleset, gameInfo.gameParameters.startingEra, usedMajorCivs, rng))
                     throw ConsoleErrorException("City-state not allowed in this game")

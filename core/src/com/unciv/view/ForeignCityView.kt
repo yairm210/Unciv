@@ -31,7 +31,7 @@ open class ForeignCityView(protected open val city: City,
     @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ)
     /** Get from a foreign view to an inner view */
     @Readonly fun tryGetCityView(): CityView? {
-        val canSeeCityData = viewer.isSpectator() // not posing, actual spectator
+        val canSeeCityData = viewer.isSpectator // not posing, actual spectator
                 || city.civ == viewer
                 || spyIsSetUpAtCity(viewer)
                 || DebugUtils.VISIBLE_MAP

@@ -108,7 +108,7 @@ object OjhBenchmark {
      * third, measured. Whichever a run used belongs in its output.
      */
     internal fun view(info: GameInfo): String =
-        if (info.civilizations.any { it.isSpectator() }) "spectator" else "civ"
+        if (info.civilizations.any { it.isSpectator }) "spectator" else "civ"
     private fun note(line: String) = System.err.println(line)
 
     @JvmStatic

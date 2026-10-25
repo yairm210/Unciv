@@ -27,7 +27,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly open fun civ(): ForeignCivView = gameView.getForeignCivView(unit.civ)
     /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */
     @Readonly fun tryGetMapUnitView(): MapUnitView? {
-        if (unit.civ != viewer && !viewer.isSpectator()) return null
+        if (unit.civ != viewer && !viewer.isSpectator) return null
         return gameView.getMapUnitView(unit)
     }
     @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())

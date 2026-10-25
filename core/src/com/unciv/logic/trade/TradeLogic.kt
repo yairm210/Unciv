@@ -78,7 +78,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it != otherCiv && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it != otherCiv && it.isMajorCiv && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow

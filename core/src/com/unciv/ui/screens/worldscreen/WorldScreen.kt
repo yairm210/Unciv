@@ -105,13 +105,13 @@ class WorldScreen(
         internal set
     /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
      *  Only ever differs from [spectatorGameView] for spectators. */
-    var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator())
+    var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator)
         internal set
 
     /** The [viewingCiv]'s own perspective.
      * This should only ever be used A. for spectators B. when forOfWar is false, for specific UI elements */
     private val spectatorGameView by lazy {
-        if (!viewingCiv.isSpectator()) throw Exception("Managed to disable fog of war without being spectator?!")
+        if (!viewingCiv.isSpectator) throw Exception("Managed to disable fog of war without being spectator?!")
         GameView(gameInfo, viewingCiv, spectatorMode = true)
     }  
     fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
@@ -122,7 +122,7 @@ class WorldScreen(
 
     /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
-        get() = isPlayersTurn && !viewingCiv.isSpectator()
+        get() = isPlayersTurn && !viewingCiv.isSpectator
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
 
@@ -198,7 +198,7 @@ class WorldScreen(
         mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
-        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
+        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator)
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -312,7 +312,7 @@ class WorldScreen(
     @Readonly
     fun openDeveloperConsole() {
         // No cheating unless you're by yourself, ignoring a possible spectator
-        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1) return
+        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator } > 1) return
         DevConsolePopup(this)
     }
 
@@ -501,16 +501,16 @@ class WorldScreen(
     }
 
     fun setSelectedCiv(civ: Civilization) {
-        if (!viewingCiv.isSpectator()) throw Exception("Tried to select a different civ when not spectator!")
+        if (!viewingCiv.isSpectator) throw Exception("Tried to select a different civ when not spectator!")
         selectedCiv = civ
-        selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
+        selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator)
     }
 
     private fun updateSelectedCiv() {
         // Only spectators/replays follow the selection's owner. For ordinary players selectedCiv must stay viewingCiv:
         // otherwise a selected unit that just changed owner (gifted to a city-state, captured) would switch the
         // whole view to its new owner, defeat UnitPresenter's "no longer ours" deselection, and leave a stale selection.
-        if (!viewingCiv.isSpectator()) return
+        if (!viewingCiv.isSpectator) return
         setSelectedCiv(when {
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
@@ -544,7 +544,7 @@ class WorldScreen(
         mapHolder.scrollY = restoreState.scrollY
         mapHolder.updateVisualScroll()
 
-        if (!viewingCiv.isSpectator()) return
+        if (!viewingCiv.isSpectator) return
         setSelectedCiv(gameInfo.getCivilization(restoreState.selectedCivName))
         fogOfWar = restoreState.fogOfWar
     }

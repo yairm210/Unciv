@@ -106,7 +106,7 @@ object UnitActionsFromUniques {
     @Readonly
     private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
         val leadersWePromisedNotToSettleNear = HashSet<String>()
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv && !civInfo.isAtWarWith(it) }) {
             val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
             if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
                 val citiesWithin6Tiles = otherCiv.cities

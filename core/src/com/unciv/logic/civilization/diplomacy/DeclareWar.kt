@@ -178,7 +178,7 @@ object DeclareWar {
         }
         
         // Defensive pact chains are not allowed now
-        if (diplomacyManager.civInfo.isMajorCiv()) {
+        if (diplomacyManager.civInfo.isMajorCiv) {
             if (!isOffensiveWar && warType != WarType.DefensivePactWar && !civAtWarWith.isCityState)
                 callInDefensivePactAllies(diplomacyManager)                
             callInCityStateAllies(diplomacyManager)

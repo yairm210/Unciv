@@ -484,9 +484,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * own-civ exemption, and detection). Callers checking whether a unit can actually be seen should use [isVisibleTo] instead. */
     @Readonly
     fun hasActiveInvisibilityUnique(to: Civilization): Boolean {
-        if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
+        if (hasUnique(UniqueType.Invisible) && !to.isSpectator)
             return true
-        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator)
             return getTile().getTilesInDistance(1).none {
                 it.getUnits().any { unit -> unit.civ == to }
             }
@@ -1027,7 +1027,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // clearEncampment must run first, because removing the improvement will invalidate quests, and both functions do so.
         if (!civ.isBarbarian && tile.isBarbarianEncampment())
             clearEncampment(tile)
-        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true)
+        if (civ.isMajorCiv && improvement?.isAncientRuinsEquivalent(cache.state) == true)
             getAncientRuinBonus(tile)
 
         // Check whether any civilians without military units are there.

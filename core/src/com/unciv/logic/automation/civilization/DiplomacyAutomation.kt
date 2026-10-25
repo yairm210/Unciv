@@ -63,9 +63,9 @@ object DiplomacyAutomation {
 
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val otherCivNumberOfFriends = otherCiv.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
-        val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
-        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
-        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
+        val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv && it.isAlive() }
+        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv } - 1 // Don't include us
+        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
 
         // Motivation should be constant as the number of civs changes
@@ -104,7 +104,7 @@ object DiplomacyAutomation {
         motivation -= 50f * deadCivs / allCivs
 
         // Become more desperate as we have more wars
-        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
+        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv && it.diplomaticStatus == DiplomaticStatus.War } * 10
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
@@ -113,7 +113,7 @@ object DiplomacyAutomation {
 
         // If they are the only non-friendly civ near us then they are the only civ to attack and expand into
         if (ThreatManager.getNeighboringCivilizations(civView).map { it.getCiv() }.none {
-                it.isMajorCiv() && it != otherCiv
+                it.isMajorCiv && it != otherCiv
                     && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)
             })
             motivation -= 20
@@ -176,7 +176,7 @@ object DiplomacyAutomation {
 
         val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs().filter {
             val ourDiploManager = civInfo.getDiplomacyManager(it)!!
-            it.isMajorCiv()
+            it.isMajorCiv
                 && !civInfo.isAtWarWith(it) 
                 && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !ourDiploManager.hasOpenBorders
@@ -331,8 +331,8 @@ object DiplomacyAutomation {
             it.hasFlag(DiplomacyFlags.DefensivePact)
                 && it.otherCiv.getDiplomacyManager(civInfo)?.hasFlag(DiplomacyFlags.DefensivePact) != true
         }
-        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
-        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
+        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv } - 1 // Don't include us
+        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
 
         // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
@@ -357,7 +357,7 @@ object DiplomacyAutomation {
         motivation -= 15 * otherCivNonOverlappingDefensivePacts
 
         // Becomre more desperate as we have more wars
-        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 5
+        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv && it.diplomaticStatus == DiplomaticStatus.War } * 5
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
@@ -435,7 +435,7 @@ object DiplomacyAutomation {
             tradeLogic.currentTrade.ourOffers.add(tradeOffer)
             tradeLogic.currentTrade.theirOffers.add(tradeOffer)
 
-            if (enemy.isMajorCiv()) {
+            if (enemy.isMajorCiv) {
                 var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
 
                 if (civView.gold > 0 && moneyWeNeedToPay > 0) {
@@ -463,7 +463,7 @@ object DiplomacyAutomation {
         val civInfo = civView.getCiv()
         if (!civView.isAtWar() || civView.cities().isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        val enemyCivs = civInfo.getCivsAtWarWith().filter { it.isMajorCiv() }
+        val enemyCivs = civInfo.getCivsAtWarWith().filter { it.isMajorCiv }
             .sortedByDescending { it.getStatForRanking(RankingType.Force) }
         for (enemyCiv in enemyCivs) {
             val potentialAllies = ThreatManager.getNeighboringCivilizations(GameView(enemyCiv.gameInfo, enemyCiv).civView).map { it.getCiv() }
@@ -513,7 +513,7 @@ object DiplomacyAutomation {
 
         for (tile in nearbyTiles) {
             val unit = tile.militaryUnit ?: continue
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || !unit.isVisibleTo(civInfo))
+            if (! unit.civ.isMajorCiv || unit.civ == civInfo || !unit.isVisibleTo(civInfo))
                 continue
             nearbyUnitCountByCiv.add(unit.civ, 1)
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
@@ -622,7 +622,7 @@ object DiplomacyAutomation {
         }
         
         val relationships = civInfo.getKnownCivs()
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .map { civInfo.getDiplomacyManager(it)!! } // ok because known civs are by definition those we have a relationship with
         
         var numberOfActiveDenouncements: Int = relationships

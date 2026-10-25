@@ -93,7 +93,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     fun triggerMayanGreatPerson() {
-        if (civInfo.isSpectator()) return
+        if (civInfo.isSpectator) return
         val greatPeople = getGreatPeople()
         if (longCountGPPool.isEmpty())
             longCountGPPool = greatPeople.map { it.name }.toHashSet()
