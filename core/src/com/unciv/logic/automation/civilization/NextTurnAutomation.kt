@@ -736,17 +736,15 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
                 offendingCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civView.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
-                diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
-                if (demand == Demand.DoNotAttackUs)
+                diplomacyManager.addDiminishingModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
+                if (demand == Demand.DoNotAttackUs) {
                     // relationship penalty with all common known civs, similar to DoF backstabbing
                     // TODO: apply WarmongerHatred personality trait here?
                     for (thirdPartyCiv in diplomacyManager.getCommonKnownCivs()) {
                         thirdPartyCiv.getDiplomacyManager(offendingCiv)!!
-                            .setModifier(
-                                DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv,
-                                -10f
-                            )
+                            .addDiminishingModifier(DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv, -10f)
                     }
+                }
                 diplomacyManager.removeFlag(demand.agreedToDemand)
             }
             // violation before promise

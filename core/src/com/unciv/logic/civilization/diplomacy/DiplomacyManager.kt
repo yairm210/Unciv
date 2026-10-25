@@ -682,6 +682,22 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         diplomaticModifiers[modifier.name] = amount
     }
 
+    /**
+     * Allows repeatedly adding to a modifier without worrying that it will reach ridiculous levels.
+     * Add 20 to 0 -> 20 (+20) (same as [addModifier]).
+     * Add 20 to 20 -> 30 (+10).
+     * Add 20 to 60 -> 65 (+5).
+     * Works for both positive and negative values.
+     */
+    fun addDiminishingModifier(modifier: DiplomaticModifiers, amount: Float) {
+        addModifier(
+            modifier,
+            // caution if we are dealing with positive AND negative values
+            if (amount == 0f || sign(amount) != sign(getModifier(modifier))) amount 
+            else amount * amount / (getModifier(modifier) + amount)
+        ) 
+    }
+
     @Readonly
     internal fun getModifier(modifier: DiplomaticModifiers): Float {
         if (!hasModifier(modifier)) return 0f
@@ -833,7 +849,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         val otherCivOpinionChangeFromBeingDenounced = INITIAL_OPINION_CHANGE_WHEN_DENOUNCED * 2f.pow(-0.5f * activeDenunciationsAgainstOtherCiv)
         Log.debug("%s is upset that %s denounced them: %.1f opinion", otherCivName, civInfo.civName, otherCivOpinionChangeFromBeingDenounced)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, otherCivOpinionChangeFromBeingDenounced)
+        otherCivDiplomacy().addDiminishingModifier(DiplomaticModifiers.Denunciation, otherCivOpinionChangeFromBeingDenounced)
         
         // denouncements are active for 30 turns
         // before adjusting with game speed - consider possible side effects of this
