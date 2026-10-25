@@ -28,8 +28,8 @@ class Simulation(
     private val civIdsInExperimentGroup: Set<String> = emptySet()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv() }.map { it.civID }
-    private val numMajorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv()  }.size
+    private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator && it.isMajorCiv }.map { it.civID }
+    private val numMajorCivs = newGameInfo.civilizations.filter { !it.isSpectator && it.isMajorCiv  }.size
     private var startTime: Long = 0
     private var talliedGames = 0
     var numWins = mutableMapOf<String, MutableInt>()
@@ -90,7 +90,7 @@ class Simulation(
 
         println(
             "Starting new game with major civs: " +
-                newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civID } +
+                newGameInfo.civilizations.filter { it.isMajorCiv }.joinToString { it.civID } +
                 " and minor civs: " +
                 newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civID }
         )

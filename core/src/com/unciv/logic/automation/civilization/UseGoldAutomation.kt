@@ -22,7 +22,7 @@ object UseGoldAutomation {
         for (unit in civ.units.getCivUnits())
             UnitAutomation.tryUpgradeUnit(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))
 
-        if (civ.isMajorCiv())
+        if (civ.isMajorCiv)
             useGoldForCityStates(civ)
 
         val acceptableHurryCostModifier = civ.gold.coerceAtLeast(0)/100

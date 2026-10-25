@@ -124,7 +124,7 @@ class MinimapTile(val tile: Tile, tileSize: Float) {
                 else
                     tile.history.getState(turn).cityCenterType ==
                             CityCenterType.Capital
-        val nationIconSize = (if (isCapital && owningCiv.isMajorCiv()) 1.667f else 1.25f) * image.width
+        val nationIconSize = (if (isCapital && owningCiv.isMajorCiv) 1.667f else 1.25f) * image.width
         val cityCircle = ImageGetter.getCircle(nation.getInnerColor())
             .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
         val hexCenterXPosition = image.x + image.width / 2

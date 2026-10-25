@@ -76,7 +76,7 @@ class VictoryScreenIllustrations(
         .filter { it.hasIllustrations() }
         .sortedBy { it.name.tr(hideIcons = true) }
     private val completionPercentages = game.civilizations
-        .filter { it.isMajorCiv() && it.isAlive() || it == selectedCiv }
+        .filter { it.isMajorCiv && it.isAlive() || it == selectedCiv }
         .associateWith { civ ->
             victories.associateWith { victoryCompletePercent(it, civ) }
         }
@@ -205,7 +205,7 @@ class VictoryScreenIllustrations(
                 compareByDescending<Victory> { victory ->
                     completionPercentages[selectedCiv]?.get(victory) ?: 0
                 }.thenByDescending { victory ->
-                    game.civilizations.filter { it != selectedCiv && it.isMajorCiv() && it.isAlive() }
+                    game.civilizations.filter { it != selectedCiv && it.isMajorCiv && it.isAlive() }
                         .maxOfOrNull { victoryCompletePercent(victory, it) } ?: 0
                 }
             ).firstOrNull() ?: victories.first()
@@ -228,9 +228,9 @@ class VictoryScreenIllustrations(
                 }
                 MilestoneType.DestroyAllPlayers -> {
                     total += if (selectedCiv.shouldHideCivCount()) game.gameParameters.maxNumberOfPlayers
-                        else game.civilizations.count { it.isMajorCiv() }
+                        else game.civilizations.count { it.isMajorCiv }
                     game.civilizations.count {
-                        it != civ && it.isMajorCiv() && civ.knows(it) && it.isDefeated()
+                        it != civ && it.isMajorCiv && civ.knows(it) && it.isDefeated()
                     }
                 }
                 MilestoneType.CaptureAllCapitals -> {
@@ -248,11 +248,11 @@ class VictoryScreenIllustrations(
                     relevantCivs.count { milestone.getMoreCountableThanOtherCivPercent(civ, it) > 100f }
                 }
                 MilestoneType.WorldReligion -> {
-                    total += game.civilizations.count { it.isMajorCiv() && it.isAlive() }
+                    total += game.civilizations.count { it.isMajorCiv && it.isAlive() }
                     val religion = civ.religionManager.religion?.takeUnless { it.isPantheon() }
                     game.civilizations.count {
                         religion != null &&
-                            it.isMajorCiv() && it.isAlive() && civ.knows(it) &&
+                            it.isMajorCiv && it.isAlive() && civ.knows(it) &&
                             it.religionManager.isMajorityReligionForCiv(religion)
                     }
                 }

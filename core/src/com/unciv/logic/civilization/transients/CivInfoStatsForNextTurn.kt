@@ -140,7 +140,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         * In civ5, it seems population modifier is always 0.5, so i hardcoded it down below */
         var supply = getBaseUnitSupply() + getUnitSupplyFromCities() + getUnitSupplyFromPop()
 
-        if (civInfo.isMajorCiv() && civInfo.playerType == PlayerType.AI)
+        if (civInfo.isMajorCiv && civInfo.playerType == PlayerType.AI)
             supply = (supply*(1f + civInfo.getDifficulty().aiUnitSupplyModifier)).toInt()
         return supply
     }

@@ -41,7 +41,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun getVotingCivs() = civInfo.gameInfo.civilizations.asSequence()
-        .filterNot { it.isBarbarian || it.isSpectator() || it.isDefeated() }
+        .filterNot { it.isBarbarian || it.isSpectator || it.isDefeated() }
 
     /** Finds the Building and Owner of the United Nations (or whatever the Mod called it)
      *  - if it's built at all and only if the owner is alive
@@ -133,7 +133,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getVictoryTypeAchieved(): String? {
-        if (!civInfo.isMajorCiv()) return null
+        if (!civInfo.isMajorCiv) return null
         val victory = getAvailableVictories().firstOrNull { getNextMilestone(it) == null }
         if (victory != null) return victory.name
         if (civInfo.hasUnique(UniqueType.TriggersVictory))

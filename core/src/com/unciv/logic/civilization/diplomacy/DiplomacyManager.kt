@@ -514,7 +514,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (religion != null && religion == otherCiv.religionManager.religion?.name)
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
-        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv}) {
+        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv && it != otherCiv}) {
             civ.forEachMatchingUnique(UniqueType.OtherCivsCityStateRelationsDegradeFaster) { unique ->
                 modifierPercent += unique.params[0].toFloat()
             }
@@ -723,7 +723,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
-            if (thirdCiv.isSpectator()) continue
+            if (thirdCiv.isSpectator) continue
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
             thirdCiv.getDiplomacyManager(otherCiv)!!.setFriendshipBasedModifier()
         }
@@ -776,7 +776,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
-            if (thirdCiv.isSpectator()) return
+            if (thirdCiv.isSpectator) return
             thirdCiv.getDiplomacyManager(civInfo)!!.setDefensivePactBasedModifier()
         }
 
@@ -877,7 +877,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
             
-            if (thirdCiv.isSpectator())
+            if (thirdCiv.isSpectator)
                 continue
 
             // their diplomacy with us

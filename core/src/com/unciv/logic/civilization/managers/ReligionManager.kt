@@ -116,7 +116,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun faithForPantheon(additionalCivs: Int = 0): Int {
         val gameInfo = civInfo.gameInfo
-        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
+        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv && it.religionManager.religion != null }
         val cost = gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth
         return (cost * gameInfo.speed.faithCostModifier).roundToInt()
     }
@@ -127,7 +127,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun canFoundOrExpandPantheon(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState > ReligionState.Pantheon) return false
-        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.isMajorCiv) return false
         if (numberOfBeliefsAvailable(BeliefType.Pantheon) == 0)
             return false // no more available pantheons
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion }
@@ -186,7 +186,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
         if (!ignoreFaithAmount && storedFaith < faithForNextGreatProphet()) return false
-        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.isMajorCiv) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
         if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded
         return true
@@ -226,7 +226,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val ruleset = gameInfo.ruleset
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
+        val civCount = gameInfo.civilizations.count { it.isMajorCiv }
         return min(ruleset.religions.size, base + (civCount * multiplier).toInt())
     }
 
@@ -259,10 +259,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
+        val civCount = gameInfo.civilizations.count { it.isMajorCiv }
         val hideCivCount = civInfo.shouldHideCivCount()
         if (hideCivCount) {
-            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
+            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv }
             val estimatedCivCount = (
                     gameInfo.gameParameters.minNumberOfPlayers.coerceAtLeast(knownCivs) +
                             gameInfo.gameParameters.maxNumberOfPlayers - 1
@@ -298,7 +298,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
-        if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
+        if (!civInfo.isMajorCiv) return false // Only major civs may use religion
 
         if (remainingFoundableReligions() == 0)
             return false // Too bad, too many religions have already been founded
@@ -327,7 +327,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
-        if (!civInfo.isMajorCiv()) return false // Only major civs
+        if (!civInfo.isMajorCiv) return false // Only major civs
 
         if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
             return false // Mod maker did not provide enough follower beliefs
@@ -512,7 +512,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
-        if (!civInfo.isMajorCiv()) return false // Only major civs
+        if (!civInfo.isMajorCiv) return false // Only major civs
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
 
         val religion = missionary.civ.gameInfo.religions[missionary.religion] ?: return false

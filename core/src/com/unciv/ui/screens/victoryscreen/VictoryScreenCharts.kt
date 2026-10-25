@@ -76,7 +76,7 @@ class VictoryScreenCharts(
         val oldScrollY = civButtonsScroll.scrollY
         civButtonsTable.clear()
         val sortedCivs = gameInfo.civilizations.asSequence()
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .filter { targetCiv -> VictoryScreen.canViewCivStats(gameInfo, viewingCiv, targetCiv) }
             .map { VictoryScreen.CivWithStat(it, rankingType) }
             .sortedWith(
@@ -108,7 +108,7 @@ class VictoryScreenCharts(
 
     private fun getLineChartData(rankingType: RankingType): List<DataPoint<Int>> {
         val dataPoints = gameInfo.civilizations.asSequence()
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .filter { targetCiv -> VictoryScreen.canViewCivStats(gameInfo, viewingCiv, targetCiv) }
             .flatMap { civ ->
                 civ.statsHistory

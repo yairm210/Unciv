@@ -96,9 +96,9 @@ class TechManager : IsPartOfGameInfoSerialization {
     @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         val numberOfCivsResearchedThisTech = civInfo.getKnownCivs()
-            .count { it.isMajorCiv() && it.tech.isResearched(techName) }
+            .count { it.isMajorCiv && it.tech.isResearched(techName) }
         val numberOfCivsRemaining = civInfo.gameInfo.civilizations
-            .count { it.isMajorCiv() && !it.isDefeated() }
+            .count { it.isMajorCiv && !it.isDefeated() }
         return 1 + numberOfCivsResearchedThisTech / numberOfCivsRemaining.toFloat() * 0.3f
     }
 
@@ -319,7 +319,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         moveToNewEra(showNotification)
 
-        if (!civInfo.isSpectator() && showNotification)
+        if (!civInfo.isSpectator && showNotification)
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
                 NotificationIcon.Science)
@@ -440,13 +440,13 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (previousEra == currentEra) return
         
         if (showNotification) {
-            if (!civInfo.isSpectator())
+            if (!civInfo.isSpectator)
                 civInfo.addNotification(
                     "You have entered the [$currentEra]!",
                     NotificationCategory.General,
                     NotificationIcon.Science
                 )
-            if (civInfo.isMajorCiv()) {
+            if (civInfo.isMajorCiv) {
                 for (knownCiv in civInfo.getKnownCivsWithSpectators()) {
                     knownCiv.addNotification(
                         "[${civInfo.civName}] has entered the [$currentEra]!",
@@ -458,7 +458,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {
-                if (!civInfo.isSpectator())
+                if (!civInfo.isSpectator)
                     civInfo.addNotification(
                         "[${policyBranch.name}] policy branch unlocked!",
                         PolicyAction(policyBranch.name),

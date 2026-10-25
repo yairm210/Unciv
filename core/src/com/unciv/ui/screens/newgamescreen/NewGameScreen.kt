@@ -324,7 +324,7 @@ class NewGameScreen(
                 // Now assign player types to explicit player Nation choices that exist in the game,
                 // remembering which are already "used".
                 // (at the moment NewGameScreen forbids such choices for scenarios, but let's support it here in case someone goes and does) 
-                val randomPool = gameInfo.civilizations.filter { it.isMajorCiv() }.map { it.civID }.toMutableSet()
+                val randomPool = gameInfo.civilizations.filter { it.isMajorCiv }.map { it.civID }.toMutableSet()
                 fun Civilization.assign(playerInfo: Player) {
                     playerType = playerInfo.playerType
                     randomPool.remove(civID)

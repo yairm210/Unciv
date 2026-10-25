@@ -86,7 +86,7 @@ internal class VictoryScreenCivGroup(
                     icon.setSize(30f)
                     return Triple(icon, Color.LIGHT_GRAY, ImageGetter.CHARCOAL)
                 }
-                currentPlayer.isSpectator()
+                currentPlayer.isSpectator
                     || civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.REGULAR
                     || currentPlayer == civ // || game.viewEntireMapForDebug
                     || currentPlayer.knows(civ)

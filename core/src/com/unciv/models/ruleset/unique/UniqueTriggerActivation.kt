@@ -168,7 +168,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.GetLeaderTitle -> {
-                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.isMajorCiv) return null
                 return {
                     civInfo.leaderTitle = unique.params[0]
                     if (notification != null)
@@ -402,7 +402,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeFreePolicy -> {
                 // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game gets stuck on the policy picker screen
-                if (civInfo.isSpectator()) return null
+                if (civInfo.isSpectator) return null
 
                 return {
                     civInfo.policies.freePolicies++
@@ -415,7 +415,7 @@ object UniqueTriggerActivation {
                 }
             }
             UniqueType.OneTimeAmountFreePolicies -> {
-                if (civInfo.isSpectator()) return null
+                if (civInfo.isSpectator) return null
                 val newFreePolicies = unique.params[0].toInt()
 
                 return {
@@ -519,7 +519,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeFreeGreatPerson -> {
-                if (civInfo.isSpectator()) return null
+                if (civInfo.isSpectator) return null
                 return {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
@@ -572,7 +572,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeFreeTech -> {
-                if (civInfo.isSpectator()) return null
+                if (civInfo.isSpectator) return null
                 return {
                     civInfo.tech.freeTechs += 1
                     if (notification != null)
@@ -581,7 +581,7 @@ object UniqueTriggerActivation {
                 }
             }
             UniqueType.OneTimeAmountFreeTechs -> {
-                if (civInfo.isSpectator()) return null
+                if (civInfo.isSpectator) return null
                 return {
                     civInfo.tech.freeTechs += unique.params[0].toInt()
                     if (notification != null)
@@ -920,7 +920,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeFreeBelief -> {
-                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.isMajorCiv) return null
                 val beliefType = BeliefType.valueOf(unique.params[0])
                 val religionManager = civInfo.religionManager
                 if ((beliefType != BeliefType.Pantheon && beliefType != BeliefType.Any)
@@ -1035,7 +1035,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeTriggerVoting -> {
                 return {
                     for (civ in civInfo.gameInfo.civilizations)
-                        if (!civ.isBarbarian && !civ.isSpectator())
+                        if (!civ.isBarbarian && !civ.isSpectator)
                             civ.addFlag(
                                 CivFlags.TurnsTillNextDiplomaticVote.name,
                                 civInfo.getTurnsBetweenDiplomaticVotes()
@@ -1047,7 +1047,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeGlobalSpiesWhenEnteringEra -> {
-                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.isMajorCiv) return null
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
@@ -1068,7 +1068,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeSpiesLevelUp -> {
-                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.isMajorCiv) return null
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {
@@ -1078,7 +1078,7 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeGainSpy -> {
-                if (!civInfo.isMajorCiv()) return null
+                if (!civInfo.isMajorCiv) return null
                 if (!civInfo.gameInfo.isEspionageEnabled()) return null
 
                 return {

@@ -314,7 +314,7 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Tiles that at some point have been explored (may have fog of war) */
     @Readonly
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.isSpectator)
             return true
         return exploredBy.contains(player.civID)
     }
@@ -395,7 +395,7 @@ class Tile : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getShownImprovement(viewingCiv: Civilization?): String? =
-        if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
+        if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator) improvement
         else viewingCiv.getLastSeenImprovement(position)
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */

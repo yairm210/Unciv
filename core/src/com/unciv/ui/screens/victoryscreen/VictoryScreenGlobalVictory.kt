@@ -20,7 +20,7 @@ class VictoryScreenGlobalVictory(
     init {
         align(Align.top)
 
-        val majorCivs = worldScreen.gameInfo.civilizations.asSequence().filter { it.isMajorCiv() }
+        val majorCivs = worldScreen.gameInfo.civilizations.asSequence().filter { it.isMajorCiv }
         val civView = worldScreen.selectedGameView.civView
         val victoriesToShow = civView.getVictoriesShownInVictoryScreen()
 

@@ -26,7 +26,7 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.startTurn") {
-        if (civInfo.isSpectator()) return
+        if (civInfo.isSpectator) return
 
         for (city in civInfo.cities) city.hasSoldBuildingThisTurn = false
 
@@ -273,7 +273,7 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.notifications.clear()
         civInfo.notificationCountAtStartTurn = null
 
-        if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
+        if (civInfo.isDefeated() || civInfo.isSpectator) return  // yes they do call this, best not update any further stuff
         
         var nextTurnStats =
             if (civInfo.isBarbarian)
@@ -326,7 +326,7 @@ class TurnManager(val civInfo: Civilization) {
 
         civInfo.espionageManager.endTurn()
 
-        if (civInfo.isMajorCiv()) // City-states don't get great people!
+        if (civInfo.isMajorCiv) // City-states don't get great people!
             civInfo.greatPeople.addGreatPersonPoints()
 
         // To handle tile's owner issue (#8246), we need to run cities being razed first.

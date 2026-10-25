@@ -38,7 +38,7 @@ class CityView(city: City,
 
     /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
     @Readonly fun getViewableCities(): List<CityView> {
-        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
+        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator
         return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
             .filter { it.civ != viewer }
             .map { gameView.getCityView(it) }

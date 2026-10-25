@@ -273,7 +273,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
                 minimapTile.owningCiv = tileInfo.getOwner()
             }
 
-            val shouldBeUnrevealed = !viewingCiv.hasExplored(tileInfo) && !viewingCiv.isSpectator()
+            val shouldBeUnrevealed = !viewingCiv.hasExplored(tileInfo) && !viewingCiv.isSpectator
             val revealStatusChanged = minimapTile.isUnrevealed != shouldBeUnrevealed
             if (revealStatusChanged || ownerChanged) {
                 minimapTile.updateColor(shouldBeUnrevealed)
