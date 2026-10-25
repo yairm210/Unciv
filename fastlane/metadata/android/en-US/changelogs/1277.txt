@@ -1,65 +1,12 @@
-
-
-Add renderer string to see if the worse behaviour is due to Exynos - this fits the data pattern we've seen in Discord
-
-View implementation - Stat diff is a View function, can't think of a nice way to generate it rom wrapped data - see 
+Fixed black flash when changing screens
 
 Fix map mirroring discrepancies
 
-Resolved  - Returned "enter city button on click" to how it used to work (no city enter if iterating city's air units only).
+Fixed "enter city button on click" problems
 
-View implementation - WorkerAutomation subfunctions - see 
+Font icons no longer disappear on onPause
 
-View implementation - WorkerAutomation.isAutomationWorkableTile - see 
-
-View implementation - WorkerAutomation.automateWorkBoats - see 
-
-View implementation - WorkerAutomation.getBasePriority - see 
-
-Updated "prepare" logic to accomodate new "we can't see other civs' flags" and to prioritize actively warring civs over potentials.
-
-View implementation - more unit automations 2 - see 
-
-View implementation - more unit automations - see 
-
-4.22.13-patch1
-
-Fix mod download by bypassing github.com's redirect entirely and go straight to the download page at codeload.github.com 
-
-View implementation - tryPillageImprovement automation - see 
-
-View implementation - tryHealUnit automation - see 
-
-View implementation - tryUpgradeUnit automation - see 
-
-View implementation - tryExplore automation - see 
-
-View implementation - More automations - see 
-
-Resolved  - Font icons no longer disappear on onPause
-
-Resolved  - "Scientific" personality now called "Rational" to distinguish from victory type
-
-View implementation - More automations - see 
-
-View implementation - tryRetreat, tryFogBust - see 
-
-View implementation - Move single-se extension functions to callsite - see 
-
-View implementation - Minimize essential API - see 
-
-View implementation - wander() conversion, minimize MapUnitView essential API - see 
-
-By SomeTroglodyte:
-- Fix ruleset technology merge with unit tests 
-- Allow keyboard-building improvements even if it needs a removal first 
-- Add the forgotten console parameter type "tileFilter" 
-- Fix Citadel notifications: Translatability, HP 
-- chore: Refactor toImageButton (and IconCircleGroup to match) 
-
-By Kilo-cy:
-- Add a CityStatsTable UI tester 
-- Fix diplomacy access from cities with established spies 
+Fix diplomacy access from cities with established spies - By Kilo-cy 
 
 More flexible diplomatic modifier math - By unciv-loof
 
@@ -68,3 +15,9 @@ By ibrahim-iqbal:
 - Fix untranslatable Privateer plunder notification 
 
 Validate assembled uniques in the unique builder - By mvanhorn
+
+By SomeTroglodyte:
+- Allow keyboard-building improvements even if it needs a removal first
+- Add the forgotten console parameter type "tileFilter"
+- Fix Citadel notifications: Translatability, HP
+- Fix ruleset technology merge with unit tests
