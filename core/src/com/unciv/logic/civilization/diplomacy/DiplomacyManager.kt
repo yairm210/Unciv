@@ -684,9 +684,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /**
      * Allows repeatedly adding to a modifier without worrying that it will reach ridiculous levels.
-     * Add 20 to 0 -> +20 (same as [addModifier]).
-     * Add 20 to 20 -> +10.
-     * Add 20 to 60 -> +5.
+     * Add 20 to 0 -> 20 (+20) (same as [addModifier]).
+     * Add 20 to 20 -> 30 (+10).
+     * Add 20 to 60 -> 65 (+5).
      * Works for both positive and negative values.
      */
     fun addDiminishingModifier(modifier: DiplomaticModifiers, amount: Float) {
