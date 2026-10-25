@@ -3,7 +3,7 @@ package com.unciv.ui.components.fonts
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -17,6 +17,8 @@ import com.unciv.ui.components.fonts.FontRulesetIcons.getPixmapFromActor
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
+import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.civilopediascreen.CivilopediaImageGetters
 import kotlin.math.ceil
 
@@ -93,15 +95,25 @@ object FontRulesetIcons {
                 addChar(terrain.name, tileGroup)
             }
         }
-        
     }
 
-    private val frameBuffer by lazy {
+    // These hold GL resources. On Android the process can outlive the GL context on pause,
+    // see https://stackoverflow.com/questions/11067881/android-when-is-opengl-context-destroyed
+    // so they must be recreatable - see reset()
+    private lateinit var frameBuffer: FrameBuffer
+    private lateinit var spriteBatch: Batch
+
+    /** (Re)create GL resources - on Android the process can outlive the GL context, so old instances may be dead */
+    fun reset() {
+        // Old GL context may be gone, disposing can throw - we're discarding them anyway
+        if (::frameBuffer.isInitialized) try { frameBuffer.dispose() } catch (ignored: Exception) {}
+        if (::spriteBatch.isInitialized) try { spriteBatch.dispose() } catch (ignored: Exception) {}
         // Size here is way too big, but it's hard to know in advance how big it needs to be.
-        // Gdx world coords, not pixels.
-        FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
+        // Icons are measured in Gdx world coords, not pixels, but FrameBuffer is dimensioned in pixels.
+        frameBuffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
+        spriteBatch = UncivStage.getBatch()
     }
-    private val spriteBatch by lazy { SpriteBatch() }
+
     private val transform = Matrix4()  // for repeated reuse without reallocation
 
     /** Get a Pixmap for a "show ruleset icons as part of text" actor.
@@ -132,6 +144,8 @@ object FontRulesetIcons {
         spriteBatch.end()
         Gdx.gl.glReadPixels(0, 0, boxWidth, boxHeight, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
+        // Also covers the plain SpriteBatch fallback and framebuffer texture allocation.
+        TextureArraySpriteBatch.invalidateTextureBindings()
 
         return pixmap
     }

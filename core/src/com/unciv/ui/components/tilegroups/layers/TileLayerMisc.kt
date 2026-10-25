@@ -1,16 +1,13 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.view.CivView
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
+import com.unciv.view.TileView
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
@@ -21,14 +18,16 @@ import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.YieldGroup
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.DebugUtils
 import kotlin.math.atan2
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val strings: TileSetStrings) {
+private class MapArrow(val targetTile: TileView, val arrowType: MapArrowType, val strings: TileSetStrings) {
 
     private fun getArrowImage(imageName: String) = ImageGetter.getImage(
         strings.orFallback { getString(tileSetLocation, "Arrows/", imageName) })
@@ -72,7 +71,7 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
     ) {
         val effectiveVisible = show &&
                 !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
-                !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
+                viewingCiv != null // main menu background
 
         if (!effectiveVisible) {
             yields?.isVisible = false
@@ -84,9 +83,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv?.civ))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv, tileGroup.cityView))
             else
-                setStats(tile.stats.getTileStats(viewingCiv?.civ))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv))
             toFront()
             // Centre horizontally; recalculate Y now that height is known after setStats
             x = tileX + (tileGroup.width - width) / 2
@@ -119,19 +118,15 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     private var resourceIcon: Actor? = null
     private var resourceProvidedIcon: Actor? = null
 
-    private fun updateResourceIcon(viewingCiv: CivView?, show: Boolean) {
+    private fun updateResourceIcon(viewingCiv: CivView?, showResourceIcon: Boolean) {
+        val tileView = tileGroup.tileView
         // This could change on any turn, since resources need certain techs to reveal them
-        val effectiveVisible = when {
-            tileGroup.isForceVisible -> show
-            show && viewingCiv == null -> true
-            show && viewingCiv?.canSeeResource(tile.tileResource) == true -> true
-            else -> false
-        }
+        val effectiveVisible = showResourceIcon && (tileView.isForceVisible() || tileView.getViewableResource(viewingCiv) != null)
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
-            resourceName = tile.resource
-            resourceAmount = tile.resourceAmount
+        if (resourceName != tileView.resource || resourceAmount != tileView.resourceAmount) {
+            resourceName = tileView.resource
+            resourceAmount = tileView.resourceAmount
             resourceIcon?.let { removeOwnedActor(it) }
             resourceIcon = null
         }
@@ -150,12 +145,12 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
 
         if (resourceIcon != null){
-            val isViewable = viewingCiv == null || isViewable(viewingCiv)
+            val isViewable = isViewable(viewingCiv)
             dimResource(!isViewable)
 
             val shouldResourceProvidedBeDisplayed =
-                viewingCiv != null && tile.getOwner() === viewingCiv.civ
-                        && tile.providesResources(viewingCiv.civ)
+                viewingCiv != null && tileView.getOwner()?.civName == viewingCiv.civName
+                        && tileView.providesResources(viewingCiv)
             if (shouldResourceProvidedBeDisplayed && resourceProvidedIcon == null){
                 val group = NonTransformGroup()
                 group.setSize(12f,12f)
@@ -216,16 +211,17 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
-        updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
+        updateImprovementIcon(showResourcesAndImprovements)
     }
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
 
-    private fun updateImprovementIcon(viewingCiv: CivView?, show: Boolean) {
+    private fun updateImprovementIcon(show: Boolean) {
+        val tileView = tileGroup.tileView
         // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = viewingCiv?.getShownImprovementOn(tile)
+        val improvementToShow = tileView.getShownImprovement()
         val newImprovementPlusPillagedID = if (improvementToShow==null) null
-        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
+        else if (tileView.improvementIsPillaged) "$improvementToShow-Pillaged"
         else improvementToShow
 
         if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
@@ -236,7 +232,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tile.improvementIsPillaged)
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tileView.improvementIsPillaged)
             // Centre on tile, offset left and down
             icon.x = tileX + (tileGroup.width - icon.width) / 2 - 22f
             icon.y = tileY + (tileGroup.height - icon.height) / 2 - 12f
@@ -252,7 +248,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
     }
 
     fun reset() {
-        updateImprovementIcon(null, false)
+        updateImprovementIcon(false)
     }
 }
 
@@ -263,7 +259,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
-    private val arrows = HashMap<Tile, ArrayList<Actor>>()
+    private val arrows = HashMap<TileView, ArrayList<Actor>>()
 
     private var hexOutlineIcon: Actor? = null
 
@@ -286,15 +282,12 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private fun updateArrows() {
         clearArrows()
         val tileScale = 50f * 0.8f // See notes in updateRoadImages.
+        val ownTileView = tileGroup.tileView
+        val tileMapView = ownTileView.getTileMap()
 
         for (arrowToAdd in arrowsToDraw) {
             val targetTile = arrowToAdd.targetTile
-            var targetPos = Vector2(targetTile.position.toVector2())
-            if (tile.tileMap.mapParameters.worldWrap)
-                targetPos = HexMath.getUnwrappedNearestTo(targetPos.toHexCoord(),
-                    tile.position, tile.tileMap.maxLongitude)
-            val targetRelative = HexMath.hex2WorldCoords(targetPos.toHexCoord())
-                .sub(HexMath.hex2WorldCoords(tile.position))
+            val targetRelative = tileMapView.getRelativeWorldPosition(ownTileView, targetTile)
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
             val targetAngle = atan2(targetRelative.y, targetRelative.x)
@@ -335,37 +328,48 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = this.tile.position.toVector2().toPrettyString()
+            val label = tileGroup.tileView.position().toPrettyString() + "{}" // Prevent tr() from killing the comma
             val tileW = tileGroup.width
             val tileH = tileGroup.height
-            startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
-                touchable = Touchable.disabled
-                setOrigin(Align.center)
-                x = tileX + (tileW - width) / 2 + 15.4f
-                y = tileY + (tileH - height) / 2 - 0.6f
-                tileGroup.layerMisc.addOwnedActor(this)
-            })
-            startingLocationIcons.add(label.toLabel(Color.FIREBRICK, 14).apply {
-                touchable = Touchable.disabled
-                setOrigin(Align.center)
-                x = tileX + (tileW - width) / 2 + 15f
-                y = tileY + (tileH - height) / 2
-                tileGroup.layerMisc.addOwnedActor(this)
-            })
+            val lbl = ShadowedLabel(
+                label, 14,
+                labelColor = Color.FIREBRICK,
+                shadowColor = ImageGetter.CHARCOAL.cpy().apply { a = 0.7f },
+                shadowOffset =  0.6f
+            )
+            lbl.apply {
+                x = tileX + (tileW - width) / 2 + 10f
+                y = tileY + (tileH - height) / 2 - 2f
+            }
+            startingLocationIcons.add(lbl)
+            tileGroup.layerMisc.addOwnedActor(lbl)
         }
 
-        val tilemap = tile.tileMap
+        if (DebugUtils.SHOW_SETTLER_SCORES) {
+            val score = DebugUtils.SETTLER_SCORES[tileGroup.tileView.position()]
+            if (score != null) {
+                val label = score.roundToInt().toString()
+                val tileW = tileGroup.width
+                val tileH = tileGroup.height
+                startingLocationIcons.add(label.toLabel(Color.GOLD, 14).apply {
+                    touchable = Touchable.disabled
+                    setOrigin(Align.center)
+                    x = tileX + (tileW - width) / 2 + 15f
+                    y = tileY + (tileH - height) / 2
+                    tileGroup.layerMisc.addOwnedActor(this)
+                })
+            }
+        }
 
-        if (tilemap.startingLocationsByNation.isEmpty())
-            return
+        val ownTileView = tileGroup.tileView
+        val ruleset = ownTileView.getRuleset()
 
         // Allow display of up to three nations starting locations on the same tile, rest only as count.
         // Sorted so major get precedence and to make the display deterministic, otherwise you could get
         // different stacking order of the same nations in the same editing session
-        val nations = tilemap.startingLocationsByNation.asSequence()
-            .filter { tile in it.value }
-            .filter { it.key in tilemap.ruleset!!.nations } // Ignore missing nations
-            .map { it.key to tilemap.ruleset!!.nations[it.key]!! }
+        val nations = ownTileView.getTileMap().getStartingLocationNationNames(ownTileView).asSequence()
+            .filter { it in ruleset.nations } // Ignore missing nations
+            .map { it to ruleset.nations[it]!! }
             .sortedWith(compareBy({ it.second.isCityState }, { it.first }))
             .toList()
         if (nations.isEmpty()) return
@@ -467,8 +471,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
 
-    fun addArrow(targetTile: Tile, type: MapArrowType) {
-        if (targetTile.position != tile.position)
+    fun addArrow(targetTile: TileView, type: MapArrowType) {
+        if (targetTile.position() != tileGroup.tileView.position())
             arrowsToDraw.add(MapArrow(targetTile, type, strings))
     }
 
@@ -480,7 +484,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
 
     override fun doUpdate(viewingCiv: CivView?) {
-        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
+        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS || DebugUtils.SHOW_SETTLER_SCORES)
             updateStartingLocationIcon(true)
         updateArrows()
     }

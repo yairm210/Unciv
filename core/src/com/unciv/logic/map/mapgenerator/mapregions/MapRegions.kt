@@ -25,7 +25,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 class TileDataMap(size: Int) {
     private val data = arrayOfNulls<MapGenTileData>(size)
@@ -42,7 +41,7 @@ class TileDataMap(size: Int) {
 
         for (ring in 1..radius) {
             val ringValue = radius - ring + 1
-            for (outerTile in tile.getTilesAtDistance(ring)) {
+            tile.forEachTileAtDistance(ring) { outerTile ->
                 val data = this[outerTile]!!
                 if (data.impacts.containsKey(type))
                     data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
@@ -220,11 +219,11 @@ class MapRegions (val ruleset: Ruleset) {
         if (widerThanTall) {
             splitOffRegion.rect.width = bestSplitPoint.toFloat()
             regionToSplit.rect.x = splitOffRegion.rect.x + splitOffRegion.rect.width
-            regionToSplit.rect.width = regionToSplit.rect.width - bestSplitPoint
+            regionToSplit.rect.width -= bestSplitPoint
         } else {
             splitOffRegion.rect.height = bestSplitPoint.toFloat()
             regionToSplit.rect.y = splitOffRegion.rect.y + splitOffRegion.rect.height
-            regionToSplit.rect.height = regionToSplit.rect.height - bestSplitPoint
+            regionToSplit.rect.height -= bestSplitPoint
         }
         splitOffRegion.updateTiles()
         regionToSplit.updateTiles()
@@ -489,8 +488,9 @@ fun Tile.getTileFertility(checkCoasts: Boolean): Int {
         if (terrain.hasUnique(UniqueType.OverrideFertility))
             return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
         else
-            fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                .sumOf { it.params[0].toInt() }
+            terrain.forEachMatchingUnique(UniqueType.AddFertility, GameContext.EmptyState) {
+                fertility += it.params[0].toInt()
+            }
     }
     if (isAdjacentToRiver()) fertility += 1
     if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
@@ -516,6 +516,7 @@ fun getRegionPriority(terrain: Terrain?): Int? {
 internal fun anonymizeUnique(unique: Unique) = Unique(
     "RULE" + unique.modifiers.sortedBy { it.text }.joinToString(prefix = " ", separator = " ") { "<" + it.text + ">" })
 
+@Readonly 
 internal fun isWaterOnlyResource(resource: TileResource, ruleset: Ruleset) = resource.terrainsCanBeFoundOn
     .all { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water }
 

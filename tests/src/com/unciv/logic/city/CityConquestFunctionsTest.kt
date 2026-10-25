@@ -6,14 +6,14 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class CityConquestFunctionsTest {
 
     private lateinit var attackerCiv: Civilization

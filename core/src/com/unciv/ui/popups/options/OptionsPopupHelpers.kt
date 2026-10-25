@@ -298,15 +298,18 @@ internal interface OptionsPopupHelpers {
                 // would only load the new SkinConfig after the next rebuild
                 BaseScreen.setSkin()
             }
+            // Rendering type may have changed - screens rebuilt below pick up the new shared batch
+            val oldBatch = withGLContext { BaseScreen.recreateBatch() }
             val screen = UncivGame.Current.screen
             if (screen is WorldScreen) {
                 UncivGame.Current.reloadWorldscreen()
             } else if (screen is MainMenuScreen) {
                 withGLContext {
-                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
+                    UncivGame.Current.replaceCurrentScreen{ MainMenuScreen() }
                 }
             }
             withGLContext {
+                oldBatch?.dispose()
                 UncivGame.Current.screen?.openOptionsPopup(activePage)
             }
         }
@@ -323,9 +326,10 @@ internal interface OptionsPopupHelpers {
             delay((if (force) 0 else 100).milliseconds)
             withGLContext {
                 val screen = UncivGame.Current.screen ?: return@withGLContext
-                if (force && screen.activePopup is OptionsPopup) screen.activePopup!!.close()
+                val page = activePage // Must be fetched before force-closing the current OptionsPopup
+                if (force) (screen.activePopup as? OptionsPopup)?.close()
                 if (screen.hasOpenPopups()) return@withGLContext // e.g. Orientation auto to fixed while auto is already the new orientation
-                screen.openOptionsPopup(activePage)
+                screen.openOptionsPopup(page)
             }
         }
     }

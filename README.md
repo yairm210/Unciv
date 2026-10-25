@@ -46,6 +46,8 @@ In this order:
 * G&K mechanics - see [#4697](https://www.github.com/yairm210/Unciv/issues/4697)
 * BNW mechanics - trade routes, world congress, etc.
 
+At the moment, no one is explicitly working to add these mechanics in - you could be the one! :D
+
 ## Contributing
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
@@ -114,19 +116,21 @@ Interestingly, [Civilization is a registered trademark](https://tsdr.uspto.gov/#
 
 ## Run with Docker [![Docker](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/yairm210/Unciv/actions/workflows/dockerPublish.yml)
 
-If you have docker compose installed:
+`docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv`
+Then go to http://localhost:6901/vnc.html?password=headless
 
- ```$ docker compose build && docker compose up```
+For more details, e.g. installing Docker, keeping saves between runs and over image updates, building the image yourself,
+troubleshooting connection issues, or using a native VNC client instead of a browser, see [Building-Locally](https://yairm210.github.io/Unciv/Developers/Building-Locally/#running-via-docker).
 
-and then goto http://localhost:6901/vnc.html?password=headless
+## Licensing and credits
 
-If just docker:
+Unciv's source code is available under the Mozilla Public License 2.0
+(see [LICENSE](LICENSE)), except where otherwise noted.
+TextureArraySpriteBatch.java, forked from
+[carlislefox/libgdx-texture-array-batch](https://github.com/carlislefox/libgdx-texture-array-batch),
+is available under CC0 1.0 Universal
+(see [LICENSE-TextureArraySpriteBatch](LICENSE-TextureArraySpriteBatch)).
 
-```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
-
-Or just use our already built one:
-
-```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
-
-and then goto http://localhost:6901/vnc.html?password=headless
-## [Credits and 3rd parties](docs/Credits.md)
+The media files are authored by many people and are available under a mix of
+CC BY-SA 4.0, CC BY 3.0/4.0, CC0, and public domain terms
+(see [docs/Credits.md](docs/Credits.md)).

@@ -142,6 +142,8 @@ Events allow users to choose between options of triggers to activate.
 
 You can use text and/or civilopediaText, if both are present both are shown (but why would you?)
 
+Add the "Only the first available choice is offered" unique to an Event to restrict it to just the first viable choice (in list order), like a `when`/`case` statement.
+
 Event choices are comprised of:
 
 | Attribute       | Type                                           | Default    | Notes                                                                                                               |
@@ -167,21 +169,52 @@ Incompatibility filtering works so far between extension and base mods, but feel
 
 The file can have the following attributes, not including the values Unciv sets automatically:
 
-| Attribute              | Type    | default | Notes                                                                                                                                                                            |
-|------------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| isBaseRuleset          | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                 |
-| uniques                | List    | empty   | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                                  |
-| techsToRemove          | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)      |
+| Attribute              | Type    | default | Notes                                                                                                                                                                               |
+|------------------------|---------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isBaseRuleset          | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                    |
+| uniques                | List    | empty   | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                                     |
+| beliefsToRemove        | List    | empty   | List of [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson) or beliefFilter (matches name, type, "All" or a filtering Unique) to remove (isBaseRuleset=false only)          |
 | buildingsToRemove      | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove          | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                             |
-| nationsToRemove        | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                 |
-| policyBranchesToRemove | List    | empty   | List of [Policy Branches](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                |
-| policiesToRemove       | List    | empty   | List of [Policies](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                       |
-| beliefsToRemove        | List    | empty   | List of [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson) to remove (isBaseRuleset=false only)                                                                         |
-| religionsToRemove      | List    | empty   | List of [Religions](2-Civilization-related-JSON-files.md#religionsjson) to remove (isBaseRuleset=false only)                                                                     |
-| constants              | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                |
-| tileset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                |
-| unitset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                |
+| cityStateTypesToRemove | List    | empty   | List of Citystate Types or "All" to remove (isBaseRuleset=false only).                                                                                                              |
+| difficultiesToRemove   | List    | empty   | List of Difficulties or "All" to remove (isBaseRuleset=false only).                                                                                                                 |
+| eventsToRemove         | List    | empty   | List of List of Events or "All" to remove (isBaseRuleset=false only).                                                                                                               |
+| improvementsToRemove   | List    | empty   | List of List of Tile Improvements or [improvementFilter](../Unique-parameters.md#improvementFilter) to remove (isBaseRuleset=false only).                                           |
+| nationsToRemove        | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                    |
+| personalitiesToRemove  | List    | empty   | List of Leader Personalities or "All" to remove (isBaseRuleset=false only).                                                                                                         |
+| policyBranchesToRemove | List    | empty   | List of [Policy Branches](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                   |
+| policiesToRemove       | List    | empty   | List of [Policies](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                          |
+| questsToRemove         | List    | empty   | List of Citystate Quest names or "All" to remove (isBaseRuleset=false only).                                                                                                        |
+| religionsToRemove      | List    | empty   | List of [Religions](2-Civilization-related-JSON-files.md#religionsjson) or "All" to remove (isBaseRuleset=false only)                                                               |
+| resourcesToRemove      | List    | empty   | List of Tile Resources or [resourceFilter](../Unique-parameters.md#resourceFilter) to remove (isBaseRuleset=false only).                                                            |
+| ruinRewardsToRemove    | List    | empty   | List of Ruin Rewards or "All" to remove (isBaseRuleset=false only).                                                                                                                 |
+| specialistsToRemove    | List    | empty   | List of Specialists or "All" to remove (isBaseRuleset=false only).                                                                                                                  |
+| speedsToRemove         | List    | empty   | List of Game Speeds or "All" to remove (isBaseRuleset=false only).                                                                                                                  |
+| techsToRemove          | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)         |
+| terrainsToRemove       | List    | empty   | List of Terrains or [terrainFilter](../Unique-parameters.md#terrainFilter) to remove (isBaseRuleset=false only).                                                                    |
+| tutorialsToRemove      | List    | empty   | List of Tutorials or "All" to remove (isBaseRuleset=false only).                                                                                                                    |
+| unitsToRemove          | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                                |
+| unitNameGroupsToRemove | List    | empty   | List of Unit-name Groups or "All" to remove (isBaseRuleset=false only).                                                                                                             |
+| unitPromotionsToRemove | List    | empty   | List of Unit Promotions or "All" to remove (isBaseRuleset=false only).                                                                                                              |
+| unitTypesToRemove      | List    | empty   | List of Unit Types or [unitTypeFilter](../Unique-parameters.md#unitTypeFilter) to remove (isBaseRuleset=false only). Note dependent units are not automatically removed as well.    |
+| victoriesToRemove      | List    | empty   | List of Victories or "All" to remove (isBaseRuleset=false only).                                                                                                                    |
+| constants              | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                   |
+| tileset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                   |
+| unitset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                   |
+
+Note that removal happens before adding new content from your mod, so an "All" filter won't kill your content too.
+
+Policies with their branches and Technologies have more complex removal rules.
+
+- Removing Policy Branches removes their member Policies as well.
+- Overriding a Policy Branch will remove existing member Policies.
+- Removing all techs from a TechColumn will also remove that column.
+- Adding techs will merge columns by their `columnNumber`.
+- Adding tech columns outside the existing ones is allowed: Replacing a column that was removed, or placing a column before (using negative `columnNumber`) or after the existing ones.
+- After tech removal and merge is done, TechColumns are resorted and renumbered so `columnNumber` is monotonous, contiguous ands starts at 0.
+
+Removing religions will clean those from the preferred religions of nations.
+
+Otherwise, no interdependencies are handled automatically, and your mod may easily fail validation unless you're careful.
 
 The values normally set automatically from github metadata are:
 
@@ -366,7 +399,37 @@ Each victory have the following structure:
 | hiddenInVictoryScreen  | Boolean         | false    | Whether progress of this victory is hidden in the victory screen                           |
 | requiredSpaceshipParts | List of Strings | empty    | What spaceship parts must be added to the capital for the corresponding milestone          |
 | Milestones             | List of Strings | Required | List of milestones that must be accomplished to win, [see below](#milestones)              |
+| uniques                | List of Strings | empty    | List of [unique abilities](../uniques.md) this victory has, [see below](#victory-uniques)  |
 | civilopediaText        | List            | Optional | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)              |
+
+### Victory uniques
+
+A victory can carry uniques, like any other ruleset object.
+
+`Only available <...>` and `Unavailable <...>` decide **who** may achieve it. They are evaluated against a
+civilization, so any [civFilter](../Unique-parameters.md#civfilter) or condition on the game works.
+A civilization that does not pass them never wins the victory, is not offered it in the victory screen
+as one of its own goals, is not listed among the contenders for it, and does not work towards it.
+Its milestones themselves are untouched.
+
+```json
+[
+    {
+        "name": "Reach the goal",
+        "uniques": ["Only available <for [Human player] Civilizations>"],
+        "milestones": ["Build [Monument]"]
+    }
+]
+```
+
+`Will not be chosen for new games` decides whether the victory is **offered** in the new game options,
+exactly as it does for a nation. Such a victory gets no checkbox, and the "all victories" default never
+enables it - a base ruleset that ships a game or a [scenario](../Scenarios.md) enables it there itself.
+
+This is a separate unique on purpose: while a game is being set up there is no civilization to evaluate
+`Only available` / `Unavailable` against, so a victory restricted to a nation, a player type or a game
+speed stays selectable unless the mod says otherwise. Conditionals on `Will not be chosen for new games`
+are never fulfilled for the same reason - use it plain.
 
 ### Milestones
 
@@ -383,6 +446,7 @@ Currently the following milestones are supported:
 | Win diplomatic vote                | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
 | Become the world religion          | Have your religion be the majority religion in a majority of cities of all major civs                        |
 | Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached       |
+| Have at least [amount] [countable] | Have at least [amount] of the given `countable`. Unlike the milestone below, this does not depend on the other players, so a ruleset can require several concrete things - a building, a policy, worked tiles - to be achieved in any order. |
 | Have more [countable] than each player's [countable] | Have your given `countable` be more than every other Civilization's `countable` to achieve this victory. This is useful to simulate a victory similar to the Cultural Victory in Brave New World. |
 
 ## Civilopedia text

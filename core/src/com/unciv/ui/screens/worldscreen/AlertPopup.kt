@@ -74,7 +74,7 @@ class AlertPopup(
     //region convenience getters
     private val music get() = UncivGame.Current.musicController
     private val gameInfo get() = worldScreen.gameInfo
-    private val viewingCiv get() = worldScreen.viewingCiv
+    private val viewingCiv get() = worldScreen.selectedGameView.civView.getCiv()
     private val stageWidth get() = worldScreen.stage.width
     private val stageHeight get() = worldScreen.stage.height
     @Readonly private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
@@ -404,7 +404,7 @@ class AlertPopup(
     private fun addGameHasBeenWon() {
         val victoryData = gameInfo.victoryData!!
         addGoodSizedLabel("[${victoryData.winningCivObject.civName}] has won a [${victoryData.victoryType}] Victory!").row()
-        addButton("Victory status") { close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
+        addButton("Victory status") { close(); worldScreen.game.pushScreen{ VictoryScreen(worldScreen) } }.row()
         addCloseButton()
     }
 
@@ -445,7 +445,7 @@ class AlertPopup(
 
             if (originalOwner.isCityState) {
                 originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
-            } else if (originalOwner.isMajorCiv()) {
+            } else if (originalOwner.isMajorCiv) {
                 // No extra bonus from doing it several times
                 originalOwner.getDiplomacyManagerOrMeet(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
@@ -669,6 +669,7 @@ class AlertPopup(
         val render = RenderEvent(event, worldScreen, unit) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
+        getScrollPane()?.fadeScrollBars = false
         return true
     }
 

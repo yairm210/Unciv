@@ -1,6 +1,5 @@
 package com.unciv.logic.city.managers
 
-import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Spy
@@ -14,19 +13,16 @@ enum class SpyFleeReason {
     Other
 }
 
-class CityEspionageManager : IsPartOfGameInfoSerialization {
+class CityEspionageManager {
+    // Note: Instance lives in City, but since we don't carry data, it's transient, and no `: IsPartOfGameInfoSerialization` here.
+
     @Transient
     lateinit var city: City
-
-    fun clone(): CityEspionageManager {
-        return CityEspionageManager()
-    }
 
     fun setTransients(city: City) {
         this.city = city
     }
 
-    
     @Readonly fun hasSpyOf(civInfo: Civilization): Boolean = civInfo.espionageManager.spyList.any { it.getCityOrNull() == city }
 
     @Readonly fun getAllStationedSpies(): List<Spy> =

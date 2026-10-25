@@ -1,6 +1,5 @@
 ﻿@file:Suppress("UNUSED_VARIABLE")  // These are tests and the names serve readability
 
-//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
 import com.unciv.Constants
@@ -10,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
@@ -17,10 +17,13 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.testing.GdxTestRunnerFactory
+import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
+import com.unciv.ui.components.UnitMovementMemoryType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -30,11 +33,15 @@ import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
 @RunWith(Parameterized::class)
-@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
-class UnitMovementTests(
-    // parameters come from the Compantion#parameters method
-    private val pathfindingAlgorithm: PathfindingAlgorithm,
-) {
+@UseParametersRunnerFactory(TestRunnerFactory::class)
+class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters() = TestRunnerFactory.Parameters.pathfinding
+    }
+
     private lateinit var tile: Tile
     private lateinit var civInfo: Civilization
     private var testGame = TestGame()
@@ -135,6 +142,23 @@ class UnitMovementTests(
             assertTrue("$type must not enter Wonder tile",
                 unit.movement.canPassThrough(tile) == type.hasUnique(UniqueType.CanPassImpassable))
         }
+    }
+
+    @Test
+    fun germanEncampmentRecruitmentUsesFullHealth() {
+        val germany = testGame.addCiv(
+            "When conquering an encampment, earn [25] Gold and recruit a Barbarian unit <with [100]% chance>"
+        )
+        testGame.addBarbarianCiv()
+        testGame.gameInfo.barbarians.setTransients(testGame.gameInfo)
+        val campTile = testGame.getTile(0, 0)
+        testGame.gameInfo.barbarians.createNewCamp(campTile)
+        val unit = testGame.addUnit("Warrior", germany, campTile.neighbors.first())
+
+        unit.movement.moveToTile(campTile)
+
+        val recruitedUnit = germany.units.getCivUnits().single { it != unit }
+        assertEquals(100, recruitedUnit.health)
     }
 
     @Test
@@ -269,11 +293,11 @@ class UnitMovementTests(
     }
 
     @Test
-    fun `can teleport land unit over civilian and capture it`() {
+    fun `forced displacement leaves an enemy civilian uncaptured`() {
 
         testGame.makeHexagonalMap(5)
         val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
-        // Force the unit to teleport to 1,2 specifically, by blocking all other neighboring tiles with mountains
+        // The nearest otherwise-valid tile is 1,2. Every other neighbor is a mountain.
         for (neighbor in unit.currentTile.neighbors) {
             if (neighbor.position.eq(1,2)) continue
             neighbor.baseTerrain = Constants.mountain
@@ -285,12 +309,158 @@ class UnitMovementTests(
         atWarCiv.diplomacyFunctions.makeCivilizationsMeet(civInfo)
         atWarCiv.getDiplomacyManager(civInfo)!!.declareWar()
         val enemyWorkerUnit = testGame.addUnit("Worker", atWarCiv, testGame.tileMap[1,2])
+        val workerTile = enemyWorkerUnit.currentTile
 
         val otherCiv = testGame.addCiv()
         val city = testGame.addCity(otherCiv, tile)
 
-        assertTrue("Warrior teleported to 1,2", unit.currentTile.position.eq(1,2))
-        assertTrue("Worker must be captured", enemyWorkerUnit.civ == civInfo)
+        assertSame("Worker stays with its owner", atWarCiv, enemyWorkerUnit.civ)
+        assertSame("Worker stays on its tile", workerTile, enemyWorkerUnit.currentTile)
+        assertFalse("Displaced unit takes another tile", unit.isDestroyed)
+        assertFalse(unit.currentTile.position.eq(1, 2))
+        assertNotEquals(testGame.tileMap[1, 1], unit.currentTile)
+    }
+
+    @Test
+    fun `barbarian displacement does not capture an enemy civilian`() {
+        testGame.makeHexagonalMap(5)
+        val barbarians = testGame.addBarbarianCiv()
+        val unit = testGame.addUnit("Warrior", barbarians, testGame.tileMap[1,1])
+        for (neighbor in unit.currentTile.neighbors) {
+            if (neighbor.position.eq(1,2)) continue
+            neighbor.baseTerrain = Constants.mountain
+            neighbor.setTransients()
+        }
+
+        val worker = testGame.addUnit("Worker", civInfo, testGame.tileMap[1,2])
+        val workerTile = worker.currentTile
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, tile)
+
+        assertSame(civInfo, worker.civ)
+        assertSame(workerTile, worker.currentTile)
+        assertFalse(unit.isDestroyed)
+        assertFalse(unit.currentTile.position.eq(1, 2))
+        assertSame(barbarians, unit.civ)
+    }
+
+    @Test
+    fun `forced displacement stacks with an own civilian`() {
+        testGame.makeHexagonalMap(5)
+        val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        for (neighbor in unit.currentTile.neighbors) {
+            if (neighbor.position.eq(1,2)) continue
+            neighbor.baseTerrain = Constants.mountain
+            neighbor.setTransients()
+        }
+        val worker = testGame.addUnit("Worker", civInfo, testGame.tileMap[1,2])
+
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, tile)
+
+        assertSame(civInfo, worker.civ)
+        assertSame(testGame.tileMap[1, 2], worker.currentTile)
+        assertSame(worker.currentTile, unit.currentTile)
+        assertSame(unit, unit.currentTile.militaryUnit)
+        assertSame(worker, unit.currentTile.civilianUnit)
+    }
+
+    @Test
+    fun `forced displacement does not stop on another civ's civilian`() {
+        testGame.makeHexagonalMap(5)
+        val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
+        for (neighbor in unit.currentTile.neighbors) {
+            if (neighbor.position.eq(1,2)) continue
+            neighbor.baseTerrain = Constants.mountain
+            neighbor.setTransients()
+        }
+
+        val friend = testGame.addCiv()
+        friend.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        civInfo.getDiplomacyManager(friend)!!.hasOpenBorders = true
+        friend.getDiplomacyManager(civInfo)!!.hasOpenBorders = true
+        val worker = testGame.addUnit("Worker", friend, testGame.tileMap[1,2])
+        val workerTile = worker.currentTile
+
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, tile)
+
+        assertSame("Worker stays with its owner", friend, worker.civ)
+        assertSame("Worker stays on its tile", workerTile, worker.currentTile)
+        assertFalse("Displaced unit takes another tile", unit.isDestroyed)
+        assertNotEquals(worker.currentTile, unit.currentTile)
+        assertFalse(unit.currentTile.position.eq(1, 2))
+    }
+
+    @Test
+    fun `military movement still captures an enemy civilian`() {
+        val warrior = testGame.addUnit("Warrior", civInfo, testGame.tileMap[0, 0])
+        val enemy = testGame.addCiv()
+        enemy.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        enemy.getDiplomacyManager(civInfo)!!.declareWar()
+        val worker = testGame.addUnit("Worker", enemy, testGame.tileMap[1, 0])
+
+        warrior.movement.moveToTile(worker.currentTile)
+
+        assertSame(civInfo, worker.civ)
+        assertSame(warrior.currentTile, worker.currentTile)
+        assertSame(worker, warrior.currentTile.civilianUnit)
+    }
+
+    @Test
+    fun `own city fallback skips an enemy civilian`() {
+        testGame.makeHexagonalMap(7)
+        val ourCity = testGame.addCity(civInfo, testGame.getTile(0, 0))
+        val origin = testGame.getTile(6, 6)
+        // Nothing within 4 tiles is enterable, so placement has to use our city.
+        origin.forEachTileInDistance(4) { nearTile ->
+            if (nearTile == origin) return@forEachTileInDistance
+            nearTile.baseTerrain = Constants.mountain
+            nearTile.setTransients()
+        }
+
+        val enemy = testGame.addCiv()
+        enemy.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        enemy.getDiplomacyManager(civInfo)!!.declareWar()
+        val infiltrator = testGame.createBaseUnit("Civilian", "May enter foreign tiles without open borders")
+        val closestCityTile = ourCity.getTiles().minBy { it.aerialDistanceTo(origin) }
+        val enemyCivilian = testGame.addUnit(infiltrator.name, enemy, closestCityTile)
+        assertSame(closestCityTile, enemyCivilian.currentTile)
+
+        val unit = testGame.addUnit("Warrior", civInfo, origin)
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, origin)
+
+        assertSame(enemy, enemyCivilian.civ)
+        assertSame(closestCityTile, enemyCivilian.currentTile)
+        assertFalse(unit.isDestroyed)
+        assertNotEquals(closestCityTile, unit.currentTile)
+        assertSame(civInfo, unit.currentTile.getOwner())
+    }
+
+    @Test
+    fun `forced displacement destroys the unit when the only candidate holds an enemy civilian`() {
+        testGame.makeHexagonalMap(4)
+        val origin = testGame.getTile(0, 0)
+        val onlyCandidate = origin.neighbors.first()
+        origin.forEachTileInDistance(4) { nearTile ->
+            if (nearTile == origin || nearTile == onlyCandidate) return@forEachTileInDistance
+            nearTile.baseTerrain = Constants.mountain
+            nearTile.setTransients()
+        }
+        val enemy = testGame.addCiv()
+        enemy.diplomacyFunctions.makeCivilizationsMeet(civInfo)
+        enemy.getDiplomacyManager(civInfo)!!.declareWar()
+        val worker = testGame.addUnit("Worker", enemy, onlyCandidate)
+
+        val unit = testGame.addUnit("Warrior", civInfo, origin)
+        origin.baseTerrain = Constants.mountain
+        origin.setTransients()
+        unit.movement.teleportToClosestMoveableTile()
+
+        assertTrue(unit.isDestroyed)
+        assertSame(enemy, worker.civ)
+        assertSame(onlyCandidate, worker.currentTile)
     }
 
 
@@ -314,6 +484,46 @@ class UnitMovementTests(
             unit.currentTile.position.eq(1, 2))
         assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
+    }
+
+    @Test
+    fun paradroppingTransportKeepsPayload() {
+        val origin = testGame.tileMap[0,0]
+        val destination = testGame.tileMap[1,0]
+        origin.baseTerrain = Constants.coast
+        origin.setTransients()
+        destination.baseTerrain = Constants.coast
+        destination.setTransients()
+
+        val transportBaseUnit = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [2] [Aircraft] units",
+            "May Paradrop to [Water] tiles up to [2] tiles away"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val transport = testGame.addUnit(transportBaseUnit.name, civInfo, origin)
+        // Freed from the carrier first, so the two real payloads can fill it to capacity below -
+        // a full carrier is exactly the case that used to lose its payloads.
+        val untransportedAirUnit = testGame.addUnit("Fighter", civInfo, origin)
+        untransportedAirUnit.isTransported = false
+        val payload = testGame.addUnit("Fighter", civInfo, origin)
+        val secondPayload = testGame.addUnit("Fighter", civInfo, origin)
+
+        transport.action = UnitActionType.Paradrop.value
+        transport.movement.moveToTile(destination)
+
+        assertEquals(destination, transport.currentTile)
+        assertEquals(destination, payload.currentTile)
+        assertEquals(destination, secondPayload.currentTile)
+        assertTrue(payload.isTransported)
+        assertTrue(secondPayload.isTransported)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, transport.mostRecentMoveType)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, payload.mostRecentMoveType)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
+        assertEquals(origin, untransportedAirUnit.currentTile)
+        assertFalse(untransportedAirUnit.isTransported)
     }
     
     @Test
@@ -373,18 +583,5 @@ class UnitMovementTests(
         assertEquals(testGame.tileMap[2,2], settler2.currentTile)
         assertEquals(warrior1, settler2.getOtherEscortUnit())
         assertEquals(warrior2, settler1.getOtherEscortUnit())
-    }
-
-    companion object {
-        @Suppress("unused")
-        @Parameters
-        @JvmStatic
-        fun parameters(): Collection<Array<Any?>?> {
-            return listOf( 
-                /* First execute the test with these parametrers */
-                arrayOf(ClassicPathfinding),
-                /* and then execute the test with these parametrers */
-                arrayOf(AStarPathfinding))
-        }
     }
 }

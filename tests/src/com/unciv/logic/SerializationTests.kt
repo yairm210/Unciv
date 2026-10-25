@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.TileHistory
 import com.unciv.models.Counter
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class SerializationTests {
     private val json = com.unciv.json.json()
 

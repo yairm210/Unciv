@@ -26,8 +26,12 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontRulesetIcons
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
+import kotlinx.coroutines.runBlocking
+import yairm210.purity.annotations.Readonly
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -65,6 +69,16 @@ object ImageGetter {
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
 
+        val setFontFamilyJob = Concurrency.run {
+            // Loading available fonts can take a long time
+            // Specifically the "set font family" part can take 700ms on my computer (!)
+            // But running it a second time is fast
+            // SO since it's not GL stuff, we can run it parallel to the mod atlas init which has to be on the GL thread,
+            // And by the time we reach BaseScreen.setSkin() -> Fonts.resetFont() it's super fast, saving us ~400-500ms on the GL thread!
+            val settings = UncivGame.Current.settings
+            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        }
+
         // Load base
         loadModAtlases("", Gdx.files.internal(""))
 
@@ -77,6 +91,8 @@ object ImageGetter {
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
+        // Just in case, don't want to get into any "parallel font update" problems
+        runBlocking { setFontFamilyJob.join() }
         BaseScreen.setSkin()
         FontRulesetIcons.addRulesetImages(ruleset)
     }
@@ -209,9 +225,11 @@ object ImageGetter {
     fun getExternalImage(fileName: String) =
         getExternalImage(Gdx.files.internal("ExtraImages/$fileName"))
 
-    fun getImage(fileName: String?, tintColor: Color? = null): Image = 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Image it returns
+    fun getImage(fileName: String?, tintColor: Color? = null): Image =
         ImageWithCustomSize(getDrawable(fileName)).apply { color = tintColor ?: Color.WHITE }
 
+    @Readonly
     fun getDrawable(fileName: String?): TextureRegionDrawable =
         textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
 
@@ -236,6 +254,7 @@ object ImageGetter {
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun ninePatchImageExists(fileName: String) = ninePatchDrawables.containsKey(fileName)
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Image it returns
     fun getStatIcon(statName: String, size: Float = 20f): Image = getImage("StatIcons/$statName")
             .apply { setSize(size, size) }
 
@@ -252,6 +271,7 @@ object ImageGetter {
             getImage("UnitIcons/${unit.name}").apply { this.color = color }
         else getImage("UnitTypeIcons/${unit.type}").apply { this.color = color }
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Group it returns
     fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
             return PortraitBuilding(construction, size)
@@ -264,15 +284,18 @@ object ImageGetter {
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
+    @Readonly
     fun getUniquePortrait(uniqueName: String, size: Float): Group = PortraitUnique(uniqueName, size)
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
+    @Readonly
     fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
         PortraitResource(resourceName, size, amount)
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
+    @Readonly
     fun getImprovementPortrait(improvementName: String, size: Float = 20f, isPillaged: Boolean = false): Portrait =
         PortraitImprovement(improvementName, size, false, isPillaged)
 
@@ -313,6 +336,7 @@ object ImageGetter {
 
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
+    @Readonly @Suppress("purity") // only mutates the freshly-created Actor it returns
     fun getRedCross(size: Float, alpha: Float): Actor {
         val redCross = getImage("OtherIcons/Close")
         redCross.setSize(size, size)

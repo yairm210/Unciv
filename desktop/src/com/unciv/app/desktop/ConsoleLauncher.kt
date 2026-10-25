@@ -60,7 +60,6 @@ internal object ConsoleLauncher {
         newGame.gameParameters.victoryTypes = ArrayList(newGame.ruleset.victories.keys)
         UncivGame.Current.gameInfo = newGame
 
-
         val simulation = Simulation(newGame, 500, 8)
         //Unless the effect size is very large, you'll typically need a large number of games to get a statistically significant result
 

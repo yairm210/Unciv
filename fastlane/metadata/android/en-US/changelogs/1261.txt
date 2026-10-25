@@ -1,0 +1,27 @@
+Invisible units no longer invisible to their own civ
+
+Remember last civilopedia position
+
+New game screen: Start fresh if the latest game start is erroring
+
+When selecting custom maps, don't overwrite the ruleset if the current mods are a superset of the map's required mods
+
+By unciv-loof:
+- Automation setting for specialist control in new cities 
+- Set default max coast extension to 3 instead of 2 
+
+By JN0V:
+- Add countable "Known [civFilter] Civilizations" 
+- Victories can carry uniques, and decide who may achieve them 
+- Add victory milestone "Have at least [amount] [countable]" 
+- Fix possible crash when scrolling to the selected construction queue entry 
+
+By LouisDeconinck:
+- Fix terrain changes from gifted improvements 
+- Fix health of units recruited from encampments 
+
+fix: prevent owned roads from being charged as neutral roads - By mvanhorn
+
+fix mod translation not enabled in restored new game screen - By finalpatch
+
+AStar correctly paths around allies - By Ambeco

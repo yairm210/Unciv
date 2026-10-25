@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
@@ -122,14 +121,15 @@ class UnitManager(val civInfo: Civilization) {
             }
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
-                { unit.matchesFilter(it.params[0]) })
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponGainingUnit, unit.cache.state,
+                { unit.matchesFilter(it.params[0]) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+        }
 
         if (unit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state)) {
+        civInfo.forEachMatchingUnique(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state) { unique ->
             if (unit.matchesFilter(unique.params[1])) {
                 civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
                 civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
@@ -186,16 +186,15 @@ class UnitManager(val civInfo: Civilization) {
         if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponLosingUnit, mapUnit.cache.state)
-                { mapUnit.matchesFilter(it.params[0]) })
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponLosingUnit, mapUnit.cache.state,
+                { mapUnit.matchesFilter(it.params[0]) }) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, mapUnit)
+        }
     }
 
     @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
     @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
-
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
     @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 

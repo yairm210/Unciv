@@ -6,12 +6,12 @@ import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.RulesetValidator
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class EventCircularTriggersTest {
 
     private lateinit var ruleset: Ruleset

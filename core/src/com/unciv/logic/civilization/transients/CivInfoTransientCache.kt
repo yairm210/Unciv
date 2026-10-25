@@ -59,6 +59,23 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val ruleset = civInfo.gameInfo.ruleset
 
         val state = civInfo.state
+
+        for (building in ruleset.buildings.values) {
+            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
+                uniqueBuildings.add(building)
+            }
+        }
+
+        for (improvement in ruleset.tileImprovements.values)
+            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
+                uniqueImprovements.add(improvement)
+
+        for (unit in ruleset.units.values) {
+            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
+                uniqueUnits.add(unit)
+            }
+        }
+
         val buildingsToRequiredResources = ruleset.buildings.values
                 .filter { civInfo.getEquivalentBuilding(it) == it }
                 .associateWith { it.requiredResources(state) }
@@ -78,22 +95,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
             if (lastEraForUnit != null)
                 lastEraResourceUsedForUnit[resource] = lastEraForUnit
-        }
-
-        for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != null && civInfo.matchesFilter(building.uniqueTo!!)) {
-                uniqueBuildings.add(building)
-            }
-        }
-
-        for (improvement in ruleset.tileImprovements.values)
-            if (improvement.uniqueTo != null && civInfo.matchesFilter(improvement.uniqueTo!!))
-                uniqueImprovements.add(improvement)
-
-        for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != null && civInfo.matchesFilter(unit.uniqueTo!!)) {
-                uniqueUnits.add(unit)
-            }
         }
     }
 
@@ -134,7 +135,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civID)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
-                if(!civInfo.isSpectator())
+                if(!civInfo.isSpectator)
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
                         entry.value.position,
                         NotificationCategory.Diplomacy, metCiv.civName,
@@ -152,17 +153,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     private fun updateViewableInvisibleTiles() {
-        val newViewableInvisibleTiles = HashSet<Tile>()
+        val newViewableInvisibleTiles = HashMap<Tile, MutableSet<String>>()
         for (unit in civInfo.units.getCivUnits()) {
             val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
             if (invisibleUnitUniques.none()) continue
-            val visibleUnitTypes = invisibleUnitUniques.map { it.params[0] }
+            val visibleUnitFilters = invisibleUnitUniques.map { it.params[0] }
                 .toList() // save this, it'll be seeing a lot of use
             for (tile in unit.viewableTiles) {
-                if (tile.militaryUnit == null) continue
-                if (tile in newViewableInvisibleTiles) continue
-                if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
-                    newViewableInvisibleTiles.add(tile)
+                newViewableInvisibleTiles.getOrPut(tile) { HashSet() }.addAll(visibleUnitFilters)
             }
         }
 
@@ -187,19 +185,17 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     private fun setNewViewableTiles() {
+        // while spectating (or defeated in singleplayer, which grants the same rights) all map is visible
+        if (civInfo.hasSpectatorVision() || DebugUtils.VISIBLE_MAP) {
+            civInfo.viewableTiles = civInfo.gameInfo.tileMap.values.toSet()
+            return
+        }
+
         if (civInfo.isDefeated()) {
             // Avoid meeting dead city states when entering a tile owned by their former ally (#9245)
             // In that case ourTilesAndNeighboringTiles and getCivUnits will be empty, but the for
             // loop getKnownCivs/getAllyCiv would add tiles.
             civInfo.viewableTiles = emptySet()
-            return
-        }
-
-        // while spectating all map is visible
-        if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
-            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
-            civInfo.viewableTiles = allTiles
-            civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
 
@@ -224,10 +220,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             civInfo.setLastSeenImprovement(tile.position, tile.improvement)
     }
 
-    /** Visible for DevConsole use only */
-    fun discoverNaturalWonders() {
+    /** Discovers Natural Wonders in [tiles]. Used by sight updates, "Reveals the entire map", and DevConsole. */
+    fun discoverNaturalWonders(tiles: Iterable<Tile> = civInfo.viewableTiles) {
         val newlyViewedNaturalWonders = HashSet<Tile>()
-        for (tile in civInfo.viewableTiles) {
+        for (tile in tiles) {
             if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
                 newlyViewedNaturalWonders += tile
         }
@@ -237,14 +233,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.naturalWonders.add(tile.naturalWonder!!)
-            if (civInfo.isSpectator()) continue // don't trigger anything
+            if (civInfo.isSpectator) continue // don't trigger anything
 
             civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             val statsGained = Stats()
 
-            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
+            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv }
                     .flatMap { it.naturalWonders }
             if (tile.terrainHasUnique(UniqueType.GrantsStatsToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
@@ -254,7 +250,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 }
             }
 
-            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusWhenDiscoveringNaturalWonder)) {
+            civInfo.forEachMatchingUnique(UniqueType.StatBonusWhenDiscoveringNaturalWonder) { unique ->
 
                 val normalBonus = Stats.parse(unique.params[0])
                 val firstDiscoveredBonus = Stats.parse(unique.params[1])
@@ -278,10 +274,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     )
             }
 
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
-                GameContext(civInfo, tile = tile)
-            ))
+            civInfo.forEachTriggeredUnique(UniqueType.TriggerUponDiscoveringNaturalWonder,
+                GameContext(civInfo, tile = tile), ignoreCities = false
+            ) { unique ->
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+            }
 
             // G&K in particular; update the happiness counter in the top bar in the world screen
             civInfo.updateStatsForNextTurn()
@@ -348,8 +345,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
             var resourceBonusPercentage = 1f
-            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
+            civInfo.forEachMatchingUnique(UniqueType.CityStateResources) { unique ->
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
+            }
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.allyCiv == civInfo }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
@@ -361,14 +359,15 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             newDetailedCivResources.addByResource(cityStateProvidedResources, Constants.cityStates)
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
-            if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
-            val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
-            newDetailedCivResources.add(
-                resource,
-                unique.getSourceNameForUser(),
-                (unique.params[0].toFloat() * civInfo.getResourceModifier(resource)).toInt()
-            )
+        civInfo.forEachMatchingUnique(UniqueType.ProvidesResources) { unique ->
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder) { // already calculated in city
+                val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
+                newDetailedCivResources.add(
+                    resource,
+                    unique.getSourceNameForUser(),
+                    (unique.params[0].toFloat() * civInfo.getResourceModifier(resource)).toInt()
+                )
+            }
         }
 
         for (diplomacyManager in civInfo.diplomacy.values)

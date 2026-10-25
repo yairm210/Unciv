@@ -33,26 +33,31 @@ open class TextFieldWithFixes private constructor(text: String, style: TextField
     }
 
     init {
-        onscreenKeyboard = OnscreenKeyboard { visible ->
-            Gdx.input.setOnscreenKeyboardVisible(visible, if (isPasswordMode) OnscreenKeyboardType.Password else OnscreenKeyboardType.Default)
+        onscreenKeyboard = object : OnscreenKeyboard {
+            override fun show(textField: TextField) {
+                Gdx.input.setOnscreenKeyboardVisible(true, if (isPasswordMode) OnscreenKeyboardType.Password else OnscreenKeyboardType.Default)
+            }
+            override fun close() {
+                Gdx.input.setOnscreenKeyboardVisible(false, if (isPasswordMode) OnscreenKeyboardType.Password else OnscreenKeyboardType.Default)
+            }
         }
         addListener(object : FocusListener() {
             override fun keyboardFocusChanged(event: FocusEvent, actor: Actor?, focused: Boolean) {
                 if (!focused && event.relatedActor is TextFieldWithFixes) return // Will be reactivated anyway
-                onscreenKeyboard.show(focused)
+                if (focused) onscreenKeyboard.show(this@TextFieldWithFixes) else onscreenKeyboard.close()
             }
         })
         setPasswordCharacter('\u2022') // Gdx bug: They use 149, which is a bullet in cp-1252, but not in a sensible encoding
     }
 
     // Without this, the DeveloperConsole can't catch the Tab key for Autocomplete reliably
-    override fun next(up: Boolean) {
-        if (KeyCharAndCode.TAB in keyShortcuts) return
-        super.next(up)
+    override fun next(up: Boolean): TextField? {
+        if (KeyCharAndCode.TAB in keyShortcuts) return null
+        return super.next(up)
     }
 
     override fun setDisabled(disabled: Boolean) {
-        onscreenKeyboard.show(!disabled)
+        if (disabled) onscreenKeyboard.close() else onscreenKeyboard.show(this)
         super.setDisabled(disabled)
     }
 

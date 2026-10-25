@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.view.MapUnitView
 
 class IdleUnitButton (
     private val unitTable: UnitTable,
@@ -33,21 +33,22 @@ class IdleUnitButton (
         keyShortcuts.add(keyShortcutBind)
         onActivation (binding = keyShortcutBind) {
 
-            val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
-            if (idleUnits.none()) return@onActivation
+            val idleUnits = unitTable.worldScreen.selectedGameView.civView.getUnits().filter { it.isIdle() }
+            if (idleUnits.isEmpty()) return@onActivation
 
-            val unitToSelect: MapUnit
-            if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))
+            val selectedUnit = unitTable.selectedUnit
+            val unitToSelect: MapUnitView
+            if (selectedUnit == null || !idleUnits.contains(selectedUnit))
                 unitToSelect = idleUnits.first()
             else {
-                var index = idleUnits.indexOf(unitTable.selectedUnit!!)
+                var index = idleUnits.indexOf(selectedUnit)
                 if (previous) index-- else index++
-                index += idleUnits.count()
-                index %= idleUnits.count() // for looping
-                unitToSelect = idleUnits.elementAt(index)
+                index += idleUnits.size
+                index %= idleUnits.size // for looping
+                unitToSelect = idleUnits[index]
             }
 
-            tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
+            tileMapHolder.setCenterPosition(unitToSelect.getTile().position())
             unitTable.selectUnit(unitToSelect)
             unitTable.worldScreen.shouldUpdate = true
         }

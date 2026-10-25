@@ -9,8 +9,6 @@ class GameStartScreen : BaseScreen() {
     init {
         val logoImage = ImageGetter.getExternalImage("banner.png")
         logoImage.center(stage)
-        logoImage.color.a = 0f
-        logoImage.addAction(Actions.alpha(1f, 0.3f))
         stage.addActor(logoImage)
     }
 }

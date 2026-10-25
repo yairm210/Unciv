@@ -53,12 +53,12 @@ class ViewFriendsListScreen : PickerScreen() {
         rightSideTable.defaults().pad(20.0f)
 
         addFriendButton.onClick {
-            game.pushScreen(AddFriendScreen())
+            game.pushScreen{ AddFriendScreen() }
         }
         rightSideTable.add(addFriendButton).padBottom(10f).row()
 
         editFriendButton.onClick {
-            game.pushScreen(EditFriendScreen(selectedFriend))
+            game.pushScreen{ EditFriendScreen(selectedFriend) }
             editFriendButton.disable()
         }
         rightSideTable.add(editFriendButton).padBottom(30f).row()

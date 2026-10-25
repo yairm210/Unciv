@@ -99,6 +99,7 @@ object FasterUIDevelopment {
             game.settings = Settings.load()
             ImageGetter.resetAtlases()
             ImageGetter.reloadImages()
+            BaseScreen.recreateBatch()
             BaseScreen.setSkin()
 
             val screen = when (tests.size) {
@@ -106,7 +107,7 @@ object FasterUIDevelopment {
                 1 -> UIDevScreen(tests[0])
                 else -> UIDevTestPicker(game, tests)
             }
-            game.pushScreen(screen)
+            game.pushScreen{ screen }
 
             Gdx.graphics.requestRendering()
         }
@@ -121,7 +122,8 @@ object FasterUIDevelopment {
         }
 
         override fun resize(width: Int, height: Int) {
-            game.resize(width, height)
+            // The initial pushScreen is asynchronous, so the first resize can arrive before it.
+            if (game.screen != null) game.resize(width, height)
         }
     }
 
@@ -156,13 +158,13 @@ object FasterUIDevelopment {
                 val text = test.testGetLabel() ?: continue
                 val button = TextButton(text, buttonStyle)
                 button.onClick {
-                    game.pushScreen(UIDevScreen(test))
+                    game.pushScreen{ UIDevScreen(test) }
                 }
                 table.add(button).colspan(2).row()
             }
 
             table.addSelectbox("UI Scale", game.settings::screenSize) {
-                game.replaceCurrentScreen(UIDevTestPicker(game, tests))
+                game.replaceCurrentScreen{ UIDevTestPicker(game, tests) }
             }
             table.addSelectbox("Gdx Scene2D debug", ::enableSceneDebug)
 

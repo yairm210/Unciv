@@ -3,34 +3,28 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -89,7 +83,7 @@ import kotlin.concurrent.timer
 class WorldScreen(
     val gameInfo: GameInfo,
     val autoPlay: AutoPlay,
-    val viewingCiv: Civilization,
+    internal val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
     /** When set, causes the screen to update in the next [render][render] event */
@@ -98,40 +92,58 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
+    
+    /** Indicates that a game failed to upload, and needs to be uploaded */
+    var failedUpload = false
+        private set
+
+    /** Defers reopening an unfulfilled free-Great-Person choice until the player requests it. */
+    internal var deferFreeGreatPersonPicker = false
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
+        internal set
+    /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
+     *  Only ever differs from [spectatorGameView] for spectators. */
+    var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator)
+        internal set
 
+    /** The [viewingCiv]'s own perspective.
+     * This should only ever be used A. for spectators B. when forOfWar is false, for specific UI elements */
+    private val spectatorGameView by lazy {
+        if (!viewingCiv.isSpectator) throw Exception("Managed to disable fog of war without being spectator?!")
+        GameView(gameInfo, viewingCiv, spectatorMode = true)
+    }  
+    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
+
+    /** UI toggle only (spectator mode): whether the map/tile panel should show [selectedGameView]'s
+     *  (fogged) vision or [spectatorGameView]'s (the spectator's own, unrestricted) vision. */
     var fogOfWar = true
 
     /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
-        get() = isPlayersTurn && !viewingCiv.isSpectator()
+        get() = isPlayersTurn && !viewingCiv.isSpectator
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
 
     internal var waitingForAutosave = false
-    private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     // Floating Widgets going counter-clockwise
     internal val topBar = WorldScreenTopBar(this)
     internal val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     internal val chatButton = ChatButton(this)
-    private val unitActionsTable = UnitActionsTable(this)
+    internal val unitActionsTable = UnitActionsTable(this)
     /** Bottom left widget holding information about a selected unit or city */
     internal val bottomUnitTable = UnitTable(this)
-    private val battleTable = BattleTable(this)
+    internal val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
-    private val bottomTileInfoTable = TileInfoTable(this)
+    internal val bottomTileInfoTable = TileInfoTable(this)
     internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton(this)
-    private val statusButtons = StatusButtons(nextTurnButton)
+    internal val statusButtons = StatusButtons(nextTurnButton)
     internal val smallUnitButton = SmallUnitButton(this, statusButtons)
-    private val tutorialTaskTable = Table().apply {
-        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
-    }
-    private var tutorialTaskTableHash = 0
+    private val tutorialTaskTable = TutorialTaskTable(this)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -186,7 +198,7 @@ class WorldScreen(
         mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
-        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
+        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator)
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -239,20 +251,20 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
+        game.pushScreen{ EmpireOverviewScreen(selectedGameView.civView, category, selection) }
     }
 
     fun openNewGameScreen() {
         val newGameSetupInfo = GameSetupInfo(gameInfo)
         newGameSetupInfo.mapParameters.reseed()
         val newGameScreen = NewGameScreen(newGameSetupInfo)
-        game.pushScreen(newGameScreen)
+        game.pushScreen{ newGameScreen }
     }
 
     fun openSaveGameScreen() {
         // See #10353 - we don't support locally saving an online multiplayer game
         if (gameInfo.gameParameters.isOnlineMultiplayer) return
-        game.pushScreen(SaveGameScreen(gameInfo))
+        game.pushScreen{ SaveGameScreen(gameInfo) }
     }
 
     private fun addKeyboardPresses() {
@@ -265,7 +277,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewNotifications) { openEmpireOverview(EmpireOverviewCategories.Notifications) }
-        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen(VictoryScreen(this)) }
+        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen{ VictoryScreen(this) } }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewStats) { openEmpireOverview(EmpireOverviewCategories.Stats) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewResources) { openEmpireOverview(EmpireOverviewCategories.Resources) }
         globalShortcuts.add(KeyboardBinding.QuickSave) { QuickSave.save(gameInfo, this) }
@@ -273,13 +285,13 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(capital))
+                game.pushScreen{ CityScreen(selectedGameView.getCityView(capital)) }
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
         }
         globalShortcuts.add(KeyboardBinding.SaveGame) { openSaveGameScreen() }    //   Save
-        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
+        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen{ LoadGameScreen() } }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }
         globalShortcuts.add(KeyboardBinding.MusicPlayer) {
@@ -300,7 +312,7 @@ class WorldScreen(
     @Readonly
     fun openDeveloperConsole() {
         // No cheating unless you're by yourself, ignoring a possible spectator
-        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1) return
+        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator } > 1) return
         DevConsolePopup(this)
     }
 
@@ -358,7 +370,7 @@ class WorldScreen(
                     }
                 }.right()
                 loadingGamePopup.addButton("Main menu") {
-                    game.pushScreen(MainMenuScreen())
+                    game.pushScreen{ MainMenuScreen() }
                 }.left()
             }
         }
@@ -372,34 +384,23 @@ class WorldScreen(
         if (uiEnabled) {
             displayTutorialsOnUpdate()
 
-            bottomUnitTable.update()
-
             updateSelectedCiv()
 
-            if (fogOfWar) minimapWrapper.update(selectedCiv)
-            else minimapWrapper.update(viewingCiv)
+            bottomUnitTable.update()
 
-            if (fogOfWar) bottomTileInfoTable.selectedCiv = selectedCiv
-            else bottomTileInfoTable.selectedCiv = viewingCiv
-            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
+            bottomTileInfoTable.update(getGameViewConsideringForOfWar().civView, mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 
             battleTable.update()
-
-            displayTutorialTaskOnUpdate()
         }
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
-            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
-                gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
-                allUnits.filter(mapVisualization::isUnitPastVisible),
-                allUnits.filter(mapVisualization::isUnitFutureVisible),
-                allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                        .map { (_, source, target) -> source to target }
+                getGameViewConsideringForOfWar(),
+                selectedGameView.civView.getUnits().asSequence(),
             )
         }
 
@@ -409,12 +410,9 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(viewingCiv)
+        mapHolder.updateTiles(getGameViewConsideringForOfWar().civView)
 
         topBar.update(selectedCiv)
-        if (tutorialTaskTable.isVisible)
-            tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(TutorialTrigger.OtherCivEncountered)
@@ -422,7 +420,7 @@ class WorldScreen(
         if (uiEnabled) {
             // UnitActionsTable measures geometry (its own y, techPolicyAndDiplomacy and fogOfWarButton), so call update this late
             unitActionsTable.y = bottomUnitTable.height
-            unitActionsTable.update(bottomUnitTable.selectedUnit)
+            unitActionsTable.update(bottomUnitTable.selectedUnit?.getUnit())
         }
 
         // If the game has ended, lets stop AutoPlay
@@ -433,11 +431,11 @@ class WorldScreen(
         if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
-                    UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
+                    UncivGame.Current.pushScreen{ DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
-                    game.pushScreen(VictoryScreen(this))
-                viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen(GreatPersonPickerScreen(this, viewingCiv))
+                    game.pushScreen{ VictoryScreen(this) }
+                hasPendingFreeGreatPerson() && !deferFreeGreatPersonPicker ->
+                    openGreatPersonPicker()
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -454,6 +452,9 @@ class WorldScreen(
 
         updateGameplayButtons()
 
+        // Late: the task card is fitted into the room left by the widgets around it, so they must have their final size
+        if (uiEnabled) tutorialTaskTable.update()
+
         val coveredNotificationsTop = stage.height - statusButtons.y
         val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
 //                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
@@ -464,16 +465,12 @@ class WorldScreen(
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
     }
 
-    private fun getCurrentTutorialTask(): Event? {
-        if (!game.settings.tutorialTasksCompleted.contains("Create a trade route")) {
-            if (viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
-                game.settings.addCompletedTutorialTask("Create a trade route")
-        }
-        val stateForConditionals = viewingCiv.state
-        return gameInfo.ruleset.events.values.firstOrNull {
-            it.presentation == Event.Presentation.Floating &&
-                it.isAvailable(stateForConditionals)
-        }
+    @Readonly
+    internal fun hasPendingFreeGreatPerson() = viewingCiv.greatPeople.freeGreatPeople > 0
+
+    internal fun openGreatPersonPicker() {
+        deferFreeGreatPersonPicker = false
+        game.pushScreen { GreatPersonPickerScreen(this, viewingCiv) }
     }
 
     private fun displayTutorialsOnUpdate() {
@@ -503,47 +500,22 @@ class WorldScreen(
         }
     }
 
-    private fun displayTutorialTaskOnUpdate() {
-        fun setInvisible() {
-            tutorialTaskTable.isVisible = false
-            tutorialTaskTable.clear()
-            tutorialTaskTableHash = 0
-        }
-        if (!game.settings.showTutorials || viewingCiv.isDefeated()) return setInvisible()
-        val tutorialTask = getCurrentTutorialTask() ?: return setInvisible()
-
-        if (!UncivGame.Current.isTutorialTaskCollapsed) {
-            val hash = tutorialTask.hashCode()  // Default implementation is OK - we see the same instance or not
-            if (hash != tutorialTaskTableHash) {
-                val renderEvent = RenderEvent(tutorialTask, this) {
-                    shouldUpdate = true
-                }
-                if (!renderEvent.isValid) return setInvisible()
-                tutorialTaskTable.clear()
-                tutorialTaskTable.add(renderEvent).pad(10f)
-                tutorialTaskTableHash = hash
-            }
-        } else {
-            tutorialTaskTable.clear()
-            tutorialTaskTable.add(ImageGetter.getImage("OtherIcons/HiddenTutorialTask").apply { setSize(30f,30f) }).pad(5f)
-            tutorialTaskTableHash = 0
-        }
-        tutorialTaskTable.pack()
-        tutorialTaskTable.centerX(stage)
-        tutorialTaskTable.y = topBar.getYForTutorialTask() - tutorialTaskTable.height
-        tutorialTaskTable.onClick {
-            UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
-            displayTutorialTaskOnUpdate()
-        }
-        tutorialTaskTable.isVisible = true
+    fun setSelectedCiv(civ: Civilization) {
+        if (!viewingCiv.isSpectator) throw Exception("Tried to select a different civ when not spectator!")
+        selectedCiv = civ
+        selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator)
     }
 
     private fun updateSelectedCiv() {
-        selectedCiv = when {
-            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
-            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
+        // Only spectators/replays follow the selection's owner. For ordinary players selectedCiv must stay viewingCiv:
+        // otherwise a selected unit that just changed owner (gifted to a city-state, captured) would switch the
+        // whole view to its new owner, defeat UnitPresenter's "no longer ours" deselection, and leave a stale selection.
+        if (!viewingCiv.isSpectator) return
+        setSelectedCiv(when {
+            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
+            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
-        }
+        })
     }
 
     class RestoreState(
@@ -565,14 +537,15 @@ class WorldScreen(
     private fun restore(restoreState: RestoreState) {
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (viewingCiv.civID == restoreState.viewingCivName) {
-            mapHolder.zoom(restoreState.zoom)
-            mapHolder.scrollX = restoreState.scrollX
-            mapHolder.scrollY = restoreState.scrollY
-            mapHolder.updateVisualScroll()
-        }
+        if (viewingCiv.civID != restoreState.viewingCivName) return
+        
+        mapHolder.zoom(restoreState.zoom)
+        mapHolder.scrollX = restoreState.scrollX
+        mapHolder.scrollY = restoreState.scrollY
+        mapHolder.updateVisualScroll()
 
-        selectedCiv = gameInfo.getCivilization(restoreState.selectedCivName)
+        if (!viewingCiv.isSpectator) return
+        setSelectedCiv(gameInfo.getCivilization(restoreState.selectedCivName))
         fogOfWar = restoreState.fogOfWar
     }
 
@@ -646,7 +619,7 @@ class WorldScreen(
                         }
                     }
 
-                    this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    this@WorldScreen.failedUpload = true // Since we couldn't push the new game clone, then we need to try again
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
@@ -672,15 +645,15 @@ class WorldScreen(
     fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
-            bottomUnitTable.selectedUnit!!.due = false
-        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
+            bottomUnitTable.selectedUnit!!.setDue(false)
+        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit?.getUnit())
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
                 nextDueUnit.currentTile.position,
                 immediately = false,
                 selectUnit = false
             )
-            bottomUnitTable.selectUnit(nextDueUnit)
+            bottomUnitTable.selectUnit(selectedGameView.getForeignMapUnitView(nextDueUnit).tryGetMapUnitView()!!)
         } else {
             mapHolder.removeAction(mapHolder.blinkAction)
             mapHolder.selectedTile = null
@@ -785,7 +758,7 @@ class WorldScreen(
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
-        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.isNotEmpty() }
         displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 
@@ -831,16 +804,14 @@ private fun startNewScreenJob(gameInfo: GameInfo, autoPlay: AutoPlay, autosaveDi
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo, autoPlay)
         } catch (notAPlayer: UncivShowableException) {
+            val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
             withGLContext {
-                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
-                val mainMenu = UncivGame.Current.goToMainMenu()
-                ToastPopup(message, mainMenu)
+                UncivGame.Current.goToMainMenu { mainMenu -> ToastPopup(message, mainMenu) }
             }
             return@run
         } catch (_: OutOfMemoryError) {
             withGLContext {
-                val mainMenu = UncivGame.Current.goToMainMenu()
-                ToastPopup("Not enough memory on phone to load game!", mainMenu)
+                UncivGame.Current.goToMainMenu { mainMenu -> ToastPopup("Not enough memory on phone to load game!", mainMenu) }
             }
             return@run
         }

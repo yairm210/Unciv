@@ -57,7 +57,7 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStatsBreakdown(city: City?, observingCiv: Civilization?): List<Pair<String, Stats>> {
         val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
         @LocalState val listOfStats = getTerrainStatsBreakdown(gameContext)
-        
+
         val otherYieldsIgnored = tile.allTerrains.any { it.hasUnique(UniqueType.NullifyYields, gameContext) }
 
         val improvement = if (otherYieldsIgnored) null // Treat it as if there is no improvement
@@ -98,7 +98,6 @@ class TileStatFunctions(val tile: Tile) {
                 listOfStats += getSingleTerrainStats(riverTerrain!!, gameContext)
         }
 
-
         var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
         if (observingCiv != null) {
             // resource base
@@ -125,12 +124,11 @@ class TileStatFunctions(val tile: Tile) {
         val statsFromMinimum = missingFromMinimum(listOfStats.toStats(), minimumStats)
         listOfStats.add("Minimum" to statsFromMinimum)
 
-        if (observingCiv != null &&
-            listOfStats.toStats().gold != 0f && observingCiv.goldenAges.isGoldenAge())
+        if (observingCiv != null && observingCiv.goldenAges.isGoldenAge() && listOfStats.toStats().gold != 0f)
             listOfStats.add("Golden Age" to Stats(gold = 1f))
 
         // To ensure that the original stats (in uniques, terrains, etc) are not modified in getTileStats, we clone them all
-        return listOfStats.filter { !it.second.isEmpty() }.map { it.first to it.second.clone() }
+        return listOfStats.mapNotNull { if (it.second.isEmpty()) null else it.first to it.second.clone() }
     }
 
     /** Ensures each stat is >= [minimumStats].stat - modifies in place */
@@ -153,7 +151,7 @@ class TileStatFunctions(val tile: Tile) {
         val list = ArrayList<Pair<String,Stats>>()
         list.add(terrain.name to (terrain as Stats))
 
-        for (unique in terrain.getMatchingUniques(UniqueType.Stats, gameContext)) {
+        terrain.forEachMatchingUnique(UniqueType.Stats, gameContext) { unique ->
             list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)
         }
         return list
@@ -238,7 +236,7 @@ class TileStatFunctions(val tile: Tile) {
 
     fun getTileStartScore(cityCenterMinStats: Stats): Float {
         var sum = 0f
-        for (closeTile in tile.getTilesInDistance(2)) {
+        tile.forEachTileInDistance(2) { closeTile ->
             val tileYield = closeTile.stats.getTileStartYield(
                 if (closeTile == tile) cityCenterMinStats else Stats.ZERO
             )
@@ -305,11 +303,11 @@ class TileStatFunctions(val tile: Tile) {
             stats.add(resource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = GameContext(civInfo = observingCiv, city = city, tile = tile)
-        for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
+        improvement.forEachMatchingUnique(UniqueType.Stats, conditionalState) { unique ->
             stats.add(unique.stats)
         }
 
-        for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsForAdjacencies, conditionalState)) {
+        improvement.forEachMatchingUnique(UniqueType.ImprovementStatsForAdjacencies, conditionalState) { unique ->
             val adjacent = unique.params[1]
             val numberOfBonuses = tile.neighbors.count {
                 it.matchesFilter(adjacent, observingCiv)
@@ -318,7 +316,7 @@ class TileStatFunctions(val tile: Tile) {
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
 
-        for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)) {
+        improvement.forEachMatchingUnique(UniqueType.ImprovementStatsOnTile, conditionalState) { unique ->
             if (tile.matchesFilter(unique.params[1])
                 || unique.params[1] == Constants.freshWater && tile.isAdjacentTo(Constants.freshWater)
                 || unique.params[1] == "non-fresh water" && !tile.isAdjacentTo(Constants.freshWater)

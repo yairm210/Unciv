@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
 import java.lang.reflect.Modifier
@@ -23,7 +23,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class CountableTests {
     //region Helpers
     private lateinit var game: TestGame
@@ -280,6 +280,30 @@ class CountableTests {
             game.createBuilding("[+3 Gold, +2 Food, +1 Production, -4 Happiness, +1 Science, +2 Culture, +3 Faith] [in this city] <when number of [Cities] is more than [1]>")
         city2.cityConstructions.addBuilding(providesStats2)
         verifyStats(GameContext(civ, city2))
+    }
+
+    @Test
+    fun testKnownCivsCountable() {
+        // A big map with distant cities: civilizations must not meet by seeing each other
+        game = TestGame()
+        game.makeHexagonalMap(12)
+        val ourCiv = game.addCiv()
+        val otherMajorCiv = game.addCiv()
+        val cityState = game.addCiv(cityStateType = game.ruleset.cityStateTypes.keys.first())
+        game.addCity(ourCiv, game.tileMap[0,0])
+        game.addCity(otherMajorCiv, game.tileMap[10,0])
+        game.addCity(cityState, game.tileMap[-10,0])
+        val context = GameContext(ourCiv)
+        fun known(filter: String) = Countables.getCountableAmount("Known [$filter] Civilizations", context)
+
+        assertEquals("Nobody met yet", 0, known("Major"))
+        ourCiv.diplomacyFunctions.makeCivilizationsMeet(cityState)
+        assertEquals("A City-State is not a major civ", 0, known("Major"))
+        assertEquals(1, known("City-State"))
+        ourCiv.diplomacyFunctions.makeCivilizationsMeet(otherMajorCiv)
+        assertEquals(1, known("Major"))
+        // "all" includes neither ourselves nor civilizations we have not met
+        assertEquals(2, known("all"))
     }
 
     @Test

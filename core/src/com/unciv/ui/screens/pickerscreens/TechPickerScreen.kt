@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.pickerscreens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
@@ -16,6 +17,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.objectdescriptions.TechnologyDescriptions
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
@@ -23,6 +25,9 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.input.onDoubleClick
@@ -75,13 +80,16 @@ class TechPickerScreen(
     private val turnsToTech = ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
 
     init {
+        Gdx.input.inputProcessor = null // Avoid ANRs while building the tech screen
+
         setDefaultCloseAction()
         scrollPane.setOverscroll(false, false)
 
-        descriptionLabel.onClick {
+        descriptionLabel.onActivation {
             if (selectedTech != null)
                 openCivilopedia(selectedTech!!.makeLink())
         }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
@@ -92,7 +100,7 @@ class TechPickerScreen(
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        
+
         rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
@@ -112,6 +120,7 @@ class TechPickerScreen(
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
+        Gdx.input.inputProcessor = stage // Return input 
     }
 
     override fun getCivilopediaRuleset() = ruleset
@@ -137,6 +146,9 @@ class TechPickerScreen(
 
         for (label in eraLabels) label.remove()
         eraLabels.clear()
+
+        // Computed once for all techs instead of per-TechButton - see #15641
+        val techIconsIndex = TechnologyDescriptions.buildTechIconsIndex(ruleset, civInfo)
 
         val allTechs = ruleset.technologies.values
         if (allTechs.isEmpty()) return
@@ -199,7 +211,7 @@ class TechPickerScreen(
                 if (tech == null) {
                     techTable.add(table).fill()
                 } else {
-                    val techButton = TechButton(tech.name, civTech, false)
+                    val techButton = TechButton(tech.name, civTech, false, techIconsIndex)
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, queue = false, center = false) }

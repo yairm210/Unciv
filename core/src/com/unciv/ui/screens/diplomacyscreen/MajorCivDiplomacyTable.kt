@@ -21,11 +21,26 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.ConfirmPopup
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     val viewingCiv = diplomacyScreen.viewingCiv
 
+    private enum class ModifierColor(val color: Color, val upperValueThreshold: Int) {
+        VeryNegative(Color(1f, 0.15f, 0.15f, 1f), -16), // red-pink
+        Negative(Color(1f, 0.6f, 0f, 1f), -4), // orange-yellow
+        Insignificant(Color.LIGHT_GRAY, 3),
+        Positive(Color(0f, 0.75f, 0f, 1f), 15), // darker green
+        VeryPositive(Color(0.15f, 1f, 0.15f, 1f), Int.MAX_VALUE); // lighter green
+        
+        companion object {
+            fun getColor(modifierValue: Int) = entries
+                .first { modifierValue <= it.upperValueThreshold }
+                .color
+        }
+    }
+    
     fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)!!
 
@@ -107,8 +122,8 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         negotiatePeaceButton.onClick {
             val tradeTable = diplomacyScreen.setTrade(otherCiv)
             val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = viewingCiv.gameInfo.speed)
-            tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
-            tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
+            tradeTable.tradeView.theirStagedOffers().add(peaceTreaty)
+            tradeTable.tradeView.ourStagedOffers().add(peaceTreaty)
             tradeTable.offerColumnsTable.update()
             tradeTable.enableOfferButton(true)
         }
@@ -200,7 +215,8 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val diplomacyModifiersTable = Table()
-        for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
+        diplomacyModifiersTable.defaults().spaceBottom(4f)
+        for (modifier in otherCivDiplomacyManager.diplomaticModifiers.entries.sortedByDescending { abs(it.value) }) {
             // Angry about attacked CS and destroyed CS do not stack
             if (modifier.key == DiplomaticModifiers.AttackedProtectedMinor.name
                 && otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
@@ -210,8 +226,9 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 ?: continue // This modifier is from the future, you cannot understand it yet
             var text = diplomaticModifier.text.tr() + " "
             if (modifier.value > 0) text += "+"
-            text += modifier.value.roundToInt()
-            val color = if (modifier.value < 0) Color.RED else Color.GREEN
+            val roundedValue = modifier.value.roundToInt()
+            text += roundedValue
+            val color = ModifierColor.getColor(roundedValue)
             diplomacyModifiersTable.add(text.toLabel(color)).row()
         }
         return diplomacyModifiersTable

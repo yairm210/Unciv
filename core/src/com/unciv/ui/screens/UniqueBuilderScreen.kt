@@ -18,30 +18,45 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.LanguageTable
-import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 
-/** A [PickerScreen] to select a language, used once on the initial run after a fresh install.
- *  After that, [OptionsPopup] provides the functionality.
- *  Reusable code is in [LanguageTable] and [addLanguageTables].
+/** A [PickerScreen] to build valid Uniques, accessible from [ModCheckTab][com.unciv.ui.popups.options.ModCheckTab].
  */
-class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
+class UniqueBuilderScreen(
+    ruleset: Ruleset,
+    selectTarget: UniqueTarget? = null,
+    initialText: String = "",
+    onUniqueChosen: ((String) -> Unit)? = null
+) : PickerScreen() {
 
-    private val mainUniqueTable = UniqueTable(true, ruleset, stage) { updateCurrentUniqueText() }
+    private val mainUniqueTable = UniqueTable(true, ruleset, stage, selectTarget, initialText) { updateCurrentUniqueText() }
     private val modifierTables = mutableListOf<UniqueTable>()
     private var currentUniqueText = ""
+    // Exists before mainUniqueTable.initialize() so target/text callbacks can fill it.
+    private val uniqueValidator = UniqueValidator(ruleset, tryFixUnknownUniques = true)
+    private val wholeUniqueErrorTable = Table().apply { defaults().pad(5f) }
 
     init {
         setDefaultCloseAction()
         rightSideButton.isVisible = false
-        rightSideButton.setText("Copy to clipboard")
-        rightSideButton.onClick { Gdx.app.clipboard.contents = currentUniqueText }
+        rightSideButton.setText(if (onUniqueChosen == null) "Copy to clipboard" else "OK")
+        rightSideButton.onClick {
+            if (onUniqueChosen == null) {
+                Gdx.app.clipboard.contents = currentUniqueText
+            } else {
+                onUniqueChosen(currentUniqueText)
+                game.popScreen()
+            }
+        }
         topTable.defaults().pad(5f)
+
+        wholeUniqueErrorTable.background = ImageGetter.getWhiteDotDrawable().tint(Color.DARK_GRAY)
+        val assembledPreview = descriptionScroll.actor as Table
+        assembledPreview.add(wholeUniqueErrorTable).pad(10f).top()
+        wholeUniqueErrorTable.add("Whole unique:".toLabel()).row()
 
         mainUniqueTable.initialize()
         topTable.add(mainUniqueTable).row()
@@ -61,25 +76,43 @@ class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
 
     private fun updateCurrentUniqueText() {
         currentUniqueText = mainUniqueTable.uniqueTextField.text +
-                modifierTables.joinToString("") { " <"+it.uniqueTextField.text+">" }
+                modifierTables.joinToString("") { " <" + it.uniqueTextField.text + ">" }
         descriptionLabel.setText(currentUniqueText)
+
+        // Fragment tables only prove each piece is well-formed. The assembled unique is authoritative.
+        wholeUniqueErrorTable.clear()
+        wholeUniqueErrorTable.add("Whole unique:".toLabel()).row()
+        wholeUniqueErrorTable.add("Errors:".toLabel()).row()
+        val assembledUnique = Unique(currentUniqueText, sourceObjectType = mainUniqueTable.selectedTarget)
+        val uniqueErrors = uniqueValidator.checkUnique(assembledUnique, null)
+        for (error in uniqueErrors)
+            wholeUniqueErrorTable.add(error.text.toLabel().apply { wrap = true }).width(stage.width / 2).row()
+        if (uniqueErrors.isEmpty())
+            wholeUniqueErrorTable.add("No errors!".toLabel())
+
         rightSideButton.isVisible = true
         rightSideButton.enable()
     }
 }
 
-class UniqueTable(
+private class UniqueTable(
     isMainUnique: Boolean,
     val ruleset: Ruleset,
     stage: Stage,
+    selectTarget: UniqueTarget? = null,
+    private val initialText: String = "",
     val onUniqueChange: () -> Unit
 ) :Table() {
     // in order of presentation
     private val uniqueTargetsSelectBox: SelectBox<UniqueTarget>
     private val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
     private val uniqueSearchTextField = TextField("", BaseScreen.skin).apply { messageText = "Search" }
-    internal val uniqueTextField = TextField("Unique", BaseScreen.skin)
+    val uniqueTextField = TextField("Unique", BaseScreen.skin)
+    /** Ruleset object type chosen for this row. The builder passes the main row's value as the assembled unique's source. */
+    val selectedTarget: UniqueTarget get() = uniqueTargetsSelectBox.selected
     private val documentationLabel = WrappableLabel("", stage.width * 0.9f)
+    /** While true, selection events from rebuilding the dropdown must not replace edited unique text. */
+    private var rebuildingUniqueChoices = false
     private val documentationCell: Cell<Actor?>
     private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
     private val uniqueErrorTable = Table().apply { defaults().pad(5f) }
@@ -98,7 +131,7 @@ class UniqueTable(
         val uniqueTargetSelectBoxTable = Table().apply { defaults().pad(5f) }
         uniqueTargetsSelectBox = SelectBox<UniqueTarget>(BaseScreen.skin)
         uniqueTargetsSelectBox.setItems(uniqueTargets)
-        uniqueTargetsSelectBox.selected = UniqueTarget.Global
+        uniqueTargetsSelectBox.selected = selectTarget ?: UniqueTarget.Global
         uniqueTargetSelectBoxTable.add(uniqueTargetsSelectBox)
 
         uniqueTargetSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f).row()
@@ -110,11 +143,11 @@ class UniqueTable(
         uniqueTargetsSelectBox.onChange {
             onUniqueTargetChange()
         }
-        if (!isMainUnique) onUniqueTargetChange()
         uniqueSelectBox.onChange {
             onUniqueSelected()
         }
         // Unique search
+        uniqueSearchTextField.text = initialText
         uniqueSearchTextField.onChange {
             setUniqueSelectBoxItems()
         }
@@ -132,23 +165,39 @@ class UniqueTable(
         uniqueErrorTable.defaults().pad(5f)
         uniqueErrorTable.background = ImageGetter.getWhiteDotDrawable().tint(Color.DARK_GRAY)
         add(uniqueErrorTable).row()
+
+        // After listeners and the documentation cell exist. initialize() runs again once the row is registered.
+        if (!isMainUnique) onUniqueTargetChange()
     }
 
     private fun setUniqueSelectBoxItems() {
         val oldType = uniqueSelectBox.selected
-        uniqueSelectBox.selection.clear()
-        val target = uniqueTargetsSelectBox.selected
-        val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(target) }
-        val uniquesFiltered = uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
-            .filter { it.text.contains(uniqueSearchTextField.text, ignoreCase = true) }
-        uniqueSelectBox.setItems(uniquesFiltered)
-        if (oldType in uniquesFiltered)
-            uniqueSelectBox.selected = oldType
+        rebuildingUniqueChoices = true
+        val keptType = try {
+            uniqueSelectBox.selection.clear()
+            val target = uniqueTargetsSelectBox.selected
+            val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(target) }
+            val uniquesFiltered = uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
+                .filter { it.text.contains(uniqueSearchTextField.text, ignoreCase = true) }
+            uniqueSelectBox.setItems(uniquesFiltered)
+            if (oldType != null && oldType in uniquesFiltered)
+                uniqueSelectBox.selected = oldType
+            uniqueSelectBox.selected
+        } finally {
+            rebuildingUniqueChoices = false
+        }
+        // Selecting a different unique replaces the text. The same unique keeps edited parameters.
+        if (keptType != oldType) onUniqueSelected()
     }
 
-    private fun onUniqueTargetChange() = setUniqueSelectBoxItems()
+    private fun onUniqueTargetChange() {
+        setUniqueSelectBoxItems()
+        // Source target can change modifier acceptance while the selected unique and its text stay the same.
+        onUniqueChange()
+    }
 
     private fun onUniqueSelected() {
+        if (rebuildingUniqueChoices) return
         val uniqueType = uniqueSelectBox.selected ?: return
 
         uniqueTextField.text = uniqueType.text
@@ -198,8 +247,8 @@ class UniqueTable(
         uniqueErrorTable.clear()
         uniqueErrorTable.add("Errors:".toLabel()).row()
 
-        val uniqueErrors = UniqueValidator(ruleset)
-            .checkUnique(Unique(uniqueTextField.text), true, null)
+        val uniqueErrors = UniqueValidator(ruleset, tryFixUnknownUniques = true)
+            .checkUnique(Unique(uniqueTextField.text), null)
         for (error in uniqueErrors)
             uniqueErrorTable.add(error.text.toLabel().apply { wrap = true }).width(stage.width/2).row()
         if (uniqueErrors.isEmpty())
@@ -212,5 +261,8 @@ class UniqueTable(
      * because it needs to update the final unique text */
     fun initialize() {
         onUniqueTargetChange()
+        if (initialText.isEmpty()) return
+        val type = UniqueType.entries.firstOrNull { it.text.startsWith(initialText) } ?: return
+        uniqueSelectBox.selected = type
     }
 }

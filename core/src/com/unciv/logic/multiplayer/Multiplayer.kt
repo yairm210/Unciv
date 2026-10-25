@@ -163,6 +163,9 @@ class Multiplayer {
         //Set civ info to AI
         playerCiv.playerType = PlayerType.AI
         playerCiv.playerId = ""
+        
+        playerCiv.turnsPlayedAsHuman = 0
+        playerCiv.totalTurnTimeSeconds = 0
 
         //call next turn so turn gets simulated by AI
         if (gameInfo.currentPlayer == playerCivName) gameInfo.nextTurn()
@@ -309,6 +312,7 @@ class Multiplayer {
     @Readonly
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+                || preview1.turns == preview2.turns && preview1.currentPlayer != preview2.currentPlayer
     }
 
     companion object {

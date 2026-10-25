@@ -4,19 +4,20 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class UniqueErrorTests {
     @Test
     fun testMultipleUniqueTypesSameText() {
@@ -93,13 +94,58 @@ class UniqueErrorTests {
 
         // Without a unit, this is an error
         val uniqueNoSourceObject = Unique(uniqueText)
-        val errorListNoSourceObject = UniqueValidator(ruleset).checkUnique(uniqueNoSourceObject, false, null)
+        val errorListNoSourceObject = UniqueValidator(ruleset).checkUnique(uniqueNoSourceObject, null)
         assert(errorListNoSourceObject.getFinalSeverity() == RulesetErrorSeverity.Warning)
 
         // When applied on a unit or promotion etc, this is fine
         val uniqueWithSourceObject = Unique(uniqueText, sourceObjectType = UniqueTarget.Promotion)
-        val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, false, null)
+        val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, null)
         assert(errorListCorrectUniqueContainer.getFinalSeverity() == RulesetErrorSeverity.OK)
+    }
+
+    @Test
+    fun testOneTimeGainStatAcceptsCivWideStats() {
+        val errors = validateUnique("Gain [10] [Gold]")
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
+    }
+
+    @Test
+    fun testOneTimeGainStatRejectsNonCivWideStats() {
+        assertOnlyCivWideStatsError("Gain [10] [Food]", "Food")
+    }
+
+    @Test
+    fun testOneTimeGainStatRangeRejectsNonCivWideStats() {
+        assertOnlyCivWideStatsError("Gain [5]-[10] [Production]", "Production")
+    }
+
+    @Test
+    fun testBuildImprovementsRejectsEachActionModifier() {
+        val base = "Can build [Land] improvements on tiles"
+        val consume = "by consuming this unit"
+        val times = "[3] times"
+
+        Assert.assertEquals(RulesetErrorSeverity.OK, validateUnique(base).getFinalSeverity())
+        assertOnlyUnacceptableModifier("$base <$consume>", consume)
+        assertOnlyUnacceptableModifier("$base <$times>", times)
+
+        val both = unacceptableModifierErrors("$base <$consume> <$times>")
+        Assert.assertEquals(listOf(consume, times), both)
+    }
+
+    @Test
+    fun testInstantImprovementAcceptsActionModifiers() {
+        val errors = validateUnique(
+            "Can instantly construct a [Farm] improvement <by consuming this unit> <[3] times>"
+        )
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
+    }
+
+    @Test
+    fun testMetaModifierOnUnitUniqueIsAccepted() {
+        val errors = validateUnique("Can build [Land] improvements on tiles <with [3] priority>")
+        Assert.assertFalse(errors.any { it.text.contains("not an acceptable modifier") })
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
     }
 
     @Test
@@ -156,5 +202,35 @@ class UniqueErrorTests {
         else
             println("GP unit gifted: $unit")
         Assert.assertEquals(0, failures)
+    }
+
+    private fun validateUnique(uniqueText: String) = run {
+        RulesetCache.loadRulesets(noMods = true)
+        val ruleset = RulesetCache.getVanillaRuleset()
+        UniqueValidator(ruleset).checkUnique(Unique(uniqueText), null)
+    }
+
+    /** Modifier name quoted by [UniqueValidator] in an unacceptable-modifier warning, in unique order. */
+    private fun unacceptableModifierErrors(uniqueText: String): List<String> =
+        validateUnique(uniqueText)
+            .filter { it.errorSeverityToReport == RulesetErrorSeverity.Warning && it.text.contains("not an acceptable modifier") }
+            .map { error ->
+                val marker = "contains the modifier \""
+                val start = error.text.indexOf(marker)
+                Assert.assertTrue(error.text, start >= 0)
+                val nameStart = start + marker.length
+                error.text.substring(nameStart, error.text.indexOf('"', nameStart))
+            }
+
+    private fun assertOnlyUnacceptableModifier(uniqueText: String, modifier: String) {
+        Assert.assertEquals(listOf(modifier), unacceptableModifierErrors(uniqueText))
+    }
+
+    private fun assertOnlyCivWideStatsError(uniqueText: String, statName: String) {
+        val error = validateUnique(uniqueText)
+            .single { it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
+        Assert.assertEquals(RulesetErrorSeverity.Error, error.errorSeverityToReport)
+        Assert.assertTrue(error.text.contains(statName))
+        Assert.assertTrue(error.text.contains(UniqueParameterType.CivWideStatName.parameterName))
     }
 }

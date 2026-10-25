@@ -1,8 +1,9 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.TileView
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
-import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
@@ -12,23 +13,61 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
+import com.unciv.view.GameView
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 object SpecificUnitAutomation {
 
-    fun automateGreatGeneral(unit: MapUnit): Boolean {
+    fun automateGreatGeneral(unitView: MapUnitView): Boolean {
         //try to follow nearby units. Do not garrison in city if possible
-        val maxAffectedTroopsTile = GreatGeneralImplementation.getBestAffectedTroopsTile(unit)
+        val maxAffectedTroopsTile = getBestAffectedTroopsTile(unitView)
             ?: return false
 
-        unit.movement.headTowards(maxAffectedTroopsTile)
+        unitView.tryHeadTowards(maxAffectedTroopsTile)
         return true
     }
 
-    fun automateCitadelPlacer(unit: MapUnit): Boolean {
+    /**
+     * Find a tile for accompanying a military unit where the total bonus for all affected units is maximized.
+     */
+    @Readonly
+    private fun getBestAffectedTroopsTile(general: MapUnitView): TileView? {
+        // Normally we have only one Unique here. But a mix is not forbidden,
+        // (imagine several GreatGeneralAura uniques - +50% at radius 1, +25% at radius 2, +5% at radius 3 - possibly learnable from promotions via buildings or natural wonders?)
+        // However, rang-1 generals are difficult to use fully without getting it killed, so it's probably best placed to support 2nd and 3rd row ranged units
+        // a 3 or more range generals are less sensitive to positioning, and thus probably suffice with 2-range general logic
+
+        val civ = general.civ()
+        val militaryUnitTilesInDistance = general.getDistanceToTiles().keys
+            .filter { tile ->
+                tile.militaryUnit?.civ() == civ
+                    && (tile.civilianUnit == null || tile.civilianUnit == general)
+            }
+
+        // Temporary bridge: getEnemyCitiesByPriority still returns raw cities
+        val closestReachableEnemyCityTile = HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority(general)
+            .map { general.getTile().getTileMap().getTile(it.getCenterTile()) }
+            .firstOrNull { general.canReach(it) }
+        // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
+
+        val militaryUnitTile = militaryUnitTilesInDistance.maxByOrNull { unitTile ->
+            val nearbyTiles = unitTile.getExploredTilesInDistance(2).toList()
+            (2 * nearbyTiles.count { it.militaryUnit?.civ() == civ }
+                - nearbyTiles.count { it.militaryUnit?.civ() != civ }
+                - if (closestReachableEnemyCityTile != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCityTile) else 0)
+            // Scoring here is found to help AI defeat former AI,
+            // a more robust scoring may be necessary to avoid leaving generals en-prise,
+            // and improve handling of multiple generals, e.g. use one to support bomber stacks and the other for frontline troops.
+        }
+        return militaryUnitTile
+    }
+
+    fun automateCitadelPlacer(unitView: MapUnitView): Boolean {
+        val unit = unitView.getUnit()
         // Keep at least 2 generals alive
         if (unit.hasUnique(UniqueType.StrengthBonusInRadius) 
                 && unit.civ.units.getCivUnits().count { it.hasUnique(UniqueType.StrengthBonusInRadius) } < 3) 
@@ -51,7 +90,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - owner.getWorkerAutomation().getBasePriority(it, unit).roundToInt()
+                        distance - owner.getWorkerAutomation().getBasePriority(unitView.getTile().getTileMap().getTile(it), unitView).roundToInt()
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -71,17 +110,14 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+    fun automateSettlerActions(unitView: MapUnitView, dangerousTiles: HashSet<TileView>, cache: AutomationCache) {
+        val unit = unitView.getUnit()
         // City-state starts are predetermined by map gen / editor — trust that tile by default.
         // Mods can opt out via CityStatesSearchForFirstCitySite.
         if (unit.civ.isCityState && unit.civ.cities.isEmpty()
             && !unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.CityStatesSearchForFirstCitySite)
         ) {
-            val foundHere = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
-            if (foundHere?.action != null && unit.hasMovement()) {
-                foundHere.action.invoke()
-                return
-            }
+            if (unitView.tryInvokeUnitAction(UnitActionType.FoundCity)) return
             // Cannot found here (blocked / invalid) — fall through to normal search.
         }
 
@@ -99,7 +135,6 @@ object SpecificUnitAutomation {
         var bestCityLocation: Tile? = null
 
         if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.hasMovement() && it.baseUnit == unit.baseUnit }
 
@@ -109,10 +144,7 @@ object SpecificUnitAutomation {
                     bestTilesInfo.tileRankMap[it.getTile()]!!
                 else -1f
             }
-            if (bestSettlerInRange == unit && foundCityAction?.action != null) {
-                foundCityAction.action.invoke()
-                return
-            }
+            if (bestSettlerInRange == unit && unitView.tryInvokeUnitAction(UnitActionType.FoundCity)) return
             // Since this settler is not in the best location, lets assume the best settler will found their city where they are
             if (bestSettlerInRange != null)
                 bestTilesInfo.tileRankMap = HashMap(bestTilesInfo.tileRankMap.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
@@ -134,7 +166,7 @@ object SpecificUnitAutomation {
             // Find the best tile that is within
             @Readonly
             fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
-                if (it.key in dangerousTiles && it.key != unit.getTile()) return false
+                if (unitView.getTile().getTileMap().getTile(it.key) in dangerousTiles && it.key != unit.getTile()) return false
                 val pathSize = unit.movement.getShortestPath(it.key).size
                 return pathSize in 1..3
             }
@@ -157,15 +189,19 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
-            fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled(unit.civ) }
+            fun getFrontierScore(city: City): Int {
+                var frontierScore = 0
+                city.getCenterTile().forEachTileAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1) {
+                    if (it.canBeSettled(unit.civ)) frontierScore++
+                }
+                return frontierScore
+            }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
-            if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit, tilesToAvoid = dangerousTiles) // go around aimlessly
+            if (UnitAutomation.tryExplore(unitView, cache)) return // try to find new areas
+            UnitAutomation.wander(unitView, tilesToAvoid = dangerousTiles) // go around aimlessly
             return
         }
 
@@ -179,7 +215,7 @@ object SpecificUnitAutomation {
         val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
-        if (tryRunAwayIfNeccessary(unit)) return 
+        if (tryRunAwayIfNeccessary(unitView, cache)) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
@@ -202,7 +238,7 @@ object SpecificUnitAutomation {
 
         val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Land }
-            .map { Automation.rankStatsValue(it, unit.civ) }
+            .map { Automation.rankStatsValue(it, GameView(unit.civ.gameInfo, unit.civ).civView) }
             .average()
 
         for (city in citiesByStatBoost) {
@@ -212,7 +248,7 @@ object SpecificUnitAutomation {
                     // okay if we replace regular improvements by great improvements, but not the other way around
                     && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
                     && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), GameView(unit.civ.gameInfo, unit.civ).civView) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue
@@ -239,7 +275,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
-                    unit.civ,
+                    GameView(unit.civ.gameInfo, unit.civ).civView,
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }
@@ -262,34 +298,30 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in conducting the trade mission. A return value of
      * `false` can be interpreted as: the unit doesn't know where to go or there are no city
      * states. */
-    fun conductTradeMission(unit: MapUnit): Boolean {
-        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
-        if (conductedTradeMission) return true
-        
-        val relevantTiles = 
-                unit.civ.gameInfo.civilizations
-                    .filter {
-                        it != unit.civ
-                            && !unit.civ.isAtWarWith(it)
-                            && it.isCityState
-                            && it.cities.isNotEmpty()
-                    }
-                    .flatMap { it.cities[0].getTiles() }
-                    .filter { unit.civ.hasExplored(it) }
-                    .sortedBy { unit.currentTile.aerialDistanceTo(it) }
+    fun conductTradeMission(unitView: MapUnitView): Boolean {
+        if (unitView.tryInvokeUnitAction(UnitActionType.ConductTradeMission)) return true
+
+        val civ = unitView.civ()
+        val unitTile = unitView.getTile()
+        val relevantTiles = civ.getKnownCivs().asSequence()
+            .filter { it.isCityState && !it.isAtWarWith(civ) }
+            .mapNotNull { it.cities().firstOrNull() }
+            .flatMap { it.getTiles() }
+            .filter { it.isExplored() }
+            .sortedBy { unitTile.aerialDistanceTo(it) }
+            .toList()
 
         val closestCityStateTile = relevantTiles.firstOrNull { tile ->
-            if (!unit.movement.canPassThrough(tile)) return@firstOrNull false
-            val path = unit.movement.getShortestPath(tile)
+            if (!unitView.canPassThrough(tile)) return@firstOrNull false
+            val path = unitView.getShortestPath(tile)
             // 0 is unreachable, 10 is too far away
             path.size in 1..10
         }
         if (closestCityStateTile == null) return false
 
-        val unitTileBeforeMovement = unit.currentTile
-        unit.movement.headTowards(closestCityStateTile)
+        unitView.tryHeadTowards(closestCityStateTile)
 
-        return unitTileBeforeMovement != unit.currentTile
+        return unitTile != unitView.getTile()
     }
 
     /**
@@ -318,10 +350,7 @@ object SpecificUnitAutomation {
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
                     getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
-                0,
-                wonderToHurry.name
-            )
+            nearbyCityWithAvailableWonders.cityConstructions.editQueue { add(0, wonderToHurry.name) }
             return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
                 || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }
@@ -337,18 +366,17 @@ object SpecificUnitAutomation {
         return city.cityConstructions.getBuildableBuildings().filter { building ->
             building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
                     && city.cityConstructions.turnsToConstruction(building.name) >= 5
-        }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
+        }.minByOrNull { -city.cityConstructions.getRemainingWork(it.name) }
     }
 
-    fun automateAddInCapital(unit: MapUnit) {
-        if (unit.civ.getCapital() == null) return // safeguard
-        val capitalTile = unit.civ.getCapital()!!.getCenterTile()
-        if (unit.movement.canReach(capitalTile))
-            unit.movement.headTowards(capitalTile)
-        if (unit.movement.canUnitSwapTo(capitalTile))
-            unit.movement.swapMoveToTile(capitalTile)
+    fun automateAddInCapital(unit: MapUnitView) {
+        val capitalTile = unit.civ().cities().firstOrNull { it.isCapital() }?.getCenterTile() ?: return // safeguard
+        if (unit.canReach(capitalTile))
+            unit.tryHeadTowards(capitalTile)
+        if (unit.canSwapTo(capitalTile))
+            unit.trySwapMoveToTile(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActions.invokeUnitAction(unit, UnitActionType.AddInCapital)
+            unit.tryInvokeUnitAction(UnitActionType.AddInCapital)
         }
     }
 

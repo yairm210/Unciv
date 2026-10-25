@@ -44,9 +44,10 @@ interface MusicControls {
             settings.citySoundsVolume = it
         }
 
-    fun Table.addVoicesVolumeSlider(settings: GameSettings) =
+    fun Table.addVoicesVolumeSlider(settings: GameSettings, music: MusicController) =
         addVolumeSlider("Leader voices volume", settings.voicesVolume) {
             settings.voicesVolume = it
+            music.setOverlayVolume(it)
         }
 
     fun Table.addMusicVolumeSlider(settings: GameSettings, music: MusicController) =

@@ -183,7 +183,7 @@ object Conditionals {
             UniqueType.ConditionalWhileResearching -> checkOnCiv { tech.currentTechnology()?.matchesFilter(conditional.params[0]) == true }
             UniqueType.ConditionalNoCivAdopted -> checkOnGameInfo {
                 civilizations.none {
-                    it.isMajorCiv() &&
+                    it.isMajorCiv &&
                     it.isAlive() &&
                     (it.policies.isAdopted(conditional.params[0]) || it.religionManager.religion?.hasBelief(conditional.params[0]) == true)
                 }
@@ -331,7 +331,7 @@ object Conditionals {
                 unique != null
                     && unique.sourceObjectType == UniqueTarget.Tech
                     && checkOnGameInfo { civilizations.none {
-                        it != state.relevantCiv && it.isMajorCiv()
+                        it != state.relevantCiv && it.isMajorCiv
                             && it.tech.isResearched(unique.sourceObjectName!!) // guarded by the sourceObjectType check
                     } }
 
@@ -339,7 +339,7 @@ object Conditionals {
                 unique != null
                     && unique.sourceObjectType == UniqueTarget.Policy
                     && checkOnGameInfo { civilizations.none {
-                        it != state.relevantCiv && it.isMajorCiv()
+                        it != state.relevantCiv && it.isMajorCiv
                             && it.policies.isAdopted(unique.sourceObjectName!!) // guarded by the sourceObjectType check
                     } }
 

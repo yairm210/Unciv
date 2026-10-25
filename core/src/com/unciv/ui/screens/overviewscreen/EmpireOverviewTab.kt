@@ -1,12 +1,12 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.CivView
 
 abstract class EmpireOverviewTab (
-    val viewingPlayer: Civilization,
+    val viewingPlayer: CivView,
     val overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
@@ -31,5 +31,5 @@ abstract class EmpireOverviewTab (
      */
     open fun select(selection: String): Float? = null
 
-    val gameInfo = viewingPlayer.gameInfo
+    val gameInfo = viewingPlayer.getCiv().gameInfo
 }

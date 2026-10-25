@@ -36,11 +36,10 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActorAttachments
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.components.input.onChange
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleButton
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -135,16 +134,17 @@ fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 
-fun Actor.surroundWithCircle(
+fun <T : Actor> T.surroundWithCircle(
     size: Float,
     resizeActor: Boolean = true,
     color: Color = Color.WHITE,
     circleImageLocation: String = ImageGetter.circleLocation
-): IconCircleGroup {
+): IconCircleGroup<T> {
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 
-fun Actor.surroundWithThinCircle(color: Color=ImageGetter.CHARCOAL): IconCircleGroup = surroundWithCircle(width+2f, false, color)
+fun <T : Actor> T.surroundWithThinCircle(color: Color = ImageGetter.CHARCOAL): IconCircleGroup<T> =
+    surroundWithCircle(width + 2f, false, color)
 
 
 fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {
@@ -295,15 +295,8 @@ fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = fal
 
 /** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
  *  hover version of the image from it, then [surroundWithCircle] it. */
-fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): Group {
-    val style = ImageButton.ImageButtonStyle()
-    val image = ImageGetter.getDrawable(this)
-    style.imageUp = image
-    style.imageOver = image.tint(overColor)
-    val button = ImageButton(style)
-    button.setSize(iconSize, iconSize)
-    return button.surroundWithCircle( circleSize, false, circleColor)
-}
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color) =
+    IconCircleButton(this, iconSize, circleSize, circleColor, overColor)
 
 /** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
  *
@@ -316,12 +309,7 @@ fun getCloseButton(
     circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
     overColor: Color = Color.RED,
     action: () -> Unit
-): Group {
-    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
-    closeButton.onActivation(action)
-    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-    return closeButton
-}
+) = IconCircleButton.getCloseButton(size, iconSize, circleColor, overColor, action)
 
 /**
  * Adds a white-circled (x) close button to [parent], positioned to the top right,
@@ -332,11 +320,11 @@ fun addRoundCloseButton(
     action: () -> Unit
 ): Group {
     val size = 30f
-    val button = getCloseButton(size, size-15f, Color.CLEAR, Color.RED, action = action)
+    val button = getCloseButton(size, size - 15f, Color.CLEAR, Color.RED, action = action)
         .surroundWithCircle(size, false, BaseScreen.clearColor)
-        .surroundWithCircle(size+4f, false, Color.WHITE)
+        .surroundWithCircle(size + 4f, false, Color.WHITE)
     parent.addActor(button)
-    button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
+    button.setPosition(parent.width - button.width * 0.75f, parent.height - button.height * 0.75f)
     return button
 }
 
@@ -473,6 +461,7 @@ object GdxKeyCodeFixes {
         DEL -> "Del"  // Gdx would name this "Forward Delete"
         BACKSPACE -> "Backspace"  // Gdx would name this "Delete"
         else -> Input.Keys.toString(keyCode)
+            ?: VirtualMouseButtonKeys.fromKey(keyCode)?.label
             ?: ""
     }
 
@@ -481,7 +470,8 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = VirtualMouseButtonKeys.fromLabel(name)?.keyCode
+                ?: Input.Keys.valueOf(name)
             if (code == -1) UNKNOWN else code
         }
     }
@@ -493,43 +483,69 @@ fun Input.isAltKeyPressed() = isKeyPressed(Input.Keys.ALT_LEFT) || isKeyPressed(
 fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
         (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
 
-/** Sets first row cell's minWidth to the max of the widths of that column over all given tables
+/**
+ * Ensures consistent horizontal layout for [tables] by setting [minWidth][Cell.minWidth] of each
+ * column's top [Cell] to the max of the [widths][Table.getColumnWidth] of that column over all given tables.
  *
- * Notes:
+ * Intended to align independently laid-out Tables that are meant to look like one grid - e.g. a
+ * fixed header row, a scrolling body, and a totals row, each a separate Table/ScrollPane so they
+ * can scroll or update independently while still lining up visually.
+ *
+ * ### Notes:
  * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
- * - first table determines columns processed, all others must have at least the same column count.
- * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
+ * - Unequal column counts between tables are allowed,
+ *   as are 'ragged' Tables (unequal column counts per row) and [colspan][Cell.colspan].
+ * - Per table and column, only the topmost cell that is *not* `colspan`ned gets its `minWidth` set.
+ *   If every cell ever occupying that column position is colspanned across a wider column range
+ *   (for all rows), that column is **silently left unequalized** for that table - there is no
+ *   single unambiguous cell to size. This is a deliberate, accepted limitation, not a bug.
+ * - Cells needing `minWidth` with `actor == null` get a dummy inert [Actor] assigned,
+ *   since empty cells otherwise ignore `minWidth` entirely.
+ * - Tables are left with `needsLayout==true`, so while equal width is ensured,
+ *   you may have to call `pack()` if you want to see the value _before_ this is rendered.
  */
 fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
         table.packIfNeeded()
     }
-    val columns = tables.first().columns
-    check(tables.all { it.columns >= columns }) {
-        "equalizeColumns needs all tables to have at least the same number of columns as the first one"
-    }
+    if (tables.count { it.rows > 0 } <= 1) return // Nothing to do when at most one table has actual cells
 
+    val tablesWithRows = tables.filter { it.rows > 0 } // getColumnWidth crashes on tables with no cells at all
+    val columns = tablesWithRows.maxOf { it.columns }
     val widths = (0 until columns)
         .mapTo(ArrayList(columns)) { column ->
-            tables.maxOf { it.getColumnWidth(column) }
+            tablesWithRows.maxOf { it.getColumnWidth(column) } // getColumnWidth is 0f for non-existent columns
         }
+    fun neutralActor() = Actor().apply { touchable = Touchable.disabled }
+
     for (table in tables) {
-        for (column in 0 until columns)
-            table.cells[column].run {
-                if (actor == null)
+        if (table.rows == 0) continue
+        // Support ragged tables by treating the topmost Cell per column, whichever row it's in:
+        // This code assumes normal Table construction where Cell.row increases monotonously over [cells].
+        // Table currently does not allow breaking that rule, but is must be said there is no documented guarantee.
+        val columnDone = BooleanArray(table.columns)
+        // Not using gdx.Array.iterator to sidestep reentrancy warning and problems - this is efficient:
+        for (i in 0 until table.cells.size) {
+            val cell = table.cells[i]
+            if (cell.colspan != 1) continue // ignore colspanned cells, some other row must have better candidates
+            val col = cell.column
+            if (columnDone[col]) continue
+            columnDone[col] = true
+            cell.run {
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor(neutralActor)
-                else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
-                    // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
-                    if (!Align.isCenterHorizontal(labelAlign))
+                if (actor == null) setActor(neutralActor())
+                else (actor as? Label)?.run {
+                    if (Align.isCenterHorizontal(align) && !Align.isCenterHorizontal(labelAlign))
                         setAlignment(Align.center)
+                    if (Align.isRight(align) && !Align.isRight(labelAlign))
+                        setAlignment(Align.right)
                 }
-                minWidth(widths[column] - padLeft - padRight)
+                minWidth(widths[col] - padLeft - padRight)
             }
+        }
         table.invalidate()
     }
 }
-private val neutralActor = Actor().apply { touchable = Touchable.disabled }
 
 /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
  *

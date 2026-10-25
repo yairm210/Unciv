@@ -18,6 +18,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
+import java.io.File
 import java.io.FileFilter
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
@@ -107,6 +108,17 @@ object GithubAPI {
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) =
         if (branch.length == 40 && branch.all { it.isHex() }) "$gitRepoUrl/archive/$branch.zip"
         else "$gitRepoUrl/archive/refs/heads/$branch.zip"
+
+    private val githubArchiveUrlRegex = Regex("""^https://github\.com/([^/]+)/([^/]+)/archive/(.+)\.zip$""")
+
+    /** As of 23/10/26 `github.com/.../archive/...` answers with a redirect whose Content-Security-Policy header exceeds the 8192 bytes the ktor CIO engine accepts :/
+     *   so go straight to the host it redirects to. Other URLs are returned unchanged. */
+    @Pure
+    fun toCodeloadUrl(url: String): String {
+        val match = githubArchiveUrlRegex.matchEntire(url) ?: return url
+        val (owner, repo, ref) = match.destructured
+        return "https://codeload.github.com/$owner/$repo/zip/$ref"
+    }
 
     /** Format a download URL for a release archive */
     @Readonly
@@ -429,7 +441,7 @@ object GithubAPI {
 
         // Thanks to: https://stackoverflow.com/a/74328603/10585461
         UncivKtor.client.prepareRequest {
-            url(zipUrl)
+            url(toCodeloadUrl(zipUrl))
             timeout { requestTimeoutMillis = Long.MAX_VALUE }
             if (updateProgressPercent != null) onDownload(::reportProgress)
         }.execute { resp ->
@@ -509,12 +521,15 @@ object GithubAPI {
         // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
 
         val job = coroutineContext[Job]
+        val destinationPath = unzipDestination.file().canonicalPath + File.separator
         // Actual unpacking
         try {
             while (job?.isActive != false) {
                 val entry = stream.nextEntry ?: break
                 if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
-                val dest = unzipDestination.child(entry.name).file()
+                val dest = unzipDestination.child(entry.name).file().canonicalFile
+                if (!dest.path.startsWith(destinationPath))
+                    throw ZipException("ZIP entry points outside the destination")
                 dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
                 dest.outputStream().use { stream.copyTo(it) }
                 stream.closeEntry()

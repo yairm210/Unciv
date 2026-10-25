@@ -15,12 +15,13 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.expressions.Expressions
+import com.unciv.models.translations.validateConditionals
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
-class UniqueValidator(val ruleset: Ruleset) {
+class UniqueValidator(val ruleset: Ruleset, private val tryFixUnknownUniques: Boolean = false) {
 
     /** Used to determine if certain uniques are used for filtering */
     private val allNonTypedUniques = HashSet<String>()
@@ -49,13 +50,12 @@ class UniqueValidator(val ruleset: Ruleset) {
     fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
-        reportRulesetSpecificErrors: Boolean,
-        tryFixUnknownUniques: Boolean
+        reportRulesetSpecificErrors: Boolean
     ) {
         val baseSeverities = if (reportRulesetSpecificErrors) allParameterSeverities else extensionModParameterSeverities
         for (unique in uniqueContainer.uniqueObjects) {
             val severities = if (isDisabledByModConditionals(unique)) disabledUniqueParameterSeverities else baseSeverities
-            val errors = checkUnique(unique, tryFixUnknownUniques, uniqueContainer, severities)
+            val errors = checkUnique(unique, uniqueContainer, severities)
             lines.addAll(errors)
         }
     }
@@ -90,7 +90,6 @@ class UniqueValidator(val ruleset: Ruleset) {
     @Readonly
     fun checkUnique(
         unique: Unique,
-        tryFixUnknownUniques: Boolean,
         uniqueContainer: IHasUniques?,
         severityToReport: Set<UniqueType.UniqueParameterErrorSeverity> = allParameterSeverities
     ): RulesetErrorList {
@@ -99,7 +98,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.type == null) {
             if (unique.deprecatedType != null && reportRulesetSpecificErrors)
                 return getDeprecationAnnotationErrors(unique, prefix, uniqueContainer)
-            return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix, reportRulesetSpecificErrors)
+            return checkUntypedUnique(unique, uniqueContainer, prefix, reportRulesetSpecificErrors)
         }
 
         val rulesetErrors = RulesetErrorList(ruleset)
@@ -120,7 +119,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             var text = "$prefix contains parameter \"${complianceError.parameterName}\", $whichDoesNotFitParameterType" +
                     " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
 
-            text = addPossibleMisspellings(complianceError, text)
+            if (tryFixUnknownUniques) text = addPossibleMisspellings(complianceError, text)
 
             rulesetErrors.add(
                 text,
@@ -135,6 +134,10 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         rulesetErrors += getUniqueTypeSpecificErrors(prefix, unique, uniqueContainer, reportRulesetSpecificErrors)
+
+        val conditionalSyntaxProblem = unique.text.validateConditionals()
+        if (conditionalSyntaxProblem != null)
+            rulesetErrors.add("$prefix contains $conditionalSyntaxProblem and may break translations.", RulesetErrorSeverity.WarningOptionsOnly, uniqueContainer, unique)
 
         val conditionals = unique.modifiers.filter { it.type?.canAcceptUniqueTarget(UniqueTarget.Conditional) == true }
         if (conditionals.size > 1){
@@ -236,7 +239,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         severityToReport: Set<UniqueType.UniqueParameterErrorSeverity>
     ): RulesetErrorList {
         val rulesetErrors = RulesetErrorList()
-        if (unique.hasFlag(UniqueFlag.NoConditionals)) {
+        if (unique.hasFlag(UniqueFlag.NoConditionals) && modifier.type?.canAcceptUniqueTarget(UniqueTarget.MetaModifier) != true) {
             rulesetErrors.add(
                 "$prefix contains the conditional \"${modifier.text}\"," +
                     " but the unique does not accept conditionals!",
@@ -311,9 +314,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             var text = "$prefix contains modifier \"${modifier.text}\"." +
                     " This contains the parameter \"${complianceError.parameterName}\" $whichDoesNotFitParameterType" +
                     " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-            
-            text = addPossibleMisspellings(complianceError, text)
-            
+
+            if (tryFixUnknownUniques) text = addPossibleMisspellings(complianceError, text)
+
             rulesetErrors.add(text,
                 complianceError.errorSeverity.getRulesetErrorSeverity(), uniqueContainer, unique)
 
@@ -428,15 +431,15 @@ class UniqueValidator(val ruleset: Ruleset) {
     @Readonly
     private fun checkUntypedUnique(
         unique: Unique,
-        tryFixUnknownUniques: Boolean,
         uniqueContainer: IHasUniques?,
         prefix: String,
         reportRulesetSpecificErrors: Boolean
     ): RulesetErrorList {
         // Malformed conditional is always bad
-        if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
+        val conditionalSyntaxProblem = unique.text.validateConditionals()
+        if (conditionalSyntaxProblem != null)
             return RulesetErrorList.of(
-                "$prefix contains mismatched conditional braces!",
+                "$prefix contains $conditionalSyntaxProblem!",
                 RulesetErrorSeverity.Warning, ruleset, uniqueContainer, unique
             )
 

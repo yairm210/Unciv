@@ -196,7 +196,7 @@ class GameStarter private constructor(
             }
 
             // add all techs to spectators
-            if (civInfo.isSpectator())
+            if (civInfo.isSpectator)
                 for (tech in ruleset.technologies.values)
                     civInfo.addTechSilently(tech.name)
 
@@ -238,7 +238,7 @@ class GameStarter private constructor(
         val ruleSet = gameInfo.ruleset
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
-        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator() }) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator }) {
             civInfo.addGold((era.startingGold * gameInfo.speed.goldCostModifier).toInt())
             civInfo.policies.addCulture((era.startingCulture * gameInfo.speed.cultureCostModifier).toInt())
         }
@@ -282,9 +282,10 @@ class GameStarter private constructor(
             }
             val desiredNumberOfPlayers = (min.coerceAtLeast(nonAICount)..max.coerceAtLeast(nonAICount)).random(rng)
 
-            if (desiredNumberOfPlayers > newGameParameters.players.size) {
-                extraRandomAIPlayers = desiredNumberOfPlayers - newGameParameters.players.size
-            } else if (desiredNumberOfPlayers < newGameParameters.players.size) {
+            val numberOfNonSpectatorPlayers = newGameParameters.players.filter { it.chosenCiv != Constants.spectator }.size
+            if (desiredNumberOfPlayers > numberOfNonSpectatorPlayers) {
+                extraRandomAIPlayers = desiredNumberOfPlayers - numberOfNonSpectatorPlayers
+            } else if (desiredNumberOfPlayers < numberOfNonSpectatorPlayers) {
                 val extraPlayers = newGameParameters.players.size - desiredNumberOfPlayers
                 selectedAIToSkip = newGameParameters.players
                     .filter { it.playerType === PlayerType.AI }
@@ -365,7 +366,7 @@ class GameStarter private constructor(
 
         for (player in chosenPlayers) {
             val civ = Civilization(player.chosenNation)
-            if (civ.isMajorCiv() || civ.isSpectator()) {
+            if (civ.isMajorCiv || civ.isSpectator) {
                 civ.playerType = player.playerType
                 civ.playerId = player.playerId
                 civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
@@ -397,7 +398,7 @@ class GameStarter private constructor(
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
         val civNamesWithStartingLocations = tileMap.startingLocationsByNation.keys
         val bestCivs = allCivs.filter { (!it.isCityState || it.civID in civNamesWithStartingLocations)
-            && !it.isSpectator()}
+            && !it.isSpectator}
         val bestLocations = getStartingLocations(bestCivs, landTilesInBigEnoughGroup, startScores)
         for ((civ, tile) in bestLocations) {
             // A nation can have multiple marked starting locations, of which the first pass may have chosen one
@@ -428,7 +429,7 @@ class GameStarter private constructor(
         val startingEra = gameInfo.gameParameters.startingEra
         val settlerLikeUnits = ruleset.units.filter { it.value.isCityFounder() }
 
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator() }) {
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isSpectator }) {
             val startingLocation = startingLocations[civ]!!
 
             removeAncientRuinsNearStartingLocation(startingLocation)
@@ -457,7 +458,7 @@ class GameStarter private constructor(
         // Add extra units granted by difficulty
         startingUnits.addAll(when {
             civ.isHuman() -> gameInfo.getDifficulty().playerBonusStartingUnits
-            civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
+            civ.isMajorCiv -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
             else -> gameInfo.getDifficulty().aiCityStateBonusStartingUnits
         })
 

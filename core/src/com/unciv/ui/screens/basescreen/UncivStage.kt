@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.enableSceneDebug
@@ -15,10 +17,20 @@ import com.unciv.utils.Log
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
-class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
+class UncivStage(viewport: Viewport, batch: Batch = BaseScreen.batch) : Stage(viewport, batch) {
 
     companion object {
-        fun getBatch(size: Int=1000): Batch = SpriteBatch(size)
+        /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
+         *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays,
+         *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.alternativeRendering]. */
+        fun getBatch(size: Int = 1000): Batch {
+            if (UncivGame.Current.settings.alternativeRendering) return SpriteBatch(size)
+            return try {
+                FontLodBiasBatch(size)
+            } catch (ignored: Exception) {
+                SpriteBatch(size)
+            }
+        }
     }
 
     /**
@@ -58,6 +70,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     override fun dispose() {
         events.stopReceiving()
         super.dispose()
+        // Stage does not own the batch supplied to its constructor - the shared [BaseScreen.batch] outlives all stages.
 
         /** [Stage.dispose] is supposed to clear all references it holds. But it forgets the mouse over properties:
          the [Stage.mouseOverActor] and [Stage.pointerOverActors]. [Stage.act] updates those properties,
@@ -88,14 +101,17 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         mouseOverDebugImpl?.touchDown(this, screenX, screenY, pointer, button)
+        if (VirtualMouseButtonKeys.fromButton(button)?.keyDown() == true) return true
         return { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
             { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
 
-    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-            { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (VirtualMouseButtonKeys.fromButton(button)?.keyUp() == true) return true
+        return { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    }
 
     override fun mouseMoved(screenX: Int, screenY: Int) =
             { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true

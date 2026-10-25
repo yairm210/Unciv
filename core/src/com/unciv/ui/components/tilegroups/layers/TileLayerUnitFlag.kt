@@ -1,10 +1,12 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.view.CivView
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -23,17 +25,13 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         militaryUnitIcon?.let { removeOwnedActor(it) }
     }
 
-    private fun showMilitaryUnit(viewingCiv: CivView) = tileGroup.isForceVisible
-            || viewingCiv.civ.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
-            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv.civ)
-
     private fun setIconPosition(slot: Int, icon: UnitIconGroup) {
         // Centre horizontally; offset vertically per slot (slot 0 = bottom, slot 1 = top)
         icon.x = tileX + (size - icon.width) / 2
         icon.y = tileY + (size - icon.height) / 2 + if (slot == 1) 20f else -20f
     }
 
-    private fun newUnitIcon(slot: Int, unit: MapUnit?, isViewable: Boolean, viewingCiv: CivView?): UnitIconGroup? {
+    private fun newUnitIcon(slot: Int, unit: ForeignMapUnitView?, isViewable: Boolean, viewingCiv: CivView?): UnitIconGroup? {
 
         var newIcon: UnitIconGroup? = null
 
@@ -43,8 +41,9 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             addOwnedActor(newIcon)
 
             // Display air unit table for carriers/transports
-            if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
-                val table = getAirUnitTable(unit)
+            val airUnits = unit.getTile().getVisibleUnits().filter { it.isAirUnit() }
+            if (!unit.getTile().isCityCenter() && airUnits.any { unit.isTransportTypeOf(it) }) {
+                val table = getAirUnitTable(unit, airUnits.size)
                 newIcon.addActor(table)
                 table.toBack()
                 table.y = newIcon.height/2 - table.height/2
@@ -52,11 +51,11 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             }
 
             // Fade out action indicator for own non-idle units
-            if (unit.civ === viewingCiv?.civ && !unit.isIdle() && UncivGame.Current.settings.unitIconOpacity == 1f)
+            if (unit.civ() == viewingCiv && !unit.isIdle() && UncivGame.Current.settings.unitIconOpacity == 1f)
                 newIcon.actionGroup?.color?.a = 0.5f
 
             // Fade out flag for own out-of-moves units
-            if (unit.civ === viewingCiv?.civ && !unit.hasMovement())
+            if (unit.civ() == viewingCiv && !unit.hasMovement())
                 newIcon.color.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
 
         }
@@ -64,10 +63,10 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         return newIcon
     }
 
-    private fun getAirUnitTable(unit: MapUnit): Table {
+    private fun getAirUnitTable(unit: ForeignMapUnitView, airUnitCount: Int): Table {
 
-        val iconColor = unit.civ.nation.getOuterColor()
-        val bgColor = unit.civ.nation.getInnerColor()
+        val iconColor = unit.civ().getOuterColor()
+        val bgColor = unit.civ().getInnerColor()
 
         val airUnitTable = Table()
         airUnitTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -82,21 +81,21 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = iconColor
         table.add(aircraftImage).size(8f)
-        table.add(unit.getTile().airUnits.size.tr().toLabel(iconColor, 10, alignment = Align.center))
+        table.add(airUnitCount.tr().toLabel(iconColor, 10, alignment = Align.center))
 
         airUnitTable.add(table).expand().center().right()
 
         return airUnitTable
     }
 
-    fun selectFlag(unit: MapUnit) {
-        getIcon(unit)?.selectUnit()
+    fun selectFlag(unitView: ForeignMapUnitView) {
+        getIcon(unitView)?.selectUnit()
     }
 
-    fun getIcon(unit: MapUnit) : UnitIconGroup? {
-        if (civilianUnitIcon?.unit == unit)
+    fun getIcon(unitView: ForeignMapUnitView) : UnitIconGroup? {
+        if (civilianUnitIcon?.unitView == unitView)
             return civilianUnitIcon
-        else if (militaryUnitIcon?.unit == unit)
+        else if (militaryUnitIcon?.unitView == unitView)
             return militaryUnitIcon
         return null
     }
@@ -107,16 +106,13 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     private fun fillSlots(viewingCiv: CivView?) {
-        val isForceVisible = viewingCiv == null || tileGroup.isForceVisible
-
-        val isViewable = isForceVisible || isViewable(viewingCiv!!)
-        val isVisibleMilitary = isForceVisible || showMilitaryUnit(viewingCiv!!)
+        val isViewable = isViewable(viewingCiv)
 
         val isCivilianShown = isViewable
-        val isMilitaryShown = isViewable && isVisibleMilitary
+        val isMilitaryShown = isViewable
 
-        civilianUnitIcon = newUnitIcon(0, tileGroup.tile.civilianUnit, isCivilianShown, viewingCiv)
-        militaryUnitIcon = newUnitIcon(1, tileGroup.tile.militaryUnit, isMilitaryShown, viewingCiv)
+        civilianUnitIcon = newUnitIcon(0, tileGroup.tileView.civilianUnit, isCivilianShown, viewingCiv)
+        militaryUnitIcon = newUnitIcon(1, tileGroup.tileView.militaryUnit, isMilitaryShown, viewingCiv)
     }
 
     override fun doUpdate(viewingCiv: CivView?) {
@@ -124,11 +120,8 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         fillSlots(viewingCiv)
 
         if (viewingCiv != null) {
-            val unitsInTile = tile.getUnits()
-            val shouldBeHighlighted = unitsInTile.any()
-                    && unitsInTile.first().civ.isAtWarWith(viewingCiv.civ)
+            val shouldBeHighlighted = tileGroup.tileView.getVisibleUnits().any { it.civ().isAtWarWith(viewingCiv) }
                     && isViewable(viewingCiv)
-                    && showMilitaryUnit(viewingCiv)
             if (shouldBeHighlighted)
                 highlightRed()
         }

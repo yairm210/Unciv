@@ -44,7 +44,7 @@ object CityResources {
     private fun getResourceModifiers(city: City): Map<String, Float> {
         val modifiers = mutableMapOf<String, Float>()
         val resources = city.getRuleset().tileResources.values
-        for (unique in city.getMatchingUniques(UniqueType.PercentResourceProduction)) {
+        city.forEachMatchingUnique(UniqueType.PercentResourceProduction) { unique ->
             val bonus = unique.params[0].toFloat() / 100f
             for (resource in resources) {
                 if (resource.matchesFilter(unique.params[1], city.state))
@@ -111,12 +111,13 @@ object CityResources {
         for (tileInfo in applicableTiles) {
             val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
-            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, gameContext)) {
-                val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
-                resourceSupplyList.add(
-                    resource, "Improvements",
-                    unique.params[0].toInt()
-                )
+            tileImprovement!!.forEachMatchingUnique(UniqueType.ProvidesResources, gameContext) { unique ->
+                val resource = city.getRuleset().tileResources[unique.params[1]]
+                if (resource != null)
+                    resourceSupplyList.add(
+                        resource, "Improvements",
+                        unique.params[0].toInt()
+                    )
             }
         }
 
@@ -127,12 +128,13 @@ object CityResources {
         for (tileInfo in applicableTiles) {
             val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
-            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ConsumesResources, gameContext)) {
-                val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
-                resourceSupplyList.add(
-                    resource, "Improvements",
-                    -1 * unique.params[0].toInt()
-                )
+            tileImprovement!!.forEachMatchingUnique(UniqueType.ConsumesResources, gameContext) { unique ->
+                val resource = city.getRuleset().tileResources[unique.params[1]]
+                if (resource != null)
+                    resourceSupplyList.add(
+                        resource, "Improvements",
+                        -1 * unique.params[0].toInt()
+                    )
             }
         }
 
@@ -156,9 +158,9 @@ object CityResources {
         val buildingResources = ResourceSupplyList()
 
         // ProvidesResources - Example: "Provides [1] [Iron]"
-        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, includeCivUniques = includeCivUniques)) {
+        city.forEachMatchingUnique(UniqueType.ProvidesResources, city.state, includeCivUniques) { unique ->
             val resource = city.getRuleset().tileResources[unique.params[1]]
-                ?: continue
+                ?: return@forEachMatchingUnique
             buildingResources.add(
                 resource, unique.getSourceNameForUser(),
                 unique.params[0].toInt()
@@ -166,9 +168,9 @@ object CityResources {
         }
 
         // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [improvementFilter/buildingFilter] in the city added to [Iron]"
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques)) {
-            val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
-            val stat = Stat.safeValueOf(unique.params[1]) ?: continue
+        city.forEachMatchingUnique(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques) { unique ->
+            val resource = city.getRuleset().tileResources[unique.params[3]] ?: return@forEachMatchingUnique
+            val stat = Stat.safeValueOf(unique.params[1]) ?: return@forEachMatchingUnique
             val filter = unique.params[2]
             var amount = 0.0
 

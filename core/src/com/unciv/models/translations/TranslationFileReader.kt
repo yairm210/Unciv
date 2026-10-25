@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.collections.set
 
 object TranslationFileReader {
@@ -22,6 +23,8 @@ object TranslationFileReader {
                 translations[key] = value
             }
         }
+        // TFW avoids offering the template for UniqueType.Comment, so we can hardcode this:
+        translations[UniqueType.Comment.text] = "[comment]"
         return translations
     }
 

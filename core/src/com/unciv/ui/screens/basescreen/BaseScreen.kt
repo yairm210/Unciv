@@ -4,16 +4,20 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.ui.screens.GameStartScreen
 import com.unciv.UncivGame
@@ -23,7 +27,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.utils.DebugUtils
 import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.KeyShortcutDispatcher
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -56,9 +62,18 @@ abstract class BaseScreen : Screen {
      */
     val globalShortcuts = KeyShortcutDispatcher()
 
+    // GameStartScreen is constructed before BaseScreen.setSkin() runs, so it can't use the skin yet.
+    private val fpsLabel: Label? = if (this !is GameStartScreen) "".toLabel() else null
+    private val fpsLabelContainer: Table? = fpsLabel?.let {
+        Table().apply {
+            background = ImageGetter.getWhiteDotDrawable().tint(Color(0f, 0f, 0.4f, 1f))
+            pad(4f)
+            add(it)
+        }
+    }
+
     init {
-        val screenSize = game.settings.screenSize
-        val height = screenSize.virtualHeight
+        val height = game.settings.screenSize.getHeight()
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
@@ -68,6 +83,12 @@ abstract class BaseScreen : Screen {
 
         @Suppress("LeakingThis")
         stage.installShortcutDispatcher(globalShortcuts, this::createDispatcherVetoer)
+
+        if (fpsLabelContainer != null) {
+            fpsLabelContainer.pack()
+            fpsLabelContainer.setPosition(0f, stage.height, Align.topLeft)
+            stage.addActor(fpsLabelContainer)
+        }
     }
 
     /** Hook allowing derived Screens to supply a key shortcut vetoer that can exclude parts of the
@@ -88,6 +109,20 @@ abstract class BaseScreen : Screen {
         Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+        if (fpsLabel != null && fpsLabelContainer != null) {
+            fpsLabelContainer.isVisible = DebugUtils.SHOW_FPS
+            if (DebugUtils.SHOW_FPS) {
+                if (!glProfiler.isEnabled) glProfiler.enable()
+                fpsLabel.setText("FPS: ${Gdx.graphics.framesPerSecond}\nDraw calls: ${glProfiler.drawCalls}\nBinds: ${glProfiler.textureBindings}")
+                glProfiler.reset()
+                fpsLabelContainer.toFront()
+                fpsLabelContainer.pack()
+                fpsLabelContainer.setPosition(0f, stage.height, Align.topLeft)
+            } else if (glProfiler.isEnabled) {
+                glProfiler.disable()
+            }
+        }
+
         stage.act()
         stage.draw()
     }
@@ -96,8 +131,9 @@ abstract class BaseScreen : Screen {
         if (this !is RecreateOnResize) {
             stage.viewport.update(width, height, true)
         } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.replaceCurrentScreen(recreate())
+            game.replaceCurrentScreen{ recreate() }
         }
+        fpsLabelContainer?.setPosition(0f, stage.height, Align.topLeft)
     }
 
     override fun pause() {}
@@ -131,6 +167,22 @@ abstract class BaseScreen : Screen {
         /** Colour to use for empty sections of the screen.
          *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
         var clearColor = Color(0f, 0f, 0.2f, 1f)
+
+        /** Shared across all screens. GL-context bound, so must be recreated via [recreateBatch] when the context is recreated or the rendering type changes. */
+        lateinit var batch: Batch
+            private set
+
+        /** Creates a new [batch] according to current settings, replacing the old one.
+         *  The old one is NOT disposed - call [Batch.dispose] on the returned value once no stage uses it anymore.
+         *  @return the previous batch, or `null` if there was none */
+        fun recreateBatch(): Batch? {
+            val old = if (::batch.isInitialized) batch else null
+            batch = UncivStage.getBatch()
+            return old
+        }
+
+        /** Shared across all screens - wraps [Gdx.gl] to count draw calls etc. for [DebugUtils.SHOW_FPS]. */
+        private val glProfiler by lazy { GLProfiler(Gdx.graphics) }
 
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings
@@ -175,7 +227,7 @@ abstract class BaseScreen : Screen {
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
     /** @return `true` if the screen is higher than it is wide _and_ resolution is at most 1050x700 */
     fun isCrampedPortrait() = isPortrait() &&
-            game.settings.screenSize.virtualHeight <= 700
+            game.settings.screenSize.getHeight() <= 700
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
@@ -207,7 +259,9 @@ abstract class BaseScreen : Screen {
     /** Helper for the [openCivilopedia] (link: String) overload to use
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
-    fun openCivilopedia(ruleset: Ruleset, link: String = "") = game.pushScreen(CivilopediaScreen(ruleset, link = link))
+    fun openCivilopedia(ruleset: Ruleset, link: String = "") {
+        game.pushScreen{ CivilopediaScreen(ruleset, link = link) }
+    }
 }
 
 interface RecreateOnResize {

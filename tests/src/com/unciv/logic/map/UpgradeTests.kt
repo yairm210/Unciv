@@ -2,18 +2,16 @@
 
 package com.unciv.logic.map
 
-import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class UpgradeTests {
 
     val testGame = TestGame()
@@ -61,11 +59,12 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
 
-        Assert.assertEquals(1, upgradeActions.count())
+        Assert.assertEquals(1, upgrades.size)
         Assert.assertFalse("Unit should not be able to upgrade to special unit",
-            upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
+            upgrades.any { it.upgradedUnit == unitToUpgradeTo })
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
@@ -84,9 +83,10 @@ class UpgradeTests {
 
         val civ = testGame.addCiv()
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
+        val upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
+            .filter { unit1.upgrade.canPerformUpgrade(it, isFree = true) }
 
-        Assert.assertTrue(upgradeActions.count() == 2)
+        Assert.assertEquals(2, upgrades.size)
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
@@ -105,15 +105,15 @@ class UpgradeTests {
         testGame.addCity(civ, testGame.getTile(HexCoord.Zero)) // We need to own the tile to be able to upgrade here
 
         val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
-        var upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
+        var upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
 
-        Assert.assertTrue("We should need gold to upgrade here", upgradeActions.all { it.action == null })
+        Assert.assertTrue("We should need gold to upgrade here", upgrades.none { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
 
         civ.addGold(unit1.upgrade.getCostOfUpgrade(unitToUpgradeTo))
 
-        upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
+        upgrades = unit1.upgrade.getUpgradesOfKind(isSpecial = false)
 
-        Assert.assertEquals(1, upgradeActions.count())
-        Assert.assertTrue(upgradeActions.none { it.action == null })
+        Assert.assertEquals(1, upgrades.size)
+        Assert.assertTrue(upgrades.all { unit1.upgrade.canPerformUpgrade(it, isFree = false) })
     }
 }

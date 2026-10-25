@@ -200,7 +200,7 @@ class TileImprovementFunctions(val tile: Tile) {
             if (!tile.tileMap.hasGameInfo()) return
             // Update the separately-kept "what a civ sees" - unless in map editor where there are no civs
             for (civ in tile.tileMap.gameInfo.civilizations) {
-                if (civ.isDefeated() || !civ.isMajorCiv()) continue
+                if (civ.isDefeated() || !civ.isMajorCiv) continue
                 if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
                     civ.setLastSeenImprovement(tile.position, improvement?.name)
             }

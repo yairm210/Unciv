@@ -10,6 +10,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.objectdescriptions.TileDescription
+import com.unciv.view.TileMapView
+import com.unciv.view.TileView
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -54,8 +56,7 @@ class MapEditorViewTab(
 
     private fun createMockCiv(ruleset: Ruleset) = Civilization().apply {
         // This crappy construct exists only to allow us to call Tile.TileStatFunctions.getTileStats
-        nation = Nation()
-        nation.name = "Test"
+        setNation(Nation().apply { name = "Test" })
         gameInfo = GameInfo()
         gameInfo.ruleset = ruleset
         gameInfo.setGlobalTransients()
@@ -180,7 +181,7 @@ class MapEditorViewTab(
         lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
-        lines.addAll(TileDescription.toMarkup(tile, null))
+        lines.addAll(TileDescription.toMarkup(TileMapView(tile.tileMap, mockCiv).getTile(tile)))
 
         val stats = try {
             tile.stats.getTileStats(null, mockCiv)
@@ -233,7 +234,10 @@ class MapEditorViewTab(
                     editorScreen.updateTile(tile)
                     editorScreen.isDirty = true
                 }
-                slider.setSnapToValues(threshold = 5f, 0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f)
+                slider.setSnapToValues(threshold = 5f,
+                    0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f,
+                    editLabel = "{Resource abundance}:"
+                )
                 add(slider).right().minWidth(80f).fillX().padTop(15f)
             }).fillX()
         }

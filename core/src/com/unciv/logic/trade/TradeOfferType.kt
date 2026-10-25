@@ -12,7 +12,7 @@ enum class TradeOfferType(val numberType: TradeTypeNumberType, val isImmediate: 
     /** Treaties are shared by both sides - like peace treaty and defensive pact */
     Treaty              (TradeTypeNumberType.None, false),
     /** Agreements are one-sided, like open borders */
-    Agreement           (TradeTypeNumberType.Simple, false),
+    Agreement           (TradeTypeNumberType.None, false),
     Luxury_Resource     (TradeTypeNumberType.Simple, false),
     Strategic_Resource  (TradeTypeNumberType.Simple, false),
     Stockpiled_Resource  (TradeTypeNumberType.Simple, true),

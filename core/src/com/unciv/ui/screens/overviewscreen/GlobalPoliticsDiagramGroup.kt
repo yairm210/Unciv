@@ -24,8 +24,9 @@ import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ShadowedLabel
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.collections.set
@@ -81,7 +82,8 @@ class GlobalPoliticsDiagramGroup(
 
             operator fun get(level: RelationshipLevel) = relationshipLevels[level.ordinal]
 
-            val entries = listOf(
+            // Don't materialize this, see issue 15393 (class-initialization cycle when the outer diagram draws a DefensivePact line first)
+            val entries get() = listOf(
                 War,
                 *relationshipLevels,
                 DefensivePact,
@@ -114,7 +116,7 @@ class GlobalPoliticsDiagramGroup(
         fun setSelected(selectedCivs: Set<Civilization>, selectedRelations: Set<Relation>) =
             setSelected(isCivSelected(selectedCivs) && isRelationSelected(selectedRelations))
 
-        class Icon(val icon: IconCircleGroup, val civ: Civilization) : WidgetEntry() {
+        class Icon(val icon: IconCircleGroup<Portrait>, val civ: Civilization) : WidgetEntry() {
             override val widget get() = icon
             override val zOrder = 200
             override fun isRelationSelected(selection: Set<Relation>) = true
@@ -213,6 +215,7 @@ class GlobalPoliticsDiagramGroup(
                 width = lineWidth
             )
             statusLine.color = relation.color
+            statusLine.touchable = Touchable.disabled
             val entry = WidgetEntry.Line(statusLine, relation, civ, otherCiv)
             hasLines += civ
             hasLines += otherCiv

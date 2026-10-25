@@ -42,9 +42,8 @@ class UnitTurnManager(val unit: MapUnit) {
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
-                    unit.getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-                        .map { it.params[0].toInt() }
-                        .minOrNull()
+                unit.getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+                    .minOfOrNull { it.params[0].toInt() }
             if (lostReligiousStrength != null)
                 unit.religiousStrengthLost += lostReligiousStrength
             if (unit.religiousStrengthLost >= unit.baseUnit.religiousStrength) {
@@ -104,12 +103,20 @@ class UnitTurnManager(val unit: MapUnit) {
                 improvementIcon, NotificationIcon.Death, unit.name
             )
             unit.destroy()
-        } else unit.civ.addNotification(
-            "An enemy [$improvementName] has attacked our [${unit.name}]",
-            locations,
-            NotificationCategory.War,
-            improvementIcon, NotificationIcon.War, unit.name
-        )
+        } else {
+            unit.civ.addNotification(
+                "An enemy [$improvementName] has attacked our [${unit.name}] ([$damage] HP)",
+                locations,
+                NotificationCategory.War,
+                improvementIcon, NotificationIcon.War, unit.name
+            )
+            citadelTile.getOwner()?.addNotification(
+                "Your [$improvementName] has attacked an enemy [${unit.name}] ([$damage] HP)",
+                locations,
+                NotificationCategory.War,
+                improvementIcon, NotificationIcon.War, unit.name
+            )
+        }
     }
 
 

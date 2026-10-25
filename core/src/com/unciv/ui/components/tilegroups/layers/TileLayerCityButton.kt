@@ -40,17 +40,17 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     override fun doUpdate(viewingCiv: CivView?) {
         if (tileGroup !is WorldTileGroup) return
 
-        val city = tile.getCity()
+        val cityView = tileGroup.tileView.owningCity()
 
         // There used to be a city here but it was razed
-        if (city == null && cityButtonWrapper != null) {
+        if (cityView == null && cityButtonWrapper != null) {
             removeOwnedActor(cityButtonWrapper!!)
             cityButtonWrapper = null
             cityButton = null
         }
 
         if (viewingCiv == null) return
-        if (city == null || !tileGroup.tile.isCityCenter()) return
+        if (cityView == null || !tileGroup.tileView.isCityCenter()) return
 
         // Create wrapper + city button if not yet present
         if (cityButton == null) {
@@ -60,7 +60,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
                 setPosition(tileX, tileY)
                 setOrigin(size / 2f, size / 2f)
             }
-            cityButton = CityButton(city, tileGroup)
+            cityButton = CityButton(cityView, tileGroup)
             cityButtonWrapper!!.addActor(cityButton!!)
             addOwnedActor(cityButtonWrapper!!)
         }

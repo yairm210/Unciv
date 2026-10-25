@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -44,6 +45,7 @@ internal enum class ConsoleParameterType(
     diplomacyFlag( { DiplomacyFlags.entries.map { it.name } }),
     diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
     newCivName({ ruleset.nations.keys.filterNot { civilizations.any { civ -> civ.nation.name == it } } }),
+    tileFilter( { UniqueParameterType.TileFilter.getKnownValuesForAutocomplete(ruleset) }, preferquoted = true),
     unitAction({ UnitActionType.entries.filter { it != UnitActionType.TriggerUnique }.map { it.name } }),
     ;
 

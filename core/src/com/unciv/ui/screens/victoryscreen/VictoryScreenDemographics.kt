@@ -13,25 +13,25 @@ import yairm210.purity.annotations.Readonly
 class VictoryScreenDemographics(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin) {
-    private val playerCiv = worldScreen.viewingCiv
+    private val playerCiv = worldScreen.selectedGameView.civView.getCiv()
 
     private enum class RankLabels { Rank, Value, Best, Average, Worst }
 
     init {
         defaults().pad(5f)
-        val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv }
 
         buildDemographicsHeaders()
 
         for (rankLabel in RankLabels.entries)   {
             if (rankLabel == RankLabels.Value) {
                 // playerCiv is not necessarily alive nor major, and the `first` below would throw
-                if (playerCiv.isDefeated() || !playerCiv.isMajorCiv()) continue
+                if (playerCiv.isDefeated() || !playerCiv.isMajorCiv) continue
             }
             row()
             add(rankLabel.name.toLabel())
 
-            for (category in RankingType.entries) {
+            for (category in RankingType.filteredEntries(playerCiv.gameInfo.gameParameters)) {
                 // Use turn-start snapshots so mid-turn army/economy changes cannot be used to
                 // probe Best/Worst values of other civilizations (see linked issue).
                 val aliveMajorCivsSorted = majorCivs.filter { it.isAlive() || it == playerCiv }
@@ -55,7 +55,7 @@ class VictoryScreenDemographics(
     }
 
     /**
-     * Ranking value frozen at that civilization's last turn-start recording in [Civilization.statsHistory].
+     * Ranking value frozen at the end of the last completed turn, as recorded in [Civilization.statsHistory].
      * Falls back to a live value only when no history exists yet (e.g. very early game).
      */
     @Readonly
@@ -72,7 +72,7 @@ class VictoryScreenDemographics(
         demoLabel.addSeparator().fillX()
         add(demoLabel)
 
-        for (category in RankingType.entries) {
+        for (category in RankingType.filteredEntries(playerCiv.gameInfo.gameParameters)) {
             val headers = Table().apply { defaults().pad(5f) }
             val textAndIcon = Table().apply { defaults() }
             val columnImage = category.getImage()

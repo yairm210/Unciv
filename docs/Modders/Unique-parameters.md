@@ -179,6 +179,17 @@ Allowed values:
 - `Great Improvement`, `Great`
 - `All Road` - for Roads & Railroads
 
+## resourceFilter
+
+For filtering tile resources.
+
+Allowed values:
+
+- resource name
+- resource type name, e.g. `Strategic`
+- a Stat listed in the resource's improvementStats
+- `any`, `all`, `All`
+
 ## populationFilter
 
 A filter determining a part of the population of a city.
@@ -199,7 +210,7 @@ For filtering specific relgions
 - `major`
 - `enhanced`
 - `your`
-- `foriegn`
+- `foreign`
 - `enemy`
 - The name of a relgion symbol
 - The name of a belief
@@ -359,6 +370,16 @@ Allowed values:
 - `Desirable`
 - `Production`
 
+## unitTypeFilter
+
+Used when filtering Unit Types (e.g. "Mounted").
+
+Allowed values:
+
+- The type's name
+- `Land`, `Water`, `Air`
+- Any exact unique the unit type has
+
 ## countable
 
 Indicates *something that can be counted*, used both for comparisons and for multiplying uniques
@@ -397,6 +418,8 @@ Allowed values:
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `[buildingFilter] Buildings by [civFilter] Civilizations`
     - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
+-   `[populationFilter] in [cityFilter] Cities`
+    - Example: `Only available <when number of [[Followers of this Religion] in [in all cities] Cities] is more than [0]>`
 -   `[cityFilter] Cities of [civFilter] Civilizations`
     - Example: `Only available <when number of [[in all cities] Cities of [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
@@ -407,6 +430,9 @@ Allowed values:
     - Example: `Only available <when number of [Researched [Agriculture] Technologies] is more than [0]>`
     - Counts researched matching technologies for the relevant Civilization
     - Repeatable technologies, like Future Tech, are only counted once
+-   `Known [civFilter] Civilizations` - The number of other civilizations the relevant Civilization has met
+    - Example: `Only available <when number of [Known [City-States] Civilizations] is more than [0]>`
+    - Counts only civilizations that are still alive, and never the civilization itself
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Worked [tileFilter] Tiles in this city`

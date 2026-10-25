@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -120,6 +121,7 @@ class GameOptionsTable(
 
         val expander = ExpanderTab(
             "Advanced Settings",
+            icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
             startsOutOpened = gameParameters.enableRandomNationsPool,
             persistenceID = "GameOptionsTable.Advanced"
         ) {
@@ -145,6 +147,7 @@ class GameOptionsTable(
                     addShowChartsCheckbox()
                     addShowDemographicsCheckbox()
                     addCensorStatsCheckbox()
+                    addShowAdditionalRankingTypesCheckbox()
                 }
                 it.add(statsTable).left()
             }
@@ -243,6 +246,10 @@ class GameOptionsTable(
     private fun Table.addCensorStatsCheckbox() =
         addCheckbox("Restrict to own civilization", gameParameters.hideOtherCivilizationStats)
         { gameParameters.hideOtherCivilizationStats = it }
+    
+    private fun Table.addShowAdditionalRankingTypesCheckbox() =
+        addCheckbox("Show additional stat types", gameParameters.showAdditionalRankingTypes)
+        { gameParameters.showAdditionalRankingTypes = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()
@@ -260,7 +267,7 @@ class GameOptionsTable(
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {
-        it.isMajorCiv
+        it.isMajorCiv && !it.hasUnique(UniqueType.WillNotBeChosenForNewGames)
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
@@ -388,7 +395,7 @@ class GameOptionsTable(
         }
         slider.isDisabled = locked
         val snapValues = floatArrayOf(100f,150f,200f,250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
-        slider.setSnapToValues(threshold = 125f, *snapValues)
+        slider.setSnapToValues(threshold = 125f, *snapValues, editLabel = "{Max Turns}:")
         return slider
     }
 
@@ -440,7 +447,8 @@ class GameOptionsTable(
 
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelected)
+        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset)
+            { InputDisabling.withInputDisabled { onBaseRulesetSelected(it) } }
     }
 
     private fun Table.addGameSpeedSelectBox() {
@@ -519,7 +527,7 @@ class GameOptionsTable(
 
         // Create a checkbox for each VictoryType existing
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
-        for ((i, victoryType) in ruleset.victories.values.withIndex()) {
+        for ((i, victoryType) in ruleset.selectableVictories().withIndex()) {
             val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType.name)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
                 if (it) {
@@ -561,9 +569,20 @@ class GameOptionsTable(
         // Remove victory types which are not in the new ruleset, then default to all if none remain
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
-            gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
+
+        // Mod choices will change the number of available civs
+        val maxMajorCivs = numberOfMajorCivs()
+        if (gameParameters.maxNumberOfPlayers > maxMajorCivs) gameParameters.maxNumberOfPlayers = maxMajorCivs
+        if (gameParameters.minNumberOfPlayers > maxMajorCivs) gameParameters.minNumberOfPlayers = maxMajorCivs
+
+        val maxCityStates = numberOfCityStates()
+        if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
+        if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
+        if (gameParameters.numberOfCityStates > maxCityStates) gameParameters.numberOfCityStates = maxCityStates
 
         (previousScreen as? NewGameScreen)?.refreshExampleMap()
+        update()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
@@ -576,7 +595,6 @@ class GameOptionsTable(
         val activeMods = gameParameters.getModsAndBaseRuleset()
         UncivGame.Current.translations.translationActiveMods = activeMods
         reloadRuleset()
-        update()
 
         var desiredCiv = ""
         val rng = GameContext(gameInfo = UncivGame.Current.gameInfo).stateBasedRandom("GameOptionsTable.onChooseMod", mod.hashCode())

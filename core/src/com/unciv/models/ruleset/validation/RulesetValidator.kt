@@ -28,7 +28,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.ruleset.validation.RulesetValidator.Companion.create
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
@@ -71,7 +70,7 @@ open class RulesetValidator protected constructor(
     /** `true` for a [BaseRulesetValidator] instance, `false` for a [RulesetValidator] instance. */
     private val reportRulesetSpecificErrors = ruleset.modOptions.isBaseRuleset
 
-    protected val uniqueValidator = UniqueValidator(ruleset)
+    protected val uniqueValidator = UniqueValidator(ruleset, tryFixUnknownUniques)
 
     private lateinit var textureNamesCache: AtlasPreview
 
@@ -144,14 +143,14 @@ open class RulesetValidator protected constructor(
         for (belief in ruleset.beliefs.values) {
             if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
                 lines.add("${belief.name} type is ${belief.type}, which is not allowed!", sourceObject = belief)
-            uniqueValidator.checkUniques(belief, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(belief, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addBuildingErrors(lines: RulesetErrorList) {
         for (building in ruleset.buildings.values) {
             checkBuilding(building, lines)
-            uniqueValidator.checkUniques(building, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(building, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -164,16 +163,18 @@ open class RulesetValidator protected constructor(
 
         if (building.replaces != null && building.uniqueTo == null)
             lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
+        if (building.replaces == building.name)
+            lines.add("${building.name} replaces itself!")
     }
 
     protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {
         for (cityStateType in ruleset.cityStateTypes.values) {
             for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
-                val errors = uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null,
+                val errors = uniqueValidator.checkUnique(unique, null,
                     if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
                 lines.addAll(errors)
             }
-            uniqueValidator.checkUniques(cityStateType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(cityStateType, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -188,7 +189,7 @@ open class RulesetValidator protected constructor(
             if (difficulty.turnBarbariansCanEnterPlayerTiles < 0)
                 lines.add("Difficulty ${difficulty.name} has a negative turnBarbariansCanEnterPlayerTiles!",
                     RulesetErrorSeverity.Warning, sourceObject = null)
-            uniqueValidator.checkUniques(difficulty, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(difficulty, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -206,7 +207,7 @@ open class RulesetValidator protected constructor(
                     RulesetErrorSeverity.WarningOptionsOnly, era
                 )
 
-            uniqueValidator.checkUniques(era, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(era, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -214,14 +215,14 @@ open class RulesetValidator protected constructor(
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
-                uniqueValidator.checkUniques(choice, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+                uniqueValidator.checkUniques(choice, lines, reportRulesetSpecificErrors)
             }
-            uniqueValidator.checkUniques(event, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(event, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addGlobalUniqueErrors(lines: RulesetErrorList) {
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors)
 
         val fakeUniqueContainer = object : IHasUniques {
             override var uniques: ArrayList<String> = ArrayList()
@@ -235,7 +236,6 @@ open class RulesetValidator protected constructor(
             val unique = Unique(uniqueText)
             val errors = uniqueValidator.checkUnique(
                 unique,
-                tryFixUnknownUniques,
                 fakeUniqueContainer,
                 if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities
             )
@@ -247,6 +247,8 @@ open class RulesetValidator protected constructor(
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.replaces != null && improvement.uniqueTo == null)
                 lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+            if (improvement.replaces == improvement.name)
+                lines.add("${improvement.name} replaces itself!")
             if (improvement.terrainsCanBeBuiltOn.isEmpty()
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
@@ -279,14 +281,14 @@ open class RulesetValidator protected constructor(
                 )
             }
 
-            uniqueValidator.checkUniques(improvement, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(improvement, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addModOptionsErrors(lines: RulesetErrorList) {
         // Basic Unique validation (type, target, parameters) should always run.
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
-        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true)
 
         // TODO: Create overload method for floating point constants. Settle on using either floats or doubles in ModConstants.kt
         /**
@@ -343,7 +345,7 @@ open class RulesetValidator protected constructor(
     protected open fun addNationErrors(lines: RulesetErrorList) {
         for (nation in ruleset.nations.values) {
             checkNation(nation, lines)
-            uniqueValidator.checkUniques(nation, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(nation, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -371,19 +373,19 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addPolicyErrors(lines: RulesetErrorList) {
         for (policy in ruleset.policies.values) {
-            uniqueValidator.checkUniques(policy, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(policy, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addPromotionErrors(lines: RulesetErrorList) {
         for (promotion in ruleset.unitPromotions.values) {
-            uniqueValidator.checkUniques(promotion, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(promotion, lines, reportRulesetSpecificErrors)
             checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
                 promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
             checkPromotion(promotion, lines)
@@ -401,15 +403,14 @@ open class RulesetValidator protected constructor(
 
     protected open fun addResourceErrors(lines: RulesetErrorList) {
         for (resource in ruleset.tileResources.values) {
-            uniqueValidator.checkUniques(resource, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(resource, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addRuinsErrors(lines: RulesetErrorList) {
         for (reward in ruleset.ruinRewards.values) {
-            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
-            uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -435,14 +436,18 @@ open class RulesetValidator protected constructor(
                     lines.add("The 'untilTurn' field in the turn increment list must be monotonously increasing, but $untilTurn is <= $lastTurn", sourceObject = speed)
                 lastTurn = untilTurn
             }
-            uniqueValidator.checkUniques(speed, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(speed, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addTechErrors(lines: RulesetErrorList) {
+        val duplicateColumnNumbers = ruleset.techColumns.groupBy { it.columnNumber }.filter { it.value.size > 1 }.map { it.key }
+        if (duplicateColumnNumbers.isNotEmpty())
+            lines.add("Tech column numbers $duplicateColumnNumbers have multiple TechColumn entries", RulesetErrorSeverity.ErrorOptionsOnly)
+
         for (tech in ruleset.technologies.values) {
             if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
-            uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -474,14 +479,14 @@ open class RulesetValidator protected constructor(
 
     protected open fun addTerrainErrors(lines: RulesetErrorList) {
         for (terrain in ruleset.terrains.values) {
-            uniqueValidator.checkUniques(terrain, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(terrain, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addUnitErrors(lines: RulesetErrorList) {
         for (unit in ruleset.units.values) {
             checkUnit(unit, lines)
-            uniqueValidator.checkUniques(unit, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unit, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -493,6 +498,8 @@ open class RulesetValidator protected constructor(
 
         if (unit.replaces != null && unit.uniqueTo == null)
             lines.add("${unit.name} should replace ${unit.replaces} but does not have uniqueTo assigned!")
+        if (unit.replaces == unit.name)
+            lines.add("${unit.name} replaces itself!")
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
@@ -507,24 +514,25 @@ open class RulesetValidator protected constructor(
         for (unitType in ruleset.unitTypes.values) {
             if (unitType.movementType !in unitMovementTypes)
                 lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
-            uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addUnitNameGroupsErrors(lines: RulesetErrorList) {
         for (unitNameGroup in ruleset.unitNameGroups.values) {
-            uniqueValidator.checkUniques(unitNameGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unitNameGroup, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addVictoryTypeErrors(lines: RulesetErrorList) {
-        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
+            uniqueValidator.checkUniques(victoryType, lines, reportRulesetSpecificErrors)
+
             for (milestone in victoryType.milestoneObjects) {
                 if (milestone.type == null)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
-                        RulesetErrorSeverity.Error, sourceObject = null
+                        RulesetErrorSeverity.Error, sourceObject = victoryType
                     )
             }
 
@@ -532,7 +540,7 @@ open class RulesetValidator protected constructor(
                 if (otherVictory.name > victoryType.name && otherVictory.milestones == victoryType.milestones)
                     lines.add(
                         "Victory types ${victoryType.name} and ${otherVictory.name} have the same requirements!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
+                        RulesetErrorSeverity.Warning, sourceObject = victoryType
                     )
         }
     }
@@ -550,6 +558,7 @@ open class RulesetValidator protected constructor(
             setOf("BaseUnit", "Difficulty", "Tutorial"),
             setOf("BaseUnit", "UnitNameGroup"),
             setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Personality", "Nation.leaderName"),
             setOf("Specialist", "UnitNameGroup")
         )
 
@@ -562,7 +571,7 @@ open class RulesetValidator protected constructor(
         for ((name, sources) in duplicateNames) {
             lines.add(
                 "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
-                RulesetErrorSeverity.WarningOptionsOnly,
+                RulesetErrorSeverity.OK,
                 sourceObject = null
             )
         }

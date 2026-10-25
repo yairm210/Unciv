@@ -121,11 +121,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         // growth!
         foodStored -= foodNeededToGrow
-        val percentOfFoodCarriedOver =
-            city.getMatchingUniques(UniqueType.CarryOverFood)
-                .filter { city.matchesFilter(it.params[1]) }
-                .sumOf { it.params[0].toInt() }
-                .coerceAtMost(95)  // Try to avoid runaway food gain in mods, just in case
+        var percentOfFoodCarriedOver = 0
+        city.forEachMatchingUnique(UniqueType.CarryOverFood) {
+            if (city.matchesFilter(it.params[1]))
+                percentOfFoodCarriedOver += it.params[0].toInt()
+        }
+        percentOfFoodCarriedOver = percentOfFoodCarriedOver.coerceAtMost(95)  // Try to avoid runaway food gain in mods, just in case
         foodStored += (foodNeededToGrow * percentOfFoodCarriedOver / 100f).toInt()
         addPopulation(1)
         city.shouldReassignPopulation = true
@@ -153,7 +154,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     /** Only assigns free population */
-    internal fun autoAssignPopulation():Unit = timeThis("CityPopulationManager.autoAssignPopulation") {
+    internal fun autoAssignPopulation(): Unit = timeThis("CityPopulationManager.autoAssignPopulation") {
         city.cityStats.update()  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
@@ -161,18 +162,15 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val cityStats = city.cityStats.currentCityStats
         city.currentGPPBonus = city.getGreatPersonPercentageBonus()  // pre-calculate for use in Automation.rankSpecialist
         var specialistFoodBonus = 2f  // See CityStats.calcFoodEaten()
-        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
-            if (city.matchesFilter(unique.params[1]))
-                specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
 
         val tilesToEvaluate = city.getWorkableTiles()
-            .filter { !it.isBlockaded() }.toList().asSequence()
+            .filterNot { it.isBlockaded() }.toList().asSequence()
 
         // Calculate stats once - but the *ranking of those stats* is dynamic and depends on what the city needs
         val tileStats = tilesToEvaluate
-                .filterNot { it.providesYield() }
-                .associateWith { it.stats.getTileStats(city, city.civ)}
+            .filterNot { it.providesYield() }
+            .associateWith { it.stats.getTileStats(city, city.civ)}
 
         val maxSpecialists = getMaxSpecialists().asSequence()
 

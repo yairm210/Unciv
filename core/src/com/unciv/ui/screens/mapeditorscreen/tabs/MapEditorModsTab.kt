@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.widgets.TabbedPager
@@ -24,7 +25,8 @@ import com.unciv.ui.screens.newgamescreen.ModCheckboxTable
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreen
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val mods = editorScreen.newMapParameters.mods
+    // Read through a getter: pasting parameters replaces the mod set instance in newMapParameters
+    private val mods get() = editorScreen.newMapParameters.mods
     private var modsTable: ModCheckboxTable
     private val modsTableCell: Cell<ModCheckboxTable>
     private val applyButton = "Change map ruleset".toTextButton()
@@ -79,12 +81,18 @@ class MapEditorModsTab(
         revertButton.isEnabled = enabled
     }
 
-    private fun revertControls() {
-        val currentParameters = editorScreen.tileMap.mapParameters
-        baseRulesetSelectBox.setSelected(currentParameters.baseRuleset)
+    private fun revertControls() = updateControlsFrom(editorScreen.tileMap.mapParameters)
+
+    /** Rebuild the controls to reflect [MapEditorScreen.newMapParameters] - e.g. after parameters were pasted */
+    fun updateControls() = updateControlsFrom(editorScreen.newMapParameters)
+
+    private fun updateControlsFrom(parameters: MapParameters) {
+        // baseRulesetSelectBox.onChange clears the mod set, so keep a copy until the table is rebuilt
+        val savedMods = LinkedHashSet(parameters.mods)
+        baseRulesetSelectBox.setSelected(parameters.baseRuleset)
         mods.clear()
-        mods.addAll(currentParameters.mods)  // clone current "into" editorScreen.newMapParameters.mods
-        modsTable = ModCheckboxTable(mods, currentParameters.baseRuleset, editorScreen, false) {
+        mods.addAll(savedMods)  // clone "into" editorScreen.newMapParameters.mods
+        modsTable = ModCheckboxTable(mods, parameters.baseRuleset, editorScreen, false) {
             enableApplyButton()
         }
         modsTableCell.setActor(modsTable)

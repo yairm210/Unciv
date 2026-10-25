@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 class EspionageAutomation(val civInfo: Civilization) {
     private val civsToStealFrom: List<Civilization> by lazy {
-        civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMajorCiv()
+        civInfo.getKnownCivs().filter {otherCiv -> otherCiv.isMajorCiv
             && otherCiv.cities.any { it.getCenterTile().isExplored(civInfo) && civInfo.espionageManager.getSpyAssignedToCity(it) == null }
             && civInfo.espionageManager.getTechsToSteal(otherCiv).isNotEmpty() }.toList()
     }
@@ -19,7 +19,7 @@ class EspionageAutomation(val civInfo: Civilization) {
         }
 
     private val cityStatesToRig: List<Civilization> by lazy {
-        civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMinorCiv() && otherCiv.knows(civInfo) && !civInfo.isAtWarWith(otherCiv) }.toList()
+        civInfo.getKnownCivs().filter { otherCiv -> otherCiv.isMinorCiv && otherCiv.knows(civInfo) && !civInfo.isAtWarWith(otherCiv) }.toList()
     }
 
     fun automateSpies() {

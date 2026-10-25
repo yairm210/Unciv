@@ -22,10 +22,9 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import java.text.DecimalFormat
 import kotlin.math.max
 
 class DetailedStatsPopup(
@@ -41,8 +40,16 @@ class DetailedStatsPopup(
     private val colorTotal: Color = Color.BLUE.brighten(0.5f)
     private val colorSelector: Color = Color.GREEN.darken(0.5f)
 
-    private val percentFormatter = DecimalFormat("0.#%").apply { positivePrefix = "+"; multiplier = 1 }
-    private val decimalFormatter = DecimalFormat("0.#")
+    private val settings get() = cityScreen.game.settings
+    private val percentFormatter = settings.getAndModifyCurrentNumberFormat {
+        applyPattern(settings.getCurrentPercentPattern())
+        positivePrefix = "+"
+        multiplier = 1
+        maximumFractionDigits = 1
+    }
+    private val decimalFormatter = settings.getAndModifyCurrentNumberFormat {
+        maximumFractionDigits = 1
+    }
 
     init {
         headerTable.defaults().pad(3f, 0f)
@@ -67,8 +74,8 @@ class DetailedStatsPopup(
         headerTable.clear()
         totalTable.clear()
 
-        val cityStats = cityScreen.city.cityStats
-        val showFaith = cityScreen.city.civ.gameInfo.isReligionEnabled()
+        val cityView = cityScreen.cityView
+        val showFaith = cityView.viewingCiv().isReligionEnabled()
 
         val stats = when {
             onlyWithStat != null -> listOfNotNull(onlyWithStat)
@@ -95,13 +102,13 @@ class DetailedStatsPopup(
         totalTable.add("Base values".toLabel().apply { setAlignment(Align.center) })
             .colspan(columnCount).growX().row()
         totalTable.addSeparator(colSpan = columnCount).padTop(2f)
-        traverseTree(totalTable, stats, cityStats.baseStatTree, mergeHappiness = true, percentage = false)
+        traverseTree(totalTable, stats, cityView.getBaseStatTree(), mergeHappiness = true, percentage = false)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Bonuses".toLabel().apply { setAlignment(Align.center) })
             .colspan(columnCount).growX().row()
         totalTable.addSeparator().padTop(2f)
-        traverseTree(totalTable, stats, cityStats.statPercentBonusTree, percentage = true)
+        traverseTree(totalTable, stats, cityView.getStatPercentBonusTree(), percentage = true)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Final".toLabel().apply { setAlignment(Align.center) })
@@ -109,9 +116,9 @@ class DetailedStatsPopup(
         totalTable.addSeparator().padTop(2f)
 
         val final = LinkedHashMap<Stat, Float>()
-        val map = cityStats.finalStatList.toSortedMap()
+        val map = cityView.getFinalStatList().toSortedMap()
 
-        for ((key, value) in cityScreen.city.cityStats.happinessList) {
+        for ((key, value) in cityView.getHappinessList()) {
             if (!map.containsKey(key)) {
                 map[key] = Stats(happiness = value)
             } else if (map[key]!![Stat.Happiness] == 0f) {
@@ -164,7 +171,7 @@ class DetailedStatsPopup(
         }
         totalTable.row()
 
-        // Mini version of IPageExtensions.equalizeColumns - the number columns work thanks to statColMinWidth
+        // Mini version of Scene2dExtensions.equalizeColumns - the number columns work thanks to statColMinWidth
         headerTable.packIfNeeded()
         totalTable.packIfNeeded()
         val firstColumnWidth = max(totalTable.getColumnWidth(0), headerTable.getColumnWidth(0))
@@ -174,7 +181,7 @@ class DetailedStatsPopup(
         totalTable.invalidate()
     }
 
-    private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
+    private fun getToggleButton(showDetails: Boolean): IconCircleGroup<IconCircleGroup<Label>> {
         val label = (if (showDetails) "-" else "+").toLabel()
         label.setAlignment(Align.center)
         val button = label
@@ -201,7 +208,7 @@ class DetailedStatsPopup(
         val map = statTreeNode.children.toSortedMap()
 
         if (mergeHappiness) {
-            for ((key, value) in cityScreen.city.cityStats.happinessList) {
+            for ((key, value) in cityScreen.cityView.getHappinessList()) {
                 if (!map.containsKey(key)) {
                     map[key] = StatTreeNode()
                     map[key]?.setInnerStat(Stat.Happiness, value)

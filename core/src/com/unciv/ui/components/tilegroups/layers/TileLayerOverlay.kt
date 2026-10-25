@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.Constants
 import com.unciv.view.CivView
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
@@ -77,7 +76,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     override fun doUpdate(viewingCiv: CivView?) {
-        val isViewable = viewingCiv == null || isViewable(viewingCiv)
+        val isViewable = isViewable(viewingCiv)
 
         setFog(isViewable)
 
@@ -85,13 +84,14 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         setUnexplored(viewingCiv)
 
-        val improvement = tile.ruleset.tileImprovements[viewingCiv.getShownImprovementOn(tile)]
-        if (improvement?.isBarbarianCampEquivalent(tile.stateThisTile) == true && tile.isExplored(viewingCiv.civ))
+        val tileView = tileGroup.tileView
+        val improvement = tileView.getRuleset().tileImprovements[tileView.getShownImprovement()]
+        if (improvement?.isBarbarianCampEquivalent() == true && viewingCiv.hasExplored(tileView))
             showHighlight(Color.RED)
     }
 
     fun setUnexplored(viewingCiv: CivView) {
-        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tile)
+        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tileGroup.tileView)
         val unexploredIsVisible = unexplored != null
         if (unexploredIsVisible && !unexploredShouldBeVisible) {
             removeOwnedActor(unexplored!!)
@@ -106,7 +106,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun setFog(isViewable: Boolean) {
-        val fogShouldBeVisible = !isViewable && !tileGroup.isForceVisible
+        val fogShouldBeVisible = !isViewable
         val fogIsVisible = fog != null
         if (fogIsVisible && !fogShouldBeVisible) {
             removeOwnedActor(fog!!)

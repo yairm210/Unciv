@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -412,6 +413,21 @@ internal class BaseRulesetValidator(
     override fun addTechErrors(lines: RulesetErrorList) {
         super.addTechErrors(lines)
 
+        val numbers = ruleset.techColumns.map { it.columnNumber }
+        if (numbers.sorted() != numbers)
+            lines.add("Tech columns should be ordered. Actual: $numbers", RulesetErrorSeverity.ErrorOptionsOnly)
+        for (column in ruleset.techColumns) {
+            if (column.techs.isEmpty())
+                lines.add("Tech column ${column.columnNumber} is empty")
+            if (column.era !in ruleset.eras) {
+                val tech = column.techs.firstOrNull()
+                if (tech == null)
+                    lines.add("Unknown era ${column.era} referenced in tech column ${column.columnNumber}")
+                else
+                    lines.add("Unknown era ${column.era} referenced in tech column ${column.columnNumber} of tech ${tech.name}", sourceObject = tech)
+            }
+        }
+
         for (tech in ruleset.technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!ruleset.technologies.containsKey(prereq))
@@ -427,8 +443,6 @@ internal class BaseRulesetValidator(
                 if (getPrereqTree(prereq).contains(tech.name))
                     lines.add("Techs ${tech.name} and $prereq require each other!", sourceObject = tech)
             }
-            if (tech.era() !in ruleset.eras)
-                lines.add("Unknown era ${tech.era()} referenced in column of tech ${tech.name}", sourceObject = tech)
 
             for (otherTech in ruleset.technologies.values) {
                 if (tech.name > otherTech.name && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
@@ -530,13 +544,12 @@ internal class BaseRulesetValidator(
     override fun addVictoryTypeErrors(lines: RulesetErrorList) {
         super.addVictoryTypeErrors(lines)
 
-        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!ruleset.units.contains(requiredUnit))
                     lines.add(
                         "Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
+                        RulesetErrorSeverity.Warning, sourceObject = victoryType
                     )
 
             for (milestone in victoryType.milestoneObjects) {
@@ -544,6 +557,12 @@ internal class BaseRulesetValidator(
                     && milestone.params[0] !in ruleset.buildings)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that references an unknown building ${milestone.params[0]}!",
+                        RulesetErrorSeverity.Error, sourceObject = victoryType
+                    )
+                if (milestone.type == MilestoneType.HaveCountable
+                    && (milestone.params[0].toIntOrNull() == null || Countables.getMatching(milestone.params[1], ruleset) == null))
+                    lines.add(
+                        "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" with an invalid amount or an unknown countable!",
                         RulesetErrorSeverity.Error,
                     )
             }

@@ -78,7 +78,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it != otherCiv && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it != otherCiv && it.isMajorCiv && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
@@ -129,8 +129,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
             when (offer.type) {
                 TradeOfferType.Embassy -> {
-                    for (tile in from.getCapital()!!.getCenterTile().getTilesInDistance(2))
+                    from.getCapital()!!.getCenterTile().forEachTileInDistance(2) { tile ->
                         tile.setExplored(to, true)
+                    }
                 }
                 TradeOfferType.Gold -> {
                     to.addGold(offer.amount)

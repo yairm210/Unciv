@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -22,12 +22,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
-    @Pure
+    @Pure @ReturnsNewInstance
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
-    @Pure
+    @Pure @ReturnsNewInstance
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -123,7 +123,7 @@ object HexMath {
                 - longitudinalRadius + referenceLong)
     }
 
-    @Readonly
+    @Pure
     fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
@@ -150,10 +150,10 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
+    @Pure fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
+    @Pure fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): HexCoord {
@@ -216,11 +216,10 @@ object HexMath {
             return listOf(origin.cpy())
         }
 
-        @Readonly
+        @Pure
         fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
 
-        @LocalState
         var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current

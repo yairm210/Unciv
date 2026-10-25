@@ -17,13 +17,14 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.utils.DebugUtils
+import com.unciv.view.CivView
 
 class WonderOverviewTab(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     private val wonderInfo = WonderInfo()
-    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
+    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer.getCiv())
 
     private val fixedContent = Table()
     override fun getFixedContent() = fixedContent

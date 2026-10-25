@@ -31,7 +31,9 @@ internal class DebugTab(
         addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
         addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
         addCheckbox("Show coordinates on tiles", DebugUtils::SHOW_TILE_COORDS, updateWorld = true)
+        addCheckbox("Show settler scores on tiles", DebugUtils::SHOW_SETTLER_SCORES, updateWorld = true)
         addCheckbox("Show tile image locations", DebugUtils::SHOW_TILE_IMAGE_LOCATIONS, updateWorld = true)
+        addCheckbox("Show FPS", DebugUtils::SHOW_FPS, updateWorld = true)
 
         val curGameInfo = game.gameInfo
         if (curGameInfo != null) {

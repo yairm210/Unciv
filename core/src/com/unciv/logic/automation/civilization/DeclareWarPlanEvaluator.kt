@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.GameView
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -26,17 +27,17 @@ object DeclareWarPlanEvaluator {
         if (teamCivDiplo.isRelationshipLevelLT(RelationshipLevel.Neutral)) return -1000f
 
         var motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         if (teamCivDiplo.isRelationshipLevelEQ(RelationshipLevel.Neutral)) motivation -= 5f
         // Make sure that they can actually help us with the target
-        if (!teamCiv.threatManager.getNeighboringCivilizations().contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(teamCiv.gameInfo, teamCiv).civView).none { it.getCiv() == target }) {
             motivation -= 40f
         }
 
         val civForce = civInfo.getStatForRanking(RankingType.Force)
         val targetForce = target.getStatForRanking(RankingType.Force)
-        val teamCivForce = (teamCiv.getStatForRanking(RankingType.Force) - 0.8f * teamCiv.threatManager.getCombinedForceOfWarringCivs()).coerceAtLeast(100f)
+        val teamCivForce = (teamCiv.getStatForRanking(RankingType.Force) - 0.8f * ThreatManager.getCombinedForceOfWarringCivs(GameView(teamCiv.gameInfo, teamCiv).civView)).coerceAtLeast(100f)
 
         // A higher motivation means that we can be riskier
         val multiplier = when {
@@ -52,7 +53,7 @@ object DeclareWarPlanEvaluator {
         } else if (civForce + teamCivForce > targetForce * 2) {
             // Why gang up on such a weaker enemy when we can declare war ourselves?
             // If our combined force is twice their force we will have -20 motivation
-            motivation -= 20 * ((civForce + teamCivForce) / targetForce * 2) - 1
+            motivation -= 20 * ((civForce + teamCivForce) / targetForce - 1)
         }
 
         val civScore = civInfo.getStatForRanking(RankingType.Score)
@@ -79,13 +80,13 @@ object DeclareWarPlanEvaluator {
         if (thirdCivDiplo.isRelationshipLevelLE(RelationshipLevel.Favorable)) return -1000f
 
         var motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
         // We need to be able to trust the thirdCiv at least somewhat
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
             motivation -= 80f - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2)
         }
-        if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(civToJoin.gameInfo, civToJoin).civView).none { it.getCiv() == target }) {
             motivation -= 20f
         }
 
@@ -123,7 +124,7 @@ object DeclareWarPlanEvaluator {
     fun evaluateJoinOurWarPlan(civInfo: Civilization, target: Civilization, civToJoin: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getDiplomacyManager(civToJoin)!!.isRelationshipLevelLT(RelationshipLevel.Favorable)) return -1000f
         var motivation = givenMotivation ?: 0f
-        if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
+        if (ThreatManager.getNeighboringCivilizations(GameView(civToJoin.gameInfo, civToJoin).civView).none { it.getCiv() == target }) {
             motivation -= 50f
         }
 
@@ -131,7 +132,7 @@ object DeclareWarPlanEvaluator {
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // If we have more force than all enemies and overpower this enemy then we don't need help
-        if (civForce - civInfo.threatManager.getCombinedForceOfWarringCivs() > targetForce * 2) return 0f
+        if (civForce - ThreatManager.getCombinedForceOfWarringCivs(GameView(civInfo.gameInfo, civInfo).civView) > targetForce * 2) return 0f
 
         // They should to be at least half the targets size
         val thirdCivForce = (civToJoin.getStatForRanking(RankingType.Force) - 0.8f * civToJoin.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
@@ -153,7 +154,7 @@ object DeclareWarPlanEvaluator {
     fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
         val motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         val diploManager = civInfo.getDiplomacyManager(target)!!
 
@@ -174,7 +175,7 @@ object DeclareWarPlanEvaluator {
     @Readonly
     fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
         val motivation = givenMotivation
-            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
+            ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, GameView(civInfo.gameInfo, civInfo).getForeignCivView(target), 0f)
 
         // TODO: We use negative values in WaryOf for now so that we aren't adding any extra fields to the save file
         // This will very likely change in the future and we will want to build upon it
