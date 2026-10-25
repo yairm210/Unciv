@@ -19,6 +19,7 @@ import com.unciv.testing.TestGame
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActivationListener
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -45,6 +46,7 @@ class UniqueBuilderScreenTests {
             ImageGetter.setNewRuleset(game.ruleset)
             uiReady = true
         }
+        BaseScreen.recreateBatch()
         screen = UniqueBuilderScreen(game.ruleset)
     }
 

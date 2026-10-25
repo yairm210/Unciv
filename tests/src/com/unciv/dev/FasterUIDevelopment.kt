@@ -99,6 +99,7 @@ object FasterUIDevelopment {
             game.settings = Settings.load()
             ImageGetter.resetAtlases()
             ImageGetter.reloadImages()
+            BaseScreen.recreateBatch()
             BaseScreen.setSkin()
 
             val screen = when (tests.size) {
