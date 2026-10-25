@@ -164,6 +164,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvement: String? get() = tile.improvement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
     val tileHeight: Int get() = tile.tileHeight
+    @Readonly fun getImprovementToRepair(): TileImprovement? = tile.getImprovementToRepair()
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
