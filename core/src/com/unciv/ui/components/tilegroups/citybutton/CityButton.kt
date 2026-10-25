@@ -25,6 +25,7 @@ import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.view.ForeignCityView
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -183,7 +184,9 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             val selectedUnit = unitTable.selectedUnit
             val isIteratingAirUnits = selectedUnit != null && selectedUnit.isAirUnit()
                 && selectedUnit.getTile() == foreignCityView.getCenterTile()
-            if (cityView != null && !isIteratingAirUnits) {
+            // Foreign cities with a spy should offer both diplomacy and inspection.
+            val openCityDirectly = belongsToViewingCiv() || viewingPlayer.isSpectator() || DebugUtils.VISIBLE_MAP
+            if (cityView != null && !isIteratingAirUnits && openCityDirectly) {
                 GUI.pushScreen{ CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))
