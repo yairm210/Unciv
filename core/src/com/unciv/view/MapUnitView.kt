@@ -54,7 +54,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
     @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
     @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique

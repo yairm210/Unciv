@@ -235,7 +235,7 @@ class WorkerAutomation(
         val unit = unitView.getUnit()
         val currentTile = unit.getTile()
         
-        if (isAutomationWorkableTile(currentTile, tilesToAvoid, currentTile, unitView)
+        if (isAutomationWorkableTile(unitView.getTile(), tilesToAvoid, unitView.getTile(), unitView)
             && getBasePriority(unitView.getTile(), unitView) >= 3
             && (currentTile.isPillaged() || currentTile.hasFalloutEquivalent() || tileHasWorkToDo(currentTile, unitView)))
             return currentTile
@@ -243,7 +243,7 @@ class WorkerAutomation(
         val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
             .filter {
                 (it.getOwner() == null || it.getOwner() == unit.civ || it.getOwner()!!.isCityState)
-                    && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unitView) 
+                    && isAutomationWorkableTile(unitView.viewOf(it), tilesToAvoid, unitView.getTile(), unitView) 
                     && getTileSelectionPriority(it, unitView) >= 0
             }
 
@@ -292,26 +292,28 @@ class WorkerAutomation(
 
     @Readonly
     private fun isAutomationWorkableTile(
-        tile: Tile,
+        tile: TileView,
         tilesToAvoid: Set<TileView>,
-        currentTile: Tile,
+        currentTile: TileView,
         unitView: MapUnitView
     ): Boolean {
-        val unit = unitView.getUnit()
-        if (unitView.getTile().getTileMap().getTile(tile) in tilesToAvoid) return false
+        val civ = unitView.civ()
+        if (tile in tilesToAvoid) return false
         if (tile.isMarkedForCreatesOneImprovement()) return false
         if (!(tile == currentTile
-                    || (unit.isCivilian() && (tile.civilianUnit == null || !tile.civilianUnit!!.cache.hasUniqueToBuildImprovements))
-                    || (unit.isMilitary() && (tile.militaryUnit == null || !tile.militaryUnit!!.cache.hasUniqueToBuildImprovements))))
+                    || (unitView.getBaseUnit().isCivilian() && (tile.civilianUnit == null || !tile.civilianUnit!!.hasUnique(UniqueType.BuildImprovements)))
+                    || (unitView.getBaseUnit().isMilitary && (tile.militaryUnit == null || !tile.militaryUnit!!.hasUnique(UniqueType.BuildImprovements)))))
             return false
-        if (tile.owningCity != null && tile.getOwner() != civInfo) return false
+        if (tile.owningCity() != null && tile.getOwner() != civ) return false
         if (tile.isCityCenter()) return false
-        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
+        // Bridge: tilesOfRoadsMap is still keyed by raw Tile
+        if (unitView.getUnit().currentTile.tileMap[tile.position()] in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
-        if (!civInfo.canSeeResource(tile.tileResource) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
-                .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
-        ) return false
-        if (tile.tileImprovement?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
+        val cityWorkRange = tile.getRuleset().modOptions.constants.cityWorkRange
+        if (tile.getViewableResource(civ) == null && civ.cities().none { it.getCenterTile().aerialDistanceTo(tile) <= cityWorkRange })
+            return false
+        val improvement = tile.improvement?.let { tile.getRuleset().tileImprovements[it] }
+        if (improvement?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.improvementIsPillaged) return false
         return true
     }
 
