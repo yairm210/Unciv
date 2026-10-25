@@ -1,9 +1,9 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UnitActionType
 import com.unciv.ui.screens.devconsole.CliInput.Companion.getAutocompleteString
 import com.unciv.ui.screens.devconsole.CliInput.Companion.orEmpty
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 internal class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
