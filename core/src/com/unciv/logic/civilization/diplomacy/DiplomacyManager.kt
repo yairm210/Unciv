@@ -25,6 +25,7 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.collections.set
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.pow
@@ -682,6 +683,22 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         diplomaticModifiers[modifier.name] = amount
     }
 
+    /**
+     * Adds the specified amount or less depending on the current value of the modifier.
+     * Add 20 to 0 -> +20.
+     * Add 20 to 20 -> +10.
+     * Add 20 to 60 -> +5.
+     * Works for both positive and negative values.
+     */
+    fun addDiminishingModifier(modifier: DiplomaticModifiers, amount: Float) {
+        addModifier(
+            modifier,
+            // caution if we are dealing with positive AND negative values
+            if (amount == 0f || sign(amount) != sign(getModifier(modifier)))amount 
+            else amount * amount / (getModifier(modifier) + amount)
+        ) 
+    }
+
     @Readonly
     internal fun getModifier(modifier: DiplomaticModifiers): Float {
         if (!hasModifier(modifier)) return 0f
@@ -833,7 +850,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         val otherCivOpinionChangeFromBeingDenounced = INITIAL_OPINION_CHANGE_WHEN_DENOUNCED * 2f.pow(-0.5f * activeDenunciationsAgainstOtherCiv)
         Log.debug("%s is upset that %s denounced them: %.1f opinion", otherCivName, civInfo.civName, otherCivOpinionChangeFromBeingDenounced)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, otherCivOpinionChangeFromBeingDenounced)
+        otherCivDiplomacy().addDiminishingModifier(DiplomaticModifiers.Denunciation, otherCivOpinionChangeFromBeingDenounced)
         
         // denouncements are active for 30 turns
         // before adjusting with game speed - consider possible side effects of this

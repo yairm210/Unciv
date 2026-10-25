@@ -204,7 +204,7 @@ object DeclareWar {
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
         val warType = declareWarReason.warType
 
-        otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
+        otherCivDiplomacy.addDiminishingModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
 
         // Apply warmongering
