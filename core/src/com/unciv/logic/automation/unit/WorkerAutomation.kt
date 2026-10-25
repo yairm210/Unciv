@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.view.TileView
+import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
 import com.unciv.view.GameView
 import com.unciv.Constants
@@ -662,21 +663,22 @@ class WorkerAutomation(
      *  @return Whether any progress was made (improved a tile or at least moved towards an opportunity)
      */
     fun automateWorkBoats(unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
-        val closestReachableResource = unit.civ.cities.asSequence()
+        val civ = unitView.civ()
+        val unitTile = unitView.getTile()
+        val closestReachableResource = civ.cities().asSequence()
             .flatMap { city -> city.getTiles() }
             .filter {
-                hasWorkableSeaResource(it, unit.civ)
-                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                hasWorkableSeaResource(it, civ)
+                    && (unitTile == it || unitView.canMoveTo(it))
             }
-            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) && isNotBonusResourceOrWorkable(it, unit.civ) }
+            .sortedBy { it.aerialDistanceTo(unitTile) }
+            .firstOrNull { unitView.canReach(it) && isNotBonusResourceOrWorkable(it, civ) }
             ?: return false
 
-        unit.movement.headTowards(closestReachableResource)
-        if (unit.currentTile != closestReachableResource) return true // moving counts as progress
+        unitView.tryHeadTowards(closestReachableResource)
+        if (unitView.getTile() != closestReachableResource) return true // moving counts as progress
 
-        return UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
+        return unitView.tryInvokeUnitAction(UnitActionType.CreateImprovement)
     }
 
     companion object {
@@ -702,6 +704,26 @@ class WorkerAutomation(
                 }
             }
         }
+
+        /** View version of [hasWorkableSeaResource] for automation use */
+        @Readonly
+        fun hasWorkableSeaResource(tile: TileView, civ: CivView): Boolean {
+            val resource = tile.getViewableResource(civ)
+            return when {
+                resource == null || !tile.isWater -> false
+                tile.improvement != null && resource.isImprovedBy(tile.improvement!!) -> false
+                else -> resource.getImprovements().any {
+                    tile.canBuildImprovement(tile.getRuleset().tileImprovements[it]!!)
+                }
+            }
+        }
+
+        /** View version of [isNotBonusResourceOrWorkable] for automation use.
+         *  @throws NullPointerException on tiles without a resource */
+        @Readonly
+        fun isNotBonusResourceOrWorkable(tile: TileView, civ: CivView): Boolean =
+            tile.getViewableResource(civ)!!.resourceType != ResourceType.Bonus
+                || civ.cities().any { it.isInRange(tile) }
 
         /** Test whether improving the resource on [tile] benefits [civInfo] (yields or strategic or luxury)
          *

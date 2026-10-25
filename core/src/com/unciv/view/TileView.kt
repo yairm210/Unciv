@@ -167,6 +167,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
+    val isWater: Boolean get() = tile.isWater
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
@@ -190,6 +191,9 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
         return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
     }
+    /** Whether the viewing civ can currently build [improvement] on this tile */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean =
+        viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
     /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
     @Readonly private fun getTileWithoutLastTerrain(): Tile {
         @LocalState val newTile = tile.clone(addUnits = false)
