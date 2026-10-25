@@ -66,7 +66,8 @@ object SpecificUnitAutomation {
         return militaryUnitTile
     }
 
-    fun automateCitadelPlacer(unit: MapUnit): Boolean {
+    fun automateCitadelPlacer(unitView: MapUnitView): Boolean {
+        val unit = unitView.getUnit()
         // Keep at least 2 generals alive
         if (unit.hasUnique(UniqueType.StrengthBonusInRadius) 
                 && unit.civ.units.getCivUnits().count { it.hasUnique(UniqueType.StrengthBonusInRadius) } < 3) 
@@ -89,7 +90,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - owner.getWorkerAutomation().getBasePriority(it, GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit)).roundToInt()
+                        distance - owner.getWorkerAutomation().getBasePriority(unitView.getTile().getTileMap().getTile(it), unitView).roundToInt()
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort

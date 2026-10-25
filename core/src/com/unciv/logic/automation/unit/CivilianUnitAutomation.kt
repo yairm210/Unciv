@@ -96,7 +96,7 @@ object CivilianUnitAutomation {
         if (unit.hasStrengthBonusInRadiusUnique()
             && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
-        if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(mapUnit))
+        if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
 
         if (mapUnit.civ.religionManager.maySpreadReligionAtAll(mapUnit))
