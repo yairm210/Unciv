@@ -4,14 +4,22 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction.StatConversion
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getTurnsToConstructionString
@@ -24,6 +32,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.CityConstructionsView
+import kotlin.sequences.asIterable
 
 /** This is the bottom-right table in the city screen that shows the currently selected construction */
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
@@ -91,7 +101,10 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
 
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
-            add(descriptionLabel).colspan(2).width(cityScreen.stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
+            add(descriptionLabel).colspan(2).width(cityScreen.stage.width / if (cityScreen.isCrampedPortrait()) 3 else 4)
+
+            if (construction is INonPerpetualConstruction && "require" in description)
+                tryAddShowMissingCities(cityConstructions, construction)
 
             if (cityConstructions.isBuilt(construction.name)) {
                 showSellButton(construction)
@@ -113,6 +126,39 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                 }
             }
         }
+    }
+
+    private fun Table.tryAddShowMissingCities(cityConstructions: CityConstructionsView, construction: INonPerpetualConstruction) {
+        val missingCities =
+            cityConstructions.getRejectionReasons(construction)
+            .filter { it.type == RejectionReasonType.RequiresBuildingInAllCities && it.extraData != null }
+            .flatMap {
+                @Suppress("UNCHECKED_CAST")
+                it.extraData as List<City>
+            }.toList()
+        if (missingCities.isEmpty()) return
+        val button = "Show cities missing requirements".toTextButton(SmallButtonStyle())
+        if (missingCities.size == 1) button.onClick { jumpToCity(missingCities[0]) }
+        else button.onClick { notifyMissingCities(missingCities) }
+        row()
+        add(button).padTop(5f).colspan(2).center()
+    }
+    //TODO Unify with the one in CityScreenTileTable?
+    private fun jumpToCity(city: City) {
+        val otherCityView = cityView.gameView.getCityView(city)
+        cityScreen.game.replaceCurrentScreen { CityScreen(otherCityView) }
+    }
+    private fun notifyMissingCities(missingCities: List<City>) {
+        val notification = Notification(
+            RejectionReasonType.RequiresBuildingInAllCities.errorMessage,
+            arrayOf(NotificationIcon.City),
+            actions = LocationAction(missingCities.asSequence().map { it.location }).asIterable()
+        )
+        val worldScreen = GUI.getWorldScreen()
+        worldScreen.notificationsScroll.oneTimeNotification = notification
+        GUI.resetToWorldScreen()
+        notification.resetExecuteRoundRobin()
+        notification.execute(worldScreen)
     }
 
     // Show sell button if construction is a currently sellable building
