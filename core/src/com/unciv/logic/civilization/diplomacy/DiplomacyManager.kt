@@ -25,7 +25,6 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import kotlin.collections.set
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.pow
@@ -684,8 +683,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Adds the specified amount or less depending on the current value of the modifier.
-     * Add 20 to 0 -> +20.
+     * Allows repeatedly adding to a modifier without worrying that it will reach ridiculous levels.
+     * Add 20 to 0 -> +20 (same as [addModifier]).
      * Add 20 to 20 -> +10.
      * Add 20 to 60 -> +5.
      * Works for both positive and negative values.
@@ -694,7 +693,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         addModifier(
             modifier,
             // caution if we are dealing with positive AND negative values
-            if (amount == 0f || sign(amount) != sign(getModifier(modifier)))amount 
+            if (amount == 0f || sign(amount) != sign(getModifier(modifier))) amount 
             else amount * amount / (getModifier(modifier) + amount)
         ) 
     }
