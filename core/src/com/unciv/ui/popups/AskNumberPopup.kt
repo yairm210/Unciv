@@ -3,6 +3,7 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.widgets.UncivTextField
@@ -11,7 +12,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 
 /** Simple class for showing a prompt for a positive integer to the user
@@ -29,7 +30,7 @@ import com.unciv.ui.images.ImageGetter
 class AskNumberPopup(
     stageToShowOn: Stage,
     label: String,
-    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
+    icon: IconCircleGroup<Image> = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
     defaultValue: Int? = null,
     amountButtons: List<Int> = listOf(),
     bounds: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
