@@ -386,7 +386,7 @@ class WorkerAutomation(
                 var repairBonusPriority = unitView.getTurnsToBuild(tile.getImprovementToRepair()!!) - unitView.getRepairTurns()
                 if (tile.improvementInProgress == Constants.repair) repairBonusPriority += unitView.getRepairTurns() - tile.turnsToImprovement
 
-                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.getStatDiffForImprovement(currentImprovement, civ), civ)
+                val repairPriority = repairBonusPriority + Automation.rankStatsValue(tile.getStatDiffForAlternative(setImprovement = currentImprovement), civ)
                 if (repairPriority > rank.improvementPriority!!) {
                     rank.improvementPriority = repairPriority
                     rank.bestImprovement = null

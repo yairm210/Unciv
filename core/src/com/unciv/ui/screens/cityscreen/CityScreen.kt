@@ -257,7 +257,7 @@ class CityScreen(
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tileView: TileView): Boolean {
             val improvement = tileView.improvement?.let { tileView.getRuleset().tileImprovements[it] } ?: return false
-            val statDiffForNewImprovement = cityView.getStatDiffForImprovement(tileView, improvement)
+            val statDiffForNewImprovement = tileView.getStatDiffForAlternative(setImprovement = improvement)
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
             return Automation.rankStatsValue(statDiffForNewImprovement, cityView.owningCivView) <= 0
         }

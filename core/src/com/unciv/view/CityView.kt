@@ -131,8 +131,6 @@ class CityView(city: City,
         construction.canBePurchasedWithStat(city, stat)
 
     @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
-    @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
-        tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)
     @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
