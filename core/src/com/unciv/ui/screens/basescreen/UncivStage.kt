@@ -17,7 +17,7 @@ import com.unciv.utils.Log
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
-class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
+class UncivStage(viewport: Viewport, batch: Batch = BaseScreen.batch) : Stage(viewport, batch) {
 
     companion object {
         /** Defaults to [TextureArraySpriteBatch] to minimize GL rebinds/texture swaps between draw calls,
@@ -70,8 +70,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     override fun dispose() {
         events.stopReceiving()
         super.dispose()
-        // Stage does not own the batch supplied to its constructor.
-        batch.dispose()
+        // Stage does not own the batch supplied to its constructor - the shared [BaseScreen.batch] outlives all stages.
 
         /** [Stage.dispose] is supposed to clear all references it holds. But it forgets the mouse over properties:
          the [Stage.mouseOverActor] and [Stage.pointerOverActors]. [Stage.act] updates those properties,

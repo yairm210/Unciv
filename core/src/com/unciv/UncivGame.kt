@@ -106,12 +106,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - SpriteBatch (hence BaseScreen.recreateBatch())
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
+        BaseScreen.recreateBatch() // old one belonged to a lost GL context
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         InputDisabling.disableInput() // We just set the game start screen, avoid ANRs until we actually load the main menu
 

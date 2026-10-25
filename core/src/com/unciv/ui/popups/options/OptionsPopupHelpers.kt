@@ -298,6 +298,8 @@ internal interface OptionsPopupHelpers {
                 // would only load the new SkinConfig after the next rebuild
                 BaseScreen.setSkin()
             }
+            // Rendering type may have changed - screens rebuilt below pick up the new shared batch
+            val oldBatch = withGLContext { BaseScreen.recreateBatch() }
             val screen = UncivGame.Current.screen
             if (screen is WorldScreen) {
                 UncivGame.Current.reloadWorldscreen()
@@ -307,6 +309,7 @@ internal interface OptionsPopupHelpers {
                 }
             }
             withGLContext {
+                oldBatch?.dispose()
                 UncivGame.Current.screen?.openOptionsPopup(activePage)
             }
         }
