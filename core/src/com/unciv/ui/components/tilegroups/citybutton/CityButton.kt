@@ -1,5 +1,9 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
+import com.unciv.view.getCivInnerColor
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
+import com.unciv.view.isCityState
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
@@ -21,6 +25,7 @@ import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.view.ForeignCityView
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -176,8 +181,12 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             val cityView = foreignCityView.tryGetCityView()
-            val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it == unitTable.selectedUnit }
-            if (cityView != null && isIteratingUnits) {
+            val selectedUnit = unitTable.selectedUnit
+            val isIteratingAirUnits = selectedUnit != null && selectedUnit.isAirUnit()
+                && selectedUnit.getTile() == foreignCityView.getCenterTile()
+            // Foreign cities with a spy should offer both diplomacy and inspection.
+            val openCityDirectly = belongsToViewingCiv() || viewingPlayer.isSpectator || DebugUtils.VISIBLE_MAP
+            if (cityView != null && !isIteratingAirUnits && openCityDirectly) {
                 GUI.pushScreen{ CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))

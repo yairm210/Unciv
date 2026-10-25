@@ -1,5 +1,8 @@
 package com.unciv.view
 
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.Constants
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -11,13 +14,16 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
+import kotlin.random.Random
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
 class MapUnitView internal constructor(
@@ -29,6 +35,7 @@ class MapUnitView internal constructor(
     val due: Boolean get() = unit.due
 
     val xp: Int get() = unit.promotions.XP
+    @Readonly fun isDestroyed(): Boolean = unit.isDestroyed
     @Readonly fun xpForNextPromotion(): Int = unit.promotions.xpForNextPromotion()
     @Readonly fun canBePromoted(): Boolean = unit.promotions.canBePromoted()
     @Readonly fun getPromotionNames(): Set<String> = unit.promotions.promotions
@@ -48,8 +55,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun isInOwnTerritory(): Boolean = unit.currentTile.getOwner() == unit.civ
-    @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
     @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
     @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
@@ -65,26 +70,20 @@ class MapUnitView internal constructor(
 
     @Readonly fun getOtherEscortUnit(): MapUnitView? = unit.getOtherEscortUnit()?.let { gameView.getMapUnitView(it) }
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
-    @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
     val action: String? get() = unit.action
-    @Readonly fun isMoving(): Boolean = unit.isMoving()
-    @Readonly fun isExploring(): Boolean = unit.isExploring()
     @Readonly fun isEscorting(): Boolean = unit.isEscorting()
-    @Readonly fun isSleeping(): Boolean = unit.isSleeping()
     @Readonly fun isAutomated(): Boolean = unit.isAutomated()
-    @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
-    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean = unit.canBuildImprovement(improvement)
+    /** Whether this unit can build [improvement] on [tile] (by default, the tile it stands on) */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement, tile: TileView? = null): Boolean =
+        if (tile == null) unit.canBuildImprovement(improvement) else unit.canBuildImprovement(improvement, tile.unwrap())
+    /** Turns needed to repair the pillaged improvement on the tile this unit stands on (0 if nothing is pillaged) */
+    @Readonly fun getRepairTurns(): Int = UnitActionsFromUniques.getRepairTurns(unit)
     @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
     @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
         improvement.getStockpiledResourceRequirements(unit.cache.state)
-    @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
-    @Readonly fun canBuildCurrentImprovement(): Boolean {
-        val tile = unit.getTile()
-        return tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
-    }
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 
@@ -98,30 +97,32 @@ class MapUnitView internal constructor(
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
         unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
+    @Readonly fun canPassThrough(tileView: TileView): Boolean = unit.movement.canPassThrough(tileView.unwrap())
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun canSwapTo(tileView: TileView): Boolean = unit.movement.canUnitSwapTo(tileView.unwrap())
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
-    @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
     @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.unwrap())
     @Readonly fun getDamageFromTerrain(tileView: TileView): Int = unit.getDamageFromTerrain(tileView.unwrap())
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
     /** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
-    @Readonly fun getAirUnitMovementRange(): Int? = if (unit.baseUnit.isAirUnit()) unit.getAirUnitMovementRange() else null
     /** `true` if [tileView] holds something this unit could attack */
     @Readonly fun containsAttackableEnemy(tileView: TileView): Boolean =
         TargetHelper.containsAttackableEnemy(tileView.unwrap(), MapUnitCombatant(unit))
-    @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
-    @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun maxAttacksPerTurn(): Int = unit.maxAttacksPerTurn()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
-    @Readonly fun isAutomatingRoadConnection(): Boolean = unit.isAutomatingRoadConnection()
-    @Readonly fun rulesetHasRoadImprovement(): Boolean = unit.currentTile.ruleset.roadImprovement != null
     @Readonly fun getReachableTilesInCurrentTurn(): List<TileView> =
         unit.movement.getReachableTilesInCurrentTurn().map { gameView.tileMapView.getTile(it) }.toList()
+    /** Defensive bonus of [tile] as seen by this unit - unit-specific uniques of the improvement are taken into account */
+    @Readonly fun getDefensiveBonusOn(tile: TileView, includeImprovementBonus: Boolean = true): Float =
+        tile.unwrap().getDefensiveBonus(includeImprovementBonus, unit)
+    @Readonly fun getVisibilityRange(): Int = unit.getVisibilityRange()
+    @Readonly fun getViewableTiles(): List<TileView> = unit.viewableTiles.map { gameView.tileMapView.getTile(it) }
+    /** Health points this unit would receive if healing on [tile] */
+    @Readonly fun healingAmountForTile(tile: TileView, noTerrainDamage: Boolean = false): Int = unit.healingAmountForTile(tile.unwrap(), noTerrainDamage)
     @Readonly fun getUnitSwappableTiles(): List<TileView> =
         unit.movement.getUnitSwappableTiles().map { gameView.tileMapView.getTile(it) }.toList()
     @Readonly fun getValidRoadConnectionTiles(): List<TileView> =
@@ -186,6 +187,16 @@ class MapUnitView internal constructor(
         unit.movement.headTowards(tileView.unwrap())
         return true
     }
+    /** Swaps places with the unit on [tileView] - check [canSwapTo] first */
+    fun trySwapMoveToTile(tileView: TileView): Boolean {
+        unit.movement.swapMoveToTile(tileView.unwrap())
+        return true
+    }
+    /** Performs the unit's pending action (moving, automation, etc.) if it has one */
+    fun tryDoAction(): Boolean {
+        unit.doAction()
+        return true
+    }
     fun trySetMoveToAction(tileView: TileView): Boolean {
         val position = tileView.position()
         unit.action = "moveTo ${position.x},${position.y}"
@@ -206,7 +217,17 @@ class MapUnitView internal constructor(
         AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
+    /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType] */
+    fun canInvokeUnitAction(unitActionType: UnitActionType): Boolean =
+        UnitActions.getUnitActions(unit, unitActionType).any { it.action != null }
+    /** Invokes the first enabled action of type [unitActionType]
+     *  @return whether an action was invoked */
     fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
+    @Readonly fun canPillage(tile: TileView): Boolean = UnitActionsPillage.canPillage(unit, tile.unwrap())
+    fun tryFortifyIfCan(): Boolean {
+        unit.fortifyIfCan()
+        return true
+    }
     fun tryMoveToTile(tileView: TileView): Boolean {
         unit.movement.moveToTile(tileView.unwrap())
         return true
@@ -220,3 +241,30 @@ class MapUnitView internal constructor(
 
     @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(MapUnitCombatant(unit))
 }
+
+/** Like [com.unciv.models.ruleset.unique.GameContext.stateBasedRandom], but seeded only from what [this] unit can be read as through the view:
+ *  owner, unit type, tile, remaining movement and the current turn. Deterministic for the same state, so reloading a save gives the same choices. */
+@Readonly fun MapUnitView.stateBasedRandom(caller: String, seed: Int = 31): Random {
+    val position = getTile().position()
+    return Random(hashOf(caller.hashCode(), seed, civ().civID.hashCode(), name.hashCode(),
+        position.x, position.y, (17 * currentMovement).hashCode(), gameView.getTurn()))
+}
+
+// Unit state derived from [MapUnitView.action]
+@Readonly fun MapUnitView.isMoving(): Boolean = action?.startsWith("moveTo") == true
+@Readonly fun MapUnitView.isExploring(): Boolean = action == UnitActionType.Explore.value
+@Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction
+@Readonly fun MapUnitView.isPreparingParadrop(): Boolean = action == UnitActionType.Paradrop.value
+@Readonly fun MapUnitView.isPreparingAirSweep(): Boolean = action == UnitActionType.AirSweep.value
+
+@Readonly fun MapUnitView.getImprovementInProgress(): String? = getTile().improvementInProgress
+@Readonly fun MapUnitView.canBuildCurrentImprovement(): Boolean {
+    val tile = getTile()
+    val improvementInProgress = tile.improvementInProgress ?: return false
+    return canBuildImprovement(tile.getRuleset().tileImprovements[improvementInProgress]!!)
+}
+/** How many tiles away this unit can relocate to or reach in one move, or `null` if it isn't an air unit */
+@Readonly fun MapUnitView.getAirUnitMovementRange(): Int? = if (isAirUnit()) getRange() * 2 else null
+@Readonly fun MapUnitView.isNuclearWeapon(): Boolean = hasUnique(UniqueType.NuclearWeapon)
+@Readonly fun MapUnitView.getNukeBlastRadius(): Int =
+    getMatchingUniques(UniqueType.BlastRadius).firstOrNull()?.params?.get(0)?.toInt() ?: 2

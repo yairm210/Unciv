@@ -275,7 +275,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** @return Sequence of all cities in game, both major civilizations and city states */
     @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
     @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+    @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv }
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
@@ -294,14 +294,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return civilizations.asSequence()
             .filterNot {
                 it.isBarbarian ||
-                it.isSpectator() ||
+                it.isSpectator ||
                 !includeDefeated && it.isDefeated() ||
                 !includeCityStates && it.isCityState ||
                 additionalFilter?.invoke(it) == false
             }
             .sortedWith(
                 compareBy<Civilization> { it != civToSortFirst }
-                    .thenByDescending { it.isMajorCiv() }
+                    .thenByDescending { it.isMajorCiv }
                     .thenBy(collator) { it.civName.tr(hideIcons = true) }
             )
     }
@@ -309,7 +309,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** Returns the first spectator for a [playerId] or creates one if none found */
     fun getSpectator(playerId: String): Civilization {
         val gameSpectatorCiv = civilizations.firstOrNull {
-            it.isSpectator() && it.playerId == playerId
+            it.isSpectator && it.playerId == playerId
         }
         return gameSpectatorCiv ?: createTemporarySpectatorCiv(playerId)
 
@@ -366,7 +366,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     // Records the ranking stats of all major civs
     private fun recordRankingStats() {
         for (civ in civilizations) {
-            if (!civ.isMajorCiv() || !civ.isAlive()) continue
+            if (!civ.isMajorCiv || !civ.isAlive()) continue
             // Force uses a transient cache that is not invalidated on combat losses during other civs' turns
             civ.resetMilitaryMightCache()
             civ.statsHistory.recordRankingStats(civ)
@@ -426,7 +426,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // If all players are defeated then let the first player control next turn
         @Readonly
         fun shouldAutoProcessOnlinePlayer(): Boolean =
-            isOnline && (player.isSpectator() || player.isDefeated() &&
+            isOnline && (player.isSpectator || player.isDefeated() &&
                 (civilizations.any { it.isHuman() && it.isAlive() }
                     || civilizations.first { it.isHuman() } != player))
 
@@ -476,7 +476,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
-        if (currentPlayerCiv.isSpectator())
+        if (currentPlayerCiv.isSpectator)
             currentPlayerCiv.popupAlerts.clear()
 
         // Play some nice music TODO: measuring actual play time might be nicer
@@ -777,7 +777,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         if (currentPlayer == "") {
             currentPlayerCiv =
-                if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() } // For MP, spectator doesn't get a 'turn'
+                if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator } // For MP, spectator doesn't get a 'turn'
                 else civilizations.first { it.isHuman() } // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
             currentPlayer = currentPlayerCiv.civID
         } else currentPlayerCiv = getCivilization(currentPlayer)

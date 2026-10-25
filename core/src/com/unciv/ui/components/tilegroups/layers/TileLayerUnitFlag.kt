@@ -1,5 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame

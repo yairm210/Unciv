@@ -385,7 +385,7 @@ class EspionageScreen(val civInfo: Civilization, val worldScreen: WorldScreen) :
         override fun clickHandler() {
             if (location != null
                 && location.civ.civName != civInfo.civName
-                && location.civ.isMajorCiv()
+                && location.civ.isMajorCiv
                 && location.civ.knows(civInfo) // ensures the !! below won't crash
                 && location.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
                 ConfirmPopup(

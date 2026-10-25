@@ -1,5 +1,8 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.getAirUnitMovementRange
+import com.unciv.view.hasMovement
+import com.unciv.view.isAirUnit
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.isAtWar

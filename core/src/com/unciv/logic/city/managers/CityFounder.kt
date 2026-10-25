@@ -177,7 +177,7 @@ class CityFounder {
     ): String? {
         val rng = foundingCiv.state.stateBasedRandom("CityFounder.borrowCityName")
         val aliveMajorNations: Sequence<Nation> =
-                aliveCivs.asSequence().filter { civ -> civ.isMajorCiv() }.map { civ -> civ.nation }
+                aliveCivs.asSequence().filter { civ -> civ.isMajorCiv }.map { civ -> civ.nation }
 
         /*
         We take the last unused city name for each other major nation in this game,
@@ -242,7 +242,7 @@ class CityFounder {
     private fun triggerCitiesSettledNearOtherCiv(city: City) {
         val citiesWithin6Tiles =
                 city.civ.gameInfo.civilizations.asSequence()
-                    .filter { it.isMajorCiv() && it != city.civ }
+                    .filter { it.isMajorCiv && it != city.civ }
                     .flatMap { it.cities }
                     .filter { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 6 }
         val civsWithCloseCities =

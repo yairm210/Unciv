@@ -1,5 +1,9 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
+import com.unciv.view.getNukeBlastRadius
+import com.unciv.view.isCivilian
+import com.unciv.view.isNuclearWeapon
+import com.unciv.view.isPreparingAirSweep
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -300,11 +304,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                         val cityView = attacker.getCityView()
                         val canBombard = cityView.getBombardableTiles().contains(defender.getTile())
                         if (canBombard) {
-                            val gameView = worldScreen.selectedGameView
-                            attackableTileView = attacker.buildBombardAttackableTile(
-                                defender.getTile(), defender,
-                                gameView.civView.getCiv(), gameView.spectatorMode, gameView
-                            )
+                            attackableTileView = attacker.buildBombardAttackableTile(defender.getTile(), defender)
                         }
                     }
                 }

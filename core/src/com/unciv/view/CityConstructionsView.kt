@@ -36,11 +36,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
         cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
     @Readonly fun isQueueFull(): Boolean = cityConstructions.isQueueFull()
-    @Readonly fun isBeingConstructedOrEnqueued(name: String): Boolean = cityConstructions.isBeingConstructedOrEnqueued(name)
     @Readonly fun canAddToQueue(construction: IConstruction): Boolean = cityConstructions.canAddToQueue(construction)
-    @Readonly fun isEnqueuedForLater(name: String): Boolean = cityConstructions.isEnqueuedForLater(name)
     
-    @Readonly fun getCurrentConstruction(): IConstruction = cityConstructions.getCurrentConstruction()
     @Readonly fun getStatBuyCost(construction: INonPerpetualConstruction, stat: Stat): Int? =
         construction.getStatBuyCost(cityConstructions.city, stat)
     @Readonly fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, cost: Int): Boolean =
@@ -52,3 +49,7 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
     fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, stat: Stat, tileView: TileView?): Boolean =
         cityConstructions.purchaseConstruction(construction, queuePosition, automatic = false, stat, tileView?.unwrap())
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun CityConstructionsView.isBeingConstructedOrEnqueued(name: String): Boolean = name in constructionQueue
+@Readonly fun CityConstructionsView.getCurrentConstruction(): IConstruction = getConstruction(currentConstructionName())

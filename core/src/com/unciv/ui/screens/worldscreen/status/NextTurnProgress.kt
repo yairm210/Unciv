@@ -67,7 +67,7 @@ class NextTurnProgress(
                 // If we shouldn't disclose how many civs there are to Mr. Eagle Eye counting steps:
                 game.gameParameters.isRandomNumberOfCivs() -> game.gameParameters.minNumberOfCivs()
                 // One step per expected city to be founded (they get an endTurn, no startTurn)
-                else -> game.civilizations.count { it.isMajorCiv() && it.isAI() || it.isCityState }
+                else -> game.civilizations.count { it.isMajorCiv && it.isAI() || it.isCityState }
             }
 
         startUpdateProgress()

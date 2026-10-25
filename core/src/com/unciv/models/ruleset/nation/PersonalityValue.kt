@@ -21,7 +21,7 @@ enum class PersonalityValue(
     Production("Productive", { ::production }),
     Food("Prolific", { ::food }),
     Gold("Greedy", { ::gold }),
-    Science("Scientific", { ::science }),
+    Science("Rational", { ::science }),
     Culture("Cultured", { ::culture }),
     Happiness("Hedonistic", { ::happiness }),
     Faith("Religious", { ::faith }),

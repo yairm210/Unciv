@@ -445,7 +445,7 @@ class AlertPopup(
 
             if (originalOwner.isCityState) {
                 originalOwner.getDiplomacyManagerOrMeet(captor).addInfluence(45f)
-            } else if (originalOwner.isMajorCiv()) {
+            } else if (originalOwner.isMajorCiv) {
                 // No extra bonus from doing it several times
                 originalOwner.getDiplomacyManagerOrMeet(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)

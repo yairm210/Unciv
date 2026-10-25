@@ -1,5 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.unciv.view.getBaseTerrain
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
@@ -235,7 +236,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private fun updateTileColor(viewingCiv: CivView?) {
         val isViewable = isViewable(viewingCiv)
         val tileView = tileGroup.tileView
-        val colorPillagedTile = isViewable && tileView.isPillaged() && !usePillagedImprovementImage(tileView)
+        val colorPillagedTile = isViewable && (tileView.improvementIsPillaged || tileView.roadIsPillaged) && !usePillagedImprovementImage(tileView)
 
         val baseTerrainColor = when {
             colorPillagedTile && strings.tileSetConfig.useColorAsBaseTerrain -> tileView.getBaseTerrain()

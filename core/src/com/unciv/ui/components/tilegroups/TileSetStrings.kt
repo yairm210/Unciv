@@ -1,5 +1,7 @@
 package com.unciv.ui.components.tilegroups
 
+import com.unciv.view.isCivilian
+import com.unciv.view.isMilitary
 import com.unciv.UncivGame
 import com.unciv.logic.map.NeighborDirection
 import com.unciv.view.ForeignCivView

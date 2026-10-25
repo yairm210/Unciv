@@ -8,10 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.HexMath
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.testing.TestGame
@@ -29,8 +32,13 @@ import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.cityscreen.CityStatsTable
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
+import com.unciv.view.GameView
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import kotlin.random.Random
 
 
@@ -112,6 +120,39 @@ internal enum class FasterUIDevTesters : IFasterUITester {
             check.onChange { testee.animated = check.isChecked }
             add(check).colspan(2)
             pack()
+        }
+    },
+
+    CityStats {
+        override fun testCreateExample(screen: BaseScreen): Actor {
+            val game = TestGame(forUITesting = true)
+            game.makeHexagonalMap(3)
+            val civ = game.addCiv(game.ruleset.nations["Rome"]!!, isPlayer = true)
+            game.gameInfo.currentPlayerCiv = civ
+            val city = game.addCity(civ, game.getTile(0, 0), initialPopulation = 3)
+
+            // Use existing resource icons for city-level stockpiles, as used by mods.
+            for ((name, amount) in listOf("Iron" to 23, "Horses" to -1)) {
+                game.ruleset.tileResources[name] = TileResource().apply {
+                    this.name = name
+                    resourceType = ResourceType.Strategic
+                    uniques.add("City-level resource")
+                    uniques.add("Stockpiled")
+                    setTransients(game.ruleset)
+                }
+                city.resourceStockpiles[name] = amount
+            }
+            city.setFlag(CityFlags.WeLoveTheKing, 12)
+            city.cityStats.update()
+
+            // Preview the real widget without constructing the full city screen or navigating away.
+            val cityScreen = mock(CityScreen::class.java)
+            `when`(cityScreen.cityView).thenReturn(GameView(game.gameInfo, civ).getCityView(city))
+            `when`(cityScreen.stage).thenReturn(screen.stage)
+            `when`(cityScreen.game).thenReturn(screen.game)
+            return CityStatsTable(cityScreen).apply {
+                update(screen.stage.height - 100f)
+            }
         }
     },
 

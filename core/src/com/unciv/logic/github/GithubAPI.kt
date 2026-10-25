@@ -109,6 +109,17 @@ object GithubAPI {
         if (branch.length == 40 && branch.all { it.isHex() }) "$gitRepoUrl/archive/$branch.zip"
         else "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
+    private val githubArchiveUrlRegex = Regex("""^https://github\.com/([^/]+)/([^/]+)/archive/(.+)\.zip$""")
+
+    /** As of 23/10/26 `github.com/.../archive/...` answers with a redirect whose Content-Security-Policy header exceeds the 8192 bytes the ktor CIO engine accepts :/
+     *   so go straight to the host it redirects to. Other URLs are returned unchanged. */
+    @Pure
+    fun toCodeloadUrl(url: String): String {
+        val match = githubArchiveUrlRegex.matchEntire(url) ?: return url
+        val (owner, repo, ref) = match.destructured
+        return "https://codeload.github.com/$owner/$repo/zip/$ref"
+    }
+
     /** Format a download URL for a release archive */
     @Readonly
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
@@ -430,7 +441,7 @@ object GithubAPI {
 
         // Thanks to: https://stackoverflow.com/a/74328603/10585461
         UncivKtor.client.prepareRequest {
-            url(zipUrl)
+            url(toCodeloadUrl(zipUrl))
             timeout { requestTimeoutMillis = Long.MAX_VALUE }
             if (updateProgressPercent != null) onDownload(::reportProgress)
         }.execute { resp ->

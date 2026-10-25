@@ -23,9 +23,9 @@ object DiplomacyTurnManager {
         updateHasOpenBorders()
         nextTurnDiplomaticModifiers()
         nextTurnFlags()
-        if (civInfo.isCityState && otherCiv.isMajorCiv())
+        if (civInfo.isCityState && otherCiv.isMajorCiv)
             nextTurnCityStateInfluence()
-        if (civInfo.isMajorCiv())
+        if (civInfo.isMajorCiv)
             saveSmoothedOpinionOfOtherCiv()
     }
 
@@ -109,7 +109,7 @@ object DiplomacyTurnManager {
             if (getInfluence() < 30  // We usually don't want to bully our friends
                 && !hasFlag(DiplomacyFlags.NotifiedAfraid)
                 && civInfo.cityStateFunctions.getTributeWillingness(otherCiv) > 0
-                && otherCiv.isMajorCiv()
+                && otherCiv.isMajorCiv
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
@@ -144,7 +144,7 @@ object DiplomacyTurnManager {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv.isCityState &&
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv && otherCiv.isCityState &&
                 civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv.isAtWarWith(it) }) {
                 for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =

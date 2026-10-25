@@ -107,7 +107,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                     startStealingTech()
             }
             SpyAction.Surveillance -> {
-                if (!getCity().civ.isMajorCiv()) return
+                if (!getCity().civ.isMajorCiv) return
                 if (canStealTech() != CanStealTech.Yes) return // nope
                 setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
@@ -298,7 +298,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 if (civ == allyCiv || civ == civInfo) continue
                 civ.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
-                if (civ.isSpectator()) continue
+                if (civ.isSpectator) continue
                 cityState.getDiplomacyManager(civ)!!.reduceInfluence(10f) // Guess
             }
             setAction(SpyAction.RiggingElections, 10)

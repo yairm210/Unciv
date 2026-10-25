@@ -94,9 +94,11 @@ internal class DisplayTab(
             reloadWorldAndOptions()
         }
         
-        val fpsLabel = ("FPS: "+Gdx.graphics.framesPerSecond).toLabel()
-        fpsLabel.actions.add(Actions.forever(Actions.run { 
-            fpsLabel.setText("FPS: "+Gdx.graphics.framesPerSecond)
+        val rendererString = Gdx.graphics.glVersion.rendererString
+        fun fpsText() = "FPS: ${Gdx.graphics.framesPerSecond}\nRenderer: $rendererString"
+        val fpsLabel = fpsText().toLabel()
+        fpsLabel.actions.add(Actions.forever(Actions.run {
+            fpsLabel.setText(fpsText())
         }))
         add(fpsLabel).colspan(2).padTop(10f).row()
         

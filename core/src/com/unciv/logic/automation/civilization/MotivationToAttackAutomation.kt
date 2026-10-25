@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.location
 import com.unciv.view.GameView
 import com.unciv.view.ForeignCivView
 import com.unciv.UncivGame
@@ -55,16 +56,16 @@ object MotivationToAttackAutomation {
 
         modifiers.add(Pair("Relative combat strength", getCombatStrengthModifier(civInfo, targetCiv, ourCombatStrength, theirCombatStrength + 0.8f * ThreatManager.getCombinedForceOfWarringCivs(civView))))
         // TODO: For now this will be a very high value because the AI can't handle multiple fronts, this should be changed later though
-        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv() && it != targetCiv } * 20f))
-        modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv() } * 3f))
+        modifiers.add(Pair("Concurrent wars", -civInfo.getCivsAtWarWith().count { it.isMajorCiv && it != targetCiv } * 20f))
+        modifiers.add(Pair("Their concurrent wars", targetCiv.getCivsAtWarWith().count { it.isMajorCiv } * 3f))
 
         modifiers.add(Pair("Their allies", getDefensivePactAlliesScore(targetCiv, civInfo, baseForce, ourCombatStrength)))
 
-        if (ThreatManager.getNeighboringCivilizations(civView).map { it.getCiv() }.none { it != targetCiv && it.isMajorCiv()
+        if (ThreatManager.getNeighboringCivilizations(civView).map { it.getCiv() }.none { it != targetCiv && it.isMajorCiv
                         && civInfo.getDiplomacyManager(it)!!.isRelationshipLevelLT(RelationshipLevel.Friend) })
             modifiers.add(Pair("No other threats", 10f))
 
-        if (targetCiv.isMajorCiv()) {
+        if (targetCiv.isMajorCiv) {
             val scoreRatioModifier = getScoreRatioModifier(targetCiv, civInfo)
             modifiers.add(Pair("Relative score", scoreRatioModifier))
 

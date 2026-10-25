@@ -190,7 +190,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
-        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
             if (thirdPartyCiv.isAtWarWith(oldCiv)) // Shared Enemies should like us more
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
@@ -250,7 +250,7 @@ class CityConquestFunctions(val city: City) {
             100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
-        if (foundingCiv.isMajorCiv()) {
+        if (foundingCiv.isMajorCiv) {
             if (foundingCiv.isDefeated()) { // resurrected civ
                 for (diploManager in foundingCiv.diplomacy.values) {
                     if (diploManager.diplomaticStatus == DiplomaticStatus.War)
@@ -277,7 +277,7 @@ class CityConquestFunctions(val city: City) {
             // Liberating a city state gives a large amount of influence, and peace
             // as per discussion in #15226 
             val maxOtherInfluence = foundingCiv.diplomacy.values
-                .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv() && it.otherCiv.isAlive() }
+                .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv && it.otherCiv.isAlive() }
                 .fold(MINOR_FRIENDSHIP_AT_WAR) { a, b -> a.coerceAtLeast(b.getInfluence()) }
             val diplomacy = foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
             val liberatorOldInfluence = diplomacy.getInfluence()
@@ -301,7 +301,7 @@ class CityConquestFunctions(val city: City) {
         }
 
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
-        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv && it != conqueredCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at it! =D
         }

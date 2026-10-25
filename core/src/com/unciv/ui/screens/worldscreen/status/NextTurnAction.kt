@@ -1,5 +1,9 @@
 package com.unciv.ui.screens.worldscreen.status
 
+import com.unciv.view.isMoving
+import com.unciv.view.isExploring
+import com.unciv.view.currentConstructionName
+import com.unciv.view.dueUnitsCount
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.Counter
@@ -181,7 +185,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             if (selectedGameView.civView.isSpectator()) return false
             if (game.settings.automatedUnitsMoveOnTurnStart) return false
             if (selectedGameView.civView.hasMovedAutomatedUnitsThisTurn()) return false
-            return selectedGameView.civView.hasUnitsReadyToAutomate()
+            return selectedGameView.civView.getUnits().any {
+                it.currentMovement > Constants.minimumMovementEpsilon && (it.isAutomated() || it.isExploring() || it.isMoving())
+            }
         }
 
         private fun moveAutomatedUnits(worldScreen: WorldScreen) {

@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.view.getCurrentConstruction
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants

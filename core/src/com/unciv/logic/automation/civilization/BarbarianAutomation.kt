@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.hasMovement
+import com.unciv.view.isCivilian
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
@@ -20,7 +22,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
 
     private fun automateUnit(unit: MapUnitView) {
         if (unit.isCivilian()) automateCapturedCivilian(unit)
-        else if (unit.getUnit().currentTile.isBarbarianEncampment()) automateUnitOnEncampment(unit)
+        else if (unit.getTile().isBarbarianEncampment()) automateUnitOnEncampment(unit)
         else automateCombatUnit(unit)
     }
 

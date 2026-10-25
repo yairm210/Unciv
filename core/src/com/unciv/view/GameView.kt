@@ -29,6 +29,7 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
     @Readonly fun getSpyView(spy: Spy): SpyView = SpyView(spy, viewer, spectatorMode, this)
 
     // Data retrieval
+    @Readonly fun getTurn(): Int = wrapped.turns
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
     /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
     @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())

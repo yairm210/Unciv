@@ -64,7 +64,6 @@ class IconCircleButton(
         private fun getButton(texturePath: String, iconSize: Float, overColor: Color, disabledColor: Color): ImageButton {
             val style = ImageButton.ImageButtonStyle()
             val image = ImageGetter.getDrawable(texturePath)
-            // ImageButton.ImageButtonStyle(actor.style).apply { imageDisabled = imageUp.tint }
             style.imageUp = image
             style.imageOver = image.tint(overColor)
             style.disabled = image.tint(disabledColor)

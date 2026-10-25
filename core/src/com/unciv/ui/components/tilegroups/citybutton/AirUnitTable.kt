@@ -1,5 +1,7 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
+import com.unciv.view.getCivInnerColor
+import com.unciv.view.getNationOuterColor
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.BorderedTable

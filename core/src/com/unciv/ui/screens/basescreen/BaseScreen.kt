@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -166,6 +167,19 @@ abstract class BaseScreen : Screen {
         /** Colour to use for empty sections of the screen.
          *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
         var clearColor = Color(0f, 0f, 0.2f, 1f)
+
+        /** Shared across all screens. GL-context bound, so must be recreated via [recreateBatch] when the context is recreated or the rendering type changes. */
+        lateinit var batch: Batch
+            private set
+
+        /** Creates a new [batch] according to current settings, replacing the old one.
+         *  The old one is NOT disposed - call [Batch.dispose] on the returned value once no stage uses it anymore.
+         *  @return the previous batch, or `null` if there was none */
+        fun recreateBatch(): Batch? {
+            val old = if (::batch.isInitialized) batch else null
+            batch = UncivStage.getBatch()
+            return old
+        }
 
         /** Shared across all screens - wraps [Gdx.gl] to count draw calls etc. for [DebugUtils.SHOW_FPS]. */
         private val glProfiler by lazy { GLProfiler(Gdx.graphics) }

@@ -27,7 +27,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly open fun civ(): ForeignCivView = gameView.getForeignCivView(unit.civ)
     /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */
     @Readonly fun tryGetMapUnitView(): MapUnitView? {
-        if (unit.civ != viewer && !viewer.isSpectator()) return null
+        if (unit.civ != viewer && !viewer.isSpectator) return null
         return gameView.getMapUnitView(unit)
     }
     @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
@@ -35,10 +35,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(this, unit, viewer, spectatorMode, gameView)
 
     // Data retrieval
-    @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
-    @Readonly fun isCivilian(): Boolean = unit.isCivilian()
     @Readonly fun canAttack(): Boolean = unit.canAttack()
-    @Readonly fun isMilitary(): Boolean = unit.isMilitary()
     @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
     @Readonly fun displayName(): String = unit.displayName()
     @Readonly fun isTransportTypeOf(other: ForeignMapUnitView): Boolean = unit.isTransportTypeOf(other.unit)
@@ -55,8 +52,13 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
         unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
 
     // Rendering (icons/flags) - visible regardless of whether [unit] is ours
-    @Readonly fun hasMovement(): Boolean = unit.hasMovement()
     @Readonly fun isIdle(): Boolean = unit.isIdle()
     @Readonly fun isFortified(): Boolean = unit.isFortified()
     @Readonly fun isGuarding(): Boolean = unit.isGuarding()
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun ForeignMapUnitView.isAirUnit(): Boolean = getBaseUnit().isAirUnit()
+@Readonly fun ForeignMapUnitView.isCivilian(): Boolean = getBaseUnit().isCivilian()
+@Readonly fun ForeignMapUnitView.isMilitary(): Boolean = getBaseUnit().isMilitary
+@Readonly fun ForeignMapUnitView.hasMovement(): Boolean = currentMovement > 0

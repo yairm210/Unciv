@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit.actions
 
+import com.unciv.view.isAirUnit
 import com.unciv.view.GameView
 import com.unciv.GUI
 import com.unciv.UncivGame
@@ -87,7 +88,8 @@ object UnitActions {
         UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
         UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions,
-        UnitActionType.GiftUnit to UnitActions::getGiftActions
+        UnitActionType.GiftUnit to UnitActions::getGiftActions,
+        UnitActionType.Pillage to UnitActionsPillage::getPillageActions
     )
 
     private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit) {
@@ -106,7 +108,6 @@ object UnitActions {
             })
 
         yieldAll(UnitActionsUpgrade.getUpgradeActions(unit))
-        yieldAll(UnitActionsPillage.getPillageActions(unit, tile))
 
         addSleepActions(unit, tile)
         addFortifyActions(unit)

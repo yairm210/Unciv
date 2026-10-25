@@ -484,9 +484,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * own-civ exemption, and detection). Callers checking whether a unit can actually be seen should use [isVisibleTo] instead. */
     @Readonly
     fun hasActiveInvisibilityUnique(to: Civilization): Boolean {
-        if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
+        if (hasUnique(UniqueType.Invisible) && !to.isSpectator)
             return true
-        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator)
             return getTile().getTilesInDistance(1).none {
                 it.getUnits().any { unit -> unit.civ == to }
             }
@@ -526,14 +526,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isEmbarked() -> 0 // embarked units can't heal
         health >= 100 -> 0 // No need to heal if at max health
         hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
-        else -> rankTileForHealing(getTile(), noTerrainDamage = true)
+        else -> healingAmountForTile(getTile(), noTerrainDamage = true)
     }
 
     @Readonly fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
     @Readonly
-    fun rankTileForHealing(tile: Tile, noTerrainDamage: Boolean = false): Int {
+    fun healingAmountForTile(tile: Tile, noTerrainDamage: Boolean = false): Int {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
         var healing = when {
@@ -1027,7 +1027,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // clearEncampment must run first, because removing the improvement will invalidate quests, and both functions do so.
         if (!civ.isBarbarian && tile.isBarbarianEncampment())
             clearEncampment(tile)
-        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true)
+        if (civ.isMajorCiv && improvement?.isAncientRuinsEquivalent(cache.state) == true)
             getAncientRuinBonus(tile)
 
         // Check whether any civilians without military units are there.

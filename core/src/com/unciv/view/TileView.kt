@@ -119,6 +119,10 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         tile.getTilesAtDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
+    /** Views only expose explored tiles, so unexplored tiles at [distance] are estimated as a full hex ring (6 * [distance]) minus the explored ones.
+     * Overestimates near the true map edge, where tiles beyond the edge are counted as unexplored. */
+    @Readonly fun estimateUnexploredTilesAtDistance(distance: Int): Int =
+        (6 * distance - getExploredTilesAtDistance(distance).count()).coerceAtLeast(0)
     @Readonly fun getExploredTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
@@ -130,7 +134,15 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun providesYield(): Boolean = tile.providesYield()
     @Readonly fun isLocked(): Boolean = tile.isLocked()
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
+    @Readonly fun canPillageTileImprovement(): Boolean = tile.canPillageTileImprovement()
+    @Readonly fun canPillageRoad(): Boolean = tile.canPillageRoad()
+    @Readonly fun getRoadOwner(): ForeignCivView? {
+        val owner = tile.getRoadOwner() ?: return null
+        if (viewer == null) return null
+        return tileMapView.gameView?.getForeignCivView(owner)
+    }
     @Readonly fun isBarbarianEncampment(): Boolean = tile.isBarbarianEncampment()
+    @Readonly fun isFriendlyTerritory(): Boolean = viewer != null && tile.isFriendlyTerritory(viewer)
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
     @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.unwrap())
@@ -150,16 +162,16 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val improvement: String? get() = tile.improvement
-    val tileImprovement: TileImprovement? get() = tile.tileImprovement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
+    val tileHeight: Int get() = tile.tileHeight
+    @Readonly fun getImprovementToRepair(): TileImprovement? = tile.getImprovementToRepair()
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
+    val isWater: Boolean get() = tile.isWater
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
-    @Readonly fun isPillaged(): Boolean = tile.isPillaged()
-    @Readonly fun getBaseTerrain(): Terrain = tile.getBaseTerrain()
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
@@ -180,6 +192,9 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
         return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
     }
+    /** Whether the viewing civ can currently build [improvement] on this tile */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean =
+        viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
     /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
     @Readonly private fun getTileWithoutLastTerrain(): Tile {
         @LocalState val newTile = tile.clone(addUnits = false)
@@ -187,8 +202,28 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         newTile.removeTerrainFeature(newTile.lastTerrain.name)
         return newTile
     }
-    @Readonly fun getStatDiffForImprovement(improvement: TileImprovement, civView: CivView): Stats =
-        tile.stats.getStatDiffForImprovement(improvement, civView.unwrap(), tile.getCity())
+    /** Stat difference between this tile and an alternative version of it, for evaluating changes without applying them.
+     *  Modifications apply in order: [removeTerrainFeature], [removeImprovement], then [setImprovement].
+     *  Evaluated from the [viewer]'s perspective; empty if there is no viewer.
+     *  [currentTileStats] can be provided for performance. */
+    @Readonly fun getStatDiffForAlternative(
+        removeTerrainFeature: String? = null,
+        removeImprovement: Boolean = false,
+        setImprovement: TileImprovement? = null,
+        currentTileStats: Stats? = null
+    ): Stats {
+        val civ = viewer ?: return Stats()
+        val city = tile.getCity()
+        val currentStats = currentTileStats ?: tile.stats.getTileStats(city, civ)
+
+        @LocalState val alternative = tile.clone(addUnits = false)
+        alternative.setTerrainTransients()
+        if (removeTerrainFeature != null) alternative.removeTerrainFeature(removeTerrainFeature)
+        if (removeImprovement) alternative.removeImprovement()
+        if (setImprovement != null) alternative.setImprovement(setImprovement.name)
+        @LocalState val futureStats = alternative.stats.getTileStats(city, civ)
+        return futureStats.minus(currentStats)
+    }
     /** Per-turn maintenance of [improvement] on this tile as negative stats, matching [com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
     // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
     @Readonly fun getImprovementMaintenance(improvement: TileImprovement, civView: CivView): Stats {
@@ -225,3 +260,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         }
     }
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!

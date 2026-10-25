@@ -18,6 +18,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.InputDisabling
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -105,12 +106,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - SpriteBatch (hence BaseScreen.recreateBatch())
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
+        BaseScreen.recreateBatch() // old one belonged to a lost GL context
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         InputDisabling.disableInput() // We just set the game start screen, avoid ANRs until we actually load the main menu
 
@@ -144,6 +146,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
     
     private fun initialize() {
+        FontRulesetIcons.reset()  // Recreate GL resources
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
 
@@ -498,7 +501,7 @@ private fun logRunningThreads() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.22.13", 1275)
+        val VERSION = Version("4.22.14", 1277)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

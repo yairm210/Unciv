@@ -1,5 +1,11 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
+import com.unciv.view.getCivInnerColor
+import com.unciv.view.getCurrentConstruction
+import com.unciv.view.getNationOuterColor
+import com.unciv.view.isCityState
+import com.unciv.view.isGrowing
+import com.unciv.view.isStarving
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -208,7 +214,7 @@ internal class CityTable(
 
     private fun addCivIcon(city: ForeignCityView) {
         val icon = when {
-            city.isMajorCiv() -> ImageGetter.getNationIcon(city.getNationName())
+            city.owningCiv().getNation().isMajorCiv -> ImageGetter.getNationIcon(city.owningCiv().getNation().name)
             else -> ImageGetter.getImage("CityStateIcons/" + city.getCityStateTypeName())
         }
         icon.color = city.getCivInnerColor()

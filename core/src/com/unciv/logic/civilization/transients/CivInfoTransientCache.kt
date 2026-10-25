@@ -135,7 +135,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civID)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
-                if(!civInfo.isSpectator())
+                if(!civInfo.isSpectator)
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
                         entry.value.position,
                         NotificationCategory.Diplomacy, metCiv.civName,
@@ -233,14 +233,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.naturalWonders.add(tile.naturalWonder!!)
-            if (civInfo.isSpectator()) continue // don't trigger anything
+            if (civInfo.isSpectator) continue // don't trigger anything
 
             civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             val statsGained = Stats()
 
-            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
+            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv }
                     .flatMap { it.naturalWonders }
             if (tile.terrainHasUnique(UniqueType.GrantsStatsToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {

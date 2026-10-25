@@ -54,13 +54,12 @@ class CivView(civ: Civilization,
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun getCivResourcesByName(): HashMap<String, Int> = civ.getCivResourcesByName()
-    @Readonly fun isSpectator(): Boolean = civ.isSpectator()
+    @Readonly fun isSpectator(): Boolean = civ.isSpectator
     /** `true` when this civ is a human player defeated in a singleplayer game - the map is fully revealed for them to watch the game play out. */
     @Readonly fun isMapRevealed(): Boolean = !civ.gameInfo.gameParameters.isOnlineMultiplayer && civ.isCurrentPlayer() && civ.isDefeated()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
     @Readonly fun isCurrentPlayer(): Boolean = civ.isCurrentPlayer()
     @Readonly fun isHuman(): Boolean = civ.isHuman()
-    @Readonly fun hasMetAnyMajorCiv(): Boolean = civ.getKnownCivs().any { it != civ && !it.isBarbarian }
     @Readonly fun getKnownCivs(): List<ForeignCivView> = civ.getKnownCivs().map { gameView.getForeignCivView(it) }.toList()
     @Readonly fun getPersonalityValue(value: PersonalityValue): Float = civ.getPersonality()[value]
     @Readonly fun getHappiness(): Int = civ.getHappiness()
@@ -100,14 +99,7 @@ class CivView(civ: Civilization,
     @Readonly fun mayVoteForDiplomaticVictory(): Boolean = civ.mayVoteForDiplomaticVictory()
 
     // Units
-    @Readonly fun hasIdleUnits(): Boolean = civ.units.getIdleUnits().any()
-    @Readonly fun idleUnitsCount(due: Boolean): Int = civ.units.getIdleUnits().count { it.due == due }
-    @Readonly fun dueUnitsCount(): Int = civ.units.getDueUnits().count()
     @Readonly fun hasMovedAutomatedUnitsThisTurn(): Boolean = civ.hasMovedAutomatedUnits
-    @Readonly fun hasUnitsReadyToAutomate(): Boolean = civ.units.getCivUnits().any {
-        it.currentMovement > Constants.minimumMovementEpsilon
-            && (it.isAutomated() || it.isExploring() || it.isMoving())
-    }
     /** [civ]'s own units, wrapped for the viewer's own use (e.g. movement-plan arrows). */
     @Readonly fun getUnits(): List<MapUnitView> = civ.units.getCivUnits().map { gameView.getMapUnitView(it) }.toList()
 
@@ -144,6 +136,9 @@ class CivView(civ: Civilization,
 
 // Helpers built on top of the view API, rather than being part of it
 // This is so we can separate the minimal API, from the helpful API.
+
+@Readonly fun CivView.idleUnitsCount(due: Boolean): Int = getUnits().count { it.isIdle() && it.due == due }
+@Readonly fun CivView.dueUnitsCount(): Int = getUnits().count { it.due && it.isIdle() }
 
 /** `true` if we are at war with any known, non-defeated civ */
 @Readonly fun CivView.isAtWar(): Boolean = getKnownCivs().any { !it.isDefeated() && isAtWarWith(it) }

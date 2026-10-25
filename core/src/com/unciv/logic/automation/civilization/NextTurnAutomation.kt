@@ -1,5 +1,9 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.isAirUnit
+import com.unciv.view.isCivilian
+import com.unciv.view.isMilitary
+import com.unciv.view.isNuclearWeapon
 import com.unciv.view.isAtWar
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -43,14 +47,14 @@ object NextTurnAutomation {
                          /** set false for 'forced' automation, such as skip turn */
                          tradeAndChangeState: Boolean = true): Unit = timeThis("automateCivMoves") {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
-        if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
+        if (civInfo.isSpectator) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
         val civView = GameView(civInfo.gameInfo, civInfo).civView
 
         respondToPopupAlerts(civView)
         TradeAutomation.respondToTradeRequests(civInfo, tradeAndChangeState)
 
-        if (tradeAndChangeState && civInfo.isMajorCiv()) {
+        if (tradeAndChangeState && civInfo.isMajorCiv) {
             if (!civView.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
                 DiplomacyAutomation.declareWar(civView)
                 DiplomacyAutomation.offerPeaceTreaty(civView)
@@ -87,7 +91,7 @@ object NextTurnAutomation {
         val cache = AutomationCache()
         automateUnits(civView, cache)  // this is the most expensive part
 
-        if (tradeAndChangeState && civInfo.isMajorCiv()) {
+        if (tradeAndChangeState && civInfo.isMajorCiv) {
             if (civView.isReligionEnabled()) {
                 // Can only be done now, as the prophet first has to decide to found/enhance a religion
                 ReligionAutomation.chooseReligiousBeliefs(civInfo)
@@ -105,7 +109,6 @@ object NextTurnAutomation {
     }
 
     fun automateGoldToSciencePercentage(civView: CivView) {
-        val civInfo = civView.getCiv()
         // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
         val estimatedIncome = civView.getGoldPerTurn()
         val projectedGold = civView.gold + estimatedIncome
@@ -113,11 +116,11 @@ object NextTurnAutomation {
         val pissPoor = civView.getEra().baseUnitBuyCost
         val stinkingRich = civView.getEra().startingGold * 10 + civView.cities().size * 2 * pissPoor
         val maxPercent = 0.8f
-        civInfo.tech.goldPercentConvertedToScience = when {
+        civView.trySetGoldPercentConvertedToScience(when {
             civView.gold <= 0 -> 0f
             projectedGold <= pissPoor -> 0f
             else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
-        }
+        })
     }
     
     private fun respondToPopupAlerts(civView: CivView) {
@@ -462,8 +465,7 @@ object NextTurnAutomation {
     /** False once an earlier action in this pass has captured or destroyed [unit]. */
     @Readonly
     private fun isStillOurUnit(unit: MapUnitView, civView: CivView): Boolean {
-        val mapUnit = unit.getUnit()
-        return !mapUnit.isDestroyed && mapUnit.civ == civView.getCiv()
+        return !unit.isDestroyed() && unit.civ() == civView
     }
 
     internal fun applyPromotions(unitView: MapUnitView) {
@@ -593,8 +595,7 @@ object NextTurnAutomation {
     }
 
     fun automateCityBombardment(civView: CivView) {
-        val civInfo = civView.getCiv()
-        for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
+        for (city in civView.cities()) UnitAutomation.tryBombardEnemy(city)
     }
 
     private fun shouldAnnexCity(civView: CivView, city: City): Boolean {
@@ -670,7 +671,7 @@ object NextTurnAutomation {
         // we clearly have room to expand safely: at peace, ample happiness, still early, and in a game with
         // other major civs whose presence deters an opportunistic attack (this is a bad idea in a 1v1 duel).
         val hasSlackToExpandSafely = !civView.isAtWar() && civView.getHappiness() >= 8 && civInfo.gameInfo.turns < 150
-            && civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } >= 3
+            && civInfo.gameInfo.civilizations.count { it.isMajorCiv && it.isAlive() } >= 3
         if (civView.getUnits().count { it.isMilitary() } < civView.cities().size && !hasSlackToExpandSafely)
             return // We need someone to defend them first
 
@@ -691,8 +692,8 @@ object NextTurnAutomation {
         if (!civView.mayVoteForDiplomaticVictory()) return
         val rng = civ.state.stateBasedRandom("NextTurnAutomation.tryVoteForDiplomaticVictory")
 
-        val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
-            val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
+        val chosenCiv: Civilization? = if (civ.isMajorCiv) {
+            val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
                     civ.getDiplomacyManager(it)!!.opinionOfOtherCiv()
@@ -714,7 +715,7 @@ object NextTurnAutomation {
 
     private fun issueRequests(civView: CivView) {
         val civInfo = civView.getCiv()
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv }) {
             val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
             for (demand in Demand.entries) {
                 if (diploManager.hasFlag(demand.violationOccurred))
@@ -735,17 +736,15 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
                 offendingCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civView.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
-                diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
-                if (demand == Demand.DoNotAttackUs)
+                diplomacyManager.addDiminishingModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
+                if (demand == Demand.DoNotAttackUs) {
                     // relationship penalty with all common known civs, similar to DoF backstabbing
                     // TODO: apply WarmongerHatred personality trait here?
                     for (thirdPartyCiv in diplomacyManager.getCommonKnownCivs()) {
                         thirdPartyCiv.getDiplomacyManager(offendingCiv)!!
-                            .setModifier(
-                                DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv,
-                                -10f
-                            )
+                            .addDiminishingModifier(DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv, -10f)
                     }
+                }
                 diplomacyManager.removeFlag(demand.agreedToDemand)
             }
             // violation before promise

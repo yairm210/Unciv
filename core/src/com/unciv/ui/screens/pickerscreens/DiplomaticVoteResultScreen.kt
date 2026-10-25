@@ -51,7 +51,7 @@ class DiplomaticVoteResultScreen(
     private fun addVote(civ: Civilization, votesReceived: Int) {
         val civName = civ.civName
 
-        if (civ.isMajorCiv()) topTable.add(votesReceived.toLabel()) else topTable.add()
+        if (civ.isMajorCiv) topTable.add(votesReceived.toLabel()) else topTable.add()
 
         topTable.add(ImageGetter.getNationPortrait(civ.nation, 30f))
         topTable.add(civName.toLabel(hideIcons = true)).padLeft(20f).padRight(20f)

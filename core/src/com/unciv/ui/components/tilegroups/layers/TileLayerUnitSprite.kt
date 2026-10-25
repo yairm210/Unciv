@@ -1,5 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.unciv.view.isCivilian
 import com.unciv.UncivGame
 import com.unciv.view.CivView
 import com.unciv.view.ForeignMapUnitView
