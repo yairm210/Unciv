@@ -158,7 +158,7 @@ class ImprovementPickerScreen(
         val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
         // get benefits of the new improvement
-        val stats = tile.getStatDiffForImprovement(improvement, currentPlayerCiv)
+        val stats = tile.getStatDiffForAlternative(setImprovement = improvement)
 
         // Add per-turn maintenance costs as negative stats.
         stats.add(tile.getImprovementMaintenance(improvement, currentPlayerCiv))

@@ -43,7 +43,7 @@ object CivilianUnitAutomation {
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
         if (hasSettlerUnique && !(unit.civ().isCityState && unit.isMilitary()))
-            return SpecificUnitAutomation.automateSettlerActions(mapUnit, dangerousTiles, cache)
+            return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles, cache)
 
         if (tryRunAwayIfNeccessary(unit, cache)) return
 
@@ -58,7 +58,7 @@ object CivilianUnitAutomation {
         if (unit.isAutomatingRoadConnection())
             return mapUnit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(mapUnit, dangerousTiles)
 
-        if (unit.hasUniqueToBuildImprovements())
+        if (unit.hasUnique(UniqueType.BuildImprovements))
             return mapUnit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
 
         if (unit.hasUniqueToCreateWaterImprovements()) {
@@ -94,9 +94,9 @@ object CivilianUnitAutomation {
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two
         if (unit.hasStrengthBonusInRadiusUnique()
-            && SpecificUnitAutomation.automateGreatGeneral(mapUnit))
+            && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
-        if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(mapUnit))
+        if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
 
         if (mapUnit.civ.religionManager.maySpreadReligionAtAll(mapUnit))
@@ -127,7 +127,7 @@ object CivilianUnitAutomation {
             && isLateGame
         ) {
             val tradeMissionCanBeConductedEventually =
-                SpecificUnitAutomation.conductTradeMission(mapUnit)
+                SpecificUnitAutomation.conductTradeMission(unit)
             if (tradeMissionCanBeConductedEventually)
                 return
         }

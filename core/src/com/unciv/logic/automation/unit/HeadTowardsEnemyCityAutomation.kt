@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.BattleDamage
@@ -8,7 +9,6 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Readonly
 
@@ -69,12 +69,13 @@ object HeadTowardsEnemyCityAutomation {
         shortestPath: List<Tile>
     ): Boolean {
         val unit = unitView.getUnit()
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        // Temporary bridge until the callers pass views
+        val enemyCityTileView = unitView.getTile().getTileMap().getTile(closestReachableEnemyCity)
 
-        val unitRange = unit.getRange()
+        val unitRange = unitView.getRange()
         val cityBombardRange = closestReachableEnemyCity.getCity()!!.getBombardRange()
         if (unitRange > cityBombardRange) { // long-ranged unit, should never be in a bombardable position
-            return headTowardsEnemyCityLongRange(closestReachableEnemyCity, unitDistanceToTiles, unitRange, unitView)
+            return headTowardsEnemyCityLongRange(enemyCityTileView, unitRange, unitView)
         }
 
         val nextTileInPath = shortestPath[0]
@@ -96,7 +97,7 @@ object HeadTowardsEnemyCityAutomation {
         val city = closestReachableEnemyCity.getCity()!!
 
         if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)) {
-            return headToLandingGrounds(closestReachableEnemyCity, unitView)
+            return headToLandingGrounds(enemyCityTileView, unitView)
         }
 
         unit.movement.moveToTile(nextTileInPath) // go for it!
@@ -120,55 +121,52 @@ object HeadTowardsEnemyCityAutomation {
                 || city.health / (expectedDamagePerTurn - cityHealingPerTurn) > 5) // Can damage, but will take more than 5 turns
     }
 
-    private fun headToLandingGrounds(closestReachableEnemyCity: Tile, unitView: MapUnitView): Boolean {
-        val unit = unitView.getUnit()
+    private fun headToLandingGrounds(closestReachableEnemyCity: TileView, unitView: MapUnitView): Boolean {
+        val unitTile = unitView.getTile()
         // don't head straight to the city, try to head to landing grounds -
         // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-        val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(minDistanceFromCityToConsiderForLandingArea..maxDistanceFromCityToConsiderForLandingArea)
-            .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
-            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
+        val tileToHeadTo = (minDistanceFromCityToConsiderForLandingArea..maxDistanceFromCityToConsiderForLandingArea).asSequence()
+            .flatMap { closestReachableEnemyCity.getExploredTilesAtDistance(it) }
+            .filter { it.isLand && unitView.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
+            .sortedBy { it.aerialDistanceTo(unitTile) }
+            .firstOrNull { (unitView.canMoveTo(it) || it == unitTile) && unitView.canReach(it) }
 
         if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
-            unit.movement.headTowards(tileToHeadTo)
+            unitView.tryHeadTowards(tileToHeadTo)
         }
         return true
     }
 
     private fun headTowardsEnemyCityLongRange(
-        closestReachableEnemyCity: Tile,
-        unitDistanceToTiles: PathsToTilesWithinTurn,
+        closestReachableEnemyCity: TileView,
         unitRange: Int,
         unitView: MapUnitView
     ): Boolean {
-        val unit = unitView.getUnit()
         // If we're already in fire range but have no sight, hold position
         // If there IS sight, automateUnitMoves would order attacking instead of heading to city
-        if (closestReachableEnemyCity.getTilesInDistance(unitRange).contains(unit.getTile()))
+        if (closestReachableEnemyCity.aerialDistanceTo(unitView.getTile()) <= unitRange)
             return true
 
-        val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
-        val candidateTiles = unitDistanceToTiles.asSequence().filter {
+        val tilesInBombardRange = closestReachableEnemyCity.getExploredTilesInDistance(2).toSet()
+        val candidateTiles = unitView.getDistanceToTiles().asSequence().filter {
             it.key.aerialDistanceTo(closestReachableEnemyCity) >= unitRange
                 && it.key !in tilesInBombardRange
-                && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain 
+                && unitView.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain 
                 // Avoid mountains in path because unitDistanceToTiles parameter doesn't exclude them due to getMovementToTilesAtPosition
-                && unit.movement.canMoveTo(it.key)
+                && unitView.canMoveTo(it.key)
         }
 
         // Sort by closest distance to target city, then by the least amount of moves needed to get into fire range
         val tileToMoveTo = candidateTiles.sortedWith(compareBy(
             { it.key.aerialDistanceTo(closestReachableEnemyCity) },
-            { it.value.totalMovement }
+            { it.value }
         )).firstOrNull()
 
-        if (tileToMoveTo != null) {
-            // move into position far away enough so that city bombard or enemy units don't hurt
-            unit.movement.headTowards(tileToMoveTo.key)
-            return true
-        }
-
         // return false if no tile to move to
-        return false
+        if (tileToMoveTo == null) return false
+
+        // move into position far away enough so that city bombard or enemy units don't hurt
+        unitView.tryHeadTowards(tileToMoveTo.key)
+        return true
     }
 }

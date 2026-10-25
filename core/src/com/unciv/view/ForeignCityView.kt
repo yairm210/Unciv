@@ -50,6 +50,7 @@ open class ForeignCityView(protected open val city: City,
         val tile = city.getCenterTile()
         return gameView.tileMapView.getTile(tile)
     }
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
     @Readonly fun canBombard(): Boolean = city.canBombard()
     @Readonly fun getBombardRange(): Int = city.getBombardRange()
     /** Cities (of any civ) within [maxDistance] of this city */

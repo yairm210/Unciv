@@ -595,8 +595,7 @@ object NextTurnAutomation {
     }
 
     fun automateCityBombardment(civView: CivView) {
-        val civInfo = civView.getCiv()
-        for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
+        for (city in civView.cities()) UnitAutomation.tryBombardEnemy(city)
     }
 
     private fun shouldAnnexCity(civView: CivView, city: City): Boolean {

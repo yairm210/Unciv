@@ -181,10 +181,12 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             val cityView = foreignCityView.tryGetCityView()
-            val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it == unitTable.selectedUnit }
+            val selectedUnit = unitTable.selectedUnit
+            val isIteratingAirUnits = selectedUnit != null && selectedUnit.isAirUnit()
+                && selectedUnit.getTile() == foreignCityView.getCenterTile()
             // Foreign cities with a spy should offer both diplomacy and inspection.
             val openCityDirectly = belongsToViewingCiv() || viewingPlayer.isSpectator() || DebugUtils.VISIBLE_MAP
-            if (cityView != null && isIteratingUnits && openCityDirectly) {
+            if (cityView != null && !isIteratingAirUnits && openCityDirectly) {
                 GUI.pushScreen{ CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))

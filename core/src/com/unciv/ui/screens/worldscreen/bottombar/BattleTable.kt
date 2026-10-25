@@ -304,11 +304,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                         val cityView = attacker.getCityView()
                         val canBombard = cityView.getBombardableTiles().contains(defender.getTile())
                         if (canBombard) {
-                            val gameView = worldScreen.selectedGameView
-                            attackableTileView = attacker.buildBombardAttackableTile(
-                                defender.getTile(), defender,
-                                gameView.civView.getCiv(), gameView.spectatorMode, gameView
-                            )
+                            attackableTileView = attacker.buildBombardAttackableTile(defender.getTile(), defender)
                         }
                     }
                 }

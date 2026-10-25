@@ -164,9 +164,11 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvement: String? get() = tile.improvement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
     val tileHeight: Int get() = tile.tileHeight
+    @Readonly fun getImprovementToRepair(): TileImprovement? = tile.getImprovementToRepair()
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
+    val isWater: Boolean get() = tile.isWater
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
@@ -190,6 +192,9 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
         return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
     }
+    /** Whether the viewing civ can currently build [improvement] on this tile */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean =
+        viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
     /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
     @Readonly private fun getTileWithoutLastTerrain(): Tile {
         @LocalState val newTile = tile.clone(addUnits = false)
@@ -197,8 +202,28 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         newTile.removeTerrainFeature(newTile.lastTerrain.name)
         return newTile
     }
-    @Readonly fun getStatDiffForImprovement(improvement: TileImprovement, civView: CivView): Stats =
-        tile.stats.getStatDiffForImprovement(improvement, civView.unwrap(), tile.getCity())
+    /** Stat difference between this tile and an alternative version of it, for evaluating changes without applying them.
+     *  Modifications apply in order: [removeTerrainFeature], [removeImprovement], then [setImprovement].
+     *  Evaluated from the [viewer]'s perspective; empty if there is no viewer.
+     *  [currentTileStats] can be provided for performance. */
+    @Readonly fun getStatDiffForAlternative(
+        removeTerrainFeature: String? = null,
+        removeImprovement: Boolean = false,
+        setImprovement: TileImprovement? = null,
+        currentTileStats: Stats? = null
+    ): Stats {
+        val civ = viewer ?: return Stats()
+        val city = tile.getCity()
+        val currentStats = currentTileStats ?: tile.stats.getTileStats(city, civ)
+
+        @LocalState val alternative = tile.clone(addUnits = false)
+        alternative.setTerrainTransients()
+        if (removeTerrainFeature != null) alternative.removeTerrainFeature(removeTerrainFeature)
+        if (removeImprovement) alternative.removeImprovement()
+        if (setImprovement != null) alternative.setImprovement(setImprovement.name)
+        @LocalState val futureStats = alternative.stats.getTileStats(city, civ)
+        return futureStats.minus(currentStats)
+    }
     /** Per-turn maintenance of [improvement] on this tile as negative stats, matching [com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
     // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
     @Readonly fun getImprovementMaintenance(improvement: TileImprovement, civView: CivView): Stats {

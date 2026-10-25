@@ -50,8 +50,9 @@ sealed class CombatantView constructor(private val combatant: ICombatant, viewer
     /** Defending strength including modifiers - as opposed to [getDefendingStrength], which is the base strength. */
     @Readonly fun getFinalDefendingStrength(attacker: CombatantView, tileToAttackFrom: TileView): Float =
         BattleDamage.getDefendingStrength(attacker.unwrap(), combatant, tileToAttackFrom.unwrap())
-    /** @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
-    @Readonly fun calculateDamageToDefender(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
+    /** @param tileToAttackFrom Defaults to the tile this combatant is currently on
+     *  @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
+    @Readonly fun calculateDamageToDefender(defender: CombatantView, tileToAttackFrom: TileView = getTile(), randomnessFactor: Float = 0.5f): Int =
         BattleDamage.calculateDamageToDefender(combatant, defender.unwrap(), tileToAttackFrom.unwrap(), randomnessFactor)
     /** @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
     @Readonly fun calculateDamageToAttacker(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
@@ -78,10 +79,7 @@ class CityCombatantView internal constructor(
     @Readonly fun getCityView(): ForeignCityView = cityView
 
     /** Builds the [AttackableTileView] this city bombard needs (no movement, so no tileToAttackFrom calculation required). */
-    @Readonly fun buildBombardAttackableTile(
-        toTile: TileView, defender: CombatantView,
-        viewer: Civilization, spectatorMode: Boolean, gameView: GameView
-    ): AttackableTileView =
+    @Readonly fun buildBombardAttackableTile(toTile: TileView, defender: CombatantView): AttackableTileView =
         AttackableTileView(
             AttackableTile(cityView.getCenterTile().unwrap()
                 , toTile.unwrap(), 0f, defender.unwrap()

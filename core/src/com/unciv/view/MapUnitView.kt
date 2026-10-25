@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -54,7 +55,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun hasUniqueToBuildImprovements(): Boolean = unit.cache.hasUniqueToBuildImprovements
     @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
     @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
     @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
@@ -76,7 +76,11 @@ class MapUnitView internal constructor(
     val action: String? get() = unit.action
     @Readonly fun isEscorting(): Boolean = unit.isEscorting()
     @Readonly fun isAutomated(): Boolean = unit.isAutomated()
-    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean = unit.canBuildImprovement(improvement)
+    /** Whether this unit can build [improvement] on [tile] (by default, the tile it stands on) */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement, tile: TileView? = null): Boolean =
+        if (tile == null) unit.canBuildImprovement(improvement) else unit.canBuildImprovement(improvement, tile.unwrap())
+    /** Turns needed to repair the pillaged improvement on the tile this unit stands on (0 if nothing is pillaged) */
+    @Readonly fun getRepairTurns(): Int = UnitActionsFromUniques.getRepairTurns(unit)
     @Readonly fun getTurnsToBuild(improvement: TileImprovement): Int = improvement.getTurnsToBuild(unit.civ, unit)
     @Readonly fun getStockpiledResourceRequirements(improvement: TileImprovement): Counter<String> =
         improvement.getStockpiledResourceRequirements(unit.cache.state)
@@ -93,6 +97,7 @@ class MapUnitView internal constructor(
         unit.movement.getDistanceToTiles().getPathToTile(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
     @Readonly fun getRoadPath(tileView: TileView): List<TileView>? =
         unit.movement.getRoadPath(tileView.unwrap())?.map { gameView.tileMapView.getTile(it) }
+    @Readonly fun canPassThrough(tileView: TileView): Boolean = unit.movement.canPassThrough(tileView.unwrap())
     @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.unwrap())
     @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
         unit.movement.getShortestPath(tileView.unwrap()).map { gameView.tileMapView.getTile(it) }
@@ -180,6 +185,16 @@ class MapUnitView internal constructor(
     }
     fun tryHeadTowards(tileView: TileView): Boolean {
         unit.movement.headTowards(tileView.unwrap())
+        return true
+    }
+    /** Swaps places with the unit on [tileView] - check [canSwapTo] first */
+    fun trySwapMoveToTile(tileView: TileView): Boolean {
+        unit.movement.swapMoveToTile(tileView.unwrap())
+        return true
+    }
+    /** Performs the unit's pending action (moving, automation, etc.) if it has one */
+    fun tryDoAction(): Boolean {
+        unit.doAction()
         return true
     }
     fun trySetMoveToAction(tileView: TileView): Boolean {
