@@ -74,11 +74,27 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     }
 
+    // Inputs of updateRoadImages: own + neighbors' road status and visibility, and which neighbors are explored
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        var key = 1L
+            .mix(tileGroup.isForMapEditorIcon)
+            .mix(viewingCiv?.civName)
+            .mix(viewingCiv == null || viewingCiv.canSeeTile(tileView))
+            .mix(tileView.roadStatus.ordinal)
+        for (neighbor in tileView.getVisibleNeighbors()) {
+            key = key.mix(neighbor.position()).mix(neighbor.roadStatus.ordinal)
+                .mix(viewingCiv == null || viewingCiv.canSeeTile(neighbor))
+        }
+        return key
+    }
+
     override fun doUpdate(viewingCiv: CivView?) {
         updateRoadImages(viewingCiv)
     }
 
     fun dim() {
+        invalidate()
         forEachOwnedActor { it.color.a = 0.5f }
     }
 

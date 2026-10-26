@@ -114,6 +114,8 @@ open class TileGroup(
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(tileView.isForceVisible() || viewingCiv.hasExplored(tileView))) {
+            // Layers are about to be hidden/reset, so their cached update keys no longer describe their state
+            for (layer in allLayers) layer.invalidate()
             if (tileView.getVisibleNeighbors().none()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)

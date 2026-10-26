@@ -282,6 +282,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     fun dim(brightness: Float) {
+        invalidate() // we mutate colors in place; the next update() must reset them
         // Dimming with alpha looks weird with overlapping tiles— Can't just set group alpha.
         // Image.draw() doesn't inherit parent colour tints— Can't just set group colour.
         // Covering up with fogImage or adding another tileset image with variable alpha doesn't look good for all terrain shapes— Can't cover up group with image.
@@ -292,6 +293,30 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         for (image in tileBaseImages) {
             image.color.lerp(BaseScreen.clearColor, 1-brightness)
         }
+    }
+
+    // Everything doUpdate reads: own terrain/improvement/resource/owner/rivers, viewer-dependent visibility,
+    // and the exploration state + terrain of neighbors (edge images)
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        val settings = UncivGame.Current.settings
+        var key = 1L
+            .mix(viewingCiv?.civName)
+            .mix(tileView.isForceVisible())
+            .mix(isViewable(viewingCiv))
+            .mix(settings.showPixelImprovements)
+            .mix(tileView.baseTerrain)
+            .mix(tileView.naturalWonder)
+            .mix(tileView.terrainFeatures)
+            .mix(tileView.getShownImprovement())
+            .mix(tileView.getViewableResource(if (tileView.isForceVisible()) null else viewingCiv)?.name)
+            .mix(tileView.improvementIsPillaged)
+            .mix(tileView.roadIsPillaged)
+            .mix(tileView.getOwner()?.civName)
+            .mix(tileView.owningCity() != null)
+            .mix(tileView.hasBottomRightRiver).mix(tileView.hasBottomRiver).mix(tileView.hasBottomLeftRiver)
+        for (neighbor in tileView.getVisibleNeighbors()) key = key.mix(neighbor.getCachedTerrainNameSet().hashCode())
+        return key
     }
 
     override fun doUpdate(viewingCiv: CivView?) {
