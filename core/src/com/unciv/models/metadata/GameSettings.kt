@@ -85,7 +85,11 @@ class GameSettings {
 
     //// Performance
     var continuousRendering = false
-    var alternativeRendering = false
+    // See https://discord.com/channels/586194543280390151/1559099801184768060 Discord thread
+    //    or https://github.com/carlislefox/libgdx-texture-array-batch/issues/1 with the summary
+    // TL;DR this *specific GPU* gives horrendous results with TextureArrayBatch.
+    // For all other GPUs, alternativeRendering should be false.
+    var alternativeRendering = Gdx.graphics.glVersion.rendererString == "Mali-G68"
 
     //// Experimental
     var unitMovementButtonAnimation = false
