@@ -173,7 +173,7 @@ abstract class BaseScreen : Screen {
             private set
 
         /** Creates a new [batch] according to current settings, replacing the old one.
-         *  The old one is NOT disposed - call [Batch.dispose] on the returned value once no stage uses it anymore.
+         *  The old one is NOT disposed - screens still showing may draw with it until replaced, so disposing risks "No buffer allocated!" crashes.
          *  @return the previous batch, or `null` if there was none */
         fun recreateBatch(): Batch? {
             val old = if (::batch.isInitialized) batch else null
