@@ -649,18 +649,14 @@ object Battle {
             }
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
-            val unit = thisCombatant.unit
-            // Same gates as the Promote action: needs movement and must not have attacked this turn
-            if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
-                if (unit.hasMovement() && unit.attacksThisTurn == 0)
-                    NextTurnAutomation.applyPromotions(GameView(civ.gameInfo, civ).getMapUnitView(unit))
-                // else: promote next turn via TurnManager
-            } else {
-                civ.addNotification("[${unit.displayName()}] can be promoted!",
-                    listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
-                    NotificationCategory.Units, unit.name)
-            }
+        // Post-battle auto-promote is never valid here: attackers have attacked,
+        // defenders are not on their turn. TurnManager handles auto-promote instead.
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()
+            && !UncivGame.Current.settings.automatedUnitsChoosePromotions
+        ) {
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
+                listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
+                NotificationCategory.Units, thisCombatant.unit.name)
         }
     }
 
