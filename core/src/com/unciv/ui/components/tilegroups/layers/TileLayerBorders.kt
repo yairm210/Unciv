@@ -5,6 +5,7 @@ import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
 import com.unciv.view.TileView
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.mix
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.PI
 import kotlin.math.atan
@@ -133,6 +134,22 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             }
         }
 
+    }
+
+    // Inputs of updateBorders: our owner, and the owners of each visible neighbor and of the two tiles it shares with us
+    // (which decide concave/convex, and may themselves be unexplored, so they're not necessarily among the visible neighbors).
+    // Owner colors are constant per civ, and a change of owner is reflected in the owner name.
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        val tileOwner = tileView.getOwner() ?: return 0L // no owner - no borders; nothing else is read
+        val tileMapView = tileView.getTileMap()
+        var key = 1L.mix(tileOwner.civName)
+        for (neighbor in tileView.getVisibleNeighbors()) {
+            key = key.mix(neighbor.position()).mix(neighbor.getOwner()?.civName)
+                .mix(tileMapView.getLeftSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+                .mix(tileMapView.getRightSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+        }
+        return key
     }
 
     override fun doUpdate(viewingCiv: CivView?) {

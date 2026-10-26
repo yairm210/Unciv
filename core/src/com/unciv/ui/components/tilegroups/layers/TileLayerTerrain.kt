@@ -8,6 +8,7 @@ import com.unciv.view.CivView
 import com.unciv.view.TileView
 import com.unciv.logic.map.NeighborDirection
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.mix
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Readonly

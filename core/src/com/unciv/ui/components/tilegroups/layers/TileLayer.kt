@@ -97,10 +97,6 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         determineVisibility()
     }
 
-    protected fun Long.mix(value: Int): Long = this * 31 + value
-    protected fun Long.mix(value: Boolean): Long = mix(if (value) 1 else 0)
-    protected fun Long.mix(value: Any?): Long = mix(value?.hashCode() ?: 0)
-
     protected open fun determineVisibility() {
         isVisible = _ownedActors?.isNotEmpty() == true
     }
