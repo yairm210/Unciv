@@ -24,7 +24,7 @@ class UncivStage(viewport: Viewport, batch: Batch = BaseScreen.batch) : Stage(vi
          *  falling back to vanilla [SpriteBatch] on devices that don't support texture arrays,
          *  or when the user disabled it via [com.unciv.models.metadata.GameSettings.alternativeRendering]. */
         fun getBatch(size: Int = 1000): Batch {
-            if (UncivGame.Current.settings.alternativeRendering) return SpriteBatch(size)
+            if (UncivGame.Current.settings.isAlternativeRenderingEnabled()) return SpriteBatch(size)
             return try {
                 FontLodBiasBatch(size)
             } catch (ignored: Exception) {

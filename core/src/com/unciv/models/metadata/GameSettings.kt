@@ -85,11 +85,8 @@ class GameSettings {
 
     //// Performance
     var continuousRendering = false
-    // See https://discord.com/channels/586194543280390151/1559099801184768060 Discord thread
-    //    or https://github.com/carlislefox/libgdx-texture-array-batch/issues/1 with the summary
-    // TL;DR this *specific GPU* gives horrendous results with TextureArrayBatch.
-    // For all other GPUs, alternativeRendering should be false.
-    var alternativeRendering = Gdx.graphics.glVersion.rendererString == "Mali-G68"
+    /** User override for using a plain SpriteBatch; null = automatic, see [isAlternativeRenderingEnabled] */
+    var alternativeRendering: Boolean? = null
 
     //// Experimental
     var unitMovementButtonAnimation = false
@@ -218,6 +215,12 @@ class GameSettings {
     }
 
     //region <Methods>
+
+    /** Resolves [alternativeRendering]: an explicit user choice wins, otherwise auto-detect.
+     *  See https://github.com/carlislefox/libgdx-texture-array-batch/issues/1 -
+     *  TL;DR the Mali-G68 GPU gives horrendous results with TextureArrayBatch, all other GPUs should default to false. */
+    fun isAlternativeRenderingEnabled() =
+        alternativeRendering ?: (Gdx.graphics?.glVersion?.rendererString == "Mali-G68")
 
     fun save() {
         if (Gdx.app == null) return // Simulation mode from ConsoleLauncher
