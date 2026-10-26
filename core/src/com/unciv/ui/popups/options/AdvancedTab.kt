@@ -279,7 +279,7 @@ internal class AdvancedTab(
             Concurrency.run("GithubTopicQuery") {
                 val result = ModCategories.mergeOnline()
                 launchOnGLThread {
-                    updateModCategoriesButton.setText(result)
+                    updateModCategoriesButton.setText(result.tr())
                 }
             }
         }
