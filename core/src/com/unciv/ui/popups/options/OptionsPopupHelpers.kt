@@ -298,8 +298,11 @@ internal interface OptionsPopupHelpers {
                 // would only load the new SkinConfig after the next rebuild
                 BaseScreen.setSkin()
             }
-            // Rendering type may have changed - screens rebuilt below pick up the new shared batch
-            val oldBatch = withGLContext { BaseScreen.recreateBatch() }
+            // Rendering type may have changed - screens rebuilt below pick up the new shared batch.
+            // The old batch is deliberately not disposed: the outgoing screen's stage may still draw with it
+            // until it is replaced, and disposing it makes that draw crash with "No buffer allocated!"
+            // Example: In main menu resume; Go back to main menu, change language; Resume again.
+            withGLContext { BaseScreen.recreateBatch() }
             val screen = UncivGame.Current.screen
             if (screen is WorldScreen) {
                 UncivGame.Current.reloadWorldscreen()
@@ -309,7 +312,6 @@ internal interface OptionsPopupHelpers {
                 }
             }
             withGLContext {
-                oldBatch?.dispose()
                 UncivGame.Current.screen?.openOptionsPopup(activePage)
             }
         }
