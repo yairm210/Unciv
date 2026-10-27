@@ -66,7 +66,11 @@ abstract class BaseScreen : Screen {
     private val fpsLabel: Label? = if (this !is GameStartScreen) "".toLabel() else null
     private val fpsLabelContainer: Table? = fpsLabel?.let {
         Table().apply {
-            background = ImageGetter.getWhiteDotDrawable().tint(Color(0f, 0f, 0.4f, 1f))
+            try {
+                background = ImageGetter.getWhiteDotDrawable().tint(Color(0f, 0f, 0.4f, 1f))
+            } catch (_: Exception) {
+                // This can fail if the images aren't available; Happens in CrashScreen
+            }
             pad(4f)
             add(it)
         }
