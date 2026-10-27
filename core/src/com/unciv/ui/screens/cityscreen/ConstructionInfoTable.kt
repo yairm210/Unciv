@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction.StatConversion
+import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
@@ -129,28 +130,32 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     }
 
     private fun Table.tryAddShowMissingCities(cityConstructions: CityConstructionsView, construction: INonPerpetualConstruction) {
-        val missingCities =
-            cityConstructions.getRejectionReasons(construction)
+        val rejections = cityConstructions.getRejectionReasons(construction)
             .filter { it.type == RejectionReasonType.RequiresBuildingInAllCities && it.extraData != null }
-            .flatMap {
-                @Suppress("UNCHECKED_CAST")
-                it.extraData as List<City>
-            }.toList()
-        if (missingCities.isEmpty()) return
-        val button = "Show cities missing requirements".toTextButton(SmallButtonStyle())
-        if (missingCities.size == 1) button.onClick { jumpToCity(missingCities[0]) }
-        else button.onClick { notifyMissingCities(missingCities) }
-        row()
-        add(button).padTop(5f).colspan(2).center()
+        for (rejection in rejections) {
+            val (requiredBuilding, missingCities) = rejection.extraData as RejectionReason.RequiresBuildingInAllCitiesExtraData
+            if (missingCities.isEmpty()) return
+            fun addButton(label: String, action: () -> Unit) {
+                val button = label.toTextButton(SmallButtonStyle())
+                button.onClick(action)
+                row()
+                add(button).padTop(5f).colspan(2).center()
+            }
+            if (missingCities.size == 1) {
+                addButton("Show [${missingCities[0].name}]") { jumpToCity(missingCities[0]) }
+            } else {
+                addButton("Show cities missing requirements") { notifyMissingCities(missingCities, requiredBuilding, construction) }
+            }
+        }
     }
     //TODO Unify with the one in CityScreenTileTable?
     private fun jumpToCity(city: City) {
         val otherCityView = cityView.gameView.getCityView(city)
         cityScreen.game.replaceCurrentScreen { CityScreen(otherCityView) }
     }
-    private fun notifyMissingCities(missingCities: List<City>) {
+    private fun notifyMissingCities(missingCities: List<City>, requiredBuilding: String, construction: INonPerpetualConstruction) {
         val notification = Notification(
-            RejectionReasonType.RequiresBuildingInAllCities.errorMessage,
+            "[${missingCities.size}] cities need a [$requiredBuilding] to allow construction of [$construction]",
             arrayOf(NotificationIcon.City),
             actions = LocationAction(missingCities.asSequence().map { it.location }).asIterable()
         )

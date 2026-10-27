@@ -155,8 +155,10 @@ class RejectionReason(
     val type: RejectionReasonType,
     val errorMessage: String = type.errorMessage,
     val shouldShow: Boolean = type.shouldShow,
-    val extraData: Any? = null
+    val extraData: IExtraData? = null
 ) {
+    interface IExtraData
+    data class RequiresBuildingInAllCitiesExtraData(val required: String, val cities: List<City>) : IExtraData
 
     @Readonly fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
@@ -284,6 +286,6 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     @Pure fun toInstance() = defaultInstance
 
     @Pure
-    fun toInstance(errorMessage: String = this.errorMessage, shouldShow: Boolean = this.shouldShow, extraData: Any? = null) =
+    fun toInstance(errorMessage: String = this.errorMessage, shouldShow: Boolean = this.shouldShow, extraData: RejectionReason.IExtraData? = null) =
         RejectionReason(this, errorMessage, shouldShow, extraData)
 }

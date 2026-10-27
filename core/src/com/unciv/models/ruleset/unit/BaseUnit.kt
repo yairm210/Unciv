@@ -353,7 +353,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     if (missingCities.isNotEmpty()) {
                         yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
                             "Requires a [${building}] in all [${cityFilter}] cities",
-                            extraData = missingCities
+                            extraData = RejectionReason.RequiresBuildingInAllCitiesExtraData(building, missingCities)
                         ))
                     }
                 }
