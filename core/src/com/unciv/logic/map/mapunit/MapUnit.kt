@@ -359,7 +359,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         gameContext: GameContext = cache.state,
         checkCivInfoUniques: Boolean = false
     ): Boolean {
-        return getMatchingUniques(uniqueType, gameContext, checkCivInfoUniques).any()
+        if (tempUniquesMap.hasMatchingUnique(uniqueType, gameContext)) return true
+        if (checkCivInfoUniques)
+            return civ.getMatchingUniques(uniqueType, gameContext).any()    
+        return false
     }
 
     @Readonly
