@@ -16,6 +16,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.input.ActivationTypes
@@ -33,6 +34,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.cityscreen.CityStatsTable
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import com.unciv.view.GameView
 import org.mockito.Mockito.mock
@@ -47,6 +49,16 @@ import kotlin.random.Random
  *  This was tested and works when one moves the interface to the core project.
  */
 internal enum class FasterUIDevTesters : IFasterUITester {
+
+    Civilopedia {
+        override fun testCreateExample(screen: BaseScreen) = Actor()
+        override val testLaunchScreen: (() -> BaseScreen)
+            get() = {
+                val game = TestGame(forUITesting = true)
+                TileSetCache.loadTileSetConfigs()
+                CivilopediaScreen(game.ruleset)
+            }
+    },
 
     GlobalPoliticsDiagram {
         override fun testCreateExample(screen: BaseScreen): Actor {

@@ -107,7 +107,7 @@ object FasterUIDevelopment {
                 1 -> UIDevScreen(tests[0])
                 else -> UIDevTestPicker(game, tests)
             }
-            game.pushScreen{ screen }
+            game.pushScreen { screen }
 
             Gdx.graphics.requestRendering()
         }
@@ -158,7 +158,7 @@ object FasterUIDevelopment {
                 val text = test.testGetLabel() ?: continue
                 val button = TextButton(text, buttonStyle)
                 button.onClick {
-                    game.pushScreen{ UIDevScreen(test) }
+                    game.pushScreen { test.testLaunchScreen?.invoke() ?: UIDevScreen(test) }
                 }
                 table.add(button).colspan(2).row()
             }

@@ -1,10 +1,8 @@
 package com.unciv.ui.components.widgets
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toImageButton
+import com.unciv.ui.components.UncivTooltip
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
@@ -16,13 +14,34 @@ class IconCircleButton(
     iconSize: Float,
     circleSize: Float,
     circleColor: Color,
-    overColor: Color
+    overColor: Color,
+    disabledColor: Color = Color.GRAY
 ) : IconCircleGroup<ImageButton>(
     circleSize,
-    getButton(texturePath, iconSize, overColor),
+    getButton(texturePath, iconSize, overColor, disabledColor),
     false,
     circleColor
 ) {
+    private var tooltip: UncivTooltip<*>? = null
+
+    var isDisabled: Boolean
+        get() = actor.isDisabled
+        set(value) {
+            actor.isDisabled = value
+            circle.color.a = if (value) 0.5f else 1f
+            saveOrRestoreTooltipListener(value)
+        }
+
+    private fun saveOrRestoreTooltipListener(disable: Boolean) {
+        val listener = listeners.filterIsInstance<UncivTooltip<*>>().firstOrNull()
+        if (disable && listener != null) {
+            tooltip = listener
+            removeListener(listener)
+        } else if (!disable && listener == null && tooltip != null) {
+            addListener(tooltip)
+        }
+    }
+
     companion object {
         /** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
          *
@@ -42,11 +61,12 @@ class IconCircleButton(
             return closeButton
         }
 
-        private fun getButton(texturePath: String, iconSize: Float, overColor: Color): ImageButton {
+        private fun getButton(texturePath: String, iconSize: Float, overColor: Color, disabledColor: Color): ImageButton {
             val style = ImageButton.ImageButtonStyle()
             val image = ImageGetter.getDrawable(texturePath)
             style.imageUp = image
             style.imageOver = image.tint(overColor)
+            style.disabled = image.tint(disabledColor)
             val button = ImageButton(style)
             button.setSize(iconSize, iconSize)
             return button

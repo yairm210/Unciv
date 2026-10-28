@@ -214,6 +214,8 @@ enum class KeyboardBinding(
     PediaDifficulties(Category.Civilopedia, "Difficulty levels", 'd'),
     PediaEras(Category.Civilopedia, "Eras", 'e'),
     PediaSpeeds(Category.Civilopedia, "Speeds", 's'),
+    PediaBack(Category.Civilopedia, "Back in history", Input.Keys.BACKSPACE),
+    PediaHistory(Category.Civilopedia, "Show history", Input.Keys.F10),
     PediaSearch(Category.Civilopedia, "Open the Search Dialog", KeyCharAndCode.ctrl('f')),
 
     // Popups
