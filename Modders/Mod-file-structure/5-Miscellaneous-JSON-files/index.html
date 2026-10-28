@@ -3019,19 +3019,19 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 <td>baseCityBombardRange</td>
 <td>Int</td>
 <td>2</td>
-<td>[^S]</td>
+<td>[^X]</td>
 </tr>
 <tr>
 <td>cityWorkRange</td>
 <td>Int</td>
 <td>3</td>
-<td>[^T]</td>
+<td>[^Y]</td>
 </tr>
 <tr>
 <td>cityExpandRange</td>
 <td>Int</td>
 <td>5</td>
-<td>[^U]</td>
+<td>[^Z]</td>
 </tr>
 <tr>
 <td>cityAirUnitCapacity</td>
@@ -3078,14 +3078,8 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 <tr>
 <td>ancientRuinCountMultiplier</td>
 <td>Float</td>
-<td>0.02</td>
+<td>0.025</td>
 <td>[^F]</td>
-</tr>
-<tr>
-<td>spawnIceBelowTemperature</td>
-<td>Float</td>
-<td>-0.8</td>
-<td>[^G]</td>
 </tr>
 <tr>
 <td>maxLakeSize</td>
@@ -3138,7 +3132,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 <tr>
 <td>workboatAutomationSearchMaxTiles</td>
 <td>Int</td>
-<td>20</td>
+<td>37</td>
 <td>[^M]</td>
 </tr>
 <tr>
@@ -3207,9 +3201,9 @@ and city distance in another. In case of conflicts, there is no guarantee which 
     defensiveBuildingStrength
     where %techs is the percentage of techs in the tech tree that are complete
     If no techs exist in this ruleset, %techs = 0.5 (=50%)</li>
-<li>[^S]: The distance that cities can attack. Minimum 0.</li>
-<li>[^T]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange. Minimum 1, maximum 100.</li>
-<li>[^U]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs. Minimum 1, maximum 100.</li>
+<li>[^X]: The distance that cities can attack. Minimum 0.</li>
+<li>[^Y]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange. Minimum 1, maximum 100.</li>
+<li>[^Z]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs. Minimum 1, maximum 100.</li>
 <li>[^C]: Formula for Unit Supply:
     Supply = unitSupplyBase (difficulties.json)
     unitSupplyPerCity * amountOfCities + (difficulties.json)
@@ -3223,7 +3217,6 @@ and city distance in another. In case of conflicts, there is no guarantee which 
     Minimum 0.</li>
 <li>[^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius &gt;=109 - all G&amp;K wonders.</li>
 <li>[^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this</li>
-<li>[^G]: MapGenerator.spawnIce: spawn Ice where T &lt; this, with T calculated from temperatureExtremeness, latitude and perlin noise.</li>
 <li>[^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes</li>
 <li>[^I]: RiverGenerator: river frequency and length bounds</li>
 <li>[^J]: A <a href="#unitupgradecost">UnitUpgradeCost</a> sub-structure.</li>
@@ -3238,7 +3231,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 <li>[^S]: If set, the Improvement picker will silently skip improvements whose tech requirement is more advanced than your current Era + this value. Example: With a 0, Trade posts will not show until the Medieval Era, with a 1 they will already show in the CLassical Era.</li>
 <li>[^T]: The multiplier of the gold value of a one-sided trade to be stored as gifts.</li>
 <li>[^U]: The multiplier of the gold value of a regular trade to be stored as gifts. Set to 0 to disable gold gifting in two-sided trades.</li>
-<li>[^U]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.</li>
+<li>[^V]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.</li>
 <li>[^W]: Number of air units that can be stationed in a city, not including carried/transported air units.</li>
 </ul>
 <h4 id="unitupgradecost">UnitUpgradeCost</h4>
