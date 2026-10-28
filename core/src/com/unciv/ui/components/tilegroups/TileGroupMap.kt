@@ -113,8 +113,8 @@ class TileGroupMap<T: TileGroup>(
         val terrainMapLayer     = TerrainMapLayer(numberOfTilegroups)
         val featureMapLayer     = FeaturesMapLayer(numberOfTilegroups)
         val borderMapLayer      = BordersMapLayer(numberOfTilegroups)
-        val resourceMapLayer    = ResourceMapLayer(numberOfTilegroups, actable = true)
-        val improvementMapLayer = ImprovementMapLayer(numberOfTilegroups, actable = true)
+        val resourceMapLayer    = ResourceMapLayer(numberOfTilegroups)
+        val improvementMapLayer = ImprovementMapLayer(numberOfTilegroups)
         // TileLayerMisc.workedIcon may receive touches, so the container must forward them
         val miscMapLayer        = MiscMapLayer(numberOfTilegroups, touchable = true)
         val yieldMapLayer       = YieldMapLayer(numberOfTilegroups)
@@ -132,8 +132,10 @@ class TileGroupMap<T: TileGroup>(
             override fun act(delta: Float) {}
             override fun draw(batch: Batch, parentAlpha: Float) {}
         }
+        // Requires actable=true because UnitIconGroup.selectUnit() adds a repeating action
         val unitFlagMapLayer    = UnitFlagMapLayer(numberOfTilegroups, actable = true)
         // CityButton wrapper Groups are Touchable.childrenOnly, so the container must forward touches
+        // Requires actable=true because the clicks move the city button up and down 
         val cityButtonMapLayer  = CityButtonMapLayer(numberOfTilegroups, actable = true, touchable = true)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
