@@ -151,9 +151,14 @@ enum class PurchaseReason(val purchasable: Boolean) {
 }
 
 
-class RejectionReason(val type: RejectionReasonType,
-                      val errorMessage: String = type.errorMessage,
-                      val shouldShow: Boolean = type.shouldShow) {
+class RejectionReason(
+    val type: RejectionReasonType,
+    val errorMessage: String = type.errorMessage,
+    val shouldShow: Boolean = type.shouldShow,
+    val extraData: IExtraData? = null
+) {
+    interface IExtraData
+    data class RequiresBuildingInAllCitiesExtraData(val required: String, val cities: List<City>) : IExtraData
 
     @Readonly fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
@@ -258,7 +263,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
-    
+
     NoSuchImprovement(false, "No such improvement exists in the ruleset"),
     NoTileCanContainImprovement(false, "No tile can contain this improvement"),
 
@@ -274,14 +279,13 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     PopulationRequirement(true, "Requires more population"),
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
-    NoPlaceToPutUnit(true, "No space to place this unit");
+    NoPlaceToPutUnit(true, "No space to place this unit"),
+    ;
 
     val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
     @Pure fun toInstance() = defaultInstance
 
     @Pure
-    fun toInstance(errorMessage: String = this.errorMessage,
-        shouldShow: Boolean = this.shouldShow): RejectionReason {
-        return RejectionReason(this, errorMessage, shouldShow)
-    }
+    fun toInstance(errorMessage: String = this.errorMessage, shouldShow: Boolean = this.shouldShow, extraData: RejectionReason.IExtraData? = null) =
+        RejectionReason(this, errorMessage, shouldShow, extraData)
 }
