@@ -649,7 +649,11 @@ object Battle {
             }
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
+        // Post-battle auto-promote is never valid here: attackers have attacked,
+        // defenders are not on their turn. TurnManager handles auto-promote instead.
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()
+            && !UncivGame.Current.settings.automatedUnitsChoosePromotions
+        ) {
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
                 listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
                 NotificationCategory.Units, thisCombatant.unit.name)

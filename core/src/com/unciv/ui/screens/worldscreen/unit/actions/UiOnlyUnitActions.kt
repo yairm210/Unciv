@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
@@ -45,7 +46,12 @@ object UiOnlyUnitActions {
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         return UiUnitAction(UiUnitActionType.Promote,
             action = {
-                UncivGame.Current.pushScreen { PromotionPickerScreen(GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)) }
+                val unitView = GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)
+                if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+                    NextTurnAutomation.applyPromotions(unitView)
+                } else {
+                    UncivGame.Current.pushScreen { PromotionPickerScreen(unitView) }
+                }
             }.takeIf { unit.hasMovement() && unit.attacksThisTurn == 0 }
         )
     }
