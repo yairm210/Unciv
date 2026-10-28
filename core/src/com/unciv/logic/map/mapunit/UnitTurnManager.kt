@@ -105,13 +105,13 @@ class UnitTurnManager(val unit: MapUnit) {
             unit.destroy()
         } else {
             unit.civ.addNotification(
-                "An enemy [$improvementName] has attacked our [${unit.name}] ([$damage] HP)",
+                "An enemy [$improvementName] has attacked our [${unit.name}] ([-$damage] HP)",
                 locations,
                 NotificationCategory.War,
                 improvementIcon, NotificationIcon.War, unit.name
             )
             citadelTile.getOwner()?.addNotification(
-                "Your [$improvementName] has attacked an enemy [${unit.name}] ([$damage] HP)",
+                "Your [$improvementName] has attacked an enemy [${unit.name}] ([-$damage] HP)",
                 locations,
                 NotificationCategory.War,
                 improvementIcon, NotificationIcon.War, unit.name
