@@ -1,3 +1,43 @@
+## 4.22.15
+
+perf(mem): Less memory allocation on MapUnit.hasUnique() - use more efficient UniqueMap.hasMatchingUnique for common case, avoid sequence
+
+perf(mem): Less memory allocation on getUnitMaintenance - since we only need the most expensive units to drop costs, use a queue bounded to only the top most expensive units
+
+Resolved crashes in crash screen (ironic) due to FPS counter requiring loaded image for background
+
+Proper handling of settings - "null as default", not set directly in settings. This will allow us greater control if we discover other bad devices
+
+Change alternativeRendering (= use SpriteBatch) to default to true for Mali-G68 GPUs - see https://github.com/carlislefox/libgdx-texture-array-batch/issues/1 for details
+
+perf: TileGroup.update() skips unchanged TileLayerBorders, CityButton
+
+perf: TileGroup.update() skips tile layers that have had no change.
+
+Resolved  - Removed unused unit types in base rulesets
+
+4.22.14-patch1
+
+Fix "resume after batch change" crash 
+
+perf: Booleanize nation-constant booleans on Civilization, for performance. About 1% but a cheap 1%.
+
+By SomeTroglodyte:
+- Civilopedia navigation history 
+- Avoid overlay toggle buttons pushing TileInfoTable up above the Minimap top edge 
+- Add a button to help finding those cities missing a required building 
+- WorldScreen elements finder comment 
+
+By ibrahim-iqbal:
+- Fix "new categories" result not being translated 
+- Fix Citadel attack notification missing the minus on damage 
+
+Adjust thresholds for modifier colors in diplomacy screen - By unciv-loof
+
+Auto-choose unit promotions for player units - By DavidZal
+
+Fix ModOptions schema and ModConstants docs - By mmporong
+
 ## 4.22.14
 
 Fixed black flash when changing screens
