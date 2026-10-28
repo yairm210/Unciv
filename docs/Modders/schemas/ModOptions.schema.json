@@ -128,7 +128,6 @@
     "ruinRewardsToRemove": {
       "title": "Ruin Rewards To Remove",
       "type": "array",
-      "$ref": "Ruins.schema.json",
       "items": {
         "type": "string",
         "description": "Internal name of a Ruin Reward",
@@ -191,9 +190,8 @@
     "unitNameGroupsToRemove": {
       "title": "Unit-name Groups To Remove",
       "type": "array",
-      "$ref": "UnitNameGroups.schema.json",
       "items": {
-        "type": "string",
+        "type": "string"
       },
       "description": "List of Unit-name Groups or \"All\" to remove (isBaseRuleset=false only)."
     },
@@ -363,7 +361,7 @@
         "ancientRuinCountMultiplier": {
           "title": "Ancient Ruin Count Multiplier",
           "type": "number",
-          "default": 0.02,
+          "default": 0.025,
           "description": "Multiplier for number of ancient ruins spawned."
         },
         "maxLakeSize": {
@@ -418,7 +416,7 @@
         "workboatAutomationSearchMaxTiles": {
           "title": "Workboat Automation Search Max Tiles",
           "type": "integer",
-          "default": 20,
+          "default": 37,
           "description": "Max tiles for workboat automation search."
         },
         "maxSpyRank": {

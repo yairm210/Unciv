@@ -245,9 +245,9 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | cityStrengthFromTechsExponent            | Float  | 2.8                           | [^B]  |
 | cityStrengthFromTechsFullMultiplier      | Float  | 1.0                           | [^B]  |
 | cityStrengthFromGarrison                 | Float  | 0.2                           | [^B]  |
-| baseCityBombardRange                     | Int    | 2                             | [^S]  |
-| cityWorkRange                            | Int    | 3                             | [^T]  |
-| cityExpandRange                          | Int    | 5                             | [^U]  |
+| baseCityBombardRange                     | Int    | 2                             | [^X]  |
+| cityWorkRange                            | Int    | 3                             | [^Y]  |
+| cityExpandRange                          | Int    | 5                             | [^Z]  |
 | cityAirUnitCapacity                      | Int    | 6                             | [^W]  |
 | unitSupplyPerPopulation                  | Float  | 0.5                           | [^C]  |
 | minimalCityDistance                      | Int    | 3                             | [^D]  |
@@ -255,8 +255,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | unitUpgradeCost                          | Object | [See below](#unitupgradecost) | [^J]  |
 | naturalWonderCountMultiplier             | Float  | 0.124                         | [^E]  |
 | naturalWonderCountAddedConstant          | Float  | 0.1                           | [^E]  |
-| ancientRuinCountMultiplier               | Float  | 0.02                          | [^F]  |
-| spawnIceBelowTemperature                 | Float  | -0.8                          | [^G]  |
+| ancientRuinCountMultiplier               | Float  | 0.025                         | [^F]  |
 | maxLakeSize                              | Int    | 10                            | [^H]  |
 | riverCountMultiplier                     | Float  | 0.01                          | [^I]  |
 | minRiverLength                           | Int    | 5                             | [^I]  |
@@ -265,7 +264,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
 | pantheonBase                             | Int    | 10                            | [^L]  |
 | pantheonGrowth                           | Int    | 5                             | [^L]  |
-| workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
+| workboatAutomationSearchMaxTiles         | Int    | 37                            | [^M]  |
 | maxSpyRank                               | Int    | 3                             | [^N]  |
 | spyRankSkillPercentBonus                 | Float  | 30                            | [^O]  |
 | minimumWarDuration                       | Int    | 10                            | [^P]  |
@@ -286,9 +285,9 @@ Legend:
     defensiveBuildingStrength
     where %techs is the percentage of techs in the tech tree that are complete
     If no techs exist in this ruleset, %techs = 0.5 (=50%)
-- [^S]: The distance that cities can attack. Minimum 0.
-- [^T]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange. Minimum 1, maximum 100.
-- [^U]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs. Minimum 1, maximum 100.
+- [^X]: The distance that cities can attack. Minimum 0.
+- [^Y]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange. Minimum 1, maximum 100.
+- [^Z]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs. Minimum 1, maximum 100.
 - [^C]: Formula for Unit Supply:
     Supply = unitSupplyBase (difficulties.json)
     unitSupplyPerCity \* amountOfCities + (difficulties.json)
@@ -302,7 +301,6 @@ Legend:
     Minimum 0.
 - [^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
 - [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
-- [^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
@@ -317,7 +315,7 @@ Legend:
 - [^S]: If set, the Improvement picker will silently skip improvements whose tech requirement is more advanced than your current Era + this value. Example: With a 0, Trade posts will not show until the Medieval Era, with a 1 they will already show in the CLassical Era.
 - [^T]: The multiplier of the gold value of a one-sided trade to be stored as gifts.
 - [^U]: The multiplier of the gold value of a regular trade to be stored as gifts. Set to 0 to disable gold gifting in two-sided trades.
-- [^U]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.
+- [^V]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.
 - [^W]: Number of air units that can be stationed in a city, not including carried/transported air units.
 
 #### UnitUpgradeCost
