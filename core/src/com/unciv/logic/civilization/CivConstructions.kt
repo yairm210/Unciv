@@ -199,7 +199,10 @@ class CivConstructions : IsPartOfGameInfoSerialization {
                 || (it != ignoreQueueOf && it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name))
             }
             is BaseUnit -> civInfo.units.getCivUnits().count { it.name == objectToCount.name } +
-                civInfo.cities.count { it != ignoreQueueOf && it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name) }
+                civInfo.cities.sumOf { city ->
+                    if (city == ignoreQueueOf) 0
+                    else city.cityConstructions.constructionQueue.count { it == objectToCount.name } // One per queue entry, not per city
+                }
             else -> 0
         }
     }
