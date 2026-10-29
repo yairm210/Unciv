@@ -44,7 +44,14 @@ object FileConversions {
      *  Closes [input]. */
     fun <T> readJson(input: InputStream, type: Class<T>): T? {
         return input.buffered().use { buffered ->
-            buffered.mark(1024) // Enough for the base64-encoded gzip header, which is all that's consumed before failure is detected
+            // The Problem: If we're reading from e.g. http, and we only get the bytes once,
+            //  then if we try to deserialize it one way and it's the wrong way, we lost the bytes!
+            // Solution: Keep the initial bytes in the buffer (hence the above .buffered())  so that if we get an exception from parsing 
+            //  we can "rollback" (buffered.reset()) and try again with the other parsing.
+            // We first try the gzip-base64 decode - this is fine because we can usually tell within the header if it's right or wrong.
+            // If we encounter a problem later on, it's probably not a "this isn't a gzip", but a "this is a malformed gzip", 
+            //   which we can't fix anyway
+            buffered.mark(1024) // "Keep this many in the buffer befre resetting". Enough for the base64-encoded gzip header, which is all that's consumed before failure is detected
             val reader = try {
                 unzippedInputStream(buffered).reader(Charsets.UTF_8)
             } catch (ex: Exception) {
