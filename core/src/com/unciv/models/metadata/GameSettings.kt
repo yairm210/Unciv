@@ -57,6 +57,13 @@ class GameSettings {
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
+    enum class AutomaticPromotions(private val label: String) {
+        ForAllUnits("For all units"),
+        ForAutomatedUnits("For automated units"),
+        Off("Off");
+        override fun toString() = label.tr()
+    }
+
     enum class LongPressIndicatorSetting {
         Default, Off, On, Debug; // Debug only offered on Debug page of Options
         /** Android defaults to off - Desktop defaults to on.
@@ -117,7 +124,9 @@ class GameSettings {
     var stopAutomatedWorkersRemoveVegetation = false
     var automatedUnitsMoveOnTurnStart = false
     var automatedUnitsCanUpgrade = false
+    /** Superseded by [automaticPromotions], retained for migration purposes */
     var automatedUnitsChoosePromotions = false
+    var automaticPromotions = AutomaticPromotions.Off
     var citiesAutoBombardAtEndOfTurn = false
     var autoAssignSpecialistsInNewCities = true
 
