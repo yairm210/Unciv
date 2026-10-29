@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.models.metadata.GameSettings
 import com.unciv.view.GameView
 import com.unciv.UncivGame
 import com.unciv.logic.VictoryData
@@ -95,7 +96,7 @@ class TurnManager(val civInfo: Civilization) {
         val promotableUnits = civInfo.units.getCivUnits()
             .filter { it.promotions.canBePromoted() }
             .toList()
-        if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+        if (UncivGame.Current.settings.automaticPromotions == GameSettings.AutomaticPromotions.ForAllUnits) {
             val gameView = GameView(civInfo.gameInfo, civInfo)
             for (unit in promotableUnits) NextTurnAutomation.applyPromotions(gameView.getMapUnitView(unit))
         } else if (promotableUnits.size <= 3) {

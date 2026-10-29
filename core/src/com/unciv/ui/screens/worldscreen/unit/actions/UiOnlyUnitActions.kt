@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.getUseFrequency
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.UnitActionConfirmation
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
@@ -47,7 +48,7 @@ object UiOnlyUnitActions {
         return UiUnitAction(UiUnitActionType.Promote,
             action = {
                 val unitView = GUI.getWorldScreen().selectedGameView.getMapUnitView(unit)
-                if (UncivGame.Current.settings.automatedUnitsChoosePromotions) {
+                if (UncivGame.Current.settings.automaticPromotions == GameSettings.AutomaticPromotions.ForAllUnits) {
                     NextTurnAutomation.applyPromotions(unitView)
                 } else {
                     UncivGame.Current.pushScreen { PromotionPickerScreen(unitView) }
