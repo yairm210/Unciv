@@ -10,6 +10,16 @@ import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
+enum class UpgradeAvailability {
+    /** Passes all requirements, including resources */
+    Available,
+    /** Passes all requirements (tech, policy, etc) except resources - shown, but can't be performed */
+    AvailableExceptResources,
+    /** Passes only when tech/policy/era/wonder requirements and resources are ignored - only free upgrades can be performed */
+    AvailableOnlyForFreeUpgrades,
+    Unavailable
+}
+
 /** A unit this [MapUnit] could upgrade to, as found by [getUpgrades]
  *  @property upgradedUnit civ-specific equivalent of the target unit
  *  @property unique the [UniqueType.CanUpgrade] or [UniqueType.RuinsUpgrade] unique granting this upgrade, `null` for the base unit's normal `upgradesTo`
@@ -19,16 +29,6 @@ import kotlin.math.pow
  *  @property goldCostOfUpgrade regular gold cost - free upgrades pay 0 instead
  *  @property newResourceRequirements additional resources per turn the upgraded unit needs (never negative)
  */
-enum class UpgradeAvailability {
-    /** Passes all requirements, including resources */
-    Available,
-    /** Passes all requirements (tech, policy, etc) except resources - shown, but can't be performed */
-    AvailableExceptResources,
-    /** Passes only when tech/policy/era/wonder requirements and resources are ignored - only free upgrades can be performed */
-    AvailableForFree,
-    Unavailable
-}
-
 class PossibleUpgrade(
     val upgradedUnit: BaseUnit,
     val unique: Unique?,
@@ -92,7 +92,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
      *  normal upgrade chain defined by [BaseUnit.getUpgradeUnits]
      *  @return the strictest [UpgradeAvailability] that holds:
      *          [UpgradeAvailability.AvailableExceptResources] is used to display a disabled Upgrade button,
-     *          [UpgradeAvailability.AvailableForFree] ignores tech/policy/building requirements (e.g. ancient ruins).
+     *          [UpgradeAvailability.AvailableOnlyForFreeUpgrades] ignores tech/policy/building requirements (e.g. ancient ruins).
      */
     @Readonly
     fun canUpgrade(unitToUpgradeTo: BaseUnit): UpgradeAvailability {
@@ -105,7 +105,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
         return when {
             rejectionReasons.none() -> UpgradeAvailability.Available
             withoutResources.none() -> UpgradeAvailability.AvailableExceptResources
-            withoutResources.none { !it.techPolicyEraWonderRequirements() } -> UpgradeAvailability.AvailableForFree
+            withoutResources.none { !it.techPolicyEraWonderRequirements() } -> UpgradeAvailability.AvailableOnlyForFreeUpgrades
             else -> UpgradeAvailability.Unavailable
         }
     }
