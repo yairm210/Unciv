@@ -46,6 +46,22 @@ object FileConversions {
         return reader.use { json().fromJson(type, it) }
     }
 
+    /** Reads [input] as JSON of [type] without buffering the full text, transparently gunzip+base64-decoding it
+     *  if that's how it was sent - otherwise (or if that fails), falls back to reading it as plain JSON text.
+     *  Closes [input]. */
+    fun <T> readJson(input: InputStream, type: Class<T>): T? {
+        return input.buffered().use { buffered ->
+            buffered.mark(1024) // Enough for the base64-encoded gzip header, which is all that's consumed before failure is detected
+            val reader = try {
+                unzippedInputStream(buffered).reader(Charsets.UTF_8)
+            } catch (ex: Exception) {
+                buffered.reset()
+                buffered.reader(Charsets.UTF_8)
+            }
+            json().fromJson(type, reader)
+        }
+    }
+
     /** Writes [obj] as JSON to [file], gzip-compressing and base64-encoding it first if [zip] is true. */
     fun writeJson(file: FileHandle, obj: Any, zip: Boolean) {
         if (zip) {
