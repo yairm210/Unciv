@@ -37,14 +37,7 @@ object FileConversions {
 
     /** Reads [file] as JSON of [type], transparently gunzip+base64-decoding it if that's how it was saved -
      *  otherwise (or if that fails), falls back to reading it as plain JSON text. */
-    fun <T> readJson(file: FileHandle, type: Class<T>): T? {
-        val reader = try {
-            unzippedInputStream(file.read()).reader(Charsets.UTF_8)
-        } catch (ex: Exception) {
-            file.reader(Charsets.UTF_8.name())
-        }
-        return reader.use { json().fromJson(type, it) }
-    }
+    fun <T> readJson(file: FileHandle, type: Class<T>): T? = readJson(file.read(), type)
 
     /** Reads [input] as JSON of [type] without buffering the full text, transparently gunzip+base64-decoding it
      *  if that's how it was sent - otherwise (or if that fails), falls back to reading it as plain JSON text.
