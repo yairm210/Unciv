@@ -10,10 +10,7 @@ fun GameSettings.doMigrations(json: JsonValue) {
         migrateMultiplayerSettings(json)
         version = 1
     }
-    if (version == 1) {
-        migrateAutomaticPromotions()
-        version = 2
-    }
+    migrateAutomaticPromotions()
 }
 
 fun GameSettings.isMigrationNecessary(): Boolean {
