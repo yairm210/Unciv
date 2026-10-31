@@ -29,8 +29,9 @@ class TradesOverviewTab(
             add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithPendingTrade) {
             for (tradeRequest in diplomacy.otherCiv.tradeRequests
-                .filter { it.requestingCiv == viewingPlayer.getCiv().civID })
+                .filter { it.requestingCiv == viewingPlayer.getCiv().civID }) {
                 add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv)).row()
+            }
         }
 
         val diplomaciesWithExistingTrade = viewingPlayer.getCiv().diplomacy.values.filter { it.trades.isNotEmpty() }
