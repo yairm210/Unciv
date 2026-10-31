@@ -11,6 +11,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.view.CivView
+import com.unciv.view.getCapital
 
 class TradesOverviewTab(
     viewingPlayer: CivView,
@@ -20,11 +21,16 @@ class TradesOverviewTab(
 
     init {
         defaults().pad(10f)
-        val diplomaciesWithPendingTrade = viewingPlayer.getCiv().diplomacy.values.filter { it.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.getCiv().civID } }
+        val diplomaciesWithPendingTrade = viewingPlayer.getCiv().diplomacy.values
+            .filter { it.otherCiv.tradeRequests
+                .any { trade -> trade.requestingCiv == viewingPlayer.getCiv().civID } }
+            // the pending trades that will be evaluated first are shown at the top
+            .sortedBy { gameInfo.civilizations.indexOf(it.otherCiv) % gameInfo.civilizations.indexOf(viewingPlayer.getCiv()) }
         if (diplomaciesWithPendingTrade.isNotEmpty())
             add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithPendingTrade) {
-            for (tradeRequest in diplomacy.otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.getCiv().civID })
+            for (tradeRequest in diplomacy.otherCiv.tradeRequests
+                .filter { it.requestingCiv == viewingPlayer.getCiv().civID })
                 add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv)).row()
         }
 
