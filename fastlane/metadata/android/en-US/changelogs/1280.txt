@@ -1,16 +1,6 @@
+Multiple "automate promotions" options - "for automated units". "for all units", "for no units"
 
-
-Multiple promotion automation options 
-
-chore: Upgrade docs
-
-chore: unification, readJson(file: FileHandle) calls readJson(input: InputStream)
-
-chore: unification, readJson(file: FileHandle) calls readJson(input: InputStream)
-
-perf(mem): Preparation for "stream json data from http requests, directly to the json deserialization" - should drastically reduce memory when downloading multiplayer games
-
-perf(render): Disable act() in resource and improvement layers, because there's nothing there that actually needs it
+Rendering performance improvements
 
 Show available specialist slots in building list - By neolabs120-mobile
 
