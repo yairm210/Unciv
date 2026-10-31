@@ -1,3 +1,23 @@
+## 4.22.16
+
+Multiple promotion automation options 
+
+chore: Upgrade docs
+
+chore: unification, readJson(file: FileHandle) calls readJson(input: InputStream)
+
+chore: unification, readJson(file: FileHandle) calls readJson(input: InputStream)
+
+perf(mem): Preparation for "stream json data from http requests, directly to the json deserialization" - should drastically reduce memory when downloading multiplayer games
+
+perf(render): Disable act() in resource and improvement layers, because there's nothing there that actually needs it
+
+Show available specialist slots in building list - By neolabs120-mobile
+
+Sort pending trades by turn order - By unciv-loof
+
+Keep Civilopedia entry names visible when selecting entries - By Kilo-cy
+
 ## 4.22.15
 
 Performance improvements on map refresh
