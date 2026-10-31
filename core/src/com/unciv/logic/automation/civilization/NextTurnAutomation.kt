@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.models.metadata.GameSettings
 import com.unciv.view.isAirUnit
 import com.unciv.view.isCivilian
 import com.unciv.view.isMilitary
@@ -470,8 +471,8 @@ object NextTurnAutomation {
 
     internal fun applyPromotions(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        // Humans only auto-promote when the setting is on (AI always does)
-        if (!unit.civ.isAI() && !UncivGame.Current.settings.automatedUnitsChoosePromotions) return
+        // Humans only auto-promote when the setting is not Off (AI always does)
+        if (!unit.civ.isAI() && UncivGame.Current.settings.automaticPromotions == GameSettings.AutomaticPromotions.Off) return
         val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
         val stateForConditionals = unit.cache.state
         while (unitView.canBePromoted()) {

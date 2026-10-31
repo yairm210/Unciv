@@ -10,6 +10,7 @@ fun GameSettings.doMigrations(json: JsonValue) {
         migrateMultiplayerSettings(json)
         version = 1
     }
+    migrateAutomaticPromotions()
 }
 
 fun GameSettings.isMigrationNecessary(): Boolean {
@@ -37,4 +38,10 @@ private fun GameSettings.migrateMultiplayerSettings(json: JsonValue) {
     if (delayInMinutes != null && delayInMinutes.isNumber) {
         multiplayer.turnCheckerDelay = Duration.ofMinutes(delayInMinutes.asLong())
     }
+}
+
+private fun GameSettings.migrateAutomaticPromotions() {
+    if (!automatedUnitsChoosePromotions) return
+    automaticPromotions = GameSettings.AutomaticPromotions.ForAutomatedUnits
+    automatedUnitsChoosePromotions = false
 }

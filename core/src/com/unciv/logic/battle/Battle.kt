@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.models.metadata.GameSettings
 import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -652,7 +653,7 @@ object Battle {
         // Post-battle auto-promote is never valid here: attackers have attacked,
         // defenders are not on their turn. TurnManager handles auto-promote instead.
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()
-            && !UncivGame.Current.settings.automatedUnitsChoosePromotions
+            && UncivGame.Current.settings.automaticPromotions != GameSettings.AutomaticPromotions.ForAllUnits
         ) {
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
                 listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),

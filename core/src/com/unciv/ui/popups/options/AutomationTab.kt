@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
@@ -26,7 +27,7 @@ internal class AutomationTab(
         addCheckbox("Stop automated workers from removing vegetation terrain", settings::stopAutomatedWorkersRemoveVegetation)
         addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)
         addCheckbox("Automated units can upgrade", settings::automatedUnitsCanUpgrade)
-        addCheckbox("Units automatically choose promotions", settings::automatedUnitsChoosePromotions)
+        addSelectBox("Automatically choose promotions", settings::automaticPromotions, GameSettings.AutomaticPromotions.entries)
         addCheckbox("Cities auto-bombard at end of turn", settings::citiesAutoBombardAtEndOfTurn)
         addCheckbox("Auto-assign specialists in new cities", settings::autoAssignSpecialistsInNewCities)
 
