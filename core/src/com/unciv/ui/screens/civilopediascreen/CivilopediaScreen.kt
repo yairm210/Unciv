@@ -354,6 +354,7 @@ class CivilopediaScreen private constructor(
         entrySelectTable.validate()
         val row = entrySelectTable.children.first { it.name == name }
         entrySelectScroll.scrollTo(row, center = true)
+        entrySelectScroll.scrollX = 0f
         if (noScrollAnimation)
             entrySelectScroll.updateVisualScroll()     // snap without animation on fresh pedia open
         updateEntry(entry)
