@@ -288,6 +288,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
     }
 
+    /**
+     * Lists a building's yields and available specialist slots so players can inspect what it provides
+     * without mistaking city-wide specialist assignments for occupancy in this particular building.
+     */
     private fun addBuildingButton(building: Building, destinationTable: Table) {
 
         val button = Table()
@@ -307,19 +311,12 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
 
         if (building.newSpecialists().any()) {
-            val assignedSpec = cityView.getNewSpecialists().clone()
             val specialistIcons = Table()
             for ((specialistName, amount) in building.newSpecialists()) {
                 val specialist = cityView.getRuleset().specialists[specialistName]
                     ?: continue // probably a mod that doesn't have the specialist defined yet
                 repeat(amount) {
-                    if (assignedSpec[specialistName] > 0) {
-                        specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
-                            .size(20f)
-                        assignedSpec.add(specialistName, -1)
-                    } else {
-                        specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
-                    }
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)
                 }
             }
             statsAndSpecialists.add(specialistIcons).right()
