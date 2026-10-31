@@ -11,7 +11,6 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.view.CivView
-import com.unciv.view.getCapital
 
 class TradesOverviewTab(
     viewingPlayer: CivView,
