@@ -13,6 +13,7 @@ import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfi
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
+import com.unciv.view.GameView
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -782,7 +783,7 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         worker.automatedRoadConnectionDestination = destination.position
         // Act
         val auto = RoadToAutomation(civInfo)
-        auto.automateConnectRoad(worker, emptySet())
+        auto.automateConnectRoad(GameView(civInfo.gameInfo, civInfo).getMapUnitView(worker), emptySet())
         // Assert
         assertTrue("Worker must have queued a Road", originTile.improvementInProgress == RoadStatus.Road.name)
         assertTrue("Worker must have a path", worker.automatedRoadConnectionPath?.isNotEmpty() == true)

@@ -56,7 +56,7 @@ object CivilianUnitAutomation {
         }
 
         if (unit.isAutomatingRoadConnection())
-            return mapUnit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(mapUnit, dangerousTiles)
+            return mapUnit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
         if (unit.hasUnique(UniqueType.BuildImprovements))
             return mapUnit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles, cache)

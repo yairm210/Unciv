@@ -2,7 +2,6 @@ package com.unciv.logic.automation.unit
 
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
@@ -11,6 +10,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.CityView
+import com.unciv.view.CivView
 import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
@@ -47,13 +47,13 @@ internal object WorkerAutomationConst {
 /**
  * Responsible for the "connect cities" automation as part of worker automation
  *
- * @param civInfo Civilization which does road automation
+ * @param civView Civilization which does road automation
  * @param cachedForTurn The turn number the instance was created for, road plans are recalculated each turn
  * @param cloningSource ?
  */
 // TODO: Coastal cities that have harbor connection, should maintain roads only for mobility (railroads won't be built)
 // TODO: Remove roads logic, e.g. toward lost or razed cities or remnant roads from conquered territory
-class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
+class RoadBetweenCitiesAutomation(val civView: CivView, private val cachedForTurn: Int, cloningSource: RoadBetweenCitiesAutomation? = null) {
 
     /**
      * Caches BFS by city locations (cities needing connecting)
@@ -69,22 +69,22 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
     internal val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         // Player can choose not to auto-build roads & railroads.
-        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads
+        if (civView.isHuman() && !UncivGame.Current.settings.autoBuildingRoads
             && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false)
             RoadStatus.None
-        else civInfo.tech.getBestRoadAvailable()
+        else civView.getBestRoadAvailable()
 
     /** Civ-wide city center tile list of _connected_ Cities, unsorted */
     private var tilesOfConnectedCitiesCache: List<TileView>? = null
 
     @Readonly @Suppress("purity")
-    private fun getTilesOfConnectedCities(cityView: CityView): List<TileView> = tilesOfConnectedCitiesCache ?: run {
-        val result = cityView.owningCivView.cities().asSequence()
+    private fun getTilesOfConnectedCities(): List<TileView> = tilesOfConnectedCitiesCache ?: run {
+        val result = civView.cities().asSequence()
             .filter { it.isCapital() || it.getRoadTypeOfConnectionToCapital() >= bestRoadAvailable }
             .map { it.getCenterTile() }
             .toList()
         if (Log.shouldLog()) {
-            debug("Turn $cachedForTurn - civ ${civInfo.civName}: workerAutomation tilesOfConnectedCities are:")
+            debug("Turn $cachedForTurn - civ ${civView.civName}: workerAutomation tilesOfConnectedCities are:")
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
@@ -129,7 +129,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
     private fun getRoadsToBuildFromCity(cityView: CityView, cache: AutomationCache): List<RoadPlan> {
         if (roadsToBuildByCitiesCache.containsKey(cityView))
             return roadsToBuildByCitiesCache[cityView]!!
-        val civView = cityView.owningCivView
         val civCities by lazy { civView.cities() }
         val roadToCapitalStatus = cityView.getRoadTypeOfConnectionToCapital()
 
@@ -271,7 +270,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      */
     @Readonly
     private fun getRoadToConnectCityToCapital(cityView: CityView, cache: AutomationCache): Pair<ForeignCityView, List<TileView>>? {
-        val tilesOfConnectedCities = getTilesOfConnectedCities(cityView)
+        val tilesOfConnectedCities = getTilesOfConnectedCities()
         if (tilesOfConnectedCities.isEmpty()) return null // In mods with no capital city indicator, there are no connected cities
 
         val isCandidateTilePredicate: (TileView) -> Boolean = { it.isLand && it.isValidRoadPathTile() }
@@ -317,7 +316,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
     internal fun getNearbyCitiesToConnect(unitView: MapUnitView, cache: AutomationCache): List<CityView> {
         if (bestRoadAvailable == RoadStatus.None) return listOf()
         val unitTile = unitView.getTile()
-        val candidateCities = unitView.civ().cities().filter {
+        val candidateCities = civView.cities().filter {
             // Cities that are too far away make the canReach() calculations devastatingly long
             it.getCenterTile().aerialDistanceTo(unitTile) < 20 && getRoadsToBuildFromCity(it, cache).isNotEmpty()
         }
@@ -352,7 +351,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             if (bestTile != unitStartingTile && unitView.hasMovement())
                 unitView.tryHeadTowards(bestTile)
             if (unitView.hasMovement() && (bestTile == unitView.getTile()) && (bestTile.improvementInProgress != bestRoadAvailable.name)) {
-                val improvement = bestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
+                val improvement = bestRoadAvailable.improvement(civView.ruleset)!!
                 unitView.tryStartWorkingOnImprovement(improvement)
             }
             return true

@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.BeliefType
@@ -60,6 +61,8 @@ class CivView(civ: Civilization,
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
     @Readonly fun isCurrentPlayer(): Boolean = civ.isCurrentPlayer()
     @Readonly fun isHuman(): Boolean = civ.isHuman()
+    /** The best road type our researched techs allow us to build */
+    @Readonly fun getBestRoadAvailable(): RoadStatus = civ.tech.getBestRoadAvailable()
     @Readonly fun getKnownCivs(): List<ForeignCivView> = civ.getKnownCivs().map { gameView.getForeignCivView(it) }.toList()
     @Readonly fun getPersonalityValue(value: PersonalityValue): Float = civ.getPersonality()[value]
     @Readonly fun getHappiness(): Int = civ.getHappiness()

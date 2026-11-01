@@ -133,6 +133,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { tileMapView.getTile(it) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
+    /** `true` if the viewer treats this tile as road-connected: has an unpillaged road, or forest/jungle that count as roads for them */
+    @Readonly fun hasConnection(): Boolean = viewer != null && tile.hasConnection(viewer)
     /** `true` if a road could be planned through this tile by [viewer] */
     @Readonly fun isValidRoadPathTile(): Boolean = viewer != null && MapPathing.isValidRoadPathTile(viewer, tile)
     /** Best path for a road from this tile to [destination], or `null` if there is none */
@@ -222,9 +224,25 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
         return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
     }
-    /** Whether the viewing civ can currently build [improvement] on this tile */
-    @Readonly fun canBuildImprovement(improvement: TileImprovement): Boolean =
-        viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
+    /** Whether the viewing civ can currently build [improvement] on this tile.
+     *  If [unitView] is given, its unit's own context is taken into account as well. */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement, unitView: MapUnitView? = null): Boolean {
+        if (unitView == null)
+            return viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
+        val unit = unitView.unwrap()
+        return tile.improvementFunctions.canBuildImprovement(improvement, GameContext(civInfo = unit.civ, unit = unit, tile = tile))
+    }
+    /** A copy of this tile with [removeTerrainFeature] and/or the improvement removed, for evaluating changes without applying them.
+     *  Not cached and not part of the map - only meant to be queried.
+     *  TODO: Not sure what to do with "alternative tiles", it's a Hard Problem, a lot of 
+     *  */
+    @Readonly fun withRemovals(removeTerrainFeature: String?, removeImprovement: Boolean): TileView {
+        @LocalState val alternative = tile.clone(addUnits = false)
+        alternative.setTerrainTransients()
+        if (removeTerrainFeature != null) alternative.removeTerrainFeature(removeTerrainFeature)
+        if (removeImprovement) alternative.removeImprovement()
+        return TileView(alternative, tileMapView, viewer, spectatorMode)
+    }
     /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
     @Readonly private fun getTileWithoutLastTerrain(): Tile {
         @LocalState val newTile = tile.clone(addUnits = false)
