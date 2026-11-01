@@ -129,7 +129,6 @@ class RoadBetweenCitiesAutomation(val civView: CivView, private val cachedForTur
     private fun getRoadsToBuildFromCity(cityView: CityView, cache: AutomationCache): List<RoadPlan> {
         if (roadsToBuildByCitiesCache.containsKey(cityView))
             return roadsToBuildByCitiesCache[cityView]!!
-        val civCities by lazy { civView.cities() }
         val roadToCapitalStatus = cityView.getRoadTypeOfConnectionToCapital()
 
         /** @return Rank 0, 1 or 2 of how important it is to build best available road to capital */
@@ -163,12 +162,7 @@ class RoadBetweenCitiesAutomation(val civView: CivView, private val cachedForTur
 
             // Try to build a plan for the road to the city
             // TODO: May return inconsistent paths across turns due to worker position, this makes it impossible to plan an exact road resulting in excessive roads built
-            val roadPath = 
-                if (UncivGame.Current.settings.useAStarPathfinding)
-                    cityView.getCenterTile().getRoadPathTo(closeCityView.getCenterTile(), cache.roadPathingCache) ?: continue
-                else if (civCities.indexOf(cityView) < civCities.indexOf(closeCityView))
-                    cityView.getCenterTile().getRoadPath(closeCityView.getCenterTile()) ?: continue
-                else closeCityView.getCenterTile().getRoadPath(cityView.getCenterTile()) ?: continue
+            val roadPath = cityView.getCenterTile().getRoadPath(closeCityView.getCenterTile(), cache.roadPathingCache) ?: continue
             val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
             if (worstRoadStatus == bestRoadAvailable) continue
 

@@ -1,6 +1,7 @@
 package com.unciv.view
 
 import com.unciv.logic.city.City
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
@@ -137,20 +138,19 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun hasConnection(): Boolean = viewer != null && tile.hasConnection(viewer)
     /** `true` if a road could be planned through this tile by [viewer] */
     @Readonly fun isValidRoadPathTile(): Boolean = viewer != null && MapPathing.isValidRoadPathTile(viewer, tile)
-    /** Best path for a road from this tile to [destination], or `null` if there is none */
-    @Readonly fun getRoadPath(destination: TileView): List<TileView>? {
-        val viewer = viewer ?: return null
-        return MapPathing.getRoadPath(viewer, tile, destination.tile)?.map { tileMapView.getTile(it) }
-    }
     @Readonly @Suppress("purity")
     private fun getRoadPathingMap(viewer: Civilization, cache: RoadPathingCache): PathingMapView = cache.getOrPut(this) {
         PathingMapView(PathingMap.createRoadPathingMap(viewer, tile), tileMapView, viewer)
     }
     /** Best road path from this tile to [destination], or `null` if there is none.
-     *  Unlike [getRoadPath] the pathing map is kept in [cache], so repeated queries between the same tiles are cheap. */
-    @Readonly fun getRoadPathTo(destination: TileView, cache: RoadPathingCache, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<TileView>? {
+     *  Uses A* if the settings say so, with the pathing map kept in [cache] so repeated queries from this tile are cheap.
+     *  Otherwise uses the simple connection search, always run from the lower-indexed tile so both directions give the same road. */
+    @Readonly fun getRoadPath(destination: TileView, cache: RoadPathingCache): List<TileView>? {
         val viewer = viewer ?: return null
-        return getRoadPathingMap(viewer, cache).getShortestPath(destination, maxTurns)
+        if (UncivGame.Current.settings.useAStarPathfinding)
+            return getRoadPathingMap(viewer, cache).getShortestPath(destination)
+        val (start, end) = if (tile.zeroBasedIndex < destination.tile.zeroBasedIndex) tile to destination.tile else destination.tile to tile
+        return MapPathing.getRoadPath(viewer, start, end)?.map { tileMapView.getTile(it) }
     }
     /** Best road path from this tile to any of [destinations], or `null` if none is reachable. Pathing maps are kept in [cache]. */
     @Readonly fun getRoadPathToAny(destinations: Set<TileView>, maxBfsReachPadding: Int, cache: RoadPathingCache): List<TileView>? {
