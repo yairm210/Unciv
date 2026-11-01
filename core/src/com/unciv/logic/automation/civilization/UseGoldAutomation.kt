@@ -77,21 +77,21 @@ object UseGoldAutomation {
         if (civInfo.gameInfo.turns < (civInfo.gameInfo.speed.scienceCostModifier * 20).toInt())
             return
 
-        val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = getHighlyDesirableTilesToCityMap(civInfo)
+        val highlyDesirableTiles = getHighlyDesirableTilesToCityMap(civInfo)
 
         // Always try to buy highly desirable tiles if it can be afforded.
-        for (highlyDesirableTile in highlyDesirableTiles) {
-            val cityWithLeastCostToBuy = highlyDesirableTile.value.minBy {
-                it.getCenterTile().aerialDistanceTo(highlyDesirableTile.key)
+        for ((key, value) in highlyDesirableTiles) {
+            val cityWithLeastCostToBuy = value.minBy {
+                it.getCenterTile().aerialDistanceTo(key)
             }
             val bfs = BFS(cityWithLeastCostToBuy.getCenterTile())
             {
                 it.getOwner() == null || it.owningCity == cityWithLeastCostToBuy
             }
-            bfs.stepUntilDestination(highlyDesirableTile.key)
+            bfs.stepUntilDestination(key)
             val tilesThatNeedBuying =
-                bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() == null }
-                    .toList().reversed() // getPathTo is from destination to source
+                bfs.getPathTo(key).filter { it.getOwner() == null }
+                    .toList().asReversed() // getPathTo is from destination to source
 
             // We're trying to acquire everything and revert if it fails, because of the difficult
             // way how tile acquisition cost is calculated. Everytime you buy a tile, the next one
@@ -121,49 +121,99 @@ object UseGoldAutomation {
     }
 
     @Readonly
-    private fun getHighlyDesirableTilesToCityMap(civInfo: Civilization): SortedMap<Tile, MutableSet<City>> {
-        val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
-            compareByDescending<Tile?> { it?.naturalWonder != null }
-                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Luxury }
-                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Strategic }
-                // This is necessary, so that the map keeps Tiles with the same resource as two
-                // separate entries.
-                .thenBy { it.hashCode() }
-        )
+    private fun getHighlyDesirableTilesToCityMap(civInfo: Civilization): List<Map.Entry<Tile, Set<City>>> {
+        val valueCache = hashMapOf<Tile, Int>()
+        /** Lower is better. Passing no city means relying on a previously cached value.
+         *  Evaluating this once even though several cities might be able to expand to a tile is a simplification.
+         *  The negative effect of this should average out over time.
+         */
+        fun Tile.getTileRank(city: City?) = if (city == null) 2000
+            else valueCache.getOrPut(this) {
+                city.expansion.rankTileForExpansion(this)
+            }
 
-        for (city in civInfo.cities.filter { !it.isPuppet && !it.isBeingRazed }) {
-            city.getCenterTile().forEachTileAtDistance(2) {
-                // Only consider second ring tiles: further tiles may be as good or better, but have much higher gold cost
-                if (isHighlyDesirableTile(it, civInfo, city)) {
-                    @LocalState val desirableTiles = highlyDesirableTiles.getOrPut(it) { mutableSetOf() }
-                    desirableTiles.add(city)
+        val comparator = compareByDescending<Tile> { it.naturalWonder != null }
+            .thenByDescending { it.tileResource?.resourceType == ResourceType.Luxury }
+            .thenByDescending { it.tileResource?.resourceType == ResourceType.Strategic }
+            .thenBy { it.getTileRank(null) }
+
+        fun isHighlyDesirableTile(tile: Tile, civInfo: Civilization, city: City, eagerToBuy: Boolean): Boolean {
+            if (!tile.isVisible(civInfo)) return false
+            if (tile.getOwner() != null) return false
+            if (tile.neighbors.none { neighbor -> neighbor.getCity() == city }) return false
+
+            if (tile.naturalWonder != null) return true
+
+            fun hasImportantResource(): Boolean {
+                val resource = tile.tileResource
+                return civInfo.canSeeResource(resource) &&
+                    (resource.resourceType == ResourceType.Luxury || resource.resourceType == ResourceType.Strategic) &&
+                    (eagerToBuy || civInfo.getResourceAmount(resource) < 2) // At 2 or more, we haven't been able to trade it away for another duplicate...
+            }
+            fun hasHighYields(): Boolean {
+                val rank = tile.getTileRank(city) // always cache this
+                if (eagerToBuy) return rank < 300
+                val tileStats = tile.stats.getTileStats(civInfo)
+                return tileStats.food + tileStats.production >= 3f
+            }
+            return hasImportantResource() || hasHighYields()
+        }
+
+        fun scanTiles(radius: Int, eagerToBuy: Boolean): List<Map.Entry<Tile, Set<City>>> {
+            val tileToCities = HashMap<Tile, MutableSet<City>>()
+            for (city in civInfo.cities) {
+                if (city.isPuppet || city.isBeingRazed) continue
+                city.getCenterTile().forEachTileInDistance(radius) {
+                    if (isHighlyDesirableTile(it, civInfo, city, eagerToBuy)) {
+                        @LocalState val desirableForCities = tileToCities.getOrPut(it) { mutableSetOf() }
+                        desirableForCities.add(city)
+                    }
                 }
             }
+            return tileToCities.entries.sortedWith(compareBy(comparator) { it.key })
         }
-        return highlyDesirableTiles
+
+        // Only consider second ring tiles: further tiles may be as good or better, but have much higher gold cost
+        // Ring 1 included for the rare case such a tile was lost after founding
+        val highlyDesirableTiles = scanTiles(2, false)
+        // TODO this needs a better heuristic
+        val fuzzyFactor = (50 * civInfo.gameInfo.speed.goldCostModifier).toInt() + getAverageTileBuyCost(civInfo)
+        val reserveGold = getPotentialProductionBuyCost(civInfo) + fuzzyFactor
+        val eagerToBuyCount = (civInfo.gold - reserveGold) / fuzzyFactor
+        if (eagerToBuyCount <= 0 || highlyDesirableTiles.isNotEmpty())
+            return highlyDesirableTiles
+
+        // We have a large gold surplus - so try to buy more tiles
+        val somewhatDesirableTiles = scanTiles(3, true)
+        if (somewhatDesirableTiles.size <= eagerToBuyCount)
+            return somewhatDesirableTiles
+        return somewhatDesirableTiles.take(eagerToBuyCount)
     }
 
     @Readonly
-    private fun isHighlyDesirableTile(it: Tile, civInfo: Civilization, city: City): Boolean {
-        if (!it.isVisible(civInfo)) return false
-        if (it.getOwner() != null) return false
-        if (it.neighbors.none { neighbor -> neighbor.getCity() == city }) return false
-
-        @Readonly fun hasNaturalWonder() = it.naturalWonder != null
-
-        @Readonly  fun hasLuxury(): Boolean {
-            val resource = it.tileResource
-            return civInfo.canSeeResource(resource) &&
-                resource.resourceType == ResourceType.Luxury &&
-                civInfo.getResourceAmount(resource) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+    private fun getPotentialProductionBuyCost(civ: Civilization): Int {
+        var result = 0
+        for (city in civ.cities) {
+            if (city.isPuppet || city.isBeingRazed) continue
+            val construction = city.cityConstructions.getCurrentConstruction()
+            if (construction !is INonPerpetualConstruction) continue
+            val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
+            result += statBuyCost
         }
+        return result
+    }
 
-        @Readonly fun hasHighYields(): Boolean {
-            val tileStats = it.stats.getTileStats(civInfo)
-            return tileStats.food + tileStats.production >= 3
+    @Readonly
+    private fun getAverageTileBuyCost(civ: Civilization): Int {
+        var result = 0
+        var count = 0
+        for (city in civ.cities) {
+            if (city.isPuppet || city.isBeingRazed) continue
+            val tile = city.expansion.chooseNewTileToOwn() ?: continue
+            result += city.expansion.getGoldCostOfTile(tile)
+            count++
         }
-
-        return (hasNaturalWonder() || hasLuxury() || hasHighYields())
+        return if (count == 0) 1 else result / count
     }
 
     private fun tryGainInfluence(civInfo: Civilization, cityState: Civilization) {
