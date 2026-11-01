@@ -26,18 +26,20 @@ class BarbarianAutomation(val civInfo: Civilization) {
         else automateCombatUnit(unit)
     }
 
-    private fun automateCapturedCivilian(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
+    private fun automateCapturedCivilian(unit: MapUnitView) {
+        val currentTile = unit.getTile()
         // 1 - Stay on current encampment
-        if (unit.currentTile.isBarbarianEncampment()) return
+        if (currentTile.isBarbarianEncampment()) return
 
-        val campTiles = unit.civ.gameInfo.barbarians.getEncampmentTiles()
-        campTiles.sortBy { unit.currentTile.aerialDistanceTo(it) }
-        val bestCamp = campTiles.firstOrNull { it.civilianUnit == null && unit.movement.canReach(it)}
+        val tileMapView = currentTile.getTileMap()
+        val campTiles = civInfo.gameInfo.barbarians.getEncampmentTiles()
+            .map { tileMapView.getTile(it) }
+            .sortedBy { currentTile.aerialDistanceTo(it) }
+        val bestCamp = campTiles.firstOrNull { it.civilianUnit == null && unit.canReach(it) }
         if (bestCamp != null)
-            unit.movement.headTowards(bestCamp) // 2 - Head towards an encampment
+            unit.tryHeadTowards(bestCamp) // 2 - Head towards an encampment
         else
-            UnitAutomation.wander(unitView) // 3 - Can't find a reachable encampment, wander aimlessly
+            UnitAutomation.wander(unit) // 3 - Can't find a reachable encampment, wander aimlessly
     }
 
     private fun automateUnitOnEncampment(unitView: MapUnitView) {
@@ -48,7 +50,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
         if (BattleHelper.tryAttackNearbyEnemy(unitView, stayOnTile = true)) return
 
         // 3 - at least fortifying
-        unitView.getUnit().fortifyIfCan()
+        unitView.tryFortifyIfCan()
     }
 
     private fun automateCombatUnit(unit: MapUnitView) {
@@ -60,7 +62,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
 
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
-        if (BattleHelper.tryDisembarkUnitToAttackPosition(unit.getUnit())) return
+        if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
         if (!unit.isCivilian() && BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route

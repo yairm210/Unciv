@@ -49,8 +49,9 @@ object BattleHelper {
         return !unitView.hasMovement()
     }
 
-    fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
-        if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit || !unit.isEmbarked()) return false
+    fun tryDisembarkUnitToAttackPosition(unitView: MapUnitView): Boolean {
+        if (!unitView.getBaseUnit().isMelee() || !unitView.getBaseUnit().isLandUnit || !unitView.isEmbarked()) return false
+        val unit = unitView.getUnit()
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val attackableEnemiesNextTurn = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles)
@@ -59,7 +60,7 @@ object BattleHelper {
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(unit),
                         Battle.getMapCombatantOfTile(it.tileToAttack)!!
-                    ) < unit.health
+                    ) < unitView.unitHealth
                 }
                 .filter { it.tileToAttackFrom.isLand }
 

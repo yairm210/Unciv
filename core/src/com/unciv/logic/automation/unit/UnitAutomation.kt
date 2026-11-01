@@ -107,7 +107,7 @@ object UnitAutomation {
         if (tryHeadTowardsOurSiegedCity(unitView)) return
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
-        if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
+        if (BattleHelper.tryDisembarkUnitToAttackPosition(unitView)) return
 
         // if there is an attackable unit in the vicinity, attack!
         if (tryAttacking(unitView, cache)) return
