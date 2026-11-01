@@ -4,6 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapgenerator.RiverGenerator
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -45,6 +46,7 @@ internal enum class ConsoleParameterType(
     diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
     newCivName({ ruleset.nations.keys.filterNot { civilizations.any { civ -> civ.nation.name == it } } }),
     tileFilter( { UniqueParameterType.TileFilter.getKnownValuesForAutocomplete(ruleset) }, preferquoted = true),
+    unitAction({ UnitActionType.entries.filter { it != UnitActionType.TriggerUnique }.map { it.name } }),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()
