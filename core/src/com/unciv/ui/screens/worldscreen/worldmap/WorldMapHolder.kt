@@ -120,8 +120,11 @@ class WorldMapHolder(
             override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
-                if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
-                    onTileClicked(child.foreignCityView.getCenterTile())
+                // The hit actor is a descendant of the city button (e.g. a label inside CityTable), not the button itself.
+                // The city button can be below the tilegroup, since it moves down when first clicked
+                val cityButton = child.firstAscendant(CityButton::class.java)
+                if (cityButton != null) {
+                    onTileClicked(cityButton.foreignCityView.getCenterTile())
                     return
                 }
                 if (child is WorldTileGroup) {
