@@ -3,6 +3,7 @@ package com.unciv.logic.multiplayer.storage
 import com.badlogic.gdx.Net
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.utils.debug
+import java.io.InputStream
 
 object UncivServerFileStorage : FileStorage {
     var authHeader: Map<String, String>? = null
@@ -22,21 +23,16 @@ object UncivServerFileStorage : FileStorage {
         }
     }
 
-    override fun loadFileData(fileName: String): String {
-        var fileData = ""
-        SimpleHttp.sendGetRequest(fileUrl(fileName), timeout=timeout, header=authHeader) {
-                success, result, code ->
-            if (!success) {
-                debug("Error from UncivServer during load: %s", result)
-                when (code) {
-                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
-                    else -> throw Exception(result)
-                }
-
+    override fun loadFileData(fileName: String): InputStream {
+        try {
+            return SimpleHttp.openStream(Net.HttpMethods.GET, fileUrl(fileName), "", timeout, authHeader).body
+        } catch (ex: SimpleHttp.HttpStatusException) {
+            debug("Error from UncivServer during load: %s", ex.message)
+            when (ex.code) {
+                404 -> throw MultiplayerFileNotFoundException(Exception(ex.message))
+                else -> throw Exception(ex.message)
             }
-            else fileData = result
         }
-        return fileData
     }
 
     override fun getFileMetaData(fileName: String): FileMetaData {

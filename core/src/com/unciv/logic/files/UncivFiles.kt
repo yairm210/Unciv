@@ -26,6 +26,7 @@ import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
+import java.io.InputStream
 import java.io.Writer
 
 const val SAVE_FILES_FOLDER = "SaveFiles"
@@ -453,13 +454,30 @@ class UncivFiles(
         }
 
         /**
-         * Parses [gameData] as gzipped serialization of a [GameInfoPreview]
-         * @throws SerializationException
+         * Streams the stream from [openInput] into a [GameInfo] without buffering the full text.
+         * [openInput] is called again if parsing fails, to read only the version for an [IncompatibleGameInfoVersionException] -
+         * a stream can't be rewound once consumed.
+         * @throws IncompatibleGameInfoVersionException if the data was created by a version of this game that is incompatible with the current one.
          */
-        fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            val preview = json().fromJson(GameInfoPreview::class.java, FileConversions.unzip(gameData))
-            preview.migrateCivID()
-            return preview
+        fun gameInfoFromStream(openInput: () -> InputStream): GameInfo {
+            val gameInfo = try {
+                FileConversions.readJson(openInput(), GameInfo::class.java)
+            } catch (ex: Exception) {
+                Log.error("Exception while deserializing GameInfo JSON", ex)
+                // NOTE: To accomodate "minimize RAM spikes by streaming" this means that if we fail with the json parse 
+                //  we need to download the whole thing again for the version
+                // I don't have a better solution, and I prefer paying on failure vs paying every successful download
+                // (Alternatively we could forgo the "get version" entirely since it's really not very often the problem)
+                val onlyVersion = FileConversions.readJson(openInput(), GameInfoSerializationVersion::class.java)!!
+                throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+            } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+            if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+                // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+                throw IncompatibleGameInfoVersionException(gameInfo.version)
+            }
+            gameInfo.setTransients()
+            return gameInfo
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */

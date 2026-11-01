@@ -4,6 +4,8 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.utils.Log
 import kotlinx.coroutines.runBlocking
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.util.UUID
 
 private const val PREVIEW_SUFFIX = "_Preview"
@@ -46,14 +48,15 @@ class ApiV2FileStorageEmulator(private val api: ApiV2) : FileStorage {
         return UncivFiles.gameInfoToString(UncivFiles.gameInfoFromString(loadGameData(gameId)).asPreview())
     }
 
-    override fun loadFileData(fileName: String): String {
-        return runBlocking {
+    override fun loadFileData(fileName: String): InputStream {
+        val data = runBlocking {
             if (fileName.endsWith(PREVIEW_SUFFIX)) {
                 loadPreviewData(fileName.dropLast(8))
             } else {
                 loadGameData(fileName)
             }
         }
+        return ByteArrayInputStream(data.toByteArray(Charsets.UTF_8))
     }
 
     override fun getFileMetaData(fileName: String): FileMetaData {
