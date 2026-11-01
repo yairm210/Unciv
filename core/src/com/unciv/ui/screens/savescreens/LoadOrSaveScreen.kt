@@ -28,6 +28,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
@@ -41,7 +42,9 @@ import kotlin.io.path.readAttributes
 
 
 abstract class LoadOrSaveScreen(
-    fileListHeaderText: String? = null
+    fileListHeaderText: String? = null,
+    /** Show a search field above the file list, once there are more than [searchMinSaves] files */
+    searchable: Boolean = false
 ) : PickerScreen(disableScroll = true) {
 
     abstract fun onExistingSaveSelected(saveGameFile: FileHandle)
@@ -51,12 +54,14 @@ abstract class LoadOrSaveScreen(
         private set
 
     private val savesScrollPane = VerticalFileListScrollPane()
+    private val searchSavesTextField = UncivTextField("Search saves")
     protected val rightSideTable = Table()
     protected val deleteSaveButton = "Delete save".toTextButton(skin.get("negative", TextButton.TextButtonStyle::class.java))
     protected val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
     protected val errorLabel = "".toLabel(Color.RED, alignment = Align.center)
 
     companion object : Helpers {
+        private const val searchMinSaves = 10
         internal const val saveToClipboardErrorMessage = "Could not save game to clipboard!"
     }
 
@@ -85,7 +90,28 @@ abstract class LoadOrSaveScreen(
 
         updateShownSaves(showAutosavesCheckbox.isChecked)
 
-        topTable.add(savesScrollPane)
+        // Always-visible scrollbar as position indicator
+        savesScrollPane.fadeScrollBars = false
+        savesScrollPane.setScrollbarsVisible(true)
+
+        // The pane cell grows to fill the column and the column is top-aligned,
+        // so the search field stays put when filtering shrinks the list
+        val savesColumn = Table()
+        savesColumn.top()
+        savesColumn.add(savesScrollPane).grow()
+        if (searchable) {
+            searchSavesTextField.onChange { savesScrollPane.setNameFilter(searchSavesTextField.text) }
+            savesScrollPane.onFilesLoaded = { count ->
+                val show = count > searchMinSaves
+                val newlyShown = show && !searchSavesTextField.hasParent()
+                savesColumn.clear()
+                if (show) savesColumn.add(searchSavesTextField).growX().pad(5f).row()
+                else if (searchSavesTextField.text.isNotEmpty()) searchSavesTextField.text = ""
+                savesColumn.add(savesScrollPane).grow()
+                if (newlyShown) stage.keyboardFocus = searchSavesTextField
+            }
+        }
+        topTable.add(savesColumn).growY()
         topTable.add(rightSideTable)
         topTable.pack()
     }
