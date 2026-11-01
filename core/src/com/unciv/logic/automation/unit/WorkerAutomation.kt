@@ -4,6 +4,7 @@ import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.TileView
 import com.unciv.view.getUnpillagedRoad
 import com.unciv.view.hasMovement
+import com.unciv.view.shortDisplayName
 import com.unciv.view.ForeignCityView
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
@@ -85,7 +86,6 @@ class WorkerAutomation(
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
     fun automateWorkerAction(unitView: MapUnitView, dangerousTiles: HashSet<TileView>, cache: AutomationCache): Unit = timeThis("automateWorkerAction") {
-        val unit = unitView.getUnit()
         val currentTile = unitView.getTile()
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
@@ -109,7 +109,7 @@ class WorkerAutomation(
             return startWorkOnCurrentTile(unitView)
 
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
-        if (unit.cache.hasUniqueToCreateWaterImprovements && automateWorkBoats(unitView)) return
+        if (unitView.hasUniqueToCreateWaterImprovements() && automateWorkBoats(unitView)) return
 
         if (tryHeadTowardsUndevelopedCity(unitView, unitView.getTile())) return
 
@@ -117,11 +117,11 @@ class WorkerAutomation(
         if (roadBetweenCitiesAutomation.tryConnectingCities(unitView, citiesToConnect, cache)) return
 
 
-        debug("WorkerAutomation: %s -> nothing to do", unit.toString())
-        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        debug("WorkerAutomation: %s -> nothing to do", unitView)
+        unitView.tryAddNotification("${unitView.shortDisplayName()} has no work to do.", NotificationCategory.Units, unitView.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
-        if (unit.civ.isCityState)
+        if (unitView.civ().isCityState)
             wander(unitView, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
     
@@ -679,27 +679,12 @@ class WorkerAutomation(
         val NO_IGNORED_IMPROVEMENTS: Sequence<TileImprovement> = sequenceOf()
         
         // Static methods so they can be reused in ConstructionAutomation
-        /** Checks whether [tile] is water and has a resource [civInfo] can improve
+        /** Checks whether [tile] is water and has a resource [civ] can improve
          *
          *  Does check whether a matching improvement can currently be built (e.g. Oil before Refrigeration).
          *  Can return `true` if there is an improvement that does not match the resource (for future modding abilities).
          *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
          */
-        @Readonly
-        fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean {
-            val resource = tile.tileResource
-            return when {
-                !tile.isWater -> false
-                !civInfo.canSeeResource(resource) -> false
-                tile.improvement != null && resource.isImprovedBy(tile.improvement!!) -> false
-                else -> resource.getImprovements().any {
-                    val improvement = civInfo.gameInfo.ruleset.tileImprovements[it]!!
-                    tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
-                }
-            }
-        }
-
-        /** View version of [hasWorkableSeaResource] for automation use */
         @Readonly
         fun hasWorkableSeaResource(tile: TileView, civ: CivView): Boolean {
             val resource = tile.getViewableResource(civ)
@@ -712,21 +697,14 @@ class WorkerAutomation(
             }
         }
 
-        /** View version of [isNotBonusResourceOrWorkable] for automation use.
-         *  @throws NullPointerException on tiles without a resource */
-        @Readonly
-        fun isNotBonusResourceOrWorkable(tile: TileView, civ: CivView): Boolean =
-            tile.getViewableResource(civ)!!.resourceType != ResourceType.Bonus
-                || civ.cities().any { it.isInRange(tile) }
-
-        /** Test whether improving the resource on [tile] benefits [civInfo] (yields or strategic or luxury)
+        /** Test whether improving the resource on [tile] benefits [civ] (yields or strategic or luxury)
          *
          *  Only tests resource type and city range, not any improvement requirements.
          *  @throws NullPointerException on tiles without a resource
          */
         @Readonly
-        fun isNotBonusResourceOrWorkable(tile: Tile, civInfo: Civilization): Boolean =
-            tile.tileResource!!.resourceType != ResourceType.Bonus // Improve Oil even if no City reaps the yields
-                || civInfo.cities.any { it.tilesInRange.contains(tile) } // Improve Fish only if any of our Cities reaps the yields
+        fun isNotBonusResourceOrWorkable(tile: TileView, civ: CivView): Boolean =
+            tile.getViewableResource(civ)!!.resourceType != ResourceType.Bonus
+                || civ.cities().any { it.isInRange(tile) }
     }
 }

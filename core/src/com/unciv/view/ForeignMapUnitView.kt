@@ -58,6 +58,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
 }
 
 // Helpers built on top of the view API, rather than being part of it
+@Readonly fun ForeignMapUnitView.shortDisplayName(): String = if (instanceName != null) "[$instanceName]" else "[$name]"
 @Readonly fun ForeignMapUnitView.isAirUnit(): Boolean = getBaseUnit().isAirUnit()
 @Readonly fun ForeignMapUnitView.isCivilian(): Boolean = getBaseUnit().isCivilian()
 @Readonly fun ForeignMapUnitView.isMilitary(): Boolean = getBaseUnit().isMilitary

@@ -10,6 +10,8 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.MapUnitAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
@@ -173,6 +175,11 @@ class MapUnitView internal constructor(
         val city = unit.currentTile.getCity() ?: return false
         city.unitShouldUseSavedPromotion[unit.baseUnit.name] = true
         city.unitToPromotions[unit.baseUnit.name] = unit.promotions
+        return true
+    }
+    /** Notifies the owning civ about this unit - activating the notification shows the unit on the map */
+    fun tryAddNotification(text: String, category: NotificationCategory, vararg notificationIcons: String): Boolean {
+        unit.civ.addNotification(text, MapUnitAction(unit), category, *notificationIcons)
         return true
     }
     fun tryDisband(): Boolean {

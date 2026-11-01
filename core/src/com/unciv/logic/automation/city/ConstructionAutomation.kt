@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.city
 
 import com.unciv.view.GameView
+import com.unciv.view.TileView
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -201,11 +202,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         // Define what makes a tile worth sending a Workboat to
         // todo Prepare for mods that allow improving water tiles without a resource?
+        val gameView = GameView(civInfo.gameInfo, civInfo)
+        val civView = gameView.civView
         @Readonly
-        fun Tile.isWorthImproving(): Boolean {
-            if (getOwner() != civInfo) return false
-            if (!WorkerAutomation.hasWorkableSeaResource(this, civInfo)) return false
-            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
+        fun TileView.isWorthImproving(): Boolean {
+            if (getOwner() != civView) return false
+            if (!WorkerAutomation.hasWorkableSeaResource(this, civView)) return false
+            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civView)
         }
 
         // Search for a tile justifying producing a Workboat
@@ -213,10 +216,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         @Readonly
         fun findTileWorthImproving(): Boolean {
             val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
-            val bfs = BFS(city.getCenterTile()) {
+            val bfs = BFS(gameView.getTile(city.getCenterTile())) {
                 (it.isWater || it.isCityCenter())
-                    && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
-                    && it.isExplored(civInfo)  // Sending WB's through unexplored terrain would be cheating
+                    && (it.getOwner() == null || it.isFriendlyTerritory())
+                    && it.isExplored()  // Sending WB's through unexplored terrain would be cheating
             }
             do {
                 val tile = bfs.nextStep() ?: break
