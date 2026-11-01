@@ -160,12 +160,15 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
     }
 
-    private fun createModifiersScroll(modifiers: Iterable<Table>): ScrollPane {
+    private fun createModifiersScroll(modifiers: Iterable<Table>, leftAligned: Boolean = false): ScrollPane {
         val wrapper = Table()
         wrapper.defaults().pad(2.5f)
         wrapper.top()
-        for (modifier in modifiers)
-            wrapper.add(modifier).row()
+        for (modifier in modifiers) {
+            val cell = wrapper.add(modifier)
+            if (leftAligned) cell.left()
+            cell.row()
+        }
         return AutoScrollPane(wrapper, skin).apply {
             fadeScrollBars = false
             setScrollbarsVisible(true)
@@ -365,15 +368,21 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val blastRadius = attackerView.getNukeBlastRadius()
 
-        val defenderNameWrapper = Table()
-        for (tileView in targetTileView.getExploredTilesInDistance(blastRadius)) {
-            val defender = tryGetDefenderAtTile(tileView, true) ?: continue
-
-            val defenderLabel = defender.getCombatantName().toLabel(hideIcons = true)
-            defenderNameWrapper.add(getIcon(defender)).padRight(5f)
-            defenderNameWrapper.add(defenderLabel).row()
-        }
-        add(defenderNameWrapper).row()
+        // Scrollable, so a huge blast radius can't push the NUKE button off-screen
+        val defenderRows = targetTileView.getExploredTilesInDistance(blastRadius)
+            .mapNotNull { tryGetDefenderAtTile(it, true) }
+            .map { defender ->
+                Table().apply {
+                    add(getIcon(defender)).padRight(5f)
+                    add(defender.getCombatantName().toLabel(hideIcons = true))
+                }
+            }.toList()
+        val defendersScroll = createModifiersScroll(defenderRows, leftAligned = true)
+        // ScrollPane only counts its scrollbar in the preferred width once the bar is showing, which is decided
+        // after the height clamp in update() - too late, the bar then eats into the rows. So reserve its width up front.
+        val scrollbarWidth = max(defendersScroll.style.vScroll?.minWidth ?: 0f, defendersScroll.style.vScrollKnob?.minWidth ?: 0f)
+        val rowsWidth = (defenderRows.maxOfOrNull { it.prefWidth } ?: 0f) + 5f // the 2.5f padding either side from createModifiersScroll
+        add(defendersScroll).pad(0f).fillY().minWidth(rowsWidth + scrollbarWidth).row()
 
         addSeparator().pad(0f)
         row().pad(5f)
