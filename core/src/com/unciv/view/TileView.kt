@@ -108,8 +108,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
      * debug mode has the whole map revealed, or [getCivView] is watching a defeated game play out.
      * TODO: Replace all usages with altering the view function called, to reveal data where relevant */
     @Readonly fun isForceVisible(): Boolean = viewer == null || DebugUtils.VISIBLE_MAP || getCivView()?.isMapRevealed() == true
-    override val neighbors: Sequence<TileView> get() = getVisibleNeighbors()
-    @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
+    /** Neighbors the viewer has explored */
+    @Readonly override fun getNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }

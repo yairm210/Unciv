@@ -225,7 +225,7 @@ object UnitAutomation {
         val civ = unitView.civ()
         return unitView.canMoveTo(tile)
                 && tile.getOwner() == null
-                && tile.getVisibleNeighbors().all { it.getOwner() == null }
+                && tile.getNeighbors().all { it.getOwner() == null }
                 && civ.hasExplored(tile)
                 && tile.getExploredTilesInDistance(2).any { it.getOwner() == civ }
                 && unitView.getDamageFromTerrain(tile) <= 0
@@ -341,7 +341,7 @@ object UnitAutomation {
                 if (unitView.canSwapTo(retreatTile)) {
                     unitView.tryHeadTowards(retreatTile) // we need to move through the intermediate tiles
                     // if nothing changed
-                    if (unitView.getTile().getVisibleNeighbors().contains(otherUnit.getTile()) && unitView.canSwapTo(retreatTile)) {
+                    if (unitView.getTile().getNeighbors().contains(otherUnit.getTile()) && unitView.canSwapTo(retreatTile)) {
                         unitView.trySwapMoveToTile(retreatTile)
                     }
                     return true

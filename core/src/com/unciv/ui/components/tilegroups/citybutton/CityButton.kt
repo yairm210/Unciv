@@ -184,7 +184,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         if (!isButtonMoved && (tileGroup.tileView.civilianUnit != null))
             insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
 
-        for (neighbor in tileGroup.tileView.getVisibleNeighbors()) {
+        for (neighbor in tileGroup.tileView.getNeighbors()) {
             val direction = tileGroup.tileView.position().minus(neighbor.position())
 
             if (isButtonMoved) {

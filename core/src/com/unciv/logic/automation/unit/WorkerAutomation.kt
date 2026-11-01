@@ -199,7 +199,7 @@ class WorkerAutomation(
         unitView.tryHeadTowards(tileToWork)
         val reachedTile = unitView.getTile()
 
-        if (reachedTile.getVisibleNeighbors().any { it == tileToWork }
+        if (reachedTile.getNeighbors().any { it == tileToWork }
             && unitView.canSwapTo(tileToWork)
             && !unitView.canMoveTo(tileToWork)
         ) {

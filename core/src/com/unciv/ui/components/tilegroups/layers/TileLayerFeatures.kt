@@ -28,7 +28,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         val tileMapView = tileView.getTileMap()
         val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileView)
 
-        for (neighbor in tileView.getVisibleNeighbors()) {
+        for (neighbor in tileView.getNeighbors()) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
@@ -83,7 +83,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             .mix(viewingCiv?.civName)
             .mix(viewingCiv == null || viewingCiv.canSeeTile(tileView))
             .mix(tileView.roadStatus.ordinal)
-        for (neighbor in tileView.getVisibleNeighbors()) {
+        for (neighbor in tileView.getNeighbors()) {
             key = key.mix(neighbor.position()).mix(neighbor.roadStatus.ordinal)
                 .mix(viewingCiv == null || viewingCiv.canSeeTile(neighbor))
         }

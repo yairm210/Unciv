@@ -55,7 +55,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         // Setup new borders
         val civOuterColor = tileOwner.getOuterColor()
         val civInnerColor = tileOwner.getInnerColor()
-        for (neighbor in tileView.getVisibleNeighbors()) {
+        for (neighbor in tileView.getNeighbors()) {
             var shouldRemoveBorderSegment = false
             var shouldAddBorderSegment = false
 
@@ -144,7 +144,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val tileOwner = tileView.getOwner() ?: return 0L // no owner - no borders; nothing else is read
         val tileMapView = tileView.getTileMap()
         var key = 1L.mix(tileOwner.civName)
-        for (neighbor in tileView.getVisibleNeighbors()) {
+        for (neighbor in tileView.getNeighbors()) {
             key = key.mix(neighbor.position()).mix(neighbor.getOwner()?.civName)
                 .mix(tileMapView.getLeftSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
                 .mix(tileMapView.getRightSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)

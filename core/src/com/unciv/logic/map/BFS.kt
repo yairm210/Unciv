@@ -59,7 +59,7 @@ class BFS<T : TileInterface<T>>(
     fun nextStep(): T? {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return null }
         val current = tilesToCheck.removeFirstOrNull() ?: return null
-        for (neighbor in current.neighbors) {
+        for (neighbor in current.getNeighbors()) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
