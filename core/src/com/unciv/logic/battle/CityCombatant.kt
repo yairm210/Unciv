@@ -16,6 +16,10 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityCombatant(val city: City) : ICombatant {
+    
+    override fun getId(): String = getName()
+    override fun getInstanceName(): String = getName()
+
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }
@@ -31,7 +35,7 @@ class CityCombatant(val city: City) : ICombatant {
     else filter == "City" || filter in Constants.all || city.matchesFilter(filter, multiFilter = false)
     override fun getAttackSound() = UncivSound.Bombard
 
-    override fun takeDamage(damage: Int) {
+    override fun takeDamage(damage: Int, recorder: AttackRecorder?) {
         city.health -= damage
         if (city.health < 1) city.health = 1  // min health is 1
     }
