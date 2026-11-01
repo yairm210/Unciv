@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.TileView
 import com.unciv.view.hasMovement
 import com.unciv.view.ForeignCityView
@@ -85,12 +86,12 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unitView: MapUnitView, dangerousTiles: HashSet<TileView>): Unit = timeThis("automateWorkerAction") {
+    fun automateWorkerAction(unitView: MapUnitView, dangerousTiles: HashSet<TileView>, cache: AutomationCache): Unit = timeThis("automateWorkerAction") {
         val unit = unitView.getUnit()
         val currentTile = unit.getTile()
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
-        val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unitView)
+        val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unitView, cache)
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
         if (!currentTileIsCreatesOneImprovementMarker
             && currentTile.improvementInProgress != null && !dangerousTiles.contains(unitView.getTile())
@@ -115,7 +116,7 @@ class WorkerAutomation(
         if (tryHeadTowardsUndevelopedCity(unitView, unitView.getTile())) return
 
         // Nothing to do, try again to connect cities
-        if (roadBetweenCitiesAutomation.tryConnectingCities(unitView, citiesToConnect)) return
+        if (roadBetweenCitiesAutomation.tryConnectingCities(unitView, citiesToConnect, cache)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
@@ -281,7 +282,7 @@ class WorkerAutomation(
     private fun getTileSelectionPriority(tile: Tile, unitView: MapUnitView): Float {
         val unit = unitView.getUnit()
         val basePriority = getBasePriority(unitView.viewOf(tile), unitView)
-        val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile] ?: return basePriority
+        val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[unitView.viewOf(tile)] ?: return basePriority
         val bestRoad = roadBetweenCitiesAutomation.bestRoadAvailable
         val roadImprovement = bestRoad.improvement(ruleSet) ?: return basePriority
 
@@ -307,8 +308,7 @@ class WorkerAutomation(
             return false
         if (tile.owningCity() != null && tile.getOwner() != civ) return false
         if (tile.isCityCenter()) return false
-        // Bridge: tilesOfRoadsMap is still keyed by raw Tile
-        if (unitView.getUnit().currentTile.tileMap[tile.position()] in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
         val cityWorkRange = tile.getRuleset().modOptions.constants.cityWorkRange
         if (tile.getViewableResource(civ) == null && civ.cities().none { it.getCenterTile().aerialDistanceTo(tile) <= cityWorkRange })
@@ -528,8 +528,8 @@ class WorkerAutomation(
 
         // Add the value of roads if we want to build it here
         if (improvement.isRoad() && roadBetweenCitiesAutomation.bestRoadAvailable.improvement(ruleSet) == improvement
-            && tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
-            val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[tile]!!
+            && unitView.viewOf(tile) in roadBetweenCitiesAutomation.tilesOfRoadsMap) {
+            val roadPlan = roadBetweenCitiesAutomation.tilesOfRoadsMap[unitView.viewOf(tile)]!!
             // We still want good farm/mine building to be able to outrank a low-value road (e.g. an
             // upgrade-only Road -> Railroad on an already-connected route), but connecting a genuinely
             // disconnected city (see #15417) shouldn't need a near-maximum roadPlan.priority (previously -9)

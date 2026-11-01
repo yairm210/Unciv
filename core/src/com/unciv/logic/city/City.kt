@@ -174,7 +174,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient @Cache private val landAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
     @Transient @Cache private val amphibiousAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
-    @Transient @Cache private lateinit var potentialRoadPathing: PathingMap
     
 
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
@@ -254,25 +253,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun getAmphibiousAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = amphibiousAttackPathing.getOrPut(destination.civ, { PathingMap.createAmphibiousAttackPathingMap(civ, centerTile, destination.civ) })
         return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
-    }
-
-    @Readonly
-    fun getRoadPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
-        if (!::potentialRoadPathing.isInitialized)
-            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
-        return if (id < destination.id) potentialRoadPathing.getShortestPath( destination.centerTile, maxTurns)
-        else destination.getRoadPath(this, maxTurns)
-    }
-
-    @Readonly
-    fun getRoadPathToAny(destinations: Set<Tile>, maxBfsReachPadding: Int): List<Tile>? {
-        // TODO: replace with multi-target AStar
-        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(centerTile) }
-        if (!::potentialRoadPathing.isInitialized)
-            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
-        val otherCity = potentialRoadPathing.bfsUntilMatchingTile(maxTurns) { tile,_ -> destinations.contains(tile) }
-        if (otherCity == null) return null
-        return potentialRoadPathing.getShortestPath(otherCity) // this just reads from cached results
     }
 
     @Readonly fun isGarrisoned() = getGarrison() != null
@@ -724,8 +704,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun clearCaches() {
         landAttackPathing.clear()
         amphibiousAttackPathing.clear()
-        if (::potentialRoadPathing.isInitialized)
-            potentialRoadPathing.clear()
     }
 
     @Readonly

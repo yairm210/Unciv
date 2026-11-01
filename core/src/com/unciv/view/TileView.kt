@@ -2,8 +2,10 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.pathingmap.PathingMap
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -129,6 +131,34 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { tileMapView.getTile(it) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
+    /** `true` if a road could be planned through this tile by [viewer] */
+    @Readonly fun isValidRoadPathTile(): Boolean = viewer != null && MapPathing.isValidRoadPathTile(viewer, tile)
+    /** Best path for a road from this tile to [destination], or `null` if there is none */
+    @Readonly fun getRoadPath(destination: TileView): List<TileView>? {
+        val viewer = viewer ?: return null
+        return MapPathing.getRoadPath(viewer, tile, destination.tile)?.map { tileMapView.getTile(it) }
+    }
+    @Readonly @Suppress("purity")
+    private fun getRoadPathingMap(cache: RoadPathingCache): PathingMapView = cache.getOrPut(this) {
+        PathingMapView(PathingMap.createRoadPathingMap(tile.getCity()!!.civ, tile), tileMapView, viewer)
+    }
+    /** Best road path from this city center to the city center at [destination], or `null` if there is none or either tile isn't a city center.
+     *  Pathing maps are kept in [cache]. */
+    @Readonly fun getRoadPathBetweenCities(destination: TileView, cache: RoadPathingCache, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<TileView>? {
+        val fromCity = tile.getCity()?.takeIf { it.getCenterTile() == tile } ?: return null
+        val toCity = destination.tile.getCity()?.takeIf { it.getCenterTile() == destination.tile } ?: return null
+        return if (fromCity.id < toCity.id) getRoadPathingMap(cache).getShortestPath(destination, maxTurns)
+        else destination.getRoadPathBetweenCities(this, cache, maxTurns)
+    }
+    /** Best road path from this city center to any of [destinations], or `null` if none is reachable. Pathing maps are kept in [cache]. */
+    @Readonly fun getRoadPathToAny(destinations: Set<TileView>, maxBfsReachPadding: Int, cache: RoadPathingCache): List<TileView>? {
+        if (tile.getCity()?.getCenterTile() != tile) return null
+        // TODO: replace with multi-target AStar
+        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(this) }
+        val pathingMap = getRoadPathingMap(cache)
+        val otherCity = pathingMap.bfsUntilMatchingTile(maxTurns) { it in destinations } ?: return null
+        return pathingMap.getShortestPath(otherCity) // this just reads from cached results
+    }
     @Readonly fun isWorked(): Boolean = tile.isWorked()
     @Readonly fun isBlockaded(): Boolean = tile.isBlockaded()
     @Readonly fun providesYield(): Boolean = tile.providesYield()
@@ -263,3 +293,4 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 
 // Helpers built on top of the view API, rather than being part of it
 @Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!
+@Readonly fun TileView.getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus

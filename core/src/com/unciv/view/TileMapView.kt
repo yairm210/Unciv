@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
@@ -30,6 +31,10 @@ class TileMapView(private val tileMap: TileMap,
         if (viewer != null && !isExplored(viewer)) return null
         return TileView(this, this@TileMapView, viewer, spectatorMode)
     }
+
+    /** A breadth-first search from [startingPoint] through the tiles that fulfill [predicate], searching at most [maxSize] tiles */
+    @Readonly @Suppress("purity") fun createBFS(startingPoint: TileView, maxSize: Int = Int.MAX_VALUE, predicate: (TileView) -> Boolean): BFSView =
+        BFSView(BFS(startingPoint.unwrap()) { predicate(getTile(it)) }.also { it.maxSize = maxSize }, this, viewer)
 
     /** Returns the [TileView] at [position], or `null` if it isn't explored by [viewer]. */
     @Readonly fun getTile(position: HexCoord): TileView? = tileMap[position].toViewIfExplored()

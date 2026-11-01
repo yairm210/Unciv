@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.RoadPathingCache
 import com.unciv.view.TileView
 
 /**
@@ -19,6 +20,8 @@ class AutomationCache {
          * It is not guaranteed that each tile in this list has an enemy (since they may have died).*/
         var tilesWithEnemies: MutableList<Pair<TileView,Int>>
     )
+
+    val roadPathingCache = RoadPathingCache()
 
     val distanceToClosestEnemyTiles = HashMap<TileView, ClosestEnemyTileData>()
 }
