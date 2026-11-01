@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.logic.map.tile.RoadStatus
 import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of the viewer's [gameView]. UI should use this and not city directly.
@@ -46,6 +47,10 @@ class CityView(city: City,
     }
 
     // Data retrieval
+    /** Cities of the same civ within [maxDistance] of this city */
+    @Readonly fun getNeighboringOwnCities(maxDistance: Int = 12): List<CityView> =
+        city.getNeighboringCities(maxDistance).filter { it.civ == city.civ }.map { gameView.getCityView(it) }
+    @Readonly fun getRoadTypeOfConnectionToCapital(): RoadStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
     @Readonly fun isInRange(tileView: TileView): Boolean = tileView.unwrap() in city.tilesInRange
 
     @Deprecated("Scheduled for removal")

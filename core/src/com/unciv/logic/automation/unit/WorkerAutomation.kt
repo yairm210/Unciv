@@ -90,7 +90,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
-        val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
+        val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unitView)
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
         if (!currentTileIsCreatesOneImprovementMarker
             && currentTile.improvementInProgress != null && !dangerousTiles.contains(unitView.getTile())
@@ -115,7 +115,7 @@ class WorkerAutomation(
         if (tryHeadTowardsUndevelopedCity(unitView, unitView.getTile())) return
 
         // Nothing to do, try again to connect cities
-        if (roadBetweenCitiesAutomation.tryConnectingCities(unit, citiesToConnect)) return
+        if (roadBetweenCitiesAutomation.tryConnectingCities(unitView, citiesToConnect)) return
 
 
         debug("WorkerAutomation: %s -> nothing to do", unit.toString())
