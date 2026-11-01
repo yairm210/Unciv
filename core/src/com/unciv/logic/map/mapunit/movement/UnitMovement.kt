@@ -514,6 +514,8 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         if (unit.isPreparingParadrop()) { // paradropping units move differently
+            // Reject an over-capacity landing before removeFromTile, or a failed putInTile strands the carrier.
+            if (!canMoveTo(destination)) return
             val origin = unit.getTile()
             unit.action = null
             unit.removeFromTile()
@@ -536,10 +538,13 @@ class UnitMovement(val unit: MapUnit) {
             return
         }
 
+        // Snapshot before leaving the origin. [MapUnit.canTransport] is destination-dependent and
+        // rejects a full carrier's existing passengers, so it must not decide who travels.
+        val payloadUnits = snapshotTransportedPassengers()
         val distanceToTiles = getDistanceToTiles(considerZoneOfControl)
         val pathToDestination = distanceToTiles.getPathToTile(destination)
         val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
-        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
+        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it, carriedPayload = payloadUnits) }
             ?: return  // no tiles can pass though/can move to
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
@@ -574,7 +579,7 @@ class UnitMovement(val unit: MapUnit) {
 
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
-            if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
+            if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true, carriedPayload = payloadUnits)) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
                 unit.removeFromTile()
@@ -603,10 +608,8 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentMovement = 0f
 
 
-        // The .toList() here is because we have a sequence that's running on the units in the tile,
-        // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
-        val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
-        // bring along the payloads
+        // bring along the payloads snapshotted at the origin. Not re-selected with [MapUnit.canTransport]:
+        // that looks at the destination and drops passengers once the carrier is full.
         for (payload in payloadUnits) {
             payload.removeFromTile()
             for (tile in pathToLastReachableTile) {
@@ -714,10 +717,12 @@ class UnitMovement(val unit: MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort unit [canMoveTo] if it has one.
      * Leave it as default unless you know what [canMoveTo] does.
+     * @param carriedPayload passengers to count for a carrier, for [moveToTile] to pass the ones it
+     * snapshotted at the origin. By default these are the passengers on the carrier's current tile.
      */
     @Readonly
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true) =
-        getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true, carriedPayload: List<MapUnit>? = null) =
+        getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit, carriedPayload) == null
 
     enum class CannotMoveToReason{
         TerrainImpassable,
@@ -732,7 +737,7 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     @Readonly
-    fun getCannotMoveToReason(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
+    fun getCannotMoveToReason(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true, carriedPayload: List<MapUnit>? = null): CannotMoveToReason? {
         if (unit.baseUnit.isAirUnit())
             return getAirUnitCannotMoveToReason(tile, unit)
 
@@ -757,7 +762,75 @@ class UnitMovement(val unit: MapUnit) {
 
         if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
 
+        if (carrierPayloadCannotEnter(tile, allowSwap, carriedPayload)) return CannotMoveToReason.NoAirUnitTransport
+
         return null
+    }
+
+    /**
+     * Owned passengers already aboard. Not new boarding requests: [MapUnit.canTransport] would reject
+     * them once the carrier is full, and it also depends on whichever tile the carrier currently occupies.
+     */
+    @Readonly
+    private fun snapshotTransportedPassengers(): List<MapUnit> {
+        if (!unit.hasTile()) return emptyList()
+        return unit.getTile().getUnits()
+            .filter { it.isTransported && it.owner == unit.owner && unit.isTransportTypeOf(it) }
+            .toList()
+    }
+
+    /**
+     * A loaded carrier may only end its turn where the whole payload still fits in carrier slots.
+     * City air slots are a separate pool: untransported aircraft are not counted.
+     * Same-tile placement stays allowed so an already over-capacity carrier can be put back on its tile.
+     */
+    @Readonly
+    private fun carrierPayloadCannotEnter(tile: Tile, allowSwap: Boolean, payload: List<MapUnit>?): Boolean {
+        if (unit.hasTile() && tile == unit.getTile()) return false
+
+        if (payload == null) {
+            // Non-carriers never carry a payload. Checked before scanning the tile: canMoveTo is hot.
+            if (!unit.hasUnique(UniqueType.CarryAirUnits) && !unit.hasUnique(UniqueType.CarryExtraAirUnits))
+                return false
+            val livePayload = snapshotTransportedPassengers()
+            if (livePayload.isEmpty()) return false
+            return !carriedPayloadFits(tile, livePayload, allowSwap)
+        }
+        if (payload.isEmpty()) return false
+        return !carriedPayloadFits(tile, payload, allowSwap)
+    }
+
+    /** Military or civilian unit standing on [tile] that a swap would move away. */
+    @Readonly
+    private fun unitLeavingOnSwap(tile: Tile): MapUnit? {
+        val departing = if (unit.isCivilian()) tile.civilianUnit else tile.militaryUnit
+        if (departing == null || departing == unit) return null
+        if (departing.owner != unit.owner) return null
+        return departing
+    }
+
+    /**
+     * Prospective transported occupancy is destination transported aircraft plus [payload].
+     * Passengers already on the destination, and aircraft a swap will take away, are not counted twice.
+     * Each incoming aircraft is checked against that group and added only after it fits.
+     */
+    @Readonly
+    private fun carriedPayloadFits(tile: Tile, payload: List<MapUnit>, allowSwap: Boolean): Boolean {
+        @LocalState
+        val projected = ArrayList<MapUnit>(payload.size + tile.airUnits.size)
+        val departing = if (allowSwap) unitLeavingOnSwap(tile) else null
+        for (occupant in tile.airUnits) {
+            if (!occupant.isTransported) continue
+            if (occupant in payload) continue
+            if (departing != null && occupant.owner == departing.owner && departing.isTransportTypeOf(occupant))
+                continue
+            projected.add(occupant)
+        }
+        for (passenger in payload) {
+            if (unit.checkCarryCapacity(passenger, projected.asSequence()) <= 0) return false
+            projected.add(passenger)
+        }
+        return true
     }
 
     @Readonly
