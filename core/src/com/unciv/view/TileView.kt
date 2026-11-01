@@ -141,23 +141,21 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         return MapPathing.getRoadPath(viewer, tile, destination.tile)?.map { tileMapView.getTile(it) }
     }
     @Readonly @Suppress("purity")
-    private fun getRoadPathingMap(cache: RoadPathingCache): PathingMapView = cache.getOrPut(this) {
-        PathingMapView(PathingMap.createRoadPathingMap(tile.getCity()!!.civ, tile), tileMapView, viewer)
+    private fun getRoadPathingMap(viewer: Civilization, cache: RoadPathingCache): PathingMapView = cache.getOrPut(this) {
+        PathingMapView(PathingMap.createRoadPathingMap(viewer, tile), tileMapView, viewer)
     }
-    /** Best road path from this city center to the city center at [destination], or `null` if there is none or either tile isn't a city center.
-     *  Pathing maps are kept in [cache]. */
-    @Readonly fun getRoadPathBetweenCities(destination: TileView, cache: RoadPathingCache, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<TileView>? {
-        val fromCity = tile.getCity()?.takeIf { it.getCenterTile() == tile } ?: return null
-        val toCity = destination.tile.getCity()?.takeIf { it.getCenterTile() == destination.tile } ?: return null
-        return if (fromCity.id < toCity.id) getRoadPathingMap(cache).getShortestPath(destination, maxTurns)
-        else destination.getRoadPathBetweenCities(this, cache, maxTurns)
+    /** Best road path from this tile to [destination], or `null` if there is none.
+     *  Unlike [getRoadPath] the pathing map is kept in [cache], so repeated queries between the same tiles are cheap. */
+    @Readonly fun getRoadPathTo(destination: TileView, cache: RoadPathingCache, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<TileView>? {
+        val viewer = viewer ?: return null
+        return getRoadPathingMap(viewer, cache).getShortestPath(destination, maxTurns)
     }
-    /** Best road path from this city center to any of [destinations], or `null` if none is reachable. Pathing maps are kept in [cache]. */
+    /** Best road path from this tile to any of [destinations], or `null` if none is reachable. Pathing maps are kept in [cache]. */
     @Readonly fun getRoadPathToAny(destinations: Set<TileView>, maxBfsReachPadding: Int, cache: RoadPathingCache): List<TileView>? {
-        if (tile.getCity()?.getCenterTile() != tile) return null
+        val viewer = viewer ?: return null
         // TODO: replace with multi-target AStar
         val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(this) }
-        val pathingMap = getRoadPathingMap(cache)
+        val pathingMap = getRoadPathingMap(viewer, cache)
         val otherCity = pathingMap.bfsUntilMatchingTile(maxTurns) { it in destinations } ?: return null
         return pathingMap.getShortestPath(otherCity) // this just reads from cached results
     }
