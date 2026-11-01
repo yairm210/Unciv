@@ -22,7 +22,6 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -30,6 +29,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  *
  * Usage: [group][Group].addTooltip([text][String], size) builds a [Label] as tip actor and attaches it to your [Group].
  *
+ * @param T             The type of the [content] Actor. Can mostly be inferred from the parameter.
  * @param target        The widget the tooltip will be added to - take care this is the same for which addListener is called
  * @param content       The actor to display as Tooltip
  * @param targetAlign   Point on the [target] widget to align the Tooltip to
@@ -42,7 +42,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  *                      Return value is used as new `forceContentSize`.
  */
 // region fields
-class UncivTooltip <T: Actor>(
+open class UncivTooltip <T: Actor>(
     private val target: Actor,
     private val content: T,
     private val targetAlign: Int = Align.topRight,
@@ -257,7 +257,7 @@ class UncivTooltip <T: Actor>(
                 else ColorMarkupLabel(text, labelColor, fontSize = 38)
             label.setAlignment(Align.center)
 
-            val background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.LIGHT_GRAY)
+            val background = getBackground()
             // This controls text positioning relative to the background.
             // The minute fiddling makes both single caps and longer text look centered.
             @Suppress("SpellCheckingInspection")
@@ -306,14 +306,24 @@ class UncivTooltip <T: Actor>(
             ))
         }
 
-        /** Hide and remove all tooltips */
-        fun Actor.removeTooltips() {
-            for (tip in listeners.filterIsInstance<UncivTooltip<*>>()) {
+        /** Get the background ninepatch appropriate for tooltips */
+        fun getBackground() = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.LIGHT_GRAY)
+
+        /** Hide and remove all tooltips
+         *  - This excludes _subclasses_ of [UncivTooltip] (e.g. desktop context menu indicators)
+         */
+        fun Actor.removeTooltips() = removeTooltips<UncivTooltip<*>>()
+
+        /** Hide and remove all [UncivTooltip] or subclass listeners
+         *  - Only removes exact class matches
+         */
+        @JvmName("removeTooltips_generic")
+        inline fun <reified T: UncivTooltip<*>> Actor.removeTooltips() {
+            for (tip in listeners.filterIsInstance<T>()) {
+                if (tip::class != T::class) continue
                 tip.hide(true)
                 removeListener(tip)
             }
-            if (this !is Group) return
-            children.filter { it.name == AnimatedMenuPopup.indicatorAndroid }.forEach { it.remove() }
         }
 
         /**
