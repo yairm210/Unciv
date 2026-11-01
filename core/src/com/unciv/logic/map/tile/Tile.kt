@@ -39,7 +39,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-class Tile : IsPartOfGameInfoSerialization {
+class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -114,7 +114,7 @@ class Tile : IsPartOfGameInfoSerialization {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: Sequence<Tile> by lazy {
+    override val neighbors: Sequence<Tile> by lazy {
         if (!isTilemapInitialized()) emptySequence()
         else getTilesAtDistance(1).toList().asSequence()
     }

@@ -3,13 +3,13 @@ package com.unciv.logic.automation.unit
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.logic.automation.civilization.AutomationCache
-import com.unciv.view.BFSView
 import com.unciv.view.CityView
 import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
@@ -60,10 +60,10 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
      *
      * key: The city to connect from as [hex position][HexCoord]
      *
-     * value: The [BFSView] searching from that city, whether successful or not
+     * value: The [BFS] searching from that city, whether successful or not
      */
     // TODO: If BFS were to deal in vectors instead of Tiles, we could copy this on cloning
-    @Cache private val bfsCache = HashMap<HexCoord, BFSView>()
+    @Cache private val bfsCache = HashMap<HexCoord, BFS<TileView>>()
 
     /** Caches road type to build for connecting cities, unless option is off or ruleset removed all roads */
     internal val bestRoadAvailable: RoadStatus =
@@ -283,12 +283,12 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
                     ?: return null
             return Pair(pathToCity.last().getCity()!!, pathToCity)
         }
-        @LocalState val bfs: BFSView = bfsCache[toConnectTile.position()] ?: run {
-            val maxSize = HexMath.getNumberOfTilesInHexagon(
+        @LocalState val bfs: BFS<TileView> = bfsCache[toConnectTile.position()] ?: run {
+            val bfs = BFS(toConnectTile, isCandidateTilePredicate)
+            bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
                 WorkerAutomationConst.maxBfsReachPadding +
                         tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
             )
-            val bfs = toConnectTile.getTileMap().createBFS(toConnectTile, maxSize, isCandidateTilePredicate)
             bfsCache[toConnectTile.position()] = bfs
             bfs
         }

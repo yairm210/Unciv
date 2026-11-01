@@ -1,6 +1,6 @@
 package com.unciv.logic.map
 
-import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileInterface
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
@@ -9,22 +9,22 @@ import kotlin.collections.ArrayDeque
 /**
  * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get connected tiles.
  * 
- * @param startingPoint Starting [Tile] from which to start the search
+ * @param startingPoint Starting tile from which to start the search
  * @param predicate A condition for subsequent neighboring tiles to be considered in search
  */
 @ModifiesInternalStateOnly
-class BFS(
-    val startingPoint: Tile,
-    @Readonly private val predicate : (Tile) -> Boolean
+class BFS<T : TileInterface<T>>(
+    val startingPoint: T,
+    @Readonly private val predicate : (T) -> Boolean
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE
 
     /** remaining tiles to check */
-    private val tilesToCheck = ArrayDeque<Tile>(37)  // needs resize at distance 4
+    private val tilesToCheck = ArrayDeque<T>(37)  // needs resize at distance 4
 
     /** each tile reached points to its parent tile, where we got to it from */
-    private val tilesReached = HashMap<Tile, Tile>()
+    private val tilesReached = HashMap<T, T>()
 
     init {
         tilesToCheck.add(startingPoint)
@@ -41,7 +41,7 @@ class BFS(
      * Process until either [destination] is reached or there's nowhere left to check
      * @return `this` instance for chaining
      */
-    fun stepUntilDestination(destination: Tile): BFS {
+    fun stepUntilDestination(destination: T): BFS<T> {
         while (!tilesReached.containsKey(destination) && !hasEnded())
             nextStep()
         return this
@@ -54,9 +54,9 @@ class BFS(
      *
      * Will do nothing when [hasEnded] returns `true`
      *
-     * @return The Tile that was checked, or `null` if there was nothing to do
+     * @return The tile that was checked, or `null` if there was nothing to do
      */
-    fun nextStep(): Tile? {
+    fun nextStep(): T? {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return null }
         val current = tilesToCheck.removeFirstOrNull() ?: return null
         for (neighbor in current.neighbors) {
@@ -72,7 +72,7 @@ class BFS(
      * @return a Sequence from the [destination] back to the [startingPoint], including both, or empty if [destination] has not been reached
      */
     @Readonly
-    fun getPathTo(destination: Tile): Sequence<Tile> = sequence {
+    fun getPathTo(destination: T): Sequence<T> = sequence {
         var currentNode = destination
         while (true) {
             val parent = tilesReached[currentNode] ?: break  // destination is not in our path
@@ -86,10 +86,10 @@ class BFS(
     fun hasEnded() = tilesToCheck.isEmpty()
 
     /** @return true if the [tile] has been reached */
-    fun hasReachedTile(tile: Tile) = tilesReached.containsKey(tile)
+    fun hasReachedTile(tile: T) = tilesReached.containsKey(tile)
 
     /** @return all tiles reached so far */
-    fun getReachedTiles(): MutableSet<Tile> = tilesReached.keys
+    fun getReachedTiles(): MutableSet<T> = tilesReached.keys
 
     /** @return number of tiles reached so far */
     fun size() = tilesReached.size

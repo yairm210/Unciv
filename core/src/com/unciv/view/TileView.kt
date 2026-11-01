@@ -9,6 +9,7 @@ import com.unciv.logic.map.pathingmap.PathingMap
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileInterface
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -25,7 +26,7 @@ import yairm210.purity.annotations.Readonly
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
 class TileView internal constructor(private val tile: Tile, val tileMapView: TileMapView,
                viewer: Civilization?,
-               spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode) {
+               spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode), TileInterface<TileView> {
 
     // Navigation
     @Readonly fun getCivView(): CivView? = tileMapView.gameView?.civView
@@ -107,6 +108,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
      * debug mode has the whole map revealed, or [getCivView] is watching a defeated game play out.
      * TODO: Replace all usages with altering the view function called, to reveal data where relevant */
     @Readonly fun isForceVisible(): Boolean = viewer == null || DebugUtils.VISIBLE_MAP || getCivView()?.isMapRevealed() == true
+    override val neighbors: Sequence<TileView> get() = getVisibleNeighbors()
     @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
