@@ -1152,6 +1152,13 @@ UnitActionIcons/ConductTradeMission
   orig: 100, 100
   offset: 0, 0
   index: -1
+UnitActionIcons/HostileTakeover
+  rotate: false
+  xy: 406, 746
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 UnitActionIcons/ConstructImprovement
   rotate: false
   xy: 514, 530

@@ -132,4 +132,21 @@ object UnitActionsGreatPerson {
             ))
         }
     }
+
+    internal fun getHostileTakeoverActions(unit: MapUnit, tile: Tile) = sequence {
+        val canHostileTakeover = tile.owningCity?.civ?.isCityState == true
+            && tile.owningCity?.civ != unit.civ
+            && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
+        for (unique in unit.getMatchingUniques(UniqueType.CanHostileTakeoverCityStates)) {
+            yield(UnitAction(
+                UnitActionType.HostileTakeover,
+                associatedUnique = unique,
+                action = {
+                    val tileOwningCiv = tile.owningCity!!.civ
+                    tileOwningCiv.cityStateFunctions.hostileTakeover(unit.civ)
+                    unit.consume()
+                }.takeIf { unit.hasMovement() && canHostileTakeover }
+            ))
+        }
+    }
 }

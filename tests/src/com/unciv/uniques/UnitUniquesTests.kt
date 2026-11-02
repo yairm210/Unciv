@@ -249,4 +249,32 @@ class UnitUniquesTests {
         Assert.assertEquals(transformed.currentTile, secondPayload.currentTile)
         Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
     }
+    
+    @Test
+    fun allYourCityStatesAreBelongToUs() {
+        // when
+        game.makeHexagonalMap(1)
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
+
+        val mainCiv = game.addCiv(isPlayer = true)
+
+        val unitTile = game.getTile(1,0)
+        cityStateCapital.expansion.takeOwnership(unitTile)
+
+        val merchantOfVenice = game.addDefaultMeleeUnitWithUniques(
+            mainCiv,
+            unitTile,
+            "Gain ownership over City-State and all its assets"
+        )
+
+        // then
+        val hostileTakeoverAction = UnitActions.getUnitActions(merchantOfVenice, UnitActionType.HostileTakeover)
+            .firstOrNull { it.action != null } // This tests that the action should be enabled, too
+
+        Assert.assertNotNull("Unit should have the action to take over the City-State", hostileTakeoverAction)
+        Assert.assertTrue(UnitActions.invokeUnitAction(merchantOfVenice, UnitActionType.HostileTakeover))
+        Assert.assertTrue(cityStateCapital.civ == mainCiv)
+    }
 }

@@ -2148,6 +2148,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Gain ownership over City-State and all its assets"
+	Applicable to: Unit
+
 ??? example  "Automation is a primary action"
 	This unique is automatically hidden from users.
 
