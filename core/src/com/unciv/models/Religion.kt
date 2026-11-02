@@ -30,7 +30,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var gameInfo: GameInfo
-    
+
     lateinit var foundingCivName: String
         private set
     @Transient
@@ -46,7 +46,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     val buildingsPurchasableByBeliefs by lazy {
         unlockedBuildingsPurchasable()
     }
-    
+
     constructor(name: String, gameInfo: GameInfo, foundingCiv: Civilization, foundingTurn: Int): this() {
         this.name = name
         this.foundingTurn = foundingTurn
@@ -75,12 +75,12 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         updateUniqueMaps()
     }
 
-    private fun updateUniqueMaps(){
+    private fun updateUniqueMaps() {
         followerBeliefUniqueMap = UniqueMap(mapToExistingBeliefs(followerBeliefs).flatMap { it.uniqueObjects })
         founderBeliefUniqueMap = UniqueMap(mapToExistingBeliefs(founderBeliefs).flatMap { it.uniqueObjects })
     }
 
-    fun addBeliefs(beliefs: Iterable<Belief>){
+    fun addBeliefs(beliefs: Iterable<Belief>) {
         for (belief in beliefs){
             when (belief.type){
                 BeliefType.Founder, BeliefType.Enhancer -> founderBeliefs.add(belief.name)
@@ -174,5 +174,13 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             belief.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat).map { it.params[0] } +
             belief.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost).map { it.params[0] }
         }.filter { gameInfo.ruleset.buildings.containsKey(it) }.toList()
+    }
+
+    /** Replace belief strings for [BackwardCompatibility][com.unciv.logic.BackwardCompatibility]. Must run before [setTransients]. */
+    fun replaceBeliefs(regex: Regex, newBelief: String) {
+        if (founderBeliefs.removeAll { regex.matches(it) })
+            founderBeliefs.add(newBelief)
+        if (followerBeliefs.removeAll { regex.matches(it) })
+            followerBeliefs.add(newBelief)
     }
 }

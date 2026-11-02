@@ -238,4 +238,11 @@ object BackwardCompatibility {
             if (unit.id == Constants.NO_ID) unit.id = getNextUnitId()
         }
     }
+
+    fun GameInfo.migrateCraftsPeopleBelief() {
+        val regex = Regex("God of (craftsmen|craftsman|Craftsman)")
+        for (religion in religions.values) {
+            religion.replaceBeliefs(regex, "God of Craftsmen")
+        }
+    }
 }
