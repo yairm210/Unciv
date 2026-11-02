@@ -158,7 +158,7 @@ object UniqueTriggerActivation {
                     else it
                 }
                 val suffixes = unique.params[1].split(',').map { it.trim() }
-                val flags = unique.params[1].split(',')
+                val flags = unique.params[2].split(',')
                     .mapNotNull { param -> MusicTrackChooserFlags.entries.firstOrNull { it.name.equals(param.trim(), true) } }
                     .toCollection(EnumSet.noneOf(MusicTrackChooserFlags::class.java))
                 return {
