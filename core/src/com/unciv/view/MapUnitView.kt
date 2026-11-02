@@ -132,8 +132,9 @@ class MapUnitView internal constructor(
             .map { gameView.tileMapView.getTile(it) }
     @Readonly fun getTilesInAttackRange(): List<TileView> =
         unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange())).map { gameView.tileMapView.getTile(it) }.toList()
-    @Readonly fun getAttackableEnemies(): List<AttackableTileView> =
-        TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+    /** @param stayOnTile If `true`, only attacks from the tile this unit is standing on are considered */
+    @Readonly fun getAttackableEnemies(stayOnTile: Boolean = false): List<AttackableTileView> =
+        TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile = stayOnTile)
             .map { AttackableTileView(it, viewer, spectatorMode, gameView) }
     /** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
     @Readonly fun getFutureAutomatedRoadConnectionTiles(): List<TileView>? {

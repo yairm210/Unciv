@@ -50,13 +50,16 @@ sealed class CombatantView constructor(private val combatant: ICombatant, viewer
     /** Defending strength including modifiers - as opposed to [getDefendingStrength], which is the base strength. */
     @Readonly fun getFinalDefendingStrength(attacker: CombatantView, tileToAttackFrom: TileView): Float =
         BattleDamage.getDefendingStrength(attacker.unwrap(), combatant, tileToAttackFrom.unwrap())
-    /** @param tileToAttackFrom Defaults to the tile this combatant is currently on
-     *  @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
-    @Readonly fun calculateDamageToDefender(defender: CombatantView, tileToAttackFrom: TileView = getTile(), randomnessFactor: Float = 0.5f): Int =
-        BattleDamage.calculateDamageToDefender(combatant, defender.unwrap(), tileToAttackFrom.unwrap(), randomnessFactor)
-    /** @param randomnessFactor Between 0f (min damage) and 1f (max damage). */
-    @Readonly fun calculateDamageToAttacker(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
-        BattleDamage.calculateDamageToAttacker(combatant, defender.unwrap(), tileToAttackFrom.unwrap(), randomnessFactor)
+    /** @param tileToAttackFrom Defaults to the defender's tile
+     *  @param randomnessFactor Between 0f (min damage) and 1f (max damage). Defaults to a turn and location-based random, to avoid save scumming. */
+    @Readonly fun calculateDamageToDefender(defender: CombatantView, tileToAttackFrom: TileView = defender.getTile(), randomnessFactor: Float? = null): Int =
+        BattleDamage.calculateDamageToDefender(combatant, defender.unwrap(), tileToAttackFrom.unwrap(),
+            randomnessFactor ?: BattleDamage.getRandomness(defender.unwrap()))
+    /** @param tileToAttackFrom Defaults to the defender's tile
+     *  @param randomnessFactor Between 0f (min damage) and 1f (max damage). Defaults to a turn and location-based random, to avoid save scumming. */
+    @Readonly fun calculateDamageToAttacker(defender: CombatantView, tileToAttackFrom: TileView = defender.getTile(), randomnessFactor: Float? = null): Int =
+        BattleDamage.calculateDamageToAttacker(combatant, defender.unwrap(), tileToAttackFrom.unwrap(),
+            randomnessFactor ?: BattleDamage.getRandomness(combatant))
 }
 
 /** A [CombatantView] of a unit - carries the [ForeignMapUnitView] it was built from. Use [ForeignMapUnitView.tryGetMapUnitView]
