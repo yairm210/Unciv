@@ -65,7 +65,7 @@ class DiscordUpdater {
 
         if (info.gameLeader.isNotEmpty() && info.gameNation.isNotEmpty()) {
             presence.details = "${info.gameLeader} of ${info.gameNation}"
-            presence.details = "Turn ${info.gameTurn}"
+            presence.state = "Turn ${info.gameTurn}"
         }
 
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
