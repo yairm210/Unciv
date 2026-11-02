@@ -64,6 +64,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
             // if no edits have been made, go back to friends list
             if (selectedFriend.name == friendNameTextField.text && selectedFriend.playerID == playerIDTextField.text) {
                 goBack()
+                return@onClick
             }
             if (friendlist.isFriendNameInFriendList(friendNameTextField.text) == FriendList.ErrorType.ALREADYINLIST
                     && friendlist.isFriendIDInFriendList(playerIDTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
