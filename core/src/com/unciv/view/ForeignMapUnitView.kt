@@ -3,6 +3,7 @@ package com.unciv.view
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
@@ -46,7 +47,9 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun getStatusMap() = unit.statusMap
     @Readonly fun getMovementMemories() = unit.movementMemories
     @Readonly fun getMostRecentMoveType() = unit.mostRecentMoveType
-    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
+    /** @param ignoreConditionals If `true`, matches uniques whether or not their conditionals currently apply */
+    @Readonly fun hasUnique(uniqueType: UniqueType, ignoreConditionals: Boolean = false): Boolean =
+        if (ignoreConditionals) unit.hasUnique(uniqueType, GameContext.IgnoreConditionals) else unit.hasUnique(uniqueType)
     @Readonly fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> = unit.getMatchingUniques(uniqueType)
     @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
         unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians

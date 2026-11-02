@@ -4,7 +4,6 @@ import com.unciv.view.AttackableTileView
 import com.unciv.view.ForeignCityView
 import com.unciv.view.MapUnitView
 import com.unciv.view.hasMovement
-import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 
@@ -162,7 +161,7 @@ object BattleHelper {
                 if (civilianUnit.getBaseUnit().isGreatPerson) {
                     attackValue += 150
                 }
-                if (civilianUnit.getBaseUnit().hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)) attackValue += 60
+                if (civilianUnit.hasUnique(UniqueType.FoundCity, ignoreConditionals = true)) attackValue += 60
             } else if (attacker.getBaseUnit().isRanged() && !civilianUnit.hasUnique(UniqueType.Uncapturable)) {
                 return 10 // Don't shoot civilians that we can capture!
             }
