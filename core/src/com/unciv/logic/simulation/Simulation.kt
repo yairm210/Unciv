@@ -16,6 +16,7 @@ import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -47,6 +48,13 @@ class Simulation(
     enum class Stat {
         SUM,
         NUM
+    }
+
+    companion object {
+        /** Turns per second; `0` if no time has passed. Uses fractional seconds - truncating to whole seconds
+         *  inflated the result for short runs and divided by zero below one second. */
+        fun turnsPerSecond(turns: Int, duration: Duration): Float =
+            if (duration.isPositive()) (turns / duration.toDouble(DurationUnit.SECONDS)).toFloat() else 0f
     }
     // print flags
     private val printPop = true
@@ -185,7 +193,7 @@ class Simulation(
     @Synchronized
     fun print(){
         totalDuration = (System.currentTimeMillis() - startTime).milliseconds
-        avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
+        avgSpeed = turnsPerSecond(totalTurns, totalDuration)
         avgDuration = totalDuration / max(talliedGames, 1)
         println(text())
     }
