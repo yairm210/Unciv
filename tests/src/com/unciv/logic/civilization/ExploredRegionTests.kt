@@ -3,6 +3,8 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
 import com.unciv.testing.BaseTestRunner
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -25,6 +27,17 @@ class ExploredRegionTests {
     private fun withNewRegion(block: ExploredRegion.() -> Unit) {
         ExploredRegion().apply {
             setMapParameters(mapParameters)
+            block()
+        }
+    }
+    private fun withWrappingRegion(block: ExploredRegion.() -> Unit) {
+        val wrapParams = MapParameters().apply {
+            shape = MapShape.rectangular
+            mapSize = MapSize(20, 10)   // adjust to your MapSize constructor; mapRadius becomes 10
+            worldWrap = true
+        }
+        ExploredRegion().apply {
+            setMapParameters(wrapParams)
             block()
         }
     }
@@ -112,6 +125,39 @@ class ExploredRegionTests {
         add(6, 2)
         copy.assertExtent(1, 1)  // fails if clone() shares the Vector2 instances
         copy.assertOut(hex(6, 2), "tile added to the original after cloning")
+    }
+
+    @Test
+    fun worldWrapRegionCrossesEastEdge() = withWrappingRegion {
+        add(8, 0)
+        add(10, 0)          // long == mapRadius: stored as -10, region becomes "wrapped"
+        assertIn(hex(10, 0), "east edge column")
+        assertIn(hex(8, 0), "first tile")
+        assertOut(hex(0, 0), "far side of the map, in the gap")
+        assertExtent(3, 1)
+
+        add(-8, 0)          // continues past the edge onto the west side
+        assertIn(hex(-8, 0), "tile west of the seam")
+        assertIn(hex(10, 0), "east edge column stays inside")
+        assertOut(hex(0, 0), "gap still unexplored")
+        assertOut(hex(-6, 0), "gap still unexplored")
+        assertExtent(5, 1)  // columns 8, 9, 10, -9, -8
+    }
+
+    @Test
+    fun worldWrapRegionCrossesWestEdge() = withWrappingRegion {
+        // West edge column is -mapRadius+1 = -9, odd, so use an odd latitude
+        add(-7, 1)
+        add(-9, 1)          // stored as 11, region becomes "wrapped"
+        assertIn(hex(-9, 1), "west edge column")
+        assertOut(hex(1, 1), "gap")
+        assertExtent(3, 1)
+
+        add(9, 1)           // continues past the seam onto the east side
+        assertIn(hex(9, 1), "tile east of the seam")
+        assertIn(hex(-9, 1), "west edge column stays inside")
+        assertOut(hex(1, 1), "gap")
+        assertExtent(5, 1)  // columns 9, 10, -9, -8, -7
     }
 
     /**
