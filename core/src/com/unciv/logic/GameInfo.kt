@@ -121,7 +121,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     /** Maps a civ to the civ they voted for - `null` on the value side means they abstained */
     var diplomaticVictoryVotesCast = HashMap<String, String?>()
-    // Set to false whenever the results still need te be processed
+    /** `true` once the results of the current vote have been processed by [processDiplomaticVictory].
+     *  Reset together with [diplomaticVictoryVotesCast] when the votes are cleared for the next round
+     *  (see `TurnManager.handleDiplomaticVictoryFlags`). Must be carried over by [clone]. */
     var diplomaticVictoryVotesProcessed = false
 
     /** The turn the replay history started recording.
@@ -209,6 +211,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
+        toReturn.diplomaticVictoryVotesProcessed = diplomaticVictoryVotesProcessed
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData?.copy()

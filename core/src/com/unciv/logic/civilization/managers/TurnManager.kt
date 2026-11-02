@@ -160,6 +160,7 @@ class TurnManager(val civInfo: Civilization) {
     private fun handleDiplomaticVictoryFlags() {
         if (civInfo.flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             civInfo.gameInfo.diplomaticVictoryVotesCast.clear()
+            civInfo.gameInfo.diplomaticVictoryVotesProcessed = false
             civInfo.removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
             civInfo.removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
         }
