@@ -131,7 +131,7 @@ open class UniqueMap() {
     @Readonly
     fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState): Boolean {
         val uniques = typedUniqueMap[uniqueType] ?: return false
-        return uniques.any { it.conditionalsApply(state) }
+        return uniques.any { !it.isTimedTriggerable && it.conditionalsApply(state) }
     }
 
     @Readonly
@@ -139,7 +139,7 @@ open class UniqueMap() {
         val tagUniques = tagUniqueMap[uniqueTag] ?: return false
         for (i in 0..< tagUniques.size) {
             val tagUnique = tagUniques[i]
-            if (tagUnique.conditionalsApply(state)) return true
+            if (!tagUnique.isTimedTriggerable && tagUnique.conditionalsApply(state)) return true
         }
         return false
     }
