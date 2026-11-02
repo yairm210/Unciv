@@ -44,7 +44,7 @@ class TestComplexRulesetMerging(
         @JvmStatic
         fun parameters() = listOf(arrayOf(
             /* verifyPolicyConsistency = */ true,
-            /* verifyPolicyReferences = */ false,
+            /* verifyPolicyReferences = */ true,
         ))
     }
 
