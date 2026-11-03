@@ -264,7 +264,7 @@ abstract class BaseScreen : Screen {
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
     fun openCivilopedia(ruleset: Ruleset, link: String = "") {
-        game.pushScreen{ CivilopediaScreen(ruleset, link = link) }
+        game.pushScreen { CivilopediaScreen(ruleset, link = link) }
     }
 }
 

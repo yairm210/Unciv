@@ -246,7 +246,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             // Foreign cities with a spy should offer both diplomacy and inspection.
             val openCityDirectly = belongsToViewingCiv() || viewingPlayer.isSpectator || DebugUtils.VISIBLE_MAP
             if (cityView != null && !isIteratingAirUnits && openCityDirectly) {
-                GUI.pushScreen{ CityScreen(cityView) }
+                GUI.pushScreen { CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))
                 foreignCityInfoPopup()
@@ -300,7 +300,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     }
 
     private fun foreignCityInfoPopup() {
-        fun openDiplomacy() = GUI.pushScreen{ 
+        fun openDiplomacy() = GUI.pushScreen {
             DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv())
         }
 
@@ -317,7 +317,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageCityView != null) addButton("View") { GUI.pushScreen{
+            if (espionageCityView != null) addButton("View") { GUI.pushScreen {
                 CityScreen(espionageCityView)
             } }
             add().expandX()
