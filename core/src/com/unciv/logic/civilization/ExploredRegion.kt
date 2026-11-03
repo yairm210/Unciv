@@ -9,6 +9,7 @@ import com.unciv.logic.map.HexMath.getLongitude
 import com.unciv.logic.map.HexMath.worldFromLatLong
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
@@ -46,17 +47,17 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     // Top left point of the explored region in stage (x;y) starting from the top left corner
     @Transient
-    private var topLeftStage = Vector2()
+    private val topLeftStage = Vector2()
 
     // Bottom right point of the explored region in stage (x;y) starting from the top left corner
     @Transient
-    private var bottomRightStage = Vector2()
+    private val bottomRightStage = Vector2()
 
     // Top left point of the explored region in hex (long;lat) from the center of the map
-    private var topLeft = Vector2()
+    private val topLeft = Vector2()
 
     // Bottom right point of the explored region in hex (long;lat) from the center of the map
-    private var bottomRight = Vector2()
+    private val bottomRight = Vector2()
 
     // Getters
     @Readonly fun shouldRecalculateCoords(): Boolean = shouldRecalculateCoords
@@ -70,8 +71,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
 
     fun clone(): ExploredRegion {
         val toReturn = ExploredRegion()
-        toReturn.topLeft = topLeft
-        toReturn.bottomRight = bottomRight
+        toReturn.topLeft.set(topLeft)
+        toReturn.bottomRight.set(bottomRight)
         return toReturn
     }
 
@@ -91,16 +92,18 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     @Readonly
     fun isEmpty() = topLeft == Vector2.Zero && bottomRight == Vector2.Zero
 
-    // Check if tilePosition is beyond explored region
-    fun checkTilePosition(tilePosition: HexCoord, explorerPosition: HexCoord?) {
+    /** Check if tilePosition is beyond explored region and expand region if not */ 
+    fun expandToInclude(tilePosition: HexCoord, explorerPosition: HexCoord?) {
         var mapExplored = false
         var longitude = getLongitude(tilePosition).toFloat()
         val latitude = getLatitude(tilePosition).toFloat()
 
         // First time call
         if (isEmpty()) {
-            topLeft = Vector2(longitude, latitude)
-            bottomRight = Vector2(longitude, latitude)
+            topLeft.set(longitude, latitude)
+            bottomRight.set(longitude, latitude)
+            shouldRecalculateCoords = true
+            shouldUpdateMinimap = true
             return
         }
 
@@ -165,7 +168,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
             mapExplored = true
         }
 
-        if(mapExplored) {
+        if (mapExplored) {
             shouldRecalculateCoords = true
             shouldUpdateMinimap = true
         }
@@ -195,8 +198,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
         val top = mapCenterY-topLeftWorld.y
         val bottom = mapCenterY-bottomRightWorld.y
 
-        topLeftStage = Vector2(left, top)
-        bottomRightStage = Vector2(right, bottom)
+        topLeftStage.set(left, top)
+        bottomRightStage.set(right, bottom)
 
         // Calculate rectangle for positioning the camera viewport on the minimap
         val yOffset = tileRadius * sqrt(3f) * 0.5f
@@ -207,27 +210,52 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun isPositionInRegion(postition: HexCoord): Boolean {
-        val long = getLongitude(postition)
-        val lat = getLatitude(postition)
-        return if (topLeft.x > bottomRight.x)
-                (long <= topLeft.x && long >= bottomRight.x && lat <= topLeft.y && lat >= bottomRight.y)
-            else
-                (((long >= topLeft.x && long >= bottomRight.x) || (long <= topLeft.x && long <= bottomRight.x)) && lat <= topLeft.y && lat >= bottomRight.y)
+    fun isPositionInRegion(position: HexCoord): Boolean {
+        if (isEmpty()) return false
+        val long = getLongitude(position)
+        val lat = getLatitude(position)
+        if (lat > topLeft.y || lat < bottomRight.y) return false
+        return if (topLeft.x >= bottomRight.x)
+            long <= topLeft.x && long >= bottomRight.x   // plain range
+        else
+            long <= topLeft.x || long >= bottomRight.x   // wrapped: outside the gap
     }
 
     @Readonly
     fun getWidth(): Int {
-        val result: Float
-        if (topLeft.x > bottomRight.x) result = topLeft.x - bottomRight.x
-        else result = mapRadius * 2f - (bottomRight.x - topLeft.x)
+        val result =
+            if (topLeft.x >= bottomRight.x) topLeft.x - bottomRight.x
+            else mapRadius * 2f - (bottomRight.x - topLeft.x)
         return result.toInt() + 1
     }
 
     @Readonly fun getHeight(): Int = (topLeft.y - bottomRight.y).toInt() + 1
 
-    fun getMinimapLeft(tileSize: Float): Float {
+    @Readonly fun getMinimapLeft(tileSize: Float) = (topLeft.x + 1f) * tileSize * -0.75f
+
+    /** Helper to determine `MiniMap` staleness, together with [shouldUpdateMinimap].
+     *  As [ExploredRegion] exists per Civilization, this requires there to be no more than one
+     *  active `MiniMap` at a time. Call this when the MiniMap is done.
+     */
+    fun markMinimapUpdated() {
         shouldUpdateMinimap = false
-        return (topLeft.x + 1f) * tileSize * -0.75f
+    }
+
+    /** Reset and rebuild for every tile [civ] has explored in [tileMap] */
+    fun rebuildFor(tileMap: TileMap, civ: Civilization) {
+        val exploredPositions = tileMap.values.asSequence()
+            .filter { civ.hasExplored(it) }.map { it.position }
+        rebuildFrom(tileMap.mapParameters, exploredPositions)
+    }
+
+    /** Reset and rebuild with [mapParameters] for all [exploredPositions] */
+    fun rebuildFrom(mapParameters: MapParameters, exploredPositions: Sequence<HexCoord>) {
+        setMapParameters(mapParameters)
+        topLeft.set(0f, 0f)
+        bottomRight.set(0f, 0f)   // back to the "empty" sentinel
+        for (position in exploredPositions)
+            expandToInclude(position, null)
+        shouldRecalculateCoords = true
+        shouldUpdateMinimap = true
     }
 }

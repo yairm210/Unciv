@@ -1202,7 +1202,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
             }
 
             if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position, explorerPosition)
+                player.exploredRegion.expandToInclude(position, explorerPosition)
         } else {
             exploredBy = exploredBy.withoutItem(player.civID)
         }

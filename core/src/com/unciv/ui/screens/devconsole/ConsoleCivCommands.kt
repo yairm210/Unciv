@@ -28,12 +28,16 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             if (!civ.isMajorCiv)
                 throw ConsoleErrorException("Can only change player type for major civs")
             civ.playerType = params[1].enumValue<PlayerType>()
+            if (civ.playerType == PlayerType.Human) {
+                // Current one is empty (AI's don't update it) or stale (earlier civ setplayertype)
+                civ.exploredRegion.rebuildFor(console.gameInfo.tileMap, civ)
+            }
             DevConsoleResponse.OK
         },
 
         "revealmap" to ConsoleAction("civ revealmap [civName]") { console, params ->
             val civ = console.getCivByNameOrSelected(params.getOrNull(0))
-            civ.gameInfo.tileMap.values.asSequence()
+            civ.gameInfo.tileMap.values
                 .forEach { it.setExplored(civ, true) }
             DevConsoleResponse.OK
         },
