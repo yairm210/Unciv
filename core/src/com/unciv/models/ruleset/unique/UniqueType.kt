@@ -15,6 +15,7 @@ private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
 private const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
 private const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
+private const val NUCLEAR_EXCLUSION_EXPLANATION = "Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats."
 private val CHOOSE_MUSIC_DOCSTRING get() = (
     """Parameters are unchecked, strings not matching existing tracks or flags are ignored.
     |See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
@@ -534,9 +535,12 @@ enum class UniqueType(
     // Gains from battle
     DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global),
     CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
-    KillUnitCapture("May capture killed [mapUnitFilter] units", UniqueTarget.Unit),
+    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = NUCLEAR_EXCLUSION_EXPLANATION),
+    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief,
+        docDescription = NUCLEAR_EXCLUSION_EXPLANATION),
+    KillUnitCapture("May capture killed [mapUnitFilter] units", UniqueTarget.Unit,
+        docDescription = NUCLEAR_EXCLUSION_EXPLANATION),
 
     // XP
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
@@ -1026,9 +1030,11 @@ enum class UniqueType(
     TriggerUponCombat("upon entering combat", UniqueTarget.UnitTriggerCondition),
     TriggerUponDamagingUnit("upon damaging a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition,
         docDescription = "Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'"),
-    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
+    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition,
+        docDescription = NUCLEAR_EXCLUSION_EXPLANATION),
     TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
-    TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
+    TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition,
+        docDescription = NUCLEAR_EXCLUSION_EXPLANATION),
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotionGain("upon gaining the [promotion] promotion", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotionLoss("upon losing the [promotion] promotion", UniqueTarget.UnitTriggerCondition),

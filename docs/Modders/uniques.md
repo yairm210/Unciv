@@ -1203,6 +1203,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
@@ -1718,6 +1720,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
@@ -2424,11 +2428,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 
 ??? example  "May capture killed [mapUnitFilter] units"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "May capture killed [Wounded] units"
 
 	Applicable to: Unit
@@ -4209,11 +4217,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon being defeated&gt;"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon being promoted&gt;"
