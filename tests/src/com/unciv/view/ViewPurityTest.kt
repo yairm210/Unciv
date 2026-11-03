@@ -6,6 +6,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.net.URI
 import java.util.jar.JarFile
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -87,8 +88,8 @@ class ViewPurityTest {
                     }
                 }
                 "jar" -> {
-                    val jarPath = resource.path.substringAfter("file:").substringBefore("!")
-                    JarFile(jarPath).use { jar ->
+                    // resource.path is still percent-encoded (e.g. %20 for a blank in the checkout path), so go through URI
+                    JarFile(File(URI(resource.path.substringBefore("!")))).use { jar ->
                         for (entry in jar.entries()) {
                             if (entry.isDirectory || !entry.name.startsWith("$packagePath/")) continue
                             val relativeName = entry.name.removePrefix("$packagePath/")
