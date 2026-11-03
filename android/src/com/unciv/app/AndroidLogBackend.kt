@@ -58,7 +58,8 @@ class AndroidLogBackend(private val activity: Activity) : LogBackend {
         FDroid("F-Droid", "cd16e386469f23988fc9cdeca01bfefbd0deaed13a4907bce76e91acc9662c68"),
         PlayStore("Play Store", "3257d599a49d2c961a471ca9843f59d341a405884583fc087df4237b733bbd6d"),
         ;
-        val digest: ByteArray = hex.toByteArray()
+        /** The SHA-256 of the signing certificate as raw bytes - `hex.toByteArray()` would be the 64 ASCII characters, never equal to a digest */
+        val digest: ByteArray = hex.hexToByteArray()
         companion object {
             fun of(digest: ByteArray?) =
                 entries.firstOrNull { it.digest.contentEquals(digest) }?.label
