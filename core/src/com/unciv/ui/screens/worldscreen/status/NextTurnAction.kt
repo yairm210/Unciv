@@ -72,9 +72,9 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.shouldOpenTechPicker()
         override fun action(worldScreen: WorldScreen) =
-                TechPickerScreen(worldScreen.selectedGameView.civView.getCiv(), null)
-            }.let {  }
             worldScreen.game.pushScreen {
+                TechPickerScreen(worldScreen.selectedGameView.civView.getCiv())
+            }
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
         override fun isChoice(worldScreen: WorldScreen) =

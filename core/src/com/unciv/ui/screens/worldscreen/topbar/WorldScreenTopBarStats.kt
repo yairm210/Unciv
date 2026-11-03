@@ -97,7 +97,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         addStat("Gold", goldLabel, EmpireOverviewCategories.Stats, true)
         addPerTurnLabel(goldPerTurnLabel)
 
-        addStat("Science", scienceLabel) { TechPickerScreen(worldScreen.selectedCiv) }
+        addStat("Science", scienceLabel) { TechPickerScreen(worldScreen.selectedGameView.civView.getCiv()) }
 
         val invokeResourcesPage = {
             worldScreen.openEmpireOverview(EmpireOverviewCategories.Resources)
