@@ -1,58 +1,20 @@
 ## 4.22.17
 
-View implementation - change civilian unit automation to also detect units with potential settler uniques - see 
+Reduced memory when downloading games from multiplayer server
 
-View implementation - BattleHelper - see 
+Nuke targets are scrollable, so too many targets don't make the "nuke" button go off-screen
 
-View implementation - BarbarianAutomation, remove getUnit calls - see 
+Citybutton clicks show units again
 
-View implementation - Unify road pathing view functions - see 
+Added search for saved games
 
-View implementation - WorkerAutomation view-ifying 2 - see 
-
-View implementation - WorkerAutomation view-ifying - see 
-
-View implementation - Road pathing cache is city-agnostic - see 
-
-View implementation - Single TileView function getNeighbors - see 
-
-View implementation - Un-Viewify BFS, instead make it generic to accomodate Tile AND TileView - see 
-
-View implementation - Move road pathing out of city, viewify the whole thing - see 
-
-View implementation - RoadsBetweenCitiesAutomation - see 
-
-Clicking on the citybutton now acts as clicking on the tile as well, allowing air units to be selected, as it did a while back
-
-Resolved  - Nuke targets are scrollable, so too many targets don't make the "nuke" button go off-screen
-
-Vibed "search load screen for saves" implementation: Space-delimited search values, select game if only one matches, focus on search bar on screen load.
-
-perf(mem): All game downloads are now streams! No more "entire string plus trimmed plus unzipped bytes", should decrease number of OOM crashes caused by multiplayer checker
-
-chore: File conversion tests
-
-By JoshKirk800:
-- Ruleset.load: log the mod name and folder when ModOptions.json is broken 
-- fromJsonFile: don't re-read the file after a parse failure 
-- ChooseMusic unique: read the flags from its third parameter 
-- ImageGetter.setNewRuleset: also clear the nine-patch cache 
-- InputDisabling.withInputDisabled: restore the input processor in a finally 
-- DiscordUpdater: put the turn in presence.state 
-- AndroidLogBackend: decode the known signing fingerprints to digest bytes 
-- EditFriendScreen: return after going back when nothing was edited 
-- UniqueMap.hasMatchingUnique/hasMatchingTagUnique: ignore timed uniques like every other lookup 
-- ViewPurityTest: find the classes jar when the checkout path contains a blank 
+Many small LLM fixes - By JoshKirk800 (new contributor!)
 
 Clarify nuclear death exclusions for combat uniques - By mvanhorn
 
-By SomeTroglodyte:
-- Harden minimap for empty explored region 
-- chore: Lint `pushScreen` calls 
+Harden minimap for empty explored region - By SomeTroglodyte
 
-By ibrahim-iqbal:
-- Fix "Off" promotion-automation option being untranslatable  ()
-- Restore capital C in the God of Craftsmen belief  ()
+Fix "Off" promotion-automation option being untranslatable - By ibrahim-iqbal
 
 ## 4.22.16
 
