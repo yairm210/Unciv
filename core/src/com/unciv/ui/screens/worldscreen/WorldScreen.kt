@@ -111,7 +111,7 @@ import kotlin.concurrent.timer
  * There really should ever be only one in memory at the same time, likely managed by [UncivGame].
  *
  * @param gameInfo The game state the screen should represent
- * @param viewingCiv The currently active [civilization][Civilization]
+ * @param viewingCiv The currently active [Civilization]
  * @param restoreState
  */
 class WorldScreen(
@@ -120,13 +120,13 @@ class WorldScreen(
     internal val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
-    /** When set, causes the screen to update in the next [render][render] event */
+    /** When set, causes the screen to update in the next [render] event */
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
-    
+
     /** Indicates that a game failed to upload, and needs to be uploaded */
     var failedUpload = false
         private set
@@ -137,7 +137,7 @@ class WorldScreen(
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
-    /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
+    /** The [selectedCiv]'s perspective. For non-spectators this equals the viewingGameView.
      *  Only ever differs from [spectatorGameView] for spectators. */
     var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator)
         internal set
@@ -147,8 +147,8 @@ class WorldScreen(
     private val spectatorGameView by lazy {
         if (!viewingCiv.isSpectator) throw Exception("Managed to disable fog of war without being spectator?!")
         GameView(gameInfo, viewingCiv, spectatorMode = true)
-    }  
-    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
+    }
+    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView
 
     /** UI toggle only (spectator mode): whether the map/tile panel should show [selectedGameView]'s
      *  (fogged) vision or [spectatorGameView]'s (the spectator's own, unrestricted) vision. */
@@ -285,20 +285,20 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen{ EmpireOverviewScreen(selectedGameView.civView, category, selection) }
+        game.pushScreen { EmpireOverviewScreen(selectedGameView.civView, category, selection) }
     }
 
     fun openNewGameScreen() {
         val newGameSetupInfo = GameSetupInfo(gameInfo)
         newGameSetupInfo.mapParameters.reseed()
         val newGameScreen = NewGameScreen(newGameSetupInfo)
-        game.pushScreen{ newGameScreen }
+        game.pushScreen { newGameScreen }
     }
 
     fun openSaveGameScreen() {
         // See #10353 - we don't support locally saving an online multiplayer game
         if (gameInfo.gameParameters.isOnlineMultiplayer) return
-        game.pushScreen{ SaveGameScreen(gameInfo) }
+        game.pushScreen { SaveGameScreen(gameInfo) }
     }
 
     private fun addKeyboardPresses() {
@@ -311,7 +311,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewNotifications) { openEmpireOverview(EmpireOverviewCategories.Notifications) }
-        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen{ VictoryScreen(this) } }
+        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen { VictoryScreen(this) } }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewStats) { openEmpireOverview(EmpireOverviewCategories.Stats) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewResources) { openEmpireOverview(EmpireOverviewCategories.Resources) }
         globalShortcuts.add(KeyboardBinding.QuickSave) { QuickSave.save(gameInfo, this) }
@@ -319,13 +319,13 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen{ CityScreen(selectedGameView.getCityView(capital)) }
+                game.pushScreen { CityScreen(selectedGameView.getCityView(capital)) }
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
         }
         globalShortcuts.add(KeyboardBinding.SaveGame) { openSaveGameScreen() }    //   Save
-        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen{ LoadGameScreen() } }    //   Load
+        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen { LoadGameScreen() } }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }
         globalShortcuts.add(KeyboardBinding.MusicPlayer) {
@@ -404,7 +404,7 @@ class WorldScreen(
                     }
                 }.right()
                 loadingGamePopup.addButton("Main menu") {
-                    game.pushScreen{ MainMenuScreen() }
+                    game.pushScreen { MainMenuScreen() }
                 }.left()
             }
         }
@@ -465,9 +465,9 @@ class WorldScreen(
         if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
-                    UncivGame.Current.pushScreen{ DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
+                    game.pushScreen { DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
-                    game.pushScreen{ VictoryScreen(this) }
+                    game.pushScreen { VictoryScreen(this) }
                 hasPendingFreeGreatPerson() && !deferFreeGreatPersonPicker ->
                     openGreatPersonPicker()
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
@@ -562,7 +562,7 @@ class WorldScreen(
         val scrollX = mapHolder.scrollX
         val scrollY = mapHolder.scrollY
     }
-    
+
     @Readonly
     fun getRestoreState(): RestoreState {
         return RestoreState(mapHolder, selectedCiv.civID, viewingCiv.civID, fogOfWar)
@@ -572,7 +572,7 @@ class WorldScreen(
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
         if (viewingCiv.civID != restoreState.viewingCivName) return
-        
+
         mapHolder.zoom(restoreState.zoom)
         mapHolder.scrollX = restoreState.scrollX
         mapHolder.scrollY = restoreState.scrollY
@@ -695,7 +695,7 @@ class WorldScreen(
         }
         shouldUpdate = true
     }
-    
+
     @Readonly
     internal fun isNextTurnUpdateRunning(): Boolean {
         val job = nextTurnUpdateJob

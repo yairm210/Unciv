@@ -62,7 +62,7 @@ class LocationAction(private val location: HexCoord = HexCoord.Zero) : Notificat
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen{ TechPickerScreen(worldScreen.selectedCiv, tech) }
+        worldScreen.game.pushScreen { TechPickerScreen(worldScreen.selectedGameView.civView.getCiv(), tech) }
     }
 }
 
@@ -73,7 +73,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
             ?: return
         val cityView = worldScreen.selectedGameView.getCityView(cityObject)
         if (cityView.isOwnedByViewer())
-            worldScreen.game.pushScreen{ CityScreen(cityView) }
+            worldScreen.game.pushScreen { CityScreen(cityView) }
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
@@ -117,7 +117,7 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen{ 
+        worldScreen.game.pushScreen {
             DiplomacyScreen(
             worldScreen.selectedGameView.civView,
             worldScreen.selectedGameView.getForeignCivView(otherCiv),

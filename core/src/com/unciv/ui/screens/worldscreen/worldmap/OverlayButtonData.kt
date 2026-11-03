@@ -196,9 +196,9 @@ class MoveSpyOverlayButtonData(val spyView: SpyView, val cityView: ForeignCityVi
         spyActionButton.onActivation(UncivSound.Silent) {
             if (cityView != null) {
                 spyView.tryMoveTo(cityView)
-                worldScreen.game.pushScreen{ EspionageScreen(worldScreen.selectedCiv, worldScreen) }
+                worldScreen.game.pushScreen { EspionageScreen(worldScreen.selectedCiv, worldScreen) }
             } else {
-                worldScreen.game.pushScreen{ EspionageScreen(worldScreen.selectedCiv, worldScreen) }
+                worldScreen.game.pushScreen { EspionageScreen(worldScreen.selectedCiv, worldScreen) }
                 worldScreen.bottomUnitTable.selectSpy(null)
             }
             worldMapHolder.removeUnitActionOverlay()

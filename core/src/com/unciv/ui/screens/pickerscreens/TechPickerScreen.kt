@@ -80,8 +80,6 @@ class TechPickerScreen(
     private val turnsToTech = ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
 
     init {
-        Gdx.input.inputProcessor = null // Avoid ANRs while building the tech screen
-
         setDefaultCloseAction()
         scrollPane.setOverscroll(false, false)
 
@@ -120,7 +118,6 @@ class TechPickerScreen(
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
-        Gdx.input.inputProcessor = stage // Return input 
     }
 
     override fun getCivilopediaRuleset() = ruleset
