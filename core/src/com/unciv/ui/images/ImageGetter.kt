@@ -68,6 +68,7 @@ object ImageGetter {
             
         ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
+        ninePatchDrawables.clear()
 
         val setFontFamilyJob = Concurrency.run {
             // Loading available fonts can take a long time
