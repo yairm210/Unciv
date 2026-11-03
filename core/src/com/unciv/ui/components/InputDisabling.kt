@@ -33,9 +33,11 @@ object InputDisabling {
     fun <T> withInputDisabled(block: () -> T): T {
         val inputProcessor = Gdx.input.inputProcessor
         Gdx.input.inputProcessor = null
-        val result = block()
-        Gdx.input.inputProcessor = inputProcessor
-        return result
+        try {
+            return block()
+        } finally {
+            Gdx.input.inputProcessor = inputProcessor
+        }
     }
 
     /** 
