@@ -111,7 +111,7 @@ import kotlin.concurrent.timer
  * There really should ever be only one in memory at the same time, likely managed by [UncivGame].
  *
  * @param gameInfo The game state the screen should represent
- * @param viewingCiv The currently active [civilization][Civilization]
+ * @param viewingCiv The currently active [Civilization]
  * @param restoreState
  */
 class WorldScreen(
@@ -120,13 +120,13 @@ class WorldScreen(
     internal val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
-    /** When set, causes the screen to update in the next [render][render] event */
+    /** When set, causes the screen to update in the next [render] event */
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
-    
+
     /** Indicates that a game failed to upload, and needs to be uploaded */
     var failedUpload = false
         private set
@@ -137,7 +137,7 @@ class WorldScreen(
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
-    /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
+    /** The [selectedCiv]'s perspective. For non-spectators this equals the viewingGameView.
      *  Only ever differs from [spectatorGameView] for spectators. */
     var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator)
         internal set
@@ -147,8 +147,8 @@ class WorldScreen(
     private val spectatorGameView by lazy {
         if (!viewingCiv.isSpectator) throw Exception("Managed to disable fog of war without being spectator?!")
         GameView(gameInfo, viewingCiv, spectatorMode = true)
-    }  
-    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
+    }
+    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView
 
     /** UI toggle only (spectator mode): whether the map/tile panel should show [selectedGameView]'s
      *  (fogged) vision or [spectatorGameView]'s (the spectator's own, unrestricted) vision. */
@@ -465,7 +465,7 @@ class WorldScreen(
         if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
-                    UncivGame.Current.pushScreen { DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
+                    game.pushScreen { DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen { VictoryScreen(this) }
                 hasPendingFreeGreatPerson() && !deferFreeGreatPersonPicker ->
@@ -562,7 +562,7 @@ class WorldScreen(
         val scrollX = mapHolder.scrollX
         val scrollY = mapHolder.scrollY
     }
-    
+
     @Readonly
     fun getRestoreState(): RestoreState {
         return RestoreState(mapHolder, selectedCiv.civID, viewingCiv.civID, fogOfWar)
@@ -572,7 +572,7 @@ class WorldScreen(
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
         if (viewingCiv.civID != restoreState.viewingCivName) return
-        
+
         mapHolder.zoom(restoreState.zoom)
         mapHolder.scrollX = restoreState.scrollX
         mapHolder.scrollY = restoreState.scrollY
@@ -695,7 +695,7 @@ class WorldScreen(
         }
         shouldUpdate = true
     }
-    
+
     @Readonly
     internal fun isNextTurnUpdateRunning(): Boolean {
         val job = nextTurnUpdateJob
