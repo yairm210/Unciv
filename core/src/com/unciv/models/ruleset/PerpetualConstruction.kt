@@ -36,7 +36,7 @@ sealed class PerpetualConstruction(override var name: String, val description: S
     }
 
     @Readonly
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String>) = isBuildable(cityConstructions)
     @Readonly
     override fun getStockpiledResourceRequirements(state: GameContext) = Counter.ZERO
     @Readonly

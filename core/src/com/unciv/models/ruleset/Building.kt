@@ -254,15 +254,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return (cost / 10f).toInt() * 10
     }
 
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        if (cityConstructions.isBeingConstructedOrEnqueued(name))
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String>): Boolean {
+        if (name in queue)
             return false
         for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
-            if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+            if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this, cityConstructions.city, queue) >= unique.params[0].toInt())
                 return false
         }
 
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+        val rejectionReasons = getRejectionReasons(cityConstructions, queue)
 
         if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })

@@ -18,7 +18,9 @@ import kotlin.math.pow
 
 interface IConstruction : INamed {
     @Readonly fun isBuildable(cityConstructions: CityConstructions): Boolean
-    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
+    /** @param queue A snapshot of [cityConstructions]' queue taken once by a caller that checks many constructions in a row
+     *  (the city screen builds its list on another thread), see [INonPerpetualConstruction.getRejectionReasons] */
+    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String> = cityConstructions.constructionQueue): Boolean
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/

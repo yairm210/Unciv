@@ -201,8 +201,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueTable.clear()
 
         val cityConstructions = cityView.constructions
-        val currentConstruction = cityConstructions.currentConstructionName()
-        val queue = cityConstructions.constructionQueue
+        val queue = cityConstructions.constructionQueue // Read once: the whole refresh, entries included, works on this snapshot
+        val currentConstruction = queue.firstOrNull() ?: ""
 
         constructionsQueueTable.defaults().pad(0f)
         constructionsQueueTable.add(getHeader("Current construction")).fillX()
@@ -210,7 +210,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueTable.addSeparator()
 
         if (currentConstruction != "")
-            constructionsQueueTable.add(getQueueEntry(0, currentConstruction))
+            constructionsQueueTable.add(getQueueEntry(queue, 0, currentConstruction))
                     .expandX().fillX().row()
         else
             constructionsQueueTable.add("Pick a construction".toLabel()).height(50f).pad(2f).row()
@@ -224,7 +224,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         queue.forEachIndexed { i, constructionName ->
             // The first entry is already displayed as "Current construction"
             if (i != 0) {
-                queueExpander.innerTable.add(getQueueEntry(i, constructionName))
+                queueExpander.innerTable.add(getQueueEntry(queue, i, constructionName))
                     .expandX().fillX().row()
                 if (i != queue.lastIndex) {
                     queueExpander.innerTable.addSeparator()
@@ -283,14 +283,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val constructionButtonDTOList = ArrayList<ConstructionButtonDTO>()
 
         val cityConstructions = cityView.constructions
+        // Read once: this list is built on a background thread while the queue can still be edited, and every entry is checked against it
+        val queue = cityConstructions.constructionQueue
 
         val constructionsSequence = cityView.getRuleset().units.values.asSequence() +
                 cityView.getRuleset().buildings.values.asSequence()
 
         cityView.updateTileStats() // only once
-        for (entry in constructionsSequence.filter { cityConstructions.shouldBeDisplayed(it) }) {
+        for (entry in constructionsSequence.filter { cityConstructions.shouldBeDisplayed(it, queue) }) {
 
-            val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
+            val useStoredProduction = entry is Building || entry.name !in queue
 
             // this is susceptible to comodification since ANY change in unique sources - for example a new building -
             //   can cause comodification change
@@ -303,7 +305,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             val resourcesRequired = cityView.getResourceRequirementsPerTurn(entry)
             val mostImportantRejection =
-                    cityConstructions.getRejectionReasons(entry)
+                    cityConstructions.getRejectionReasons(entry, queue)
                         .filter { it.isImportantRejection() }
                         .minByOrNull { it.getRejectionPrecedence() }
 
@@ -408,7 +410,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
     }
 
-    private fun getQueueEntry(constructionQueueIndex: Int, constructionName: String): Table {
+    private fun getQueueEntry(queue: List<String>, constructionQueueIndex: Int, constructionName: String): Table {
         val cityConstructions = cityView.constructions
 
         val table = Table()
@@ -416,7 +418,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         highlightQueueEntry(table, constructionQueueIndex == selectedQueueEntry)
 
         val construction = cityConstructions.getConstruction(constructionName)
-        val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
+        val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(queue, constructionQueueIndex, constructionName)
 
         var text = constructionName.tr(true) +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n" + Fonts.infinity
@@ -438,7 +440,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged()){
                 table.add(getRaisePriorityButton(constructionQueueIndex, constructionName)).right()}
             else table.add().right()
-            if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
+            if (constructionQueueIndex != queue.lastIndex && cityScreen.canCityBeChanged())
                 table.add(getLowerPriorityButton(constructionQueueIndex, constructionName)).right()
             else table.add().right()
         }
@@ -648,11 +650,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun cannotAddConstructionToQueue(construction: IConstruction): Boolean {
         val cityConstructions = cityView.constructions
-        return cityConstructions.isQueueFull()
-                || !cityScreen.canChangeState
+        val queue = cityConstructions.constructionQueue // Read once for all the checks
+        return !cityScreen.canChangeState
                 || cityView.isPuppet()
-                || !cityConstructions.isBuildable(construction)
-                || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
+                || !cityConstructions.canAddToQueue(construction, queue)
+                || construction is PerpetualConstruction && construction.name in queue
     }
 
     private fun addConstructionToQueue(construction: IConstruction) {

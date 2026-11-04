@@ -121,12 +121,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     // Why is one of these called 'buildable' and the other 'constructable'?
     @Readonly
-    internal fun getBuildableBuildings(): Sequence<Building> = city.getRuleset().buildings.values
-        .asSequence().filter { it.isBuildable(this) }
+    internal fun getBuildableBuildings(): Sequence<Building> {
+        val queue = constructionQueue // Read once, the sequence is evaluated later
+        return city.getRuleset().buildings.values.asSequence().filter { it.isBuildable(this, queue) }
+    }
 
     @Readonly
-    fun getConstructableUnits() = city.getRuleset().units.values
-        .asSequence().filter { it.isBuildable(this) }
+    fun getConstructableUnits(): Sequence<BaseUnit> {
+        val queue = constructionQueue
+        return city.getRuleset().units.values.asSequence().filter { it.isBuildable(this, queue) }
+    }
 
     /**
      * @return [Stats] provided by all built buildings in city
@@ -209,8 +213,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  once that entry is bought or built, so it does not count against itself (see [INonPerpetualConstruction.getRejectionReasons]).
      *  Reads the field once. */
     @Readonly
-    fun queueWithoutOneOf(constructionName: String): List<String> {
-        val queue = constructionQueue
+    fun queueWithoutOneOf(constructionName: String): List<String> = queueWithoutOneOf(constructionQueue, constructionName)
+
+    /** Same on a [queue] snapshot the caller took once */
+    @Readonly
+    fun queueWithoutOneOf(queue: List<String>, constructionName: String): List<String> {
         val index = queue.indexOf(constructionName)
         if (index < 0) return queue
         return queue.filterIndexed { i, _ -> i != index }
@@ -322,9 +329,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun cheapestStatBuilding(stat: Stat): Building? {
+        val queue = constructionQueue
         return city.getRuleset().buildings.values.asSequence()
             .filter { !it.isAnyWonder() && it.isStatRelated(stat, city) &&
-                (it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name)) }
+                (it.isBuildable(this, queue) || it.name in queue) }
             .minByOrNull { it.cost }
     }
 
@@ -384,9 +392,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         validateConstructionQueue()
         validateInProgressConstructions()
 
-        if (getConstruction( currentConstructionName()) !is PerpetualConstruction) {
-            if (getWorkDone( currentConstructionName()) == 0) {
-                constructionBegun(getConstruction( currentConstructionName()))
+        val currentName = currentConstructionName() // Once, this is one step
+        if (getConstruction(currentName) !is PerpetualConstruction) {
+            if (getWorkDone(currentName) == 0) {
+                constructionBegun(getConstruction(currentName))
             }
             addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
             productionOverflow = 0
@@ -464,7 +473,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
         // should have little visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...), all other points should be refunded
         // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
-        val inProgressSnapshot = inProgressConstructions.keys.filter { it !=  currentConstructionName() }
+        val queue = constructionQueue // Once for the whole pass
+        val currentName = queue.firstOrNull() ?: ""
+        val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentName }
         for (constructionName in inProgressSnapshot) {
             val construction = getConstruction(constructionName)
             // Perpetual constructions should always still be valid (I hope)
@@ -472,7 +483,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
             // A queued entry must not count against itself when it is checked for MaxNumberBuildable
             val rejectionReasons = (construction as INonPerpetualConstruction)
-                .getRejectionReasons(this, queueWithoutOneOf(constructionName))
+                .getRejectionReasons(this, queueWithoutOneOf(queue, constructionName))
 
             if (!rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) continue
 
@@ -493,7 +504,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 // Production put into upgradable units gets put into upgraded version
                 val cheapestUpgradeUnit = construction.getRulesetUpgradeUnits(city.state)
                     .map { city.civ.getEquivalentUnit(it) }
-                    .filter { it.isBuildable(this) }
+                    .filter { it.isBuildable(this, queue) }
                     .minByOrNull { it.cost }
                 if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && cheapestUpgradeUnit != null) {
                     inProgressConstructions[cheapestUpgradeUnit.name] = (inProgressConstructions[cheapestUpgradeUnit.name] ?: 0) + workDone
@@ -838,8 +849,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
         }
 
-        if (queuePosition in 0 until constructionQueue.size)
-            removeFromQueue(queuePosition, automatic)
+        if (queuePosition >= 0) removeFromQueue(queuePosition, automatic)
         validateConstructionQueue()
 
         // A purchase should never leave the city idle if we invalidated or emptied the queue
@@ -877,9 +887,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction():Unit = timeThis("chooseNextConstruction") {
-        if (!isQueueEmptyOrIdle()) {
+        val currentName = currentConstructionName()
+        if (currentName.isNotEmpty() && currentName != PerpetualConstruction.Idle.name) { // the queue is neither empty nor idle
             // If the USER set a perpetual construction, then keep it!
-            if (getConstruction( currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return
+            if (getConstruction(currentName) !is PerpetualConstruction || currentConstructionIsUserSet) return
         }
 
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
@@ -931,8 +942,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun canAddToQueue(construction: IConstruction): Boolean {
-        val queue = constructionQueue // Single read, the field may be replaced by another thread
+    fun canAddToQueue(construction: IConstruction, queue: List<String> = constructionQueue): Boolean {
+        // [queue] is a snapshot: by default taken here, otherwise by a caller that checks several things in a row
         if (queue.size >= queueMaxSize) return false
         if (construction is Building && queue.contains(construction.name)) return false
         // For limited constructions this counts everything already queued, in this city too - the queue is passed explicitly
@@ -1005,6 +1016,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     @Synchronized
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
+        if (constructionQueueIndex !in constructionQueue.indices) return // The queue may have changed since the caller looked at it
         val newQueue = ArrayList(constructionQueue)
         val constructionName = newQueue.removeAt(constructionQueueIndex)
         val queueBecameEmpty = newQueue.isEmpty()
