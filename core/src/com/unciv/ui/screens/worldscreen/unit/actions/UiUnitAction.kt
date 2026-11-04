@@ -205,7 +205,7 @@ enum class UiUnitActionType private constructor(
     ShowAdditionalActions("Show more", portrait("ShowMore"), false, useFrequency = 0f),
     HideAdditionalActions("Back", portrait("HideMore"), false, page = 1, useFrequency = 0f),
     AddInCapital(UnitActionType.AddInCapital, portrait("AddInCapital"), uncivSound = UncivSound.Chimes, useFrequency = 80f),
-    HostileTakeover(UnitActionType.HostileTakeover, portrait("HostileTakeover"), uncivSound = UncivSound.Chimes, useFrequency = 70f)
+    HostileTakeover(UnitActionType.HostileTakeover, portrait("ConductTradeMission"), uncivSound = UncivSound.Chimes, useFrequency = 70f)
     ;
 
     /** For types backed by a logic [UnitActionType] */
