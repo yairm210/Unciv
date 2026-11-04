@@ -235,14 +235,9 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         val defenderIsCivilian = defender is MapUnitCombatantView && defender.getUnitView().isCivilian()
-        if (!attacker.isRanged() &&
-                (defenderIsCivilian || defender.isCity() && defender.isDefeated())) {
+        if (!attacker.isRanged() && defenderIsCivilian) {
             add()
-            val defeatedText = when {
-                !defenderIsCivilian -> "Occupied!"
-                defender.hasUnique(UniqueType.Uncapturable) -> ""
-                else -> "Captured!"
-            }
+            val defeatedText = if (defender.hasUnique(UniqueType.Uncapturable)) "" else "Captured!"
             add(defeatedText.toLabel())
         } else {
             var maxDamageToDefender = attacker.calculateDamageToDefender(defender, tileToAttackFromView, 1f)
@@ -285,6 +280,13 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
             if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender ($avgDamageToDefender)".toLabel())
             else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender (~$avgDamageToDefender)".toLabel())
+
+            // A city at its minimum health still fights back at full strength, and a melee unit that survives takes it
+            if (!attacker.isRanged() && defender.isCity() && defender.isDefeated() && minRemainingLifeAttacker > 0) {
+                row()
+                add()
+                add("Occupied!".toLabel())
+            }
         }
 
         row().pad(5f)

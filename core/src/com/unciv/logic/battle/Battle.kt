@@ -206,7 +206,7 @@ object Battle {
     }
 
     private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
-        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || 
+        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || attacker.isDefeated() ||
             (!attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true))
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
         ) return
@@ -391,12 +391,14 @@ object Battle {
         } else {
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
+            // A city at its minimum health is only taken by a melee unit that survives the fight, so it keeps fighting back at full strength
+            val defeatedCityFightsOn = defender is CityCombatant && attacker.isMelee()
 
             while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
                 if (rng.nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
                     potentialDamageToDefender--
                     defender.takeDamage(1)
-                    if (defender.isDefeated()) break
+                    if (defender.isDefeated() && !defeatedCityFightsOn) break
                 } else {
                     potentialDamageToAttacker--
                     attacker.takeDamage(1)
