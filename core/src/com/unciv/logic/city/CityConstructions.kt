@@ -79,7 +79,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** The queue is never mutated in place, only replaced as a whole, so concurrent readers always see a consistent list.
-     *  All modifications must go through here (or assign a freshly built list). */
+     *  Readers must take the field **once** per task and work on that snapshot.
+     *  Writers are `@Synchronized` (read-copy-assign must not interleave); all modifications must go through here
+     *  or another `@Synchronized` function of this class. */
+    @Synchronized
     fun editQueue(edit: MutableList<String>.() -> Unit) {
         val newQueue = ArrayList(constructionQueue)
         newQueue.edit()
@@ -92,6 +95,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionIsUserSet = false
+    @Volatile
     var constructionQueue: List<String> = ArrayList(queueMaxSize)
         private set
     var productionOverflow = 0
@@ -375,7 +379,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
 
     private fun validateConstructionQueue() {
-        val queueSnapshot = constructionQueue.toList()
+        // Validate a snapshot without holding a lock (it asks many questions), and publish the result only if nobody
+        // replaced the queue meanwhile - otherwise their change would be lost, so validate the new queue instead.
+        while (true) {
+            val queueSnapshot = constructionQueue
+            val validatedQueue = validatedCopyOf(queueSnapshot)
+            val published = synchronized(this) {
+                if (constructionQueue !== queueSnapshot) false
+                else { constructionQueue = validatedQueue; true }
+            }
+            if (published) break
+        }
+        chooseNextConstruction()
+        validateCreatesOneImprovementMarkers()
+    }
+
+    private fun validatedCopyOf(queueSnapshot: List<String>): List<String> {
         // Build into a new list and swap it in at the end, so concurrent readers never see an empty queue
         val validatedQueue = ArrayList<String>(queueMaxSize)
 
@@ -399,9 +418,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else if (construction is Building)
                 removeImprovementForBuilding(construction)
         }
-        constructionQueue = validatedQueue
-        chooseNextConstruction()
-        validateCreatesOneImprovementMarkers()
+        return validatedQueue
     }
 
     /** Remove orphaned [UniqueType.CreatesOneImprovement] markers whose queue entry was removed elsewhere. */
@@ -912,6 +929,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *      Required when adding such a building without an existing marker.
      *  Note: Overload with string parameter `constructionName` exists as well.
      */
+    @Synchronized
     fun addToQueue(construction: IConstruction, addToTop: Boolean = false, tile: Tile? = null) {
         if (!canAddToQueue(construction)) return
         markTileForCreatesOneImprovement(construction, tile)
@@ -959,6 +977,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /** Remove one entry from the queue by index.
      *  @param automatic  If this was done automatically, we should automatically try to choose a new construction and treat it as such
      */
+    @Synchronized
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
         val newQueue = ArrayList(constructionQueue)
         val constructionName = newQueue.removeAt(constructionQueueIndex)
@@ -989,6 +1008,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  Does nothing if there's no entry of that name in the queue.
      *  If the queue is emptied, no automatic: getSettings().autoAssignCityProduction is ignored! (parameter to be added when needed)
      */
+    @Synchronized
     fun removeAllByName(constructionName: String) {
         while (!isQueueEmptyOrIdle()) {
             val index = constructionQueue.indexOf(constructionName)
@@ -997,6 +1017,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
     
+    @Synchronized
     fun removeAll(){
         while (!isQueueEmptyOrIdle())
             // automatic=false so once the queue is empties the "idle" construction is set, ending the loop
@@ -1007,6 +1028,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** Moves an entry to the queue top by index.
      *  No-op when index invalid. Must not be called for PerpetualConstruction entries - unchecked! */
+    @Synchronized
     fun moveEntryToTop(constructionQueueIndex: Int) {
         if (constructionQueueIndex == 0 || constructionQueueIndex >= constructionQueue.size) return
         editQueue { add(0, removeAt(constructionQueueIndex)) }
@@ -1015,6 +1037,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /** Moves an entry by index to the end of the queue, or just before a PerpetualConstruction
      *  (or replacing a PerpetualConstruction if it itself is one and the queue is by happenstance invalid having more than one of those)
      */
+    @Synchronized
     fun moveEntryToEnd(constructionQueueIndex: Int) {
         if (constructionQueueIndex >= constructionQueue.size) return
         val withoutEntry = ArrayList(constructionQueue)
@@ -1035,6 +1058,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     // Lowering == Highering next element in queue
+    @Synchronized
     fun lowerPriority(constructionQueueIndex: Int): Int {
         if (constructionQueueIndex >= constructionQueue.size - 1) return constructionQueueIndex // Already last
         raisePriority(constructionQueueIndex + 1)
@@ -1068,6 +1092,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  To be called after circumstances forced clearing a marker from a tile (pillaging, nuking).
      *  Should remove one matching building from the queue without looking for a marked tile.
      */
+    @Synchronized
     fun removeCreateOneImprovementConstruction(improvement: String) {
         val ruleset = city.getRuleset()
         val indexToRemove = constructionQueue.withIndex().firstNotNullOfOrNull {
