@@ -4389,6 +4389,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;for each [mapUnitFilter] unit within [positiveAmount] tiles&gt;"
+	Triggers this unique once for each of your units that matches the filter, instead of once for the triggering unit. Distance 0 is the tile of the triggering unit, 1 adds its neighbors. Only applies to unit-triggerable uniques triggered by a unit, and only to units of the same civilization. `[This Unit]` then refers to each matching unit in turn - add `other` to the filter to leave out the triggering unit. Not performable (and so a unit action is disabled) if no unit would be affected.
+
+	Example: "&lt;for each [Wounded] unit within [3] tiles&gt;"
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;(modified by game speed)&gt;"
 	Can only be applied to certain uniques, see details of each unique for specifics
 

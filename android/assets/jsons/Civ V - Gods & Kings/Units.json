@@ -1676,7 +1676,9 @@
 		"name": "Great Admiral",
 		"unitType": "Civilian Water",
 		"uniques": [
-            // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
+            // Repair Fleet. The filter is "Water or Embarked", written as non-[non-Water and non-Embarked]; hidden because that reads badly in the Civilopedia
+            "[This Unit] heals [100] HP <for each [non-[{non-[Water]} {non-[Embarked]}]] unit within [1] tiles> <by consuming this unit> <hidden from users>",
+            "Comment [Fully heals your naval and embarked units on this and adjacent tiles by consuming this unit]",
             "May Paradrop to [{your} {Coastal} {City center}] tiles up to [25] tiles away <in [City center] tiles>", // Change Port
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",

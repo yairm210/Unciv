@@ -145,6 +145,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             op(this)
     }
 
+    /** A copy of this unique without [modifier] (one of [modifiers]), for triggering what a modifier fans out
+     *  without applying the modifier again. All other modifiers are kept. */
+    fun withoutModifier(modifier: Unique) =
+        Unique(text.replace("<${modifier.text}>", ""), sourceObjectType, sourceObjectName)
+
     private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
         override fun iterator(): Iterator<T> = object : Iterator<T> {
             override fun next() = value

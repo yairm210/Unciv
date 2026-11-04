@@ -103,6 +103,11 @@ object UniqueTriggerActivation {
             }
         }
 
+        val forEachUnitModifier = unique.getModifiers(UniqueType.ForEachUnitWithinTiles).firstOrNull()
+        if (forEachUnitModifier != null && unit != null)
+            return getForEachUnitTriggerFunction(unique, forEachUnitModifier, civInfo, city, unit,
+                tile ?: unit.currentTile, notification, triggerNotificationText)
+
         val gameContext = GameContext(civInfo, city, unit, tile)
         val rng = gameContext.stateBasedRandom("UniqueTriggerActivation.getTriggerFunction", unique.text.hashCode())
 
@@ -1468,6 +1473,39 @@ object UniqueTriggerActivation {
             }
 
             else -> return null
+        }
+    }
+
+    /** Implements [UniqueType.ForEachUnitWithinTiles]: triggers [unique] without that modifier on each unit of [civInfo]
+     *  within range of [unit] that matches the filter.
+     *  @return null if there is nothing to trigger on, so that unit actions are disabled when they would do nothing */
+    private fun getForEachUnitTriggerFunction(
+        unique: Unique,
+        modifier: Unique,
+        civInfo: Civilization,
+        city: City?,
+        unit: MapUnit,
+        tile: Tile,
+        notification: String?,
+        triggerNotificationText: String?
+    ): (()->Boolean)? {
+        val perUnitUnique = unique.withoutModifier(modifier)
+        val filterContext = GameContext(civInfo, city, unit, tile) // so that `other` means "not the triggering unit"
+        val triggerFunctions = ArrayList<()->Boolean>()
+        tile.forEachTileInDistance(modifier.params[1].toInt()) { rangeTile ->
+            for (target in rangeTile.getUnits()) {
+                if (target.civ != civInfo || !target.matchesFilter(modifier.params[0], state = filterContext)) continue
+                val triggerFunction = getTriggerFunction(perUnitUnique, civInfo, city, target, target.currentTile,
+                    notification, triggerNotificationText) ?: continue
+                triggerFunctions.add(triggerFunction)
+            }
+        }
+        if (triggerFunctions.isEmpty()) return null
+        return {
+            var anyTriggered = false
+            for (triggerFunction in triggerFunctions)
+                if (triggerFunction()) anyTriggered = true
+            anyTriggered
         }
     }
 

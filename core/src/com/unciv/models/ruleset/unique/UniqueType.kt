@@ -1086,6 +1086,12 @@ enum class UniqueType(
         docDescription = "Works for positive numbers only"),
     ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
+    ForEachUnitWithinTiles("for each [mapUnitFilter] unit within [positiveAmount] tiles", UniqueTarget.MetaModifier,
+        docDescription = "Triggers this unique once for each of your units that matches the filter, instead of once for the triggering unit. " +
+            "Distance 0 is the tile of the triggering unit, 1 adds its neighbors. " +
+            "Only applies to unit-triggerable uniques triggered by a unit, and only to units of the same civilization. " +
+            "`[This Unit]` then refers to each matching unit in turn - add `other` to the filter to leave out the triggering unit. " +
+            "Not performable (and so a unit action is disabled) if no unit would be affected."),
 
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
