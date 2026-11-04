@@ -81,6 +81,7 @@ class UiUnitAction(
                     UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech -> ImageGetter.getUnitActionPortrait("HurryResearch", size)
                     UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], size)
+                    UniqueType.OneTimeTakeOverCityState -> ImageGetter.getUnitActionPortrait("ConductTradeMission", size)
                     else -> ImageGetter.getUnitActionPortrait("Star", size)
                 }
             }

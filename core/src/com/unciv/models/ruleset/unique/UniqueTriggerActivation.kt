@@ -1419,6 +1419,18 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            
+            UniqueType.OneTimeTakeOverCityState -> {
+                val takeOverVictim = civInfo.getKnownCivs()
+                    .filter { it.isCityState && it.isAlive() }
+                    .toList()
+                    .randomOrNull()
+                if (takeOverVictim == null) return null
+                return { 
+                    takeOverVictim.cityStateFunctions.hostileTakeover(civInfo)
+                    true
+                }
+            }
 
             UniqueType.OneTimeUnitGetsName -> {
                 if (unit == null) return null

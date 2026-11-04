@@ -434,7 +434,6 @@ enum class UniqueType(
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
-    CanHostileTakeoverCityStates("Gain ownership over City-State and all its assets", UniqueTarget.Unit),
     CanTransform("Can transform to [unit]", UniqueTarget.UnitAction,
         docDescription = "By default consumes all movement"),
 
@@ -930,6 +929,9 @@ enum class UniqueType(
 
     OneTimeTakeOverTilesInRadius("Gain control over [tileFilter] tiles in a [nonNegativeAmount]-tile radius", UniqueTarget.Triggerable),
     OneTimeTakeOverTilesInCity("Gain control over [positiveAmount] tiles [cityFilter]", UniqueTarget.Triggerable),
+    OneTimeTakeOverCityState("Gain ownership over a City-State and all its assets", UniqueTarget.Triggerable,
+        docDescription = "Should be primarily used on Units.\n" +
+            "For other targets such as Policies, Techs, Buildings, etc., this unique will simply absorb a random City-State that the root civ has already met."),
 
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"

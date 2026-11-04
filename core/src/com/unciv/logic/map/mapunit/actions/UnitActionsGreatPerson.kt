@@ -137,7 +137,7 @@ object UnitActionsGreatPerson {
         val canHostileTakeover = tile.owningCity?.civ?.isCityState == true
             && tile.owningCity?.civ != unit.civ
             && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
-        for (unique in unit.getMatchingUniques(UniqueType.CanHostileTakeoverCityStates)) {
+        for (unique in unit.getMatchingUniques(UniqueType.OneTimeTakeOverCityState)) {
             yield(UnitAction(
                 UnitActionType.HostileTakeover,
                 associatedUnique = unique,

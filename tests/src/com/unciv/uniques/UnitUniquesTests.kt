@@ -251,7 +251,7 @@ class UnitUniquesTests {
     }
     
     @Test
-    fun allYourCityStatesAreBelongToUs() {
+    fun takeOverCityStateVeniceTest() {
         // when
         game.makeHexagonalMap(1)
         val cityState = game.addCiv(cityStateType = "Cultured")
@@ -266,7 +266,7 @@ class UnitUniquesTests {
         val merchantOfVenice = game.addDefaultMeleeUnitWithUniques(
             mainCiv,
             unitTile,
-            "Gain ownership over City-State and all its assets"
+            "Gain ownership over a City-State and all its assets"
         )
 
         // then
