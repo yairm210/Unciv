@@ -205,6 +205,17 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Readonly fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
 
+    /** The queue without its first entry named [constructionName], or the current queue if there is none: what remains of the queue
+     *  once that entry is bought or built, so it does not count against itself (see [INonPerpetualConstruction.getRejectionReasons]).
+     *  Reads the field once. */
+    @Readonly
+    fun queueWithoutOneOf(constructionName: String): List<String> {
+        val queue = constructionQueue
+        val index = queue.indexOf(constructionName)
+        if (index < 0) return queue
+        return queue.filterIndexed { i, _ -> i != index }
+    }
+
     @Readonly
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
@@ -219,9 +230,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
     @Readonly
-    fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
+    fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean =
+        isFirstConstructionOfItsKind(constructionQueue, constructionQueueIndex, name)
+
+    /** Same as above on a [queue] snapshot the caller took once - a caller walking the queue must not mix it with fresh reads of the field */
+    @Readonly
+    fun isFirstConstructionOfItsKind(queue: List<String>, constructionQueueIndex: Int, name: String): Boolean {
         // Simply compare index of first found [name] with given index
-        return constructionQueueIndex == constructionQueue.indexOf(name)
+        return constructionQueueIndex == queue.indexOf(name)
     }
 
 
@@ -413,7 +429,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     continue // Removes this construction from the queue
                 }
             }
-            if (construction.isBuildable(this))
+            val buildable = if (construction is INonPerpetualConstruction)
+                construction.isBuildable(this, validatedQueue) // Count only the entries before this one, not the entry itself
+            else construction.isBuildable(this)
+            if (buildable)
                 validatedQueue.add(constructionName)
             else if (construction is Building)
                 removeImprovementForBuilding(construction)
@@ -451,8 +470,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
 
-            val rejectionReasons =
-                (construction as INonPerpetualConstruction).getRejectionReasons(this)
+            // A queued entry must not count against itself when it is checked for MaxNumberBuildable
+            val rejectionReasons = (construction as INonPerpetualConstruction)
+                .getRejectionReasons(this, queueWithoutOneOf(constructionName))
 
             if (!rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) continue
 
@@ -911,14 +931,20 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun canAddToQueue(construction: IConstruction) =
-        !isQueueFull() &&
-        construction.isBuildable(this) &&
-        !(construction is Building && isBeingConstructedOrEnqueued(construction.name))
+    fun canAddToQueue(construction: IConstruction): Boolean {
+        val queue = constructionQueue // Single read, the field may be replaced by another thread
+        if (queue.size >= queueMaxSize) return false
+        if (construction is Building && queue.contains(construction.name)) return false
+        // For limited constructions this counts everything already queued, in this city too - the queue is passed explicitly
+        return if (construction is INonPerpetualConstruction) construction.isBuildable(this, queue)
+            else construction.isBuildable(this)
+    }
 
-    private fun isLastConstructionPerpetual() = constructionQueue.isNotEmpty() &&
-        PerpetualConstruction.isNamePerpetual(constructionQueue.last())
-        // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
+    private fun isLastConstructionPerpetual(): Boolean {
+        val queue = constructionQueue
+        // `getConstruction(queue.last()) is PerpetualConstruction` is clear but more expensive
+        return queue.isNotEmpty() && PerpetualConstruction.isNamePerpetual(queue.last())
+    }
 
     @Readonly fun isQueueEmptyOrIdle() = currentConstructionName().isEmpty()
         ||  currentConstructionName() == PerpetualConstruction.Idle.name

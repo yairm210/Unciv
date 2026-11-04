@@ -277,7 +277,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+    override fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String>): Sequence<RejectionReason> = sequence {
         val city = cityConstructions.city
         val cityCenter = city.getCenterTile()
         val civ = city.civ
@@ -347,7 +347,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
 
                 UniqueType.MaxNumberBuildable ->
-                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city) >= unique.params[0].toInt())
+                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city, ownQueue) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 // To be replaced with `Only available <after [Apollo Project] has been build>`
