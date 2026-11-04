@@ -432,6 +432,13 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
         return civInfo.isAtWarWith(tileOwner)
     }
 
+    /** Whether this tile belongs to a city whose majority religion is the one [civInfo] founded */
+    @Readonly
+    fun isInCityFollowingReligionOf(civInfo: Civilization): Boolean {
+        val ourReligion = civInfo.religionManager.religion ?: return false
+        return getCity()?.religion?.getMajorityReligion() == ourReligion
+    }
+
     @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
@@ -584,6 +591,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> return observingCiv != null && isEnemyTerritory(observingCiv)
+            "in cities following our religion" -> return observingCiv != null && isInCityFollowingReligionOf(observingCiv)
             "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Featureless" -> return terrainFeatures.isEmpty()

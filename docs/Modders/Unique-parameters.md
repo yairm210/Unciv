@@ -340,6 +340,7 @@ Allowed values:
     - `Enemy Land`, `Enemy` - any terrain belonging to a civ you are at war with
     - `your` - terrain belonging to you
     - `Unowned` - terrain that is not owned by any civ
+    - `in cities following our religion` - terrain belonging to a city whose majority religion is the one your civilization founded. Combine with the above, e.g. `{Friendly Land} {in cities following our religion}`
 
 Please note all of these are _case-sensitive_.
 
