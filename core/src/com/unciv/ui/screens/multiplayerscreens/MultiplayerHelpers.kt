@@ -88,11 +88,7 @@ object MultiplayerHelpers {
                     || fromIndex == -1 // just in case - should not happen 
                     || untilIndex == -1 // ensure we are alive
                     || players.any { it.turnsPlayedAsHuman < 5 } // ensure sufficient data
-                ) {
-                    println(players.map { it.civName }.toList())
-                    //println("${players.size} $playerCivName ${preview.currentPlayer} $fromIndex $untilIndex ${players.minOf { it.turnsPlayedAsHuman }}")
-                    return null
-                }
+                ) return null
                 // how many players left until our turn
                 val numRemainingPlayers = Math.floorMod(untilIndex - fromIndex, players.size)
                 // list player civs between current player and ourselves, wrapping around if needed
