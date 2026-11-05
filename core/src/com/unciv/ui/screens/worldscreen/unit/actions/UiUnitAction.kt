@@ -81,7 +81,7 @@ class UiUnitAction(
                     UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech -> ImageGetter.getUnitActionPortrait("HurryResearch", size)
                     UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], size)
-                    UniqueType.OneTimeTakeOverCityState -> ImageGetter.getUnitActionPortrait("ConductTradeMission", size)
+                    UniqueType.OneTimeUnitTakeOverCityState -> ImageGetter.getUnitActionPortrait("ConductTradeMission", size)
                     else -> ImageGetter.getUnitActionPortrait("Star", size)
                 }
             }
@@ -204,8 +204,7 @@ enum class UiUnitActionType private constructor(
     Skip(UnitActionType.Skip, portrait("Skip"), uncivSound = UncivSound.Silent, useFrequency = 0f),
     ShowAdditionalActions("Show more", portrait("ShowMore"), false, useFrequency = 0f),
     HideAdditionalActions("Back", portrait("HideMore"), false, page = 1, useFrequency = 0f),
-    AddInCapital(UnitActionType.AddInCapital, portrait("AddInCapital"), uncivSound = UncivSound.Chimes, useFrequency = 80f),
-    HostileTakeover(UnitActionType.HostileTakeover, portrait("ConductTradeMission"), uncivSound = UncivSound.Chimes, useFrequency = 70f)
+    AddInCapital(UnitActionType.AddInCapital, portrait("AddInCapital"), uncivSound = UncivSound.Chimes, useFrequency = 80f)
     ;
 
     /** For types backed by a logic [UnitActionType] */

@@ -179,13 +179,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain ownership over a City-State and all its assets"
-	Should be primarily used on Units.
-
-	For other targets such as Policies, Techs, Buildings, etc., this unique will simply absorb a random City-State that the root civ has already met.
-
-	Applicable to: Triggerable
-
 ??? example  "Reveal up to [positiveAmount/'all'] [tileFilter] within a [positiveAmount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
@@ -369,6 +362,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[unitTriggerTarget] is destroyed"
 	Example: "[This Unit] is destroyed"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] takes over the City-State owning the tile it's standing on"
+	Only allows taking over City-States not at war with the unit's root nation. Does not require a friendship or an alliance with the target City-State.
+
+	Example: "[This Unit] takes over the City-State owning the tile it's standing on"
 
 	Applicable to: UnitTriggerable
 

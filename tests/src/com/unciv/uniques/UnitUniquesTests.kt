@@ -6,6 +6,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.BaseTestRunner
@@ -266,15 +267,11 @@ class UnitUniquesTests {
         val merchantOfVenice = game.addDefaultMeleeUnitWithUniques(
             mainCiv,
             unitTile,
-            "Gain ownership over a City-State and all its assets"
+            "[This Unit] takes over the City-State owning the tile it's standing on <by consuming this unit>"
         )
 
         // then
-        val hostileTakeoverAction = UnitActions.getUnitActions(merchantOfVenice, UnitActionType.HostileTakeover)
-            .firstOrNull { it.action != null } // This tests that the action should be enabled, too
-
-        Assert.assertNotNull("Unit should have the action to take over the City-State", hostileTakeoverAction)
-        Assert.assertTrue(UnitActions.invokeUnitAction(merchantOfVenice, UnitActionType.HostileTakeover))
+        UniqueTriggerActivation.triggerUnique(merchantOfVenice.getUniques().first(), merchantOfVenice)
         Assert.assertTrue(cityStateCapital.civ == mainCiv)
     }
 }
