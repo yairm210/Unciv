@@ -365,6 +365,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "[unitTriggerTarget] takes over the City-State owning the tile it's standing on"
+	Only allows taking over City-States not at war with the unit's root nation. Does not require a friendship or an alliance with the target City-State.
+
+	Example: "[This Unit] takes over the City-State owning the tile it's standing on"
+
+	Applicable to: UnitTriggerable
+
 ??? example  "[unitTriggerTarget] gets a name from the [unitNameGroup] group"
 	Example: "[This Unit] gets a name from the [Scientist] group"
 

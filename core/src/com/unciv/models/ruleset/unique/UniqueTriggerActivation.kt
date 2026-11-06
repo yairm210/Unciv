@@ -1419,6 +1419,20 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            
+            UniqueType.OneTimeUnitTakeOverCityState -> {
+                val canHostileTakeover = unit != null
+                    && unit.currentTile.owningCity?.civ?.isCityState == true
+                    && unit.currentTile.owningCity?.civ != unit.civ
+                    && unit.currentTile.owningCity?.civ?.isAtWarWith(unit.civ) == false
+                
+                if (!canHostileTakeover) return null
+                return {
+                    val takeOverVictim = unit.currentTile.owningCity!!.civ
+                    takeOverVictim.cityStateFunctions.hostileTakeover(unit.civ)
+                    true
+                }
+            }
 
             UniqueType.OneTimeUnitGetsName -> {
                 if (unit == null) return null
