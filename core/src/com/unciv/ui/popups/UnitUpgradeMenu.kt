@@ -16,6 +16,7 @@ import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade
 import com.unciv.view.CivView
 import com.unciv.view.MapUnitView
+import kotlin.sequences.count
 
 /**
  *  A popup menu showing info about a unit upgrade, with buttons to upgrade "this" unit or _all_
@@ -112,7 +113,7 @@ class UnitUpgradeMenu(
     }
 
     private fun doAllUpgrade() {
-        SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound)
+        SoundPlayer.playRepeated(UiUnitActionType.Upgrade.uncivSound, allUpgradableUnits.count())
         for (unit in allUpgradableUnits) {
             unit.tryUpgradeTo(unitToUpgradeTo)
         }
