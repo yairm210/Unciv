@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.worldmap
 
+import com.unciv.view.getFutureAutomatedRoadConnectionTiles
 import com.unciv.view.getNukeBlastRadius
 import com.unciv.view.isAirUnit
 import com.unciv.view.isMilitary

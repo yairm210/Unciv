@@ -136,14 +136,11 @@ class MapUnitView internal constructor(
     @Readonly fun getAttackableEnemies(stayOnTile: Boolean = false): List<AttackableTileView> =
         TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile = stayOnTile)
             .map { AttackableTileView(it, viewer, spectatorMode, gameView) }
-    /** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
-    @Readonly fun getFutureAutomatedRoadConnectionTiles(): List<TileView>? {
-        val path = unit.automatedRoadConnectionPath ?: return null
-        val currTileIndex = path.indexOf(unit.currentTile.position)
-        if (currTileIndex == -1) return emptyList()
-        return path.filterIndexed { index, _ -> index > currTileIndex }
-            .mapNotNull { gameView.tileMapView.getTile(it) }
-    }
+    /** The tile this unit is automatically connecting a road to, or `null` if it has none */
+    @Readonly fun getAutomatedRoadConnectionDestination(): TileView? =
+        unit.automatedRoadConnectionDestination?.let { gameView.tileMapView.getTile(unit.civ.gameInfo.tileMap[it]) }
+    /** Cheaper than [canReach], as it's cached */
+    @Readonly fun canReachInCurrentTurn(tileView: TileView): Boolean = unit.movement.canReachInCurrentTurn(tileView.unwrap())
 
     // Actions
     fun trySwapMoveToTile(tileView: TileView, keepEscorting: Boolean = false): Boolean {
@@ -181,6 +178,13 @@ class MapUnitView internal constructor(
     /** Notifies the owning civ about this unit - activating the notification shows the unit on the map */
     fun tryAddNotification(text: String, category: NotificationCategory, vararg notificationIcons: String): Boolean {
         unit.civ.addNotification(text, MapUnitAction(unit), category, *notificationIcons)
+        return true
+    }
+    /** Ends any automation, including the destination of an automated road connection */
+    fun tryStopAutomation(): Boolean {
+        unit.automated = false
+        unit.action = null
+        unit.automatedRoadConnectionDestination = null
         return true
     }
     fun tryDisband(): Boolean {
@@ -264,6 +268,14 @@ class MapUnitView internal constructor(
 @Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction
 @Readonly fun MapUnitView.isPreparingParadrop(): Boolean = action == UnitActionType.Paradrop.value
 @Readonly fun MapUnitView.isPreparingAirSweep(): Boolean = action == UnitActionType.AirSweep.value
+/** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
+@Readonly fun MapUnitView.getFutureAutomatedRoadConnectionTiles(): List<TileView>? {
+    val destination = getAutomatedRoadConnectionDestination() ?: return null
+    val path = getRoadPath(destination) ?: return null
+    val currTileIndex = path.indexOf(getTile())
+    if (currTileIndex == -1) return emptyList()
+    return path.drop(currTileIndex + 1)
+}
 
 @Readonly fun MapUnitView.getImprovementInProgress(): String? = getTile().improvementInProgress
 @Readonly fun MapUnitView.canBuildCurrentImprovement(): Boolean {

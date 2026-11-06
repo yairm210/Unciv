@@ -141,7 +141,6 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tileView: Tile
 
     private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTilePosition: HexCoord) {
         selectedUnit.automatedRoadConnectionDestination = targetTilePosition
-        selectedUnit.automatedRoadConnectionPath = null
         selectedUnit.action = Constants.connectRoadAction
         selectedUnit.automated = true
         UnitAutomation.automateUnitMoves(GameView(selectedUnit.civ.gameInfo, selectedUnit.civ).getMapUnitView(selectedUnit))

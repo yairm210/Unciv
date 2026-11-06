@@ -74,9 +74,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Cache private var escorting: Boolean = false
 
     var automatedRoadConnectionDestination: HexCoord? = null
-    // Temp disable, since this data broke saves
-    @Transient
-    var automatedRoadConnectionPath: List<HexCoord>? = null
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
@@ -227,7 +224,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.automated = automated
         toReturn.escorting = escorting
         toReturn.automatedRoadConnectionDestination = automatedRoadConnectionDestination
-        toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone(toReturn)
