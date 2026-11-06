@@ -38,7 +38,10 @@ internal class LanguageTable(val language: String, val percentComplete: Int) : T
             add(Actor()).minWidth(40f)
 
         val spaceSplitLang = language.replace("_"," ")
-        add("$spaceSplitLang ($percentComplete%)".toLabel())
+        if (percentComplete == 999)
+            add("$spaceSplitLang (new)".toLabel())
+        else
+            add("$spaceSplitLang ($percentComplete%)".toLabel())
         update("")
         touchable =
             Touchable.enabled // so click listener is activated when any part is clicked, not only children
@@ -71,10 +74,11 @@ internal class LanguageTable(val language: String, val percentComplete: Int) : T
 
             val systemLanguage = LocaleCode.getSystemLanguage()
 
-            val languageCompletionPercentage = UncivGame.Current.translations
-                .percentCompleteOfLanguages
+            val languagesToOffer =
+                UncivGame.Current.translations.percentCompleteOfLanguages.asSequence() +
+                LocaleCode.getUnsupportedLanguages().associateWith { 999 }.asSequence()
             languageTables.addAll(
-                languageCompletionPercentage
+                languagesToOffer
                 .map { LanguageTable(it.key, if (it.key == Constants.english) 100 else it.value) }
                 .sortedWith(
                     compareBy<LanguageTable> { it.language != Constants.english }
