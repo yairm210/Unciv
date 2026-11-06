@@ -6,16 +6,12 @@ import com.unciv.view.isAirUnit
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.isAtWar
+import com.unciv.view.ForeignCivView
+import com.unciv.view.getNukeBlastRadius
+import com.unciv.view.isCivilian
+import com.unciv.view.isMilitary
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
-import com.unciv.logic.battle.AirInterception
-import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.battle.Nuke
-import com.unciv.logic.battle.TargetHelper
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -134,23 +130,26 @@ object AirUnitAutomation {
     }
 
     fun automateNukes(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
         if (!unitView.civ().isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
-        if (unit.type.isAirUnit()) {
-            val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
+        if (unitView.isAirUnit()) {
+            val tilesInRange = (2..unitView.getRange()).asSequence()
+                .flatMap { unitView.getTile().getExploredTilesAtDistance(it) }
             val highestTileNukeValue = tilesInRange.map { it to getNukeLocationValue(unitView, it) }
                 .maxByOrNull { it.second }
             if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
-                Nuke.NUKE(MapUnitCombatant(unit), highestTileNukeValue.first)
+                unitView.tryNuke(highestTileNukeValue.first)
 
             tryRelocateMissileToNearbyAttackableCities(unitView)
         } else {
-            val attackableTiles = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-            val highestTileNukeValue = attackableTiles.map { it to getNukeLocationValue(unitView, it.tileToAttack) }
+            val attackableTiles = unitView.getAttackableEnemies()
+            val highestTileNukeValue = attackableTiles.map { it to getNukeLocationValue(unitView, it.getTileToAttack()) }
                 .maxByOrNull { it.second }
-            if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
-                Battle.moveAndAttack(MapUnitCombatant(unit), highestTileNukeValue.first)
+            if (highestTileNukeValue != null && highestTileNukeValue.second > 0) {
+                val attackableTile = highestTileNukeValue.first
+                if (unitView.tryMovePreparingAttack(attackableTile, tryHealPillage = true))
+                    unitView.attackOrNuke(attackableTile)
+            }
             HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unitView)
         }
     }
@@ -160,14 +159,13 @@ object AirUnitAutomation {
      * By default the value is -500 to prevent inefficient nuking.
      */
     @Readonly
-    private fun getNukeLocationValue(nukeView: MapUnitView, tile: Tile): Int {
-        val nuke = nukeView.getUnit()
-        val civ = nuke.civ
-        if (!Nuke.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
-        val blastRadius = nuke.getNukeBlastRadius()
-        val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+    private fun getNukeLocationValue(nukeView: MapUnitView, tile: TileView): Int {
+        val civ = nukeView.civ()
+        if (!nukeView.mayUseNuke(tile)) return Int.MIN_VALUE
+        val blastRadius = nukeView.getNukeBlastRadius()
+        val tilesInBlastRadius = tile.getExploredTilesInDistance(blastRadius).toList()
         val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
-            tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
+            tilesInBlastRadius.mapNotNull { it.getVisibleUnits().firstOrNull()?.civ() }
 
         // Don't nuke if it means we will be declaring war on someone!
         if (civsInBlastRadius.any { it != civ && !it.isAtWarWith(civ) }) return -100000
@@ -179,36 +177,37 @@ object AirUnitAutomation {
 
         // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
         @Pure
-        fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
+        fun evaluateCivValue(targetCiv: ForeignCivView, ourValue: Int, theirValue: Int): Int {
             if (targetCiv == civ) // We are nuking something that we own!
                 return ourValue
             return theirValue // We are nuking an enemy!
         }
         for (targetTile in tilesInBlastRadius) {
             // We can only account for visible units
-            if (targetTile.isVisible(civ)) {
-                for (targetUnit in targetTile.getUnits()) {
-                    if (!targetUnit.isVisibleTo(civ)) continue
+            if (targetTile.isVisible()) {
+                for (targetUnit in targetTile.getVisibleUnits()) {
                     // If we are nuking a unit at ground zero, it is more likely to be destroyed
                     val tileExplosionValue = if (targetTile == tile) 80 else 50
 
                     if (targetUnit.isMilitary()) {
-                        explosionValue += if (targetTile == tile) evaluateCivValue(targetUnit.civ, -200, tileExplosionValue)
-                        else evaluateCivValue(targetUnit.civ, -150, 50)
+                        explosionValue += if (targetTile == tile) evaluateCivValue(targetUnit.civ(), -200, tileExplosionValue)
+                        else evaluateCivValue(targetUnit.civ(), -150, 50)
                     } else if (targetUnit.isCivilian()) {
-                        explosionValue += evaluateCivValue(targetUnit.civ, -100, tileExplosionValue / 2)
+                        explosionValue += evaluateCivValue(targetUnit.civ(), -100, tileExplosionValue / 2)
                     }
                 }
             }
             // Never nuke our own Civ, don't nuke single enemy civs as well
+            val city = targetTile.getCity()
+            val owningCity = targetTile.owningCity()
             if (targetTile.isCityCenter()
-                && !(targetTile.getCity()!!.health <= 50f
-                    && targetTile.neighbors.any {it.militaryUnit?.civ == civ})) // Prefer not to nuke cities that we are about to take
-                explosionValue += evaluateCivValue(targetTile.getCity()?.civ!!, -100000, 250)
-            else if (targetTile.owningCity != null) {
-                val owningCiv = targetTile.owningCity?.civ!!
+                && !(city!!.getHealth() <= 50
+                    && targetTile.getNeighbors().any { it.militaryUnit?.civ() == civ })) // Prefer not to nuke cities that we are about to take
+                explosionValue += evaluateCivValue(city.owningCiv(), -100000, 250)
+            else if (owningCity != null) {
+                val owningCiv = owningCity.owningCiv()
                 // If there is a tile to add fallout to there is a 50% chance it will get fallout
-                if (!(targetTile.isWater || targetTile.isImpassible() || targetTile.hasFalloutEquivalent()))
+                if (!(targetTile.isWater || targetTile.isImpassible() || WorkerAutomation.hasFalloutEquivalent(targetTile)))
                     explosionValue += evaluateCivValue(owningCiv, -40, 10)
                 // If there is an improvment to pillage
                 if (targetTile.improvement != null && !targetTile.improvementIsPillaged)

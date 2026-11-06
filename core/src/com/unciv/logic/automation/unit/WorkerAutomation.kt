@@ -643,10 +643,6 @@ class WorkerAutomation(
         }
     }
 
-    /** Fallout or an equivalent terrain feature - same check as [Tile.hasFalloutEquivalent] */
-    @Readonly fun hasFalloutEquivalent(tile: TileView): Boolean =
-        tile.terrainFeatures.any { tile.getRuleset().terrains[it]!!.hasUnique(UniqueType.NullifyYields) }
-
     @Readonly fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 
@@ -679,6 +675,10 @@ class WorkerAutomation(
         val NO_IGNORED_IMPROVEMENTS: Sequence<TileImprovement> = sequenceOf()
         
         // Static methods so they can be reused in ConstructionAutomation
+        /** Fallout or an equivalent terrain feature - same check as [Tile.hasFalloutEquivalent] */
+        @Readonly fun hasFalloutEquivalent(tile: TileView): Boolean =
+            tile.terrainFeatures.any { tile.getRuleset().terrains[it]!!.hasUnique(UniqueType.NullifyYields) }
+
         /** Checks whether [tile] is water and has a resource [civ] can improve
          *
          *  Does check whether a matching improvement can currently be built (e.g. Oil before Refrigeration).
