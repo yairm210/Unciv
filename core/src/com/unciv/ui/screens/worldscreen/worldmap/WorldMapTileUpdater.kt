@@ -25,8 +25,10 @@ object WorldMapTileUpdater {
 
      fun WorldMapHolder.updateTiles(civView: CivView) {
         // General update of all tiles
-        for (tileGroup in tileGroups.values)
+        for (tileGroup in tileGroups.values) {
             tileGroup.update(civView)
+            tileGroup.layerImprovement.dimImprovement(false)
+        }
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
