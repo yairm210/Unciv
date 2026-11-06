@@ -6,8 +6,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -76,27 +75,23 @@ open class Policy : RulesetObject() {
                 policyBranchType.ordinal
     override fun getSubCategory(ruleset: Ruleset): String? = branch.name
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        val lineList = ArrayList<FormattedLine>()
-
-        lineList += if (this is PolicyBranch) {
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        if (this@Policy is PolicyBranch) {
             val era = ruleset.eras[era]
             val eraColor = era?.getHexColor() ?: ""
             val eraLink = era?.makeLink() ?: ""
-            FormattedLine("{Unlocked at} {${branch.era}}", header = 4, color = eraColor, link = eraLink)
+            add("{Unlocked at} {${branch.era}}", header = 4, color = eraColor, link = eraLink)
         } else {
-            FormattedLine("Policy branch: [${branch.name}]", link = branch.makeLink())
+            add("Policy branch: [${branch.name}]", link = branch.makeLink())
         }
 
-        if (policyBranchType != PolicyBranchType.BranchComplete && requires != null && requires!!.isNotEmpty()) {
-            lineList += FormattedLine()
+        if (policyBranchType != PolicyBranchType.BranchComplete && !requires.isNullOrEmpty()) {
+            add()
             if (requires!!.size == 1)
-                requires!!.first().let { lineList += FormattedLine("Requires [$it]", link = "Policy/$it") }
+                requires!!.first().let { add("Requires [$it]", link = "Policy/$it") }
             else {
-                lineList += FormattedLine("Requires all of the following:")
-                requires!!.forEach {
-                    lineList += FormattedLine(it, link = "Policy/$it")
-                }
+                add("Requires all of the following:")
+                requires!!.forEach { add(it, link = "Policy/$it") }
             }
         }
 
@@ -105,64 +100,51 @@ open class Policy : RulesetObject() {
                     && it.policyBranchType != PolicyBranchType.BranchComplete
         }
         if (leadsTo.isNotEmpty()) {
-            lineList += FormattedLine()
+            add()
             if (leadsTo.size == 1)
-                leadsTo.first().let { lineList += FormattedLine("Leads to [${it.name}]", link = it.makeLink()) }
+                leadsTo.first().let { add("Leads to [${it.name}]", link = it.makeLink()) }
             else {
-                lineList += FormattedLine("Leads to:")
+                add("Leads to:")
                 leadsTo.forEach {
-                    lineList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+                    add(it.name, link = it.makeLink(), indent = 1)
                 }
             }
         }
 
-        fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
-                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
-                    it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } }
-                || rulesetObject.getMatchingUniques(UniqueType.Unavailable).any {
-                    it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
-                }
+        fun IRulesetObject.hasUniqueWithConditional(uniqueType: UniqueType, condition: UniqueType) =
+            getMatchingUniques(uniqueType, GameContext.IgnoreConditionals).any { unique ->
+                unique.getModifiers(condition).any { it.params[0] == this@Policy.name }
+            }
 
-        val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
-        val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }
+        fun IRulesetObject.isEnabledByThisPolicy() =
+            hasUniqueWithConditional(UniqueType.OnlyAvailable, UniqueType.ConditionalAfterPolicyOrBelief) ||
+            hasUniqueWithConditional(UniqueType.Unavailable, UniqueType.ConditionalBeforePolicyOrBelief)
+        val enabledBuildings = ruleset.buildings.values.filter { it.isEnabledByThisPolicy() }
+        val enabledUnits = ruleset.units.values.filter { it.isEnabledByThisPolicy() }
 
         if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()) {
-            lineList += FormattedLine("Enables:")
+            add("Enables:")
             for (building in enabledBuildings)
-                lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
+                add(building.name, link = building.makeLink(), indent = 1)
             for (unit in enabledUnits)
-                lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
+                add(unit.name, link = unit.makeLink(), indent = 1)
         }
 
-
-        fun isDisabledByPolicy(rulesetObject: IRulesetObject): Boolean {
-            if (rulesetObject.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals).any {
-                    it.getModifiers(UniqueType.ConditionalBeforePolicyOrBelief).any { it.params[0] == name }
-                })
-                return true
-
-            if (rulesetObject.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals).any {
-                    it.getModifiers(UniqueType.ConditionalAfterPolicyOrBelief).any { it.params[0] == name } })
-                return true
-            
-            return false
-        }
-
-
-        val disabledBuildings = ruleset.buildings.values.filter { isDisabledByPolicy(it) }
-        val disabledUnits = ruleset.units.values.filter { isDisabledByPolicy(it) }
+        fun IRulesetObject.isDisabledByThisPolicy() =
+            hasUniqueWithConditional(UniqueType.OnlyAvailable, UniqueType.ConditionalBeforePolicyOrBelief) ||
+            hasUniqueWithConditional(UniqueType.Unavailable, UniqueType.ConditionalAfterPolicyOrBelief)
+        val disabledBuildings = ruleset.buildings.values.filter { it.isDisabledByThisPolicy() }
+        val disabledUnits = ruleset.units.values.filter { it.isDisabledByThisPolicy() }
 
         if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()) {
-            lineList += FormattedLine("Disables:")
+            add("Disables:")
             for (building in disabledBuildings)
-                lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
+                add(building.name, link = building.makeLink(), indent = 1)
             for (unit in disabledUnits)
-                lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
+                add(unit.name, link = unit.makeLink(), indent = 1)
         }
 
-        uniquesToCivilopediaTextLines(lineList)
-
-        return lineList
+        addUniques()
     }
 
 }

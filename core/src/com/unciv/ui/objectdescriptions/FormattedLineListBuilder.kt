@@ -109,10 +109,10 @@ interface FormattedLineListBuilder {
 
     /** Add several lines for ruleset objects, only simple name and link, ignoring [defaults]. */
     @Readonly
-    fun addObjects(input: Iterable<IRulesetObject>): Unit = add(input) { FormattedLine(name, makeLink()) }
+    fun addObjects(input: Iterable<IRulesetObject>, indent: Int = 1): Unit = add(input) { FormattedLine(name, makeLink(), indent = indent) }
     /** Add several lines for ruleset objects, only simple name and link, ignoring [defaults]. */
     @Readonly
-    fun addObjects(input: Sequence<IRulesetObject>): Unit = addObjects(input.asIterable())
+    fun addObjects(input: Sequence<IRulesetObject>, indent: Int = 1): Unit = addObjects(input.asIterable(), indent)
 
     /** Add a vertical separator of type [separator]. [size] (line thickness) and [color] are used for type [SeparatorType.Line]. */
     @Readonly
