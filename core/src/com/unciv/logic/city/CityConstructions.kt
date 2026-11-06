@@ -897,7 +897,19 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun canAddToQueue(construction: IConstruction) =
         !isQueueFull() &&
         construction.isBuildable(this) &&
-        !(construction is Building && isBeingConstructedOrEnqueued(construction.name))
+        !(construction is Building && isBeingConstructedOrEnqueued(construction.name)) &&
+        !isMaxNumberBuildableReachedWithQueue(construction)
+
+    /** Like the MaxNumberBuildable check in [isBuildable], but also counts the entries already in *this* city's queue.
+     *  That check ignores this city's queue so an enqueued entry doesn't block itself on re-check; when adding, it must count. */
+    @Readonly
+    private fun isMaxNumberBuildableReachedWithQueue(construction: IConstruction): Boolean {
+        if (construction !is INonPerpetualConstruction) return false
+        val queuedHere = constructionQueue.count { it == construction.name }
+        return construction.getMatchingUniques(UniqueType.MaxNumberBuildable, city.state).any {
+            city.civ.civConstructions.countConstructedObjects(construction, city) + queuedHere >= it.params[0].toInt()
+        }
+    }
 
     private fun isLastConstructionPerpetual() = constructionQueue.isNotEmpty() &&
         PerpetualConstruction.isNamePerpetual(constructionQueue.last())
