@@ -171,7 +171,8 @@ internal class CityTable(
         val textColor = city.getCivInnerColor()
 
         val cityConstructions = city.constructions
-        val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
+        val currentName = cityConstructions.currentConstructionName() // Once: a second read could see a different queue
+        val cityCurrentConstruction = cityConstructions.getConstruction(currentName)
 
         val progressTable = Table()
 
@@ -179,7 +180,7 @@ internal class CityTable(
         // getCurrentConstruction does not distinuish these, only currentConstructionName does. And we want the icon to only show in the second case.
         var nextTurnPercentage = 0f
         var percentage = 0f
-        val icon = if (cityConstructions.currentConstructionName().isEmpty()) null
+        val icon = if (currentName.isEmpty()) null
             else ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         val turns = when (cityCurrentConstruction) {
             PerpetualConstruction.Idle -> {

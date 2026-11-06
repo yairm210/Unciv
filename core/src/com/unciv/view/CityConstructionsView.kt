@@ -23,11 +23,16 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
     @Readonly fun currentConstructionName(): String = cityConstructions.currentConstructionName()
     @Readonly fun getConstruction(name: String): IConstruction = cityConstructions.getConstruction(name)
     @Readonly fun isFirstConstructionOfItsKind(index: Int, name: String): Boolean = cityConstructions.isFirstConstructionOfItsKind(index, name)
+    /** For a caller that walks a [constructionQueue] snapshot it took once */
+    @Readonly fun isFirstConstructionOfItsKind(queue: List<String>, index: Int, name: String): Boolean =
+        cityConstructions.isFirstConstructionOfItsKind(queue, index, name)
     @Readonly fun isBuilt(name: String): Boolean = cityConstructions.isBuilt(name)
     @Readonly fun getWorkDone(name: String): Int = cityConstructions.getWorkDone(name)
     @Readonly fun turnsToConstruction(name: String, useStoredProduction: Boolean = true): Int = cityConstructions.turnsToConstruction(name, useStoredProduction)
-    @Readonly fun shouldBeDisplayed(construction: IConstruction): Boolean = construction.shouldBeDisplayed(cityConstructions)
-    @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
+    // The optional [queue] is a snapshot of [constructionQueue] for callers that check many constructions in a row - see INonPerpetualConstruction.getRejectionReasons
+    @Readonly fun shouldBeDisplayed(construction: IConstruction, queue: List<String> = constructionQueue): Boolean = construction.shouldBeDisplayed(cityConstructions, queue)
+    @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction, queue: List<String> = constructionQueue): Sequence<RejectionReason> =
+        construction.getRejectionReasons(cityConstructions, queue)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
     
     @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
@@ -36,7 +41,7 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
         cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
     @Readonly fun isQueueFull(): Boolean = cityConstructions.isQueueFull()
-    @Readonly fun canAddToQueue(construction: IConstruction): Boolean = cityConstructions.canAddToQueue(construction)
+    @Readonly fun canAddToQueue(construction: IConstruction, queue: List<String> = constructionQueue): Boolean = cityConstructions.canAddToQueue(construction, queue)
     
     @Readonly fun getStatBuyCost(construction: INonPerpetualConstruction, stat: Stat): Int? =
         construction.getStatBuyCost(cityConstructions.city, stat)

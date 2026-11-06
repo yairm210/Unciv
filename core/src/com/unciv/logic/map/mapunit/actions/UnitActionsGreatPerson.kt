@@ -76,13 +76,14 @@ object UnitActionsGreatPerson {
             }
 
             val cityConstructions = tile.getCity()!!.cityConstructions
-            val canHurryConstruction = cityConstructions.getCurrentConstruction() is Building
+            val currentName = cityConstructions.currentConstructionName() // Once: the queue can change between two reads
+            val canHurryConstruction = cityConstructions.getConstruction(currentName) is Building
                 && cityConstructions.canBeHurried()
 
             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
             val productionPointsToAdd = min(
                 (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
-                cityConstructions.getRemainingWork(cityConstructions. currentConstructionName()).toFloat() - 1
+                cityConstructions.getRemainingWork(currentName).toFloat() - 1
             ).toInt()
             if (productionPointsToAdd <= 0) continue
 
