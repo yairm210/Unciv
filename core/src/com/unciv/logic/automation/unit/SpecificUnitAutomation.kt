@@ -48,9 +48,8 @@ object SpecificUnitAutomation {
                     && (tile.civilianUnit == null || tile.civilianUnit == general)
             }
 
-        // Temporary bridge: getEnemyCitiesByPriority still returns raw cities
         val closestReachableEnemyCityTile = HeadTowardsEnemyCityAutomation.getEnemyCitiesByPriority(general)
-            .map { general.getTile().getTileMap().getTile(it.getCenterTile()) }
+            .map { it.getCenterTile() }
             .firstOrNull { general.canReach(it) }
         // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 

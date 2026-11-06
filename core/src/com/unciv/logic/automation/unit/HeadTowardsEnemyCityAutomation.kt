@@ -1,56 +1,53 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.view.ForeignCityView
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
-import com.unciv.logic.automation.Timers.Companion.timeThis
-import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.battle.BattleDamage
-import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.City
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.getCapital
+import com.unciv.view.isMilitary
 import yairm210.purity.annotations.Readonly
 
 object HeadTowardsEnemyCityAutomation {
 
     /** @returns whether the unit has taken this action */
     fun tryHeadTowardsEnemyCity(unitView: MapUnitView): Boolean = timeThis("tryHeadTowardsEnemyCity") {
-        val unit = unitView.getUnit()
-        if (unit.civ.cities.isEmpty()) return false
+        if (unitView.civ().cities().isEmpty()) return false
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
         val closestReachableEnemyCity = getEnemyCitiesByPriority(unitView)
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
+            .firstOrNull { unitView.canReach(it.getCenterTile()) }
             ?: return false // No enemy city reachable
 
         return headTowardsEnemyCity(
             unitView,
             closestReachableEnemyCity.getCenterTile(),
             // This should be cached after the `canReach` call above.
-            unit.movement.getShortestPath(closestReachableEnemyCity.getCenterTile())
+            unitView.getShortestPath(closestReachableEnemyCity.getCenterTile())
         )
     }
 
     @Readonly
-    fun getEnemyCitiesByPriority(unitView: MapUnitView): Sequence<City> {
-        val unit = unitView.getUnit()
-        val enemies = unit.civ.getKnownCivs()
-            .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
+    fun getEnemyCitiesByPriority(unitView: MapUnitView): Sequence<ForeignCityView> {
+        val civ = unitView.civ()
+        val enemies = civ.getKnownCivs()
+            .filter { civ.isAtWarWith(it) && it.cities().isNotEmpty() }
 
-        val closestEnemyCity = enemies
-            .mapNotNull { NextTurnAutomation.getForeignCityNearCapital(unit.civ.getCapital(), it) }
-            .minByOrNull { it.aerialDistance }?.city
+        val capitalTile = civ.getCapital()?.getCenterTile()
+        val closestEnemyCity = (if (capitalTile == null) null else enemies
+            .mapNotNull { enemy -> enemy.cities().minByOrNull { it.getCenterTile().aerialDistanceTo(capitalTile) } }
+            .minByOrNull { it.getCenterTile().aerialDistanceTo(capitalTile) })
             ?: return emptySequence() // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
-        var enemyCitiesByPriority = closestEnemyCity.civ.cities
+        var enemyCitiesByPriority = closestEnemyCity.owningCiv().cities()
             .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
             .asSequence().filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
             .sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
 
-        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
-            enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }
+        if (unitView.getBaseUnit().isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.getHealth() == 1 }
 
         return enemyCitiesByPriority
     }
@@ -61,46 +58,40 @@ object HeadTowardsEnemyCityAutomation {
 
     /**
      * @return whether the unit has taken this action
-     * @throws [NullPointerException] when [closestReachableEnemyCity] does not contain a [City]
+     * @throws [NullPointerException] when [closestReachableEnemyCity] does not contain a city
      */
     fun headTowardsEnemyCity(
         unitView: MapUnitView,
-        closestReachableEnemyCity: Tile,
-        shortestPath: List<Tile>
+        closestReachableEnemyCity: TileView,
+        shortestPath: List<TileView>
     ): Boolean {
-        val unit = unitView.getUnit()
-        // Temporary bridge until the callers pass views
-        val enemyCityTileView = unitView.getTile().getTileMap().getTile(closestReachableEnemyCity)
-
         val unitRange = unitView.getRange()
-        val cityBombardRange = closestReachableEnemyCity.getCity()!!.getBombardRange()
-        if (unitRange > cityBombardRange) { // long-ranged unit, should never be in a bombardable position
-            return headTowardsEnemyCityLongRange(enemyCityTileView, unitRange, unitView)
+        val city = closestReachableEnemyCity.getCity()!!
+        if (unitRange > city.getBombardRange()) { // long-ranged unit, should never be in a bombardable position
+            return headTowardsEnemyCityLongRange(closestReachableEnemyCity, unitRange, unitView)
         }
 
         val nextTileInPath = shortestPath[0]
 
         // None of the stuff below is relevant if we're still quite far away from the city, so we
         // short-circuit here for performance reasons.
-        if (unit.currentTile.aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
+        if (unitView.getTile().aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
             // Even in the worst case of only being able to move 1 tile per turn, we would still
             // not overshoot.
             && shortestPath.size > minDistanceFromCityToConsiderForLandingArea ) {
-            unit.movement.moveToTile(nextTileInPath)
+            unitView.tryMoveToTile(nextTileInPath)
             return true
         }
 
-        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
-            .flatMap { it.getUnits() }
-            .filter { it.isMilitary() && it.civ == unit.civ }
-
-        val city = closestReachableEnemyCity.getCity()!!
+        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getExploredTilesInDistance(6)
+            .flatMap { it.getVisibleUnits() }
+            .filter { it.isMilitary() && it.civ() == unitView.civ() }
 
         if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)) {
-            return headToLandingGrounds(enemyCityTileView, unitView)
+            return headToLandingGrounds(closestReachableEnemyCity, unitView)
         }
 
-        unit.movement.moveToTile(nextTileInPath) // go for it!
+        unitView.tryMoveToTile(nextTileInPath) // go for it!
 
         return true
     }
@@ -108,17 +99,17 @@ object HeadTowardsEnemyCityAutomation {
     /** Cannot take within 5 turns */
     @Readonly
     private fun cannotTakeCitySoon(
-        ourUnitsAroundEnemyCity: Sequence<MapUnit>,
-        city: City
+        ourUnitsAroundEnemyCity: Sequence<ForeignMapUnitView>,
+        city: ForeignCityView
     ): Boolean {
-        val cityCombatant = CityCombatant(city)
+        val cityCombatant = city.asCombatant()
         val expectedDamagePerTurn = ourUnitsAroundEnemyCity
-            .sumOf { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
+            .sumOf { it.asCombatant().calculateDamageToDefender(cityCombatant) }
 
         val cityHealingPerTurn = 20
-        return expectedDamagePerTurn < city.health && // Cannot take immediately
+        return expectedDamagePerTurn < city.getHealth() && // Cannot take immediately
             (expectedDamagePerTurn <= cityHealingPerTurn // No lasting damage
-                || city.health / (expectedDamagePerTurn - cityHealingPerTurn) > 5) // Can damage, but will take more than 5 turns
+                || city.getHealth() / (expectedDamagePerTurn - cityHealingPerTurn) > 5) // Can damage, but will take more than 5 turns
     }
 
     private fun headToLandingGrounds(closestReachableEnemyCity: TileView, unitView: MapUnitView): Boolean {

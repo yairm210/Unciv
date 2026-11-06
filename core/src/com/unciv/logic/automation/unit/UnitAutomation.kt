@@ -614,16 +614,16 @@ object UnitAutomation {
             capturedCities = capturedCities.filterNot { it.health == 1 }
 
         val closestReachableCapturedCity = capturedCities
-                .map { it.getCenterTile() }
-                .sortedBy { it.aerialDistanceTo(unit.getTile()) }
-                .firstOrNull { unit.movement.canReach(it) }
+                .map { unitView.getTile().getTileMap().getTile(it.getCenterTile()) } // Temporary bridge until this function uses views
+                .sortedBy { it.aerialDistanceTo(unitView.getTile()) }
+                .firstOrNull { unitView.canReach(it) }
 
         if (closestReachableCapturedCity != null) {
             return HeadTowardsEnemyCityAutomation.headTowardsEnemyCity(
                 unitView,
                 closestReachableCapturedCity,
                 // This should be cached after the `canReach` call above.
-                unit.movement.getShortestPath(closestReachableCapturedCity)
+                unitView.getShortestPath(closestReachableCapturedCity)
             )
         }
         return false
