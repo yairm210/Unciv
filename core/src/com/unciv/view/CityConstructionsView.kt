@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.models.ruleset.Building
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.IConstruction
@@ -35,6 +36,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
     @Readonly fun getTileForImprovement(improvementName: String): TileView? =
         cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
+    @Readonly fun getBuildableBuildings(): Sequence<Building> = cityConstructions.getBuildableBuildings()
+    @Readonly fun getRemainingWork(name: String): Int = cityConstructions.getRemainingWork(name)
     @Readonly fun isQueueFull(): Boolean = cityConstructions.isQueueFull()
     @Readonly fun canAddToQueue(construction: IConstruction): Boolean = cityConstructions.canAddToQueue(construction)
     

@@ -1,21 +1,22 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.view.CityView
+import com.unciv.view.getWorkableTiles
+import com.unciv.view.getBaseTerrain
+import com.unciv.view.isMilitary
 import com.unciv.view.TileView
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
-import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
@@ -222,73 +223,70 @@ object SpecificUnitAutomation {
 
     /** @return whether there was any progress in placing the improvement. A return value of `false`
      * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
-    fun automateImprovementPlacer(unit: MapUnit) : Boolean {
+    fun automateImprovementPlacer(unit: MapUnitView) : Boolean {
         val improvementBuildingUnique = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly).firstOrNull()
             ?: return false
 
+        val civ = unit.civ()
+        val ruleset = unit.getTile().getRuleset()
         val improvementName = improvementBuildingUnique.params[0]
-        val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
+        val improvement = ruleset.tileImprovements[improvementName]
             ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
-        val citiesByStatBoost = unit.civ.cities.sortedByDescending {
-            it.cityStats.statPercentBonusTree.totalStats[relatedStat]
+        val citiesByStatBoost = civ.cities().sortedByDescending {
+            it.getStatPercentBonusTree().totalStats[relatedStat]
         }
 
-        val averageTerrainStatsValue = unit.civ.gameInfo.ruleset.terrains.values.asSequence()
+        val averageTerrainStatsValue = ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Land }
-            .map { Automation.rankStatsValue(it, GameView(unit.civ.gameInfo, unit.civ).civView) }
+            .map { Automation.rankStatsValue(it, civ) }
             .average()
 
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
-                it.isLand && (it.tileResource?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
-                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                it.isLand && (it.getViewableResource(civ)?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
+                    && (unit.getTile() == it || unit.canMoveTo(it))
                     // okay if we replace regular improvements by great improvements, but not the other way around
-                    && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
-                    && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), GameView(unit.civ.gameInfo, unit.civ).civView) > averageTerrainStatsValue)
+                    && (it.improvement == null || ruleset.tileImprovements[it.improvement!!]?.hasUnique(UniqueType.GreatImprovement) != true)
+                    && it.canBuildImprovement(improvement, unit)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), civ) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue
 
-            val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
+            val pathToCity = unit.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
                 // Radius 5 is quite arbitrary. Few units have such a high movement radius although
                 // streets might modify it. Also there might be invisible units, so this is just an
                 // approximation for relative safety and simplicity.
-                val enemyUnitsNearby = unit.getTile().getTilesInDistance(5).any { tileNearby ->
-                    tileNearby.getUnits().any { unitOnTileNearby ->
-                        unitOnTileNearby.isMilitary() && unitOnTileNearby.civ.isAtWarWith(unit.civ)
+                val enemyUnitsNearby = unit.getTile().getExploredTilesInDistance(5).any { tileNearby ->
+                    tileNearby.getVisibleUnits().any { unitOnTileNearby ->
+                        unitOnTileNearby.isMilitary() && unitOnTileNearby.civ().isAtWarWith(civ)
                     }
                 }
                 // Don't move until you're accompanied by a military unit if there are enemies nearby.
                 if (unit.getTile().militaryUnit == null && enemyUnitsNearby) return true
-                unit.movement.headTowards(city.getCenterTile())
+                unit.tryHeadTowards(city.getCenterTile())
                 return true
             }
 
             // if we got here, we're pretty close, start looking!
-            val chosenTile = applicableTiles.sortedByDescending {
-                Automation.rankTile(
-                    it,
-                    GameView(unit.civ.gameInfo, unit.civ).civView,
-                )
-            }
-                .firstOrNull { unit.movement.canReach(it) }
+            val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, civ) }
+                .firstOrNull { unit.canReach(it) }
                 ?: continue // to another city
 
-            val unitTileBeforeMovement = unit.currentTile
-            unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile) {
-                if (unit.currentTile.isPillaged())
-                    UnitActions.invokeUnitAction(unit, UnitActionType.Repair)
-                else UnitActions.invokeUnitAction(unit, UnitActionType.CreateImprovement)
+            val unitTileBeforeMovement = unit.getTile()
+            unit.tryHeadTowards(chosenTile)
+            if (unit.getTile() == chosenTile) {
+                if (chosenTile.improvementIsPillaged || chosenTile.roadIsPillaged)
+                    unit.tryInvokeUnitAction(UnitActionType.Repair)
+                else unit.tryInvokeUnitAction(UnitActionType.CreateImprovement)
                 return true
             }
-            return unitTileBeforeMovement != unit.currentTile
+            return unitTileBeforeMovement != unit.getTile()
         }
         // No city needs this improvement.
         return false
@@ -332,40 +330,41 @@ object SpecificUnitAutomation {
      *
      * @return whether there was any progress in speeding up a wonder construction. A return value
      * of `false` can be interpreted as: the unit doesn't know where to go or is stuck. */
-    fun speedupWonderConstruction(unit: MapUnit): Boolean {
-        val nearbyCityWithAvailableWonders = unit.civ.cities.filter { city ->
+    fun speedupWonderConstruction(unit: MapUnitView): Boolean {
+        val nearbyCityWithAvailableWonders = unit.civ().cities().filter { city ->
             // Don't speed up construction in small cities. There's a risk the great
             // engineer can't get it done entirely and then it takes forever for the small
             // city to finish the rest.
-            city.population.population >= 3 &&
-            (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
+            city.getPopulationCount() >= 3 &&
+            (unit.canMoveTo(city.getCenterTile()) || unit.getTile() == city.getCenterTile())
                     && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
         }.mapNotNull { city ->
-            val path = unit.movement.getShortestPath(city.getCenterTile())
+            val path = unit.getShortestPath(city.getCenterTile())
             if (path.any() && path.size <= 5) city to path.size else null
         }.minByOrNull { it.second }
             ?.first ?: return false
 
-        if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
+        if (unit.getTile() == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
                     getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-            nearbyCityWithAvailableWonders.cityConstructions.editQueue { add(0, wonderToHurry.name) }
-            return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
-                || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
+            nearbyCityWithAvailableWonders.tryAddToQueueConstruction(wonderToHurry, addToTop = true)
+            return unit.tryInvokeUnitAction(UnitActionType.HurryBuilding)
+                || unit.tryInvokeUnitAction(UnitActionType.HurryWonder)
         }
 
         // Walk towards the city.
         val tileBeforeMoving = unit.getTile()
-        unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
-        return tileBeforeMoving != unit.currentTile
+        unit.tryHeadTowards(nearbyCityWithAvailableWonders.getCenterTile())
+        return tileBeforeMoving != unit.getTile()
     }
 
     @Readonly
-    private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
-        return city.cityConstructions.getBuildableBuildings().filter { building ->
+    private fun getWonderThatWouldBenefitFromBeingSpedUp(city: CityView): Building? {
+        val constructions = city.constructions
+        return constructions.getBuildableBuildings().filter { building ->
             building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
-                    && city.cityConstructions.turnsToConstruction(building.name) >= 5
-        }.minByOrNull { -city.cityConstructions.getRemainingWork(it.name) }
+                    && constructions.turnsToConstruction(building.name) >= 5
+        }.minByOrNull { -constructions.getRemainingWork(it.name) }
     }
 
     fun automateAddInCapital(unit: MapUnitView) {

@@ -306,3 +306,7 @@ class CityView(city: City,
 @Readonly fun CityView.isStarving(): Boolean = foodForNextTurn() < 0
 @Readonly fun CityView.isGrowing(): Boolean = foodForNextTurn() > 0
 @Readonly fun CityView.currentConstructionName(): String = constructions.currentConstructionName()
+
+/** Explored tiles in work range that belong to this city's civ and could be worked */
+@Readonly fun CityView.getWorkableTiles(): Sequence<TileView> =
+    getCenterTile().getExploredTilesInDistance(getWorkRange()).filter { it.getOwner() == owningCiv() }

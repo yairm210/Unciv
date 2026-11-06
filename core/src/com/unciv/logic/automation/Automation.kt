@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.view.TileView
 import com.unciv.view.GameView
 import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
@@ -429,20 +430,19 @@ object Automation {
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
     @Readonly
-    internal fun rankTile(tile: Tile?, civView: CivView): Float {
-        val civInfo = civView.getCiv()
-        if (tile == null) return 0f
+    internal fun rankTile(tile: TileView, civView: CivView): Float {
         val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
-        val stats = tile.stats.getTileStats(null, civInfo)
+        if (tileOwner != null && tileOwner != civView) return 0f // Already belongs to another civilization, useless to us
+        val stats = tile.getTileStats(civView)
         var rank = rankStatsValue(stats, civView)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.isPillaged()) rank += 0.6f
-        val resource = tile.tileResource
-        if (civInfo.canSeeResource(resource)) {
+        val isPillaged = tile.improvementIsPillaged || tile.roadIsPillaged
+        if (isPillaged) rank += 0.6f
+        val resource = tile.getViewableResource(civView)
+        if (resource != null) {
             if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
             if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
-            if (tile.isPillaged()) rank += 1.1f // even better, repair is faster
+            if (isPillaged) rank += 1.1f // even better, repair is faster
         }
         return rank
     }

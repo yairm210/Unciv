@@ -126,7 +126,7 @@ object CivilianUnitAutomation {
         // Great engineer -> Try to speed up wonder construction
         if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
                 || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
-            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit.getUnit()) // Temporary bridge
+            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
         }
@@ -158,8 +158,7 @@ object CivilianUnitAutomation {
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
 
-        // Temporary bridge until automateImprovementPlacer takes a view
-        if (SpecificUnitAutomation.automateImprovementPlacer(unit.getUnit())) return
+        if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
         
         if (unit.tryInvokeTriggerUniqueAction(UniqueType.OneTimeEnterGoldenAge)) return
         if (unit.tryInvokeTriggerUniqueAction(UniqueType.OneTimeEnterGoldenAgeTurns)) return
