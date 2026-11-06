@@ -305,18 +305,27 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         if (city.isHolyCity()) {
             addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
         }
-        val allCitiesWithin10Tiles =
+        val allCitiesWithinNaturalSpreadRange =
             city.civ.gameInfo.getCities()
                 .filter {
                     it != city
                     && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= it.religion.getSpreadRange()
                 }
-        for (city in allCitiesWithin10Tiles) {
-            val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
-            if (!majorityReligionOfCity.isMajorReligion()) continue
-            addedPressure.add(majorityReligionOfCity.name, city.religion.pressureAmountToAdjacentCities(
-                this.city
-            ))
+
+        val adjacentUnitsThatLimitNaturalSpread = city.getCenterTile().getTilesInDistance(1)
+            .flatMap { it.getUnits() }
+            .filter { it.hasUnique(UniqueType.PreventNaturalReligionSpread) }
+
+        for (nearbyCity in allCitiesWithinNaturalSpreadRange) {
+            val majorityReligionOfNearbyCity = nearbyCity.religion.getMajorityReligion() ?: continue
+            if (!majorityReligionOfNearbyCity.isMajorReligion()) continue
+            if (adjacentUnitsThatLimitNaturalSpread
+                .any { it.religion != majorityReligionOfNearbyCity.name })
+                continue
+            addedPressure.add(
+                majorityReligionOfNearbyCity.name,
+                nearbyCity.religion.pressureAmountToAdjacentCities(this.city)
+            )
         }
         return addedPressure
     }
