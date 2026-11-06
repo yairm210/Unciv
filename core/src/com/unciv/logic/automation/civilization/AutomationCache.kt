@@ -1,7 +1,10 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.view.CityView
 import com.unciv.view.RoadPathingCache
 import com.unciv.view.TileView
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Readonly
 
 /**
  * Holds data that automation caches while a civ's moves are being automated.
@@ -22,6 +25,14 @@ class AutomationCache {
     )
 
     val roadPathingCache = RoadPathingCache()
+
+    @Cache private val neighboringOwnCities = HashMap<CityView, List<CityView>>()
+
+    /** Own cities within [maxDistance] of [cityView], computed once per city for the whole civ instead of once per unit.
+     *  The first call's [maxDistance] is used for later calls on the same city. */
+    @Readonly @Suppress("purity")
+    fun getNeighboringOwnCities(cityView: CityView, maxDistance: Int = 12): List<CityView> =
+        neighboringOwnCities.getOrPut(cityView) { cityView.getNeighboringOwnCities(maxDistance) }
 
     val distanceToClosestEnemyTiles = HashMap<TileView, ClosestEnemyTileData>()
 }

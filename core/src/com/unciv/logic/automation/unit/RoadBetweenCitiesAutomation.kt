@@ -127,8 +127,7 @@ class RoadBetweenCitiesAutomation(val civView: CivView, private val cachedForTur
      */
     @Readonly @Suppress("purity") 
     private fun getRoadsToBuildFromCity(cityView: CityView, cache: AutomationCache): List<RoadPlan> {
-        if (roadsToBuildByCitiesCache.containsKey(cityView))
-            return roadsToBuildByCitiesCache[cityView]!!
+        roadsToBuildByCitiesCache[cityView]?.let { return it }
         val roadToCapitalStatus = cityView.getRoadTypeOfConnectionToCapital()
 
         /** @return Rank 0, 1 or 2 of how important it is to build best available road to capital */
@@ -143,16 +142,14 @@ class RoadBetweenCitiesAutomation(val civView: CivView, private val cachedForTur
 
         val basePriority = rankRoadCapitalPriority(roadToCapitalStatus)
         val roadPlans: MutableList<RoadPlan> = mutableListOf()
-        for (closeCityView in cityView.getNeighboringOwnCities(8)) {
+        for (closeCityView in cache.getNeighboringOwnCities(cityView, 8)) {
             // Try to find if the other city has planned to build a road to this city
-            if (roadsToBuildByCitiesCache.containsKey(closeCityView)) {
-                // There should only ever be one or zero possible connections from their city to this city
-                val roadToBuild = roadsToBuildByCitiesCache[closeCityView]!!.firstOrNull { it.fromCity == cityView || it.toCity == cityView }
-                if (roadToBuild != null) {
-                    // We already did the hard work, there can't be any other possible roads to this city
-                    roadPlans.add(roadToBuild)
-                    continue
-                }
+            // There should only ever be one or zero possible connections from their city to this city
+            val roadToBuild = roadsToBuildByCitiesCache[closeCityView]?.firstOrNull { it.fromCity == cityView || it.toCity == cityView }
+            if (roadToBuild != null) {
+                // We already did the hard work, there can't be any other possible roads to this city
+                roadPlans.add(roadToBuild)
+                continue
             }
 
             if (roadToCapitalStatus == bestRoadAvailable) {
