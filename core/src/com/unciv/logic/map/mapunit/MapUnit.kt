@@ -695,8 +695,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 || (civ.isCityState && civ.allyCiv == otherCiv)
     }
 
-    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] 
-     * Gets passed state explicitly when the unit applying the filter isn't this unit*/
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter]
+     *
+     *  @param state Passed explicitly when the unit applying the filter isn't this unit, so it describes that other unit
+     *  (this unit has its own state, [MapUnitCache.state]). It is what `other` compares against, and what the filters relative to a
+     *  civilization (`Friendly`, `Hostile`, `Known`, `Open Borders`) are relative to, so `Hostile` means "at war with the civilization applying the filter".
+     *  Without a civilization in it, those filters are relative to this unit's own civilization. */
     @Readonly
     fun matchesFilter(filter: String, multiFilter: Boolean = true, state: GameContext = GameContext.EmptyState): Boolean =
         if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
@@ -713,7 +717,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter, cache.state, false)) return true
-                if (civ.matchesFilter(filter, cache.state, false)) return true
+                if (civ.matchesFilter(filter, if (state.civInfo != null) state else cache.state, false)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
                 if (hasStatus(filter)) return true
