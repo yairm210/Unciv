@@ -38,10 +38,7 @@ class CityCombatant(val city: City) : ICombatant {
 
     override fun getUnitType(): UnitType = UnitType.City
     override fun getAttackingStrength(defender: ICombatant?): Int = (getCityStrength(defender, CombatAction.Attack) * 0.75).roundToInt()
-    @Readonly override fun getDefendingStrength(attacker: ICombatant?): Int {
-        if (isDefeated()) return 1
-        return getCityStrength(attacker)
-    }
+    @Readonly override fun getDefendingStrength(attacker: ICombatant?): Int = getCityStrength(attacker)
 
     @Readonly
     fun getCityStrength(theirCombatant: ICombatant? = null, combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
