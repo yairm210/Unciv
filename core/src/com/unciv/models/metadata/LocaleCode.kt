@@ -77,6 +77,7 @@ enum class LocaleCode(
     TraditionalChinese("zh-TW", languageName = "Traditional_Chinese"),
     Turkish("tr-TR"),
     Ukrainian("uk-UA"),
+    Uzbek("uz-UZ"),
     Vietnamese("vi-VN"),
     Zulu("zu-ZA")
     ;
