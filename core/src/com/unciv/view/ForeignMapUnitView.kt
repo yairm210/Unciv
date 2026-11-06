@@ -50,7 +50,9 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     /** @param ignoreConditionals If `true`, matches uniques whether or not their conditionals currently apply */
     @Readonly fun hasUnique(uniqueType: UniqueType, ignoreConditionals: Boolean = false): Boolean =
         if (ignoreConditionals) unit.hasUnique(uniqueType, GameContext.IgnoreConditionals) else unit.hasUnique(uniqueType)
-    @Readonly fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> = unit.getMatchingUniques(uniqueType)
+    /** @param ignoreConditionals If `true`, matches uniques whether or not their conditionals currently apply */
+    @Readonly fun getMatchingUniques(uniqueType: UniqueType, ignoreConditionals: Boolean = false): Sequence<Unique> =
+        if (ignoreConditionals) unit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals) else unit.getMatchingUniques(uniqueType)
     @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
         unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
 

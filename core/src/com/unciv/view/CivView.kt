@@ -84,6 +84,8 @@ class CivView(civ: Civilization,
     @Readonly fun shouldShowMoveSpies(): Boolean = civ.espionageManager.shouldShowMoveSpies()
 
     // Religion
+    @Readonly fun mayFoundReligion(): Boolean = civ.religionManager.mayFoundReligionAtAll()
+    @Readonly fun mayEnhanceReligion(): Boolean = civ.religionManager.mayEnhanceReligionAtAll()
     @Readonly fun canFoundPantheon(): Boolean = civ.religionManager.religionState != ReligionState.Pantheon && civ.religionManager.canFoundOrExpandPantheon()
     @Readonly fun canExpandPantheon(): Boolean = civ.religionManager.religionState == ReligionState.Pantheon && civ.religionManager.canFoundOrExpandPantheon()
     @Readonly fun isFoundingReligion(): Boolean = civ.religionManager.religionState == ReligionState.FoundingReligion

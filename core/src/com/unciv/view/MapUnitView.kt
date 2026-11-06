@@ -1,7 +1,10 @@
 package com.unciv.view
 
 import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import com.unciv.Constants
 import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
@@ -236,6 +239,24 @@ class MapUnitView internal constructor(
      *  @return whether an action was invoked */
     fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
     @Readonly fun canPillage(tile: TileView): Boolean = UnitActionsPillage.canPillage(unit, tile.unwrap())
+    /** Invokes the first enabled [UnitActionType.TriggerUnique] action whose unique is of [uniqueType]
+     *  @return whether an action was invoked */
+    fun tryInvokeTriggerUniqueAction(uniqueType: UniqueType): Boolean {
+        val action = UnitActions.getUnitActions(unit, UnitActionType.TriggerUnique)
+            .firstOrNull { it.action != null && it.associatedUnique?.type == uniqueType }?.action ?: return false
+        action.invoke()
+        return true
+    }
+    /** `true` if this unit's civ may spread its religion with this unit at all */
+    @Readonly fun maySpreadReligion(): Boolean = unit.civ.religionManager.maySpreadReligionAtAll(unit)
+    /** `true` if the unit action [unique] has usages left, see [UnitActionModifiers.canUse] */
+    @Readonly fun canUseUnitActionUnique(unique: Unique): Boolean = UnitActionModifiers.canUse(unit, unique)
+    /** Triggers [unique] on this unit's tile, and applies its action side effects (movement cost, consuming the unit, etc.) */
+    fun tryActivateUnitActionUnique(unique: Unique): Boolean {
+        UniqueTriggerActivation.triggerUnique(unique, unit.civ, unit = unit, tile = unit.currentTile)
+        UnitActionModifiers.activateSideEffects(unit, unique)
+        return true
+    }
     fun tryFortifyIfCan(): Boolean {
         unit.fortifyIfCan()
         return true

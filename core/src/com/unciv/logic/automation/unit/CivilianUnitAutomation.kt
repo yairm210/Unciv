@@ -5,15 +5,8 @@ import com.unciv.view.isAutomatingRoadConnection
 import com.unciv.logic.automation.civilization.ThreatManager
 import com.unciv.logic.automation.civilization.AutomationCache
 import com.unciv.view.CivView
-import com.unciv.logic.civilization.managers.ReligionState
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
-import com.unciv.logic.map.mapunit.actions.UnitActionModifiers.canUse
-import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
@@ -28,17 +21,17 @@ object CivilianUnitAutomation {
         && unit.civ().getUnits().any { it.hasUnique(UniqueType.AddInCapital) }
 
     fun automateCivilianUnit(unit: MapUnitView, dangerousTiles: HashSet<TileView>, cache: AutomationCache): Unit = timeThis("automateCivilianUnit") {
-        // Temporary - logic-layer automation below still works on MapUnit
-        val mapUnit = unit.getUnit()
+        // Temporary - the worker automation cache lives on the raw civ
+        val workerAutomation = unit.civ().getCiv().getWorkerAutomation()
 
         // To allow "found city" actions that can only trigger a limited number of times
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
         @Readonly
         fun hasSettlerAction(uniqueType: UniqueType) =
-            mapUnit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals)
+            unit.getMatchingUniques(uniqueType, ignoreConditionals = true)
                 .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
-                .any { canUse(mapUnit, it) }
+                .any { unit.canUseUnitActionUnique(it) }
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
@@ -56,20 +49,19 @@ object CivilianUnitAutomation {
         }
 
         if (unit.isAutomatingRoadConnection())
-            return mapUnit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
+            return workerAutomation.roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
         if (unit.hasUnique(UniqueType.BuildImprovements))
-            return mapUnit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles, cache)
+            return workerAutomation.automateWorkerAction(unit, dangerousTiles, cache)
 
         if (unit.hasUniqueToCreateWaterImprovements()) {
-            if (!mapUnit.civ.getWorkerAutomation().automateWorkBoats(unit))
+            if (!workerAutomation.automateWorkBoats(unit))
                 UnitAutomation.tryExplore(unit, cache)
             return
         }
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
-            && mapUnit.civ.religionManager.religionState < ReligionState.Religion
-            && mapUnit.civ.religionManager.mayFoundReligionAtAll()
+            && unit.civ().mayFoundReligion()
         )
             return ReligiousUnitAutomation.foundReligion(unit)
         
@@ -81,8 +73,7 @@ object CivilianUnitAutomation {
             
 
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
-            && mapUnit.civ.religionManager.religionState < ReligionState.EnhancedReligion
-            && mapUnit.civ.religionManager.mayEnhanceReligionAtAll()
+            && unit.civ().mayEnhanceReligion()
         )
             return ReligiousUnitAutomation.enhanceReligion(unit)
 
@@ -99,7 +90,7 @@ object CivilianUnitAutomation {
         if (unit.hasCitadelPlacementUnique() && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
 
-        if (mapUnit.civ.religionManager.maySpreadReligionAtAll(mapUnit))
+        if (unit.maySpreadReligion())
             return ReligiousUnitAutomation.automateMissionary(unit)
 
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
@@ -135,13 +126,13 @@ object CivilianUnitAutomation {
         // Great engineer -> Try to speed up wonder construction
         if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
                 || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
-            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(mapUnit)
+            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit.getUnit()) // Temporary bridge
             if (wonderCanBeSpedUpEventually)
                 return
         }
 
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
-            val unique = mapUnit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
+            val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
             val buildingName = unique.params[0]
             // Choose the city that is closest in distance and does not have the building constructed.
             val cityToGainBuilding = unit.civ().cities().filter {
@@ -155,8 +146,7 @@ object CivilianUnitAutomation {
 
             if (cityToGainBuilding != null) {
                 if (unit.getTile() == cityToGainBuilding.getCenterTile()) {
-                    UniqueTriggerActivation.triggerUnique(unique, mapUnit.civ, unit = mapUnit, tile = mapUnit.currentTile)
-                    UnitActionModifiers.activateSideEffects(mapUnit, unique)
+                    unit.tryActivateUnitActionUnique(unique)
                     return
                 }
                 else unit.tryHeadTowards(cityToGainBuilding.getCenterTile())
@@ -168,15 +158,11 @@ object CivilianUnitAutomation {
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
 
-        if (SpecificUnitAutomation.automateImprovementPlacer(mapUnit)) return
+        // Temporary bridge until automateImprovementPlacer takes a view
+        if (SpecificUnitAutomation.automateImprovementPlacer(unit.getUnit())) return
         
-        val goldenAgeAction = UnitActions.getUnitActions(mapUnit, UnitActionType.TriggerUnique)
-            .filter { it.action != null && it.associatedUnique?.type in listOf(UniqueType.OneTimeEnterGoldenAge,
-                UniqueType.OneTimeEnterGoldenAgeTurns) }.firstOrNull()
-        if (goldenAgeAction != null) {
-            goldenAgeAction.action?.invoke()
-            return
-        }
+        if (unit.tryInvokeTriggerUniqueAction(UniqueType.OneTimeEnterGoldenAge)) return
+        if (unit.tryInvokeTriggerUniqueAction(UniqueType.OneTimeEnterGoldenAgeTurns)) return
 
         return // The AI doesn't know how to handle unknown civilian units
     }
@@ -205,38 +191,37 @@ object CivilianUnitAutomation {
     }
 
     private fun runAway(unit: MapUnitView, cache: AutomationCache) {
-        val mapUnit = unit.getUnit()
-        val reachableTiles = mapUnit.movement.getDistanceToTiles()
+        val reachableTiles = unit.getDistanceToTiles()
         val enterableCity = reachableTiles.keys
-            .firstOrNull { it.isCityCenter() && mapUnit.movement.canMoveTo(it) }
+            .firstOrNull { it.isCityCenter() && unit.canMoveTo(it) }
         if (enterableCity != null) {
-            mapUnit.movement.moveToTile(enterableCity)
+            unit.tryMoveToTile(enterableCity)
             return
         }
         val defensiveUnit = reachableTiles.keys
             .firstOrNull {
-                it.militaryUnit != null && it.militaryUnit!!.civ == mapUnit.civ && it.civilianUnit == null
+                it.militaryUnit?.civ() == unit.civ() && it.civilianUnit == null
             }
         if (defensiveUnit != null) {
-            mapUnit.movement.moveToTile(defensiveUnit)
+            unit.tryMoveToTile(defensiveUnit)
             return
         }
 
         val dangerousTiles = ThreatManager.getDangerousTiles(cache, unit)
-        val unitTileView = unit.getTile()
+        val unitTile = unit.getTile()
         val tileClosestToDanger = dangerousTiles
             // Priotirize capture threat over ranged attack
             .sortedByDescending { ThreatManager.getEnemyUnitsOnTiles(unit.civ(), listOf(it)).isNotEmpty() }
-            .minByOrNull { it.aerialDistanceTo(unitTileView) } ?: unitTileView
+            .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
         val tileFurthestFromDanger = reachableTiles.keys
             .filter {
-                mapUnit.movement.canMoveTo(it)
-                    && mapUnit.getDamageFromTerrain(it) < unit.unitHealth
-                    && unitTileView.getTileMap().getTile(it) !in dangerousTiles }
-            .sortedWith(compareByDescending<Tile> { unitTileView.getTileMap().getTile(it).aerialDistanceTo(tileClosestToDanger) } // As far away from threat
-                .thenByDescending { it.isFriendlyTerritory(mapUnit.civ) }) // Priotirize friendly territory
+                unit.canMoveTo(it)
+                    && unit.getDamageFromTerrain(it) < unit.unitHealth
+                    && it !in dangerousTiles }
+            .sortedWith(compareByDescending<TileView> { it.aerialDistanceTo(tileClosestToDanger) } // As far away from threat
+                .thenByDescending { it.isFriendlyTerritory() }) // Priotirize friendly territory
             .firstOrNull() ?: return // can't move anywhere!
 
-        mapUnit.movement.moveToTile(tileFurthestFromDanger)
+        unit.tryMoveToTile(tileFurthestFromDanger)
     }
 }
