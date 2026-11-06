@@ -40,6 +40,10 @@ import com.unciv.ui.components.input.KeyShortcutDispatcherVeto.DispatcherVetoRes
         if ((key == KeyCharAndCode.ESC && activate(KeyCharAndCode.BACK, dispatcherVetoer))
             || (key == KeyCharAndCode.BACK && activate(KeyCharAndCode.ESC, dispatcherVetoer)))
             return true
+        // Mouse back button (virtual key, see UncivStage) acts as Back too, if not bound to something else
+        if (key == KeyCharAndCode(VirtualMouseButtonKeys.Back.keyCode)
+            && (activate(KeyCharAndCode.BACK, dispatcherVetoer) || activate(KeyCharAndCode.ESC, dispatcherVetoer)))
+            return true
 
         return false
     }
