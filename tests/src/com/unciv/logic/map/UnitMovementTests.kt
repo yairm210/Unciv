@@ -4,10 +4,12 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
@@ -583,5 +585,301 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         assertEquals(testGame.tileMap[2,2], settler2.currentTile)
         assertEquals(warrior1, settler2.getOtherEscortUnit())
         assertEquals(warrior2, settler1.getOtherEscortUnit())
+    }
+
+    @Test
+    fun loadedCarrierDoesNotEnterCityThatCannotHoldItsPayload() {
+        val cityTile = testGame.tileMap[0, 0]
+        for (neighbor in cityTile.neighbors) {
+            neighbor.baseTerrain = Constants.coast
+            neighbor.setTransients()
+        }
+        val city = testGame.addCity(civInfo, cityTile)
+        val water = cityTile.neighbors.first()
+        // One valid fighter, then the stale flag, then a full city garrison that stays city-based.
+        val stale = testGame.addUnit("Fighter", civInfo, cityTile)
+        stale.isTransported = true
+        val cityAircraft = ArrayList<MapUnit>()
+        repeat(city.getMaxAirUnits()) {
+            cityAircraft += testGame.addUnit("Fighter", civInfo, cityTile)
+        }
+        val carrier = testGame.addUnit("Carrier", civInfo, water)
+        carrier.health = 30
+        val payload = listOf(
+            testGame.addUnit("Fighter", civInfo, water),
+            testGame.addUnit("Fighter", civInfo, water)
+        )
+        val idsBefore = civInfo.units.getCivUnits().map { it.id }.sorted().toList()
+
+        assertEquals(UnitMovement.CannotMoveToReason.NoAirUnitTransport, carrier.movement.getCannotMoveToReason(cityTile))
+        assertFalse(carrier.movement.canMoveTo(cityTile))
+
+        carrier.movement.moveToTile(cityTile)
+
+        assertEquals(water, carrier.currentTile)
+        for (passenger in payload) {
+            assertEquals(water, passenger.currentTile)
+            assertTrue(passenger.isTransported)
+            assertTrue(water.airUnits.contains(passenger))
+            assertFalse(cityTile.airUnits.contains(passenger))
+        }
+
+        UnitAutomation.automateUnitMoves(carrier)
+
+        assertEquals(idsBefore, civInfo.units.getCivUnits().map { it.id }.sorted().toList())
+        for (unit in civInfo.units.getCivUnits()) {
+            var seen = 0
+            for (mapTile in testGame.tileMap.tileList)
+                seen += mapTile.getUnits().count { it == unit }
+            assertEquals(1, seen)
+        }
+        assertEquals(water, carrier.currentTile)
+        for (passenger in payload) {
+            assertEquals(water, passenger.currentTile)
+            assertTrue(passenger.isTransported)
+        }
+        assertEquals(cityTile, stale.currentTile)
+        assertTrue(stale.isTransported)
+        for (aircraft in cityAircraft) {
+            assertEquals(cityTile, aircraft.currentTile)
+            assertFalse(aircraft.isTransported)
+        }
+    }
+
+    @Test
+    fun loadedCarrierEntersFullCityWhenAircraftAreCityBased() {
+        val cityTile = testGame.tileMap[0, 0]
+        val water = cityTile.neighbors.first()
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+        val city = testGame.addCity(civInfo, cityTile)
+        val cityAircraft = ArrayList<MapUnit>()
+        repeat(city.getMaxAirUnits()) {
+            cityAircraft += testGame.addUnit("Fighter", civInfo, cityTile)
+        }
+        val carrier = testGame.addUnit("Carrier", civInfo, water)
+        val payload = listOf(
+            testGame.addUnit("Fighter", civInfo, water),
+            testGame.addUnit("Fighter", civInfo, water)
+        )
+        for (passenger in payload)
+            passenger.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+
+        assertTrue(carrier.movement.canMoveTo(cityTile))
+        carrier.movement.moveToTile(cityTile)
+
+        assertEquals(cityTile, carrier.currentTile)
+        for (passenger in payload) {
+            assertEquals(cityTile, passenger.currentTile)
+            assertTrue(passenger.isTransported)
+            assertEquals(UnitMovementMemoryType.UnitMoved, passenger.mostRecentMoveType)
+        }
+        for (aircraft in cityAircraft) {
+            assertEquals(cityTile, aircraft.currentTile)
+            assertFalse(aircraft.isTransported)
+        }
+        assertEquals(city.getMaxAirUnits(), cityTile.airUnits.count { !it.isTransported })
+        assertEquals(payload.size, cityTile.airUnits.count { it.isTransported })
+        assertEquals(0, carrier.checkCarryCapacity(cityAircraft[0]))
+    }
+
+    @Test
+    fun loadedCarrierEntersWhenDestinationCarrierSlotsFitPayload() {
+        val cityTile = testGame.tileMap[0, 0]
+        val water = cityTile.neighbors.first()
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+        testGame.addCity(civInfo, cityTile)
+        val carrierBase = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [1] [Aircraft] units",
+            "Can carry [1] extra [Fighter] units"
+        ).apply {
+            movement = 4
+            strength = 40
+        }
+        val carrier = testGame.addUnit(carrierBase.name, civInfo, water)
+        val resident = testGame.addUnit("Bomber", civInfo, cityTile)
+        resident.isTransported = true
+        val payload = testGame.addUnit("Fighter", civInfo, water)
+
+        assertTrue(carrier.checkCarryCapacity(payload, sequenceOf(resident)) > 0)
+        assertTrue(carrier.movement.canMoveTo(cityTile))
+        carrier.movement.moveToTile(cityTile)
+
+        assertEquals(cityTile, carrier.currentTile)
+        assertEquals(cityTile, payload.currentTile)
+        assertEquals(cityTile, resident.currentTile)
+        assertTrue(payload.isTransported)
+        assertTrue(resident.isTransported)
+    }
+
+    @Test
+    fun loadedCarrierRejectsDestinationOneSlotOverCapacity() {
+        val cityTile = testGame.tileMap[0, 0]
+        val water = cityTile.neighbors.first()
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+        testGame.addCity(civInfo, cityTile)
+        val carrierBase = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [1] [Aircraft] units",
+            "Can carry [1] extra [Fighter] units"
+        ).apply {
+            movement = 4
+            strength = 40
+        }
+        val carrier = testGame.addUnit(carrierBase.name, civInfo, water)
+        val resident = testGame.addUnit("Bomber", civInfo, cityTile)
+        resident.isTransported = true
+        val payload = listOf(
+            testGame.addUnit("Fighter", civInfo, water),
+            testGame.addUnit("Fighter", civInfo, water)
+        )
+
+        assertTrue(carrier.checkCarryCapacity(payload[0], sequenceOf(resident)) > 0)
+        assertTrue(carrier.checkCarryCapacity(payload[1], sequenceOf(resident, payload[0])) <= 0)
+        assertEquals(UnitMovement.CannotMoveToReason.NoAirUnitTransport, carrier.movement.getCannotMoveToReason(cityTile))
+        carrier.movement.moveToTile(cityTile)
+
+        assertEquals(water, carrier.currentTile)
+        assertEquals(cityTile, resident.currentTile)
+        assertTrue(resident.isTransported)
+        for (passenger in payload) {
+            assertEquals(water, passenger.currentTile)
+            assertTrue(passenger.isTransported)
+            assertFalse(cityTile.airUnits.contains(passenger))
+        }
+    }
+
+    @Test
+    fun fullCarrierKeepsPassengersOnWaterAndCityDeparture() {
+        val cityTile = testGame.tileMap[0, 0]
+        val water = cityTile.neighbors.first()
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+        val nextWater = water.neighbors.first { it != cityTile }
+        nextWater.baseTerrain = Constants.coast
+        nextWater.setTransients()
+        val foreignCoast = cityTile.getTilesAtDistance(2).first { it != nextWater }
+        foreignCoast.baseTerrain = Constants.coast
+        foreignCoast.setTransients()
+        val city = testGame.addCity(civInfo, cityTile)
+
+        val carrier = testGame.addUnit("Carrier", civInfo, cityTile)
+        val cityAircraft = ArrayList<MapUnit>()
+        repeat(city.getMaxAirUnits()) {
+            cityAircraft += testGame.addUnit("Fighter", civInfo, cityTile)
+        }
+        val passengers = listOf(
+            testGame.addUnit("Fighter", civInfo, cityTile),
+            testGame.addUnit("Fighter", civInfo, cityTile)
+        )
+        val foreignCiv = testGame.addCiv()
+        testGame.addUnit("Carrier", foreignCiv, foreignCoast)
+        val foreignFighter = testGame.addUnit("Fighter", foreignCiv, foreignCoast)
+        foreignFighter.removeFromTile()
+        cityTile.airUnits.add(foreignFighter)
+        foreignFighter.currentTile = cityTile
+        foreignFighter.isTransported = true
+
+        for (passenger in passengers) {
+            assertTrue(passenger.isTransported)
+            passenger.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+        }
+        val memorySizes = passengers.map { it.movementMemories.size }
+
+        carrier.movement.moveToTile(water)
+        carrier.movement.moveToTile(nextWater)
+
+        assertEquals(nextWater, carrier.currentTile)
+        for ((passenger, memorySize) in passengers.zip(memorySizes)) {
+            assertEquals(nextWater, passenger.currentTile)
+            assertTrue(passenger.isTransported)
+            assertTrue(nextWater.airUnits.contains(passenger))
+            assertEquals(UnitMovementMemoryType.UnitMoved, passenger.mostRecentMoveType)
+            assertEquals(memorySize, passenger.movementMemories.size)
+        }
+        for (aircraft in cityAircraft) {
+            assertEquals(cityTile, aircraft.currentTile)
+            assertFalse(aircraft.isTransported)
+            assertFalse(nextWater.airUnits.contains(aircraft))
+        }
+        assertSame(foreignCiv, foreignFighter.civ)
+        assertEquals(cityTile, foreignFighter.currentTile)
+        assertTrue(foreignFighter.isTransported)
+        assertTrue(cityTile.airUnits.contains(foreignFighter))
+        assertFalse(nextWater.airUnits.contains(foreignFighter))
+    }
+
+    @Test
+    fun overCapacityCarrierCanReturnToItsOwnTile() {
+        val origin = testGame.tileMap[0, 0]
+        val other = testGame.tileMap[1, 0]
+        origin.baseTerrain = Constants.coast
+        origin.setTransients()
+        other.baseTerrain = Constants.coast
+        other.setTransients()
+        val carrierBase = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [1] [Aircraft] units"
+        ).apply {
+            movement = 4
+            strength = 40
+        }
+        val carrier = testGame.addUnit(carrierBase.name, civInfo, origin)
+        val fighter = testGame.addUnit("Fighter", civInfo, origin)
+        val extra = testGame.addUnit("Fighter", civInfo, null)
+        origin.airUnits.add(extra)
+        extra.currentTile = origin
+        extra.isTransported = true
+
+        assertEquals(UnitMovement.CannotMoveToReason.TileIsNotEmpty, carrier.movement.getCannotMoveToReason(origin))
+        assertEquals(UnitMovement.CannotMoveToReason.NoAirUnitTransport, carrier.movement.getCannotMoveToReason(other))
+
+        carrier.removeFromTile()
+        carrier.putInTile(origin)
+
+        assertEquals(origin, carrier.currentTile)
+        assertTrue(origin.airUnits.contains(fighter))
+        assertTrue(origin.airUnits.contains(extra))
+        assertTrue(fighter.isTransported)
+        assertTrue(extra.isTransported)
+        assertEquals(UnitMovement.CannotMoveToReason.NoAirUnitTransport, carrier.movement.getCannotMoveToReason(other))
+    }
+
+    @Test
+    fun ordinaryAircraftBoardingRespectsCarrierSlots() {
+        val cityTile = testGame.tileMap[0, 0]
+        val water = cityTile.neighbors.first()
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+        testGame.addCity(civInfo, cityTile)
+        val carrierBase = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [1] [Fighter] units"
+        ).apply {
+            movement = 4
+            strength = 40
+        }
+        val carrier = testGame.addUnit(carrierBase.name, civInfo, water)
+        val fighter = testGame.addUnit("Fighter", civInfo, cityTile)
+        val secondFighter = testGame.addUnit("Fighter", civInfo, cityTile)
+        val bomber = testGame.addUnit("Bomber", civInfo, cityTile)
+
+        assertTrue(carrier.canTransport(fighter))
+        assertTrue(fighter.movement.canMoveTo(water))
+        fighter.movement.moveToTile(water)
+
+        assertEquals(water, fighter.currentTile)
+        assertTrue(fighter.isTransported)
+        assertFalse(carrier.canTransport(secondFighter))
+        assertFalse(secondFighter.movement.canMoveTo(water))
+        assertEquals(cityTile, secondFighter.currentTile)
+        assertFalse(secondFighter.isTransported)
+        assertFalse(carrier.canTransport(bomber))
+        assertFalse(bomber.movement.canMoveTo(water))
+        assertEquals(cityTile, bomber.currentTile)
+        assertFalse(bomber.isTransported)
     }
 }
