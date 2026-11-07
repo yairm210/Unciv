@@ -992,6 +992,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
             UniqueTriggerActivation.triggerUnique(unique, this,
                 triggerNotificationText = "due to expending our [${this.name}]")
         }
+        // Notify City-States that a great person was expended, required for the GreatPerson quest
+        if (isGreatPerson())
+            civ.gameInfo.getAliveCityStates()
+                .forEach { it.questManager.greatPersonExpended(this) }
         destroy()
     }
 
