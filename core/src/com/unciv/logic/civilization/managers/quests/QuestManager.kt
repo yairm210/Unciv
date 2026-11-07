@@ -645,10 +645,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Gets notified when a great person belonging to [unit.civ] is bulbed or planted.
-     * This handles the case where the player acquires and activates a great person on
+     * Gets notified when a great person belonging to [unit.civ] is expended, disbanded, or destroyed.
+     * This handles cases where the player acquires and activates/disbands/loses a great person on
      * the same turn: by the time [endTurn] runs and [handleIndividualQuests] checks
-     * [QuestImplementation.GreatPerson.isComplete], the unit is already gone
+     * [QuestImplementation.GreatPerson.isComplete], the unit is already gone.
      */
     fun greatPersonExpended(unit: MapUnit) {
         val matchingQuests = getAssignedQuestsOfName(QuestName.GreatPerson)
