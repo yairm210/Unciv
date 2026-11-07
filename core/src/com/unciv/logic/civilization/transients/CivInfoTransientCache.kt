@@ -269,7 +269,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
             if (!statsGained.isEmpty() && naturalWonder != null) {
                 civInfo.addStats(statsGained)
-                civInfo.addNotification("We have received [${statsGained}] for discovering [${naturalWonder}]",
+                civInfo.addNotification("We have received [${statsGained.toStringForNotifications()}] for discovering [${naturalWonder}]",
                     Notification.NotificationCategory.General, statsGained.toString()
                     )
             }
