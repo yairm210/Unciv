@@ -410,6 +410,23 @@ class TranslationTests {
         )
     }
 
+    /** #15955: the Natural Wonder bonus notification must have a matching template, or it is never translated */
+    @Test
+    fun naturalWonderBonusNotificationHasATemplate() {
+        setupUncivGame()
+        val stats = Stats(gold = 100f).toStringForNotifications()
+        val notification = "We have received [$stats] for discovering [El Dorado]"
+        val templateKeys = mutableSetOf<String>()
+        TranslationFileReader.readTemplates { templateLines ->
+            for (template in templateLines) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                templateKeys.add(template.substringBefore(" = ").getPlaceholderText())
+            }
+        }
+        Assert.assertTrue("No template matches \"$notification\"", notification.getPlaceholderText() in templateKeys)
+        Assert.assertTrue("The stats placeholder should hold untranslated stats", Stats.isStats(stats))
+    }
+
     @Test
     fun isStatsRecognizesStatsIncludingStatCharacter() {
         setupUncivGame()
