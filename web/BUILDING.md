@@ -27,6 +27,20 @@ then, `preparePages` excludes map files from the deployment copy.
 The full game compiler currently needs an 8 GiB TeaVM worker heap;
 `webCompilerMemory` sets that heap in MiB.
 
+## CI and optional Pages deployment
+
+`.github/workflows/web.yml` runs `:web:test`, `:web:preparePages`, a generated
+JavaScript syntax check, and the browser font contracts on pull requests and
+pushes that change the web target or shared code/assets. It uploads test logs
+and the clean game package as run artifacts. Pull requests never deploy.
+
+To deploy from a trusted branch, set repository variables
+`WEB_DEPLOY_PAGES=true` and `WEB_DEPLOY_BRANCH` to that branch name, and enable
+GitHub Pages with GitHub Actions as the source. The deployment job checks out
+the existing `gh-pages` branch, replaces only its `game/` directory, and keeps
+the rest of that site. A repository using deployment must therefore have a
+`gh-pages` branch; repositories without the variables only build and test.
+
 ## Pinned toolchains and cache
 
 `dependencies.lock.properties` pins each fork commit and the SHA-256 digest of
