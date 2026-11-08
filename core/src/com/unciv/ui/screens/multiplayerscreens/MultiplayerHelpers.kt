@@ -79,7 +79,7 @@ object MultiplayerHelpers {
             /** Use average turn time data to estimate time until our turn */
             fun estimateTimeUntilOurTurn(): String? {
                 // ignore AIs, spectators, and defeated players
-                val players = preview.civilizations.filter { it.isAlive == true && it.isPlayerCivilization() }
+                val players = preview.civilizations.filter { it.isAlive == true && it.isPlayerCivilization() && it.civID != Constants.spectator }
                 val playerCivIDs = players.map { it.civID }
                 val fromIndex = playerCivIDs.indexOf(preview.currentPlayer)
                 val untilIndex = playerCivIDs.indexOf(playerCivName)
