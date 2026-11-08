@@ -112,14 +112,16 @@ class MapFileSelectTable(
 
     }
 
-    private fun getMapFilesSequence() = sequence<FileHandle> {
+    private fun getUnsortedMapFilesSequence() = sequence<FileHandle> {
         yieldAll(MapSaver.getMaps().asSequence())
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val mapsFolder = modFolder.child(MapSaver.mapsFolder)
             if (mapsFolder.exists())
                 yieldAll(mapsFolder.list().asSequence())
         }
-    }.sortedByDescending { it.lastModified() }
+    }
+
+    private fun getMapFilesSequence() = getUnsortedMapFilesSequence().sortedByDescending { it.lastModified() }
 
     private fun addMapWrappersAsync() {
         val mapFilesFlow = getMapFilesSequence().asFlow().map {
@@ -175,19 +177,9 @@ class MapFileSelectTable(
         }
     }
 
-    private val firstMap: FileHandle? by lazy {
-        getMapFilesSequence().firstOrNull {
-            try {
-                MapSaver.loadMapParameters(it)
-                true
-            } catch (_: Exception) {
-                false
-            }
-        }
-    }
-
     private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000 // 900s = quarter hour
-    fun isNotEmpty() = firstMap != null
+    /** Only lists files, no parsing - a folder holding only unreadable maps still counts as non-empty */
+    fun isNotEmpty() = getUnsortedMapFilesSequence().any()
 
     fun activateCustomMaps() {
         if (isActivated) {
