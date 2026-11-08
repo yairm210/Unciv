@@ -567,11 +567,13 @@ class CityScreen(
         if (numCities == 0) return
         val indexOfCity = viewableCities.indexOfFirst { it == cityView }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        game.replaceCurrentScreen {
-            val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
-            newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
-            newCityScreen.updateAsync()
-            newCityScreen
+        Concurrency.runOnGLThread { // Allow touch event to return immediately, avoid ANR
+            game.replaceCurrentScreen {
+                val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+                newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
+                newCityScreen.updateAsync()
+                newCityScreen
+            }
         }
     }
 
