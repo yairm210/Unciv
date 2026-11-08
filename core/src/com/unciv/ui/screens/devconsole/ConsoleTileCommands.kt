@@ -20,7 +20,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
             val selectedTile = console.getSelectedTile()
-            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].originalUnquoted()).toString())
+            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].originalUnquoted(), console.screen.viewingCiv).toString())
         },
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
@@ -126,7 +126,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         "find" to ConsoleAction("tile find <tileFilter>") { console, params ->
             val filter = params[0]
             val locations = console.gameInfo.tileMap.tileList
-                .filter { it.matchesFilter(filter.originalUnquoted()) }  // filters are case sensitive
+                .filter { it.matchesFilter(filter.originalUnquoted(), console.screen.viewingCiv) }  // filters are case sensitive
                 .map { it.position }
             if (locations.isEmpty()) DevConsoleResponse.hint("None found")
             else {
