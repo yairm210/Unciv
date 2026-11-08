@@ -453,8 +453,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
-        settings.save()
-
         val autoSaveJob = files.autosaves.autoSaveJob
         if (autoSaveJob != null && autoSaveJob.isActive) {
             // onPause() call always precedes dispose() call so auto save is already in progress
