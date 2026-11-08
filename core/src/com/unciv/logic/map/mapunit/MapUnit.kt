@@ -956,11 +956,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
-        // Notify City-States for the GreatPerson quest
-        if (isGreatPerson())
-            civ.gameInfo.getAliveCityStates()
-                .forEach { it.questManager.greatPersonExpended(this) }
-
         stopEscorting()
         currentMovement = 0f
         civ.units.removeUnit(this)

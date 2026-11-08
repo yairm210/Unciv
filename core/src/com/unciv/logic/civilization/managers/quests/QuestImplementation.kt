@@ -111,9 +111,6 @@ sealed class QuestImplementation : IQuestImplementation {
             civ.getGreatPersonForQuest(challenger) != null
         override fun getAssignedQuestData(civ: Civilization, quest: Quest, assignee: Civilization) =
             civ.getGreatPersonForQuest(assignee)!!.name to ""
-        /** Completion also happens when [MapUnit.destroy] calls [QuestManager.greatPersonExpended],
-         *  in case the great person is used up/destroyed/disbanded before the end of the turn.
-         */
         override fun isComplete(civ: Civilization, assignedQuest: AssignedQuest): Boolean {
             val ruleset = civ.gameInfo.ruleset
             return assignedQuest.assigneeCiv.units.getCivGreatPeople()

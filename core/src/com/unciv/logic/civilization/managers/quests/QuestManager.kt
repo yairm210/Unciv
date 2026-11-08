@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getRandom
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.translations.tr
@@ -642,25 +641,6 @@ class QuestManager : IsPartOfGameInfoSerialization {
     fun unitsKilledSoFar(target: Civilization, viewingCiv: Civilization): Int {
         val killMap = unitsKilledFromCiv[target.civID] ?: return 0
         return killMap[viewingCiv.civID] ?: 0
-    }
-
-    /**
-     * Gets notified when a great person belonging to [unit.civ] is expended, disbanded, or destroyed.
-     * This handles cases where the player acquires and activates/disbands/loses a great person on
-     * the same turn: by the time [endTurn] runs and [handleIndividualQuests] checks
-     * [QuestImplementation.GreatPerson.isComplete], the unit is already gone.
-     */
-    fun greatPersonExpended(unit: MapUnit) {
-        val matchingQuests = getAssignedQuestsOfName(QuestName.GreatPerson)
-            .filter { assignedQuest ->
-                assignedQuest.assigneeCiv == unit.civ &&
-                    unit.baseUnit.getReplacedUnit(ruleset).name == assignedQuest.data1
-            }.toList()
-
-        for (quest in matchingQuests)
-            giveReward(quest)
-
-        assignedQuests.removeAll(matchingQuests)
     }
 
     /**
