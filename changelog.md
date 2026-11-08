@@ -1,3 +1,43 @@
+## 4.22.18
+
+perf(update): Cache neighbors on tilegroup on update so we don't need to generate it per layer (allocation time leads to timeouts)
+
+Avoid ANR on shutdown - do not save game settings on dispose. Why did we do that in the first place?
+
+Avoid ANR on new game screen by not reading the first map (get rid of IO bound)
+
+Avoid ANR when paging through cities
+
+Resolved  - Coastal oil placed regularly
+
+Resolved  - added turn time config translations
+
+perf(cpu): Cache default distance to tiles.
+
+Resolved  - Civ-specific tile filters work in console
+
+perf(allocations): Made tile improvement reasons enum contain the relevance check so we don't need the sequence for canBuildImprovement
+
+View implementation - SpecificUnitAutomation - see 
+
+View implementation - CivilianUnitAutomation - see 
+
+View implementation - RoadToAutomation - see 
+
+View implementation - HeadTowardsEnemyCityAutomation - see 
+
+View implementation - AirUnitAutomation - see 
+
+Construction queue: MaxNumberBuildable counting and thread-safe queue access - By JoshKirk800
+
+By unciv-loof:
+- Fewer conditions to display number of players until our turn in MP preview 
+- Fix spectators preventing estimated time until turn from showing in MP preview 
+
+Translate the Natural Wonder bonus notification - By ibrahim-iqbal
+
+New Hostile Takeover unit unique - By HungLTL
+
 ## 4.22.17
 
 Reduced memory when downloading games from multiplayer server
