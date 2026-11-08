@@ -427,6 +427,20 @@ class TranslationTests {
         Assert.assertTrue("The stats placeholder should hold untranslated stats", Stats.isStats(stats))
     }
 
+    /** #15964: the turn time drop-downs show "3m" in English and translate the unit elsewhere */
+    @Test
+    fun turnTimeUnitsTranslate() {
+        setupUncivGame()
+        Assert.assertEquals("3m", "[3]m".tr())
+        Assert.assertEquals("11d", "[11]d".tr())
+
+        UncivGame.Current.translations["[]m"] = TranslationEntry("[amount]m").apply {
+            this["Russian"] = "[amount] мин."
+        }
+        UncivGame.Current.settings.language = "Russian"
+        Assert.assertEquals("3 мин.", "[3]m".tr())
+    }
+
     @Test
     fun isStatsRecognizesStatsIncludingStatCharacter() {
         setupUncivGame()

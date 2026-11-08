@@ -501,8 +501,8 @@ class GameOptionsTable(
         init { for (box in boxes) {box.onChange {preventNullTime(); updateGameParameter()}} }
 
         fun preventNullTime() {
-            if (dayBox.selected == "0d" && hourBox.selected == "0h" && minuteBox.selected == "0m") {
-                minuteBox.selected ="3m"
+            if (dayValues[dayBox.selectedIndex] == 0 && hourValues[hourBox.selectedIndex] == 0 && minuteValues[minuteBox.selectedIndex] == 0) {
+                minuteBox.selectedIndex = minuteValues.indexOf(3)
             }
         }
             
@@ -516,9 +516,9 @@ class GameOptionsTable(
         
         fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
             val timeBox = SelectBox<String>(BaseScreen.skin)
-            val stringValues =  Array(intValues.size) { i -> "${intValues[i]}" + suffix }
+            val stringValues = Array(intValues.size) { i -> "[${intValues[i]}]$suffix".tr() }
             timeBox.setItems(*stringValues)
-            timeBox.selected = "$initialValue" + suffix
+            timeBox.selectedIndex = intValues.indexOf(initialValue)
             return timeBox
         }
     }
