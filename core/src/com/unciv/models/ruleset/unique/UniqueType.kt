@@ -986,6 +986,8 @@ enum class UniqueType(
                 "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
     OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     OneTimeUnitDestroyed("[unitTriggerTarget] is destroyed", UniqueTarget.UnitTriggerable),
+    OneTimeUnitTakeOverCityState("[unitTriggerTarget] takes over the City-State owning the tile it's standing on", UniqueTarget.UnitTriggerable,
+        docDescription = "Only allows taking over City-States not at war with the unit's root nation. Does not require a friendship or an alliance with the target City-State."),
     OneTimeUnitGetsName("[unitTriggerTarget] gets a name from the [unitNameGroup] group", UniqueTarget.UnitTriggerable),
     //endregion
 

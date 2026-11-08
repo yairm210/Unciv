@@ -419,6 +419,64 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
         civInfo.destroy(notificationLocation.toHexCoord())
     }
+    
+    fun hostileTakeover(otherCiv: Civilization) {
+        val notificationLocation = civInfo.getCapital()!!.location
+        otherCiv.addNotification("We have bought the City-State of [${civInfo.civName}], bringing them under our control!",
+            notificationLocation,
+            NotificationCategory.Diplomacy, civInfo.civName,
+            NotificationIcon.Diplomacy, otherCiv.civName)
+
+        for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
+            civ.addNotification("[${otherCiv.civName}] has bought the City-State of [${civInfo.civName}], bringing them under their control.",
+                notificationLocation,
+                NotificationCategory.Diplomacy, civInfo.civName,
+                NotificationIcon.Diplomacy, otherCiv.civName)
+        
+        // OPTIONAL: Make other civs angry because you circumvented their protection pledge/stole their alliance
+        // Merchants of Venice in base BNW don't anger other civs when you puppet CSes, but considering how you can buy any CS regardless of influence, I felt it'd be appropriate to cause a bit of tension.
+        /* val allyCiv = civInfo.allyCiv
+        if (allyCiv != null && allyCiv.knows(otherCiv)) {
+            val allyDiplomacy = allyCiv.getDiplomacyManager(otherCiv)!!
+            allyDiplomacy.addModifier(DiplomaticModifiers.StoleOurAlly, -60f)
+
+            if (allyCiv.playerType != PlayerType.Human)
+                otherCiv.addNotification(
+                    "[${allyCiv.civName}] is outraged that you bought out [${civInfo.civName}], whom they were allied with!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, allyCiv.civName
+                )
+        }
+            
+        for (protector in civInfo.cityStateFunctions.getProtectorCivs().filter { allyCiv != null && it != allyCiv }) {
+            val protectorDiplomacy = protector.getDiplomacyManager(otherCiv) ?: continue
+            protectorDiplomacy.addModifier(
+                DiplomaticModifiers.DestroyedProtectedMinor,
+                -20f,
+                limit = -100f
+            )
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                otherCiv.addNotification(
+                    "[${protector.civName}] is angry that you bought out [${civInfo.civName}], whom they had pledged to protect!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName
+                )
+        } */
+
+        for (unit in civInfo.units.getCivUnits())
+            unit.gift(otherCiv)
+
+        // Make sure this CS can never be liberated
+        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
+            it.foundingCivObject = null
+            it.isOriginalCapital = false
+        }
+
+        for (city in civInfo.cities) {
+            city.espionage.removeAllPresentSpies(SpyFleeReason.CityBought)
+            city.moveToCiv(otherCiv)
+            city.isPuppet = true // Human players get a popup that allows them to annex instead
+        }
+        civInfo.destroy(notificationLocation.toHexCoord())
+    }
 
     @Readonly
     fun getTributeWillingness(demandingCiv: Civilization, demandingWorker: Boolean = false): Int {
