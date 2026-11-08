@@ -869,7 +869,7 @@ class UnitMovement(val unit: MapUnit) {
      * @param includeOtherEscortUnit determines whether or not this method will also check if the other escort units [getDistanceToTiles] if it has one.
      * Leave it as default unless you know what [getDistanceToTiles] does.
      */
-    @Readonly
+    @Readonly @Suppress("purity") // fills the per-unit cache
     fun getDistanceToTiles(
         considerZoneOfControl: Boolean = true,
         passThroughCacheNew: ArrayList<Boolean?>? = null,
@@ -883,6 +883,13 @@ class UnitMovement(val unit: MapUnit) {
                 else aStarPathingWithoutEscort
             return pathingMap.getMovementToTilesAtPosition()
         }
+        // Only the default call is cacheable - callers passing their own caches expect them to be filled
+        val isDefaultCall = considerZoneOfControl && includeOtherEscortUnit
+            && passThroughCacheNew == null && movementCostCache == null
+        if (isDefaultCall) {
+            pathfindingCache.getDistanceToTilesCache()?.let { return it }
+        }
+
         val distanceToTiles = getMovementToTilesAtPosition(
             unit.currentTile.position,
             unit.currentMovement,
@@ -893,6 +900,7 @@ class UnitMovement(val unit: MapUnit) {
             includeOtherEscortUnit
         )
 
+        if (isDefaultCall) pathfindingCache.setDistanceToTilesCache(distanceToTiles)
         return distanceToTiles
     }
 
@@ -943,6 +951,7 @@ class PathfindingCache(private val unit: MapUnit) {
     private var destination: Tile? = null
     private var movement = -1f
     private var currentTile: Tile? = null
+    private var distanceToTilesCache: PathsToTilesWithinTurn? = null
 
     /** Check if the caches are valid (only checking if the unit has moved or consumed movement points;
      * the isPlayerCivilization check is performed in the functions because we want isValid() == false
@@ -965,7 +974,17 @@ class PathfindingCache(private val unit: MapUnit) {
         }
     }
 
+    /** Cached result of the default [UnitMovement.getDistanceToTiles]. AI only, same validity as the shortest path cache */
+    fun getDistanceToTilesCache(): PathsToTilesWithinTurn? =
+        if (unit.civ.isHuman() || !isValid()) null else distanceToTilesCache
+
+    fun setDistanceToTilesCache(paths: PathsToTilesWithinTurn) {
+        if (unit.civ.isHuman() || !isValid()) return
+        distanceToTilesCache = paths
+    }
+
     fun clear() {
+        distanceToTilesCache = null
         movement = unit.currentMovement
         currentTile = unit.getTile()
         destination = null
