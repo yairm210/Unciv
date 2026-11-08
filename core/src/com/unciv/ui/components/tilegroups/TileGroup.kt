@@ -19,6 +19,10 @@ open class TileGroup(
     /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
     var tileView: TileView = tileView
         private set
+
+    /** Explored neighbors of [tileView]. Computed once per [update] and shared by all layers, which read it only from within their own update */
+    var neighbors: List<TileView> = tileView.getNeighbors().toList()
+        private set
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -106,6 +110,7 @@ open class TileGroup(
                 // We switched viewers - e.g. spectator changing who it's spectating as
                 tileView = viewingCiv.gameView.getTile(tileView)
         }
+        neighbors = tileView.getNeighbors().toList()
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
@@ -116,7 +121,7 @@ open class TileGroup(
         if (viewingCiv != null && !(tileView.isForceVisible() || viewingCiv.hasExplored(tileView))) {
             // Layers are about to be hidden/reset, so their cached update keys no longer describe their state
             for (layer in allLayers) layer.invalidate()
-            if (tileView.getNeighbors().none()) {
+            if (neighbors.isEmpty()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {

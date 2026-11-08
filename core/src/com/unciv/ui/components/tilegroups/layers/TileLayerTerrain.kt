@@ -126,7 +126,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private val neighborEdgeDataByNeighbor = HashMap<TileView, NeighborEdgeData>()
 
     private fun getEdgeTileLocations(): Sequence<String> =
-        tileGroup.tileView.getNeighbors().flatMap { neighbor ->
+        tileGroup.neighbors.asSequence().flatMap { neighbor ->
             val neighborEdgeData = neighborEdgeDataByNeighbor.getOrPut(neighbor) {
                 val clockPosition = tileGroup.tileView.getNeighborClockPosition(neighbor)
                 val direction = NeighborDirection.byClockPosition[clockPosition]
@@ -316,7 +316,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             .mix(tileView.getOwner()?.civName)
             .mix(tileView.owningCity() != null)
             .mix(tileView.hasBottomRightRiver).mix(tileView.hasBottomRiver).mix(tileView.hasBottomLeftRiver)
-        for (neighbor in tileView.getNeighbors()) key = key.mix(neighbor.getCachedTerrainNameSet().hashCode())
+        for (neighbor in tileGroup.neighbors) key = key.mix(neighbor.getCachedTerrainNameSet().hashCode())
         return key
     }
 
