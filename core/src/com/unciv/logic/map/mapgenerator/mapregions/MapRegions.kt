@@ -531,5 +531,5 @@ internal fun getTerrainRule(terrain: Terrain, ruleset: Ruleset): Unique {
                 .filter { it.type == TerrainType.TerrainFeature && it.hasUnique(UniqueType.VisibilityElevation) }
                 .joinToString(separator = " ") { "<in tiles without [${it.name}]>" })
     } else
-        Unique("RULE <in [Featureless] [${terrain.name}] tiles>")
+        Unique("RULE <in [{Featureless} {${terrain.name}}] tiles>")
 }
