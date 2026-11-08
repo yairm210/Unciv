@@ -25,6 +25,7 @@ dependencies {
     implementation(rootProject.libs.kotlin.reflect)
     implementation(rootProject.libs.gdx)
     implementation(rootProject.libs.coroutines.core)
+    testImplementation(rootProject.libs.junit)
     compileOnly("org.teavm:teavm-extension-spi:0.17.0")
 }
 

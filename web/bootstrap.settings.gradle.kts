@@ -33,6 +33,7 @@ settings.includeBuild(teavmSource.absolutePath) {
         substitute(module("org.teavm:teavm-extension-spi")).using(project(":extension:spi"))
         substitute(module("org.teavm:teavm-extension-annotation-processor")).using(project(":extension:processor"))
         substitute(module("org.teavm:teavm-tooling")).using(project(":tools:core"))
+        substitute(module("org.teavm:teavm-junit")).using(project(":tools:junit"))
         substitute(module("org.teavm:teavm-core")).using(project(":core"))
         substitute(module("org.teavm:teavm-classlib")).using(project(":classlib"))
         substitute(module("org.teavm:teavm-jso")).using(project(":jso:core"))

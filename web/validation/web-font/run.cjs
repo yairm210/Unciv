@@ -40,17 +40,16 @@ async function main() {
     const measure = jsBody(rasterizerSource, 'measureMetrics');
     const rasterize = jsBody(rasterizerSource, 'rasterizeGlyphAligned');
 
-    const modFontsPath = path.resolve(__dirname, '../../../core/src/com/unciv/ui/components/fonts/ModFonts.kt');
-    const modFontsSource = fs.readFileSync(modFontsPath, 'utf8');
-    const scannerStart = modFontsSource.indexOf('fun scanWithFileHandles(');
-    const scannerEnd = modFontsSource.indexOf('\n    }', scannerStart);
-    assert(scannerStart >= 0 && scannerEnd > scannerStart, 'Could not locate FileHandle mod-font scanner');
-    const scanner = modFontsSource.slice(scannerStart, scannerEnd);
+    const webFontPath = path.resolve(__dirname, '../../src/main/kotlin/com/unciv/app/web/WebFont.kt');
+    const webFontSource = fs.readFileSync(webFontPath, 'utf8');
+    const scannerStart = webFontSource.indexOf('override fun getModFonts(');
+    const scannerEnd = webFontSource.indexOf('\n    }', scannerStart);
+    assert(scannerStart >= 0 && scannerEnd > scannerStart, 'Could not locate WebFont FileHandle mod-font scanner');
+    const scanner = webFontSource.slice(scannerStart, scannerEnd);
     for (const api of ['modsDir.isDirectory', 'modsDir.list()', 'mod.isDirectory', 'fontsDir.exists()', 'fontsDir.list()'])
         assert(scanner.includes(api), `FileHandle mod-font scanner no longer uses ${api}`);
     assert(!scanner.includes('.file()'), 'WebGL mod-font scanner must not call FileHandle.file()');
     assert(scanner.includes('"$modsDirName/${mod.name()}/fonts/${font.name()}"'), 'Discovered path must remain relative to the local data folder');
-    const webFontSource = fs.readFileSync(path.resolve(__dirname, '../../src/main/kotlin/com/unciv/app/web/WebFont.kt'), 'utf8');
     assert(webFontSource.includes('getLocalFile(filePath).readBytes()'), 'WebFont must read font bytes through FileHandle APIs');
 
     const { chromium } = loadPlaywright();

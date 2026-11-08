@@ -1,13 +1,17 @@
 package com.unciv.app.web
 
+import com.badlogic.gdx.Files
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
 import com.unciv.ui.components.fonts.FontMetricsCommon
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.UncivGame
 import com.unciv.utils.Log
 import org.teavm.jso.JSObject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class WebFont : FontImplementation {
     private var fontSize = Fonts.ORIGINAL_FONT_SIZE.toInt()
@@ -105,6 +109,28 @@ class WebFont : FontImplementation {
     }
 
     override fun getSystemFonts(): Sequence<FontFamilyData> = sequenceOf(FontFamilyData.default)
+
+    override fun getModFonts(modsDir: FileHandle): Flow<FontFamilyData> = flow {
+        val supportedExtensions = setOf("ttf", "otf")
+        val fileSystemTypes = setOf(Files.FileType.Local, Files.FileType.Absolute, Files.FileType.External)
+        if (modsDir.type() !in fileSystemTypes || !modsDir.isDirectory) return@flow
+        val modsDirName = modsDir.name()
+        for (mod in modsDir.list()) {
+            if (!mod.isDirectory) continue
+            val fontsDir = mod.child("fonts")
+            if (!fontsDir.exists() || !fontsDir.isDirectory) continue
+            for (font in fontsDir.list()) {
+                if (font.isDirectory) continue
+                if (font.extension().lowercase() !in supportedExtensions) continue
+                emit(FontFamilyData(
+                    "${font.nameWithoutExtension()} (${mod.name()})",
+                    "$modsDirName/${mod.name()}/fonts/${font.name()}",
+                    // Relative to the data folder, as the font loaders resolve it with UncivFiles.getLocalFile
+                    "$modsDirName/${mod.name()}/fonts/${font.name()}"
+                ))
+            }
+        }
+    }
 
     override fun getMetrics() = metrics
 }

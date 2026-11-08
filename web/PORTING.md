@@ -64,8 +64,9 @@ filesystem. It is not wired to gdx-teavm LocalDB, so returning a path from
 
 For mod fonts ([ModFonts.kt](../core/src/com/unciv/ui/components/fonts/ModFonts.kt)), keep the
 existing NIO scanner on desktop and supported Android, and use the equivalent
-`FileHandle.list/isDirectory/exists` operations on WebGL. This keeps the
-platform-specific boundary at the caller that requires NIO. A reusable
+`FileHandle.list/isDirectory/exists` operations in the WebFont platform override.
+The shared font interface defaults to the NIO scanner, while the WebGL backend
+handles its virtual files directly. A reusable
 `java.io.File`/NIO view of LocalDB could be built in gdx-teavm,
 but it would require a VirtualFileSystem adapter with explicit path, storage,
 and persistence semantics; that broader filesystem integration is separate
