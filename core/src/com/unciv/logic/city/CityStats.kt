@@ -118,9 +118,10 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromProduction(production: Float): Stats? {
-        if (Stat.isStat(city.cityConstructions.currentConstructionName())) {
+        val currentName = city.cityConstructions.currentConstructionName() // Once: the queue can change between two reads
+        if (Stat.isStat(currentName)) {
             val stats = Stats()
-            val stat = Stat.valueOf(city.cityConstructions.currentConstructionName())
+            val stat = Stat.valueOf(currentName)
             stats[stat] = production * getStatConversionRate(stat)
             return stats
         }

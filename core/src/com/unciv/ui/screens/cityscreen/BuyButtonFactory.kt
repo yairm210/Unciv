@@ -186,8 +186,9 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
                     cityScreen.selectedQueueEntry = -1
                     cityScreen.clearSelection()
 
-                    if (cityView.constructions.currentConstructionName().isNotEmpty()) {
-                        val newConstruction = cityView.constructions.getCurrentConstruction()
+                    val newName = cityView.constructions.currentConstructionName() // Once: the queue can change between two reads
+                    if (newName.isNotEmpty()) {
+                        val newConstruction = cityView.constructions.getConstruction(newName)
                         if (newConstruction is INonPerpetualConstruction)
                             cityScreen.selectConstruction(newConstruction)
                     }

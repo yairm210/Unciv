@@ -195,7 +195,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(null, stat)
         if (hasUnique(UniqueType.CannotBePurchased)) return false
-        if (getRejectionReasons(city.cityConstructions).any { it.type != RejectionReasonType.Unbuildable  })
+        if (getRejectionReasons(city.cityConstructions, city.cityConstructions.queueWithoutOneOf(name)).any { it.type != RejectionReasonType.Unbuildable  })
             return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
         return super.canBePurchasedWithStat(city, stat)
@@ -211,8 +211,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String>): Boolean {
+        val rejectionReasons = getRejectionReasons(cityConstructions, queue)
 
         if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })
@@ -224,14 +224,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return false
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
-        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
+    override fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String>): Sequence<RejectionReason> =
+        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city, ownQueue = ownQueue)
 
+    /** @param ownQueue What counts as [city]'s own queue for [UniqueType.MaxNumberBuildable], see [INonPerpetualConstruction.getRejectionReasons];
+     *  `null` means the city's current queue (or no queue if there is no [city]). */
     @Readonly
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
-        additionalResources: Counter<String> = Counter.ZERO
+        additionalResources: Counter<String> = Counter.ZERO,
+        ownQueue: List<String>? = null
     ): Sequence<RejectionReason> = sequence {
 
         val stateForConditionals = city?.state ?: civ.state
@@ -276,7 +279,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
-                civ.civConstructions.countConstructedObjects(this@BaseUnit, city) >= it.params[0].toInt()
+                civ.civConstructions.countConstructedObjects(this@BaseUnit, city, ownQueue) >= it.params[0].toInt()
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 

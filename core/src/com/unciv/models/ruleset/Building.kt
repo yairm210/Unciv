@@ -254,15 +254,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return (cost / 10f).toInt() * 10
     }
 
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        if (cityConstructions.isBeingConstructedOrEnqueued(name))
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String>): Boolean {
+        if (name in queue)
             return false
         for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
-            if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+            if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this, cityConstructions.city, queue) >= unique.params[0].toInt())
                 return false
         }
 
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+        val rejectionReasons = getRejectionReasons(cityConstructions, queue)
 
         if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })
@@ -277,7 +277,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+    override fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String>): Sequence<RejectionReason> = sequence {
         val city = cityConstructions.city
         val cityCenter = city.getCenterTile()
         val civ = city.civ
@@ -347,7 +347,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
 
                 UniqueType.MaxNumberBuildable ->
-                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city) >= unique.params[0].toInt())
+                    if (civ.civConstructions.countConstructedObjects(this@Building, cityConstructions.city, ownQueue) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 // To be replaced with `Only available <after [Apollo Project] has been build>`

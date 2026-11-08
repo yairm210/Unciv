@@ -18,7 +18,9 @@ import kotlin.math.pow
 
 interface IConstruction : INamed {
     @Readonly fun isBuildable(cityConstructions: CityConstructions): Boolean
-    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
+    /** @param queue A snapshot of [cityConstructions]' queue taken once by a caller that checks many constructions in a row
+     *  (the city screen builds its list on another thread), see [INonPerpetualConstruction.getRejectionReasons] */
+    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String> = cityConstructions.constructionQueue): Boolean
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
@@ -38,7 +40,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     @Readonly fun getProductionCost(civInfo: Civilization, city: City?): Int
     @Readonly fun getStatBuyCost(city: City, stat: Stat): Int?
-    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
+    /** @param ownQueue The part of [cityConstructions]' own queue that counts as already existing when checking [UniqueType.MaxNumberBuildable].
+     *  The default is all of it: "may another copy be added?". To re-check an entry that is queued already, pass the entries
+     *  before it, and to check one about to be bought, pass the queue without it ([CityConstructions.queueWithoutOneOf]) -
+     *  otherwise the entry counts against itself.
+     *  Take the queue once per task: it can be replaced by another thread at any time. */
+    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String> = cityConstructions.constructionQueue): Sequence<RejectionReason>
+
+    /** [isBuildable] with an explicit [ownQueue], see [getRejectionReasons] */
+    @Readonly fun isBuildable(cityConstructions: CityConstructions, ownQueue: List<String>): Boolean =
+        getRejectionReasons(cityConstructions, ownQueue).none()
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     @Readonly fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
@@ -72,7 +83,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
     @Readonly
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+        // Buying a queued entry takes it out of the queue, so it must not count against itself
+        val rejectionReasons = getRejectionReasons(cityConstructions, cityConstructions.queueWithoutOneOf(name))
         return rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 

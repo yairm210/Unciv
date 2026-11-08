@@ -100,8 +100,9 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             key = key.mix(detailedCityView.getFoodStored()).mix(detailedCityView.getFoodToNextPopulation())
                 .mix(detailedCityView.foodForNextTurn())
             val constructions = detailedCityView.constructions
-            key = key.mix(constructions.currentConstructionName())
-            val construction = constructions.getCurrentConstruction()
+            val currentName = constructions.currentConstructionName() // Once: the queue can change between two reads
+            key = key.mix(currentName)
+            val construction = constructions.getConstruction(currentName)
             if (construction is INonPerpetualConstruction)
                 key = key.mix(constructions.getWorkDone(construction.name))
                     .mix(detailedCityView.getConstructionProductionCost(construction))
