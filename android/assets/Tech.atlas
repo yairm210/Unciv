@@ -2,7 +2,7 @@
 Tech.png
 size: 2048, 1024
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 TechIcons/Acoustics
   rotate: false

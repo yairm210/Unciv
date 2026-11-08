@@ -2,7 +2,7 @@
 EasterEggs.png
 size: 2048, 128
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 TileSets/FantasyHex/Tiles/Easter Egg 1
   rotate: false

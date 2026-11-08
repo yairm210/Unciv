@@ -55,6 +55,7 @@ import kotlin.reflect.KClass
  *  - contains references to [the game being played][gameInfo], and high-level UI elements.
  */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
+    override open val supportsOnlineMultiplayer: Boolean = true
 
     var deepLinkedMultiplayerGame: String? = null
     override var customDataDirectory: String? = null

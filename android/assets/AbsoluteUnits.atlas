@@ -2,7 +2,7 @@
 AbsoluteUnits.png
 size: 2048, 2048
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: MipMapLinearLinear, Linear
 repeat: none
 TileSets/AbsoluteUnits/Units/African Forest Elephant
   rotate: false

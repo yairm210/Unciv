@@ -38,6 +38,27 @@ object ModFonts {
         }
     }
 
+    /** Lists mod fonts through libGDX handles for backends without java.io.File support. */
+    fun scanWithFileHandles(modsDir: FileHandle): Flow<FontFamilyData> = flow {
+        if (modsDir.type() !in fileSystemTypes || !modsDir.isDirectory) return@flow
+        val modsDirName = modsDir.name()
+        for (mod in modsDir.list()) {
+            if (!mod.isDirectory) continue
+            val fontsDir = mod.child("fonts")
+            if (!fontsDir.exists() || !fontsDir.isDirectory) continue
+            for (font in fontsDir.list()) {
+                if (font.isDirectory) continue
+                if (font.extension().lowercase() !in supportedExtensions) continue
+                emit(FontFamilyData(
+                    "${font.nameWithoutExtension()} (${mod.name()})",
+                    "$modsDirName/${mod.name()}/fonts/${font.name()}",
+                    // Relative to the data folder, as the font loaders resolve it with UncivFiles.getLocalFile
+                    "$modsDirName/${mod.name()}/fonts/${font.name()}"
+                ))
+            }
+        }
+    }
+
     @Suppress("NewApi")
     private fun scanMod(modsDirName: String, mod: Path) = flow {
         if (!mod.isDirectory()) return@flow
