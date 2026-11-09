@@ -62,7 +62,7 @@ class MapFileSelectTable(
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
     private var preselectedName = mapParameters.name
-    private val descriptionLabel = "".toLabel()
+    private val descriptionLabel = "".toLabel().apply { setWrap(true) }
     private val descriptionLabelCell: Cell<Label>
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
@@ -100,7 +100,7 @@ class MapFileSelectTable(
         useNationsButtonCell = add().pad(0f)
         row()
 
-        descriptionLabelCell = add(descriptionLabel)
+        descriptionLabelCell = add(descriptionLabel).width(columnWidth - 20f)
         descriptionLabelCell.height(0f).row()
 
         add(miniMapWrapper)
@@ -349,6 +349,7 @@ class MapFileSelectTable(
 
     private fun showDescription(text: String) {
         descriptionLabel.setText(text)
+        descriptionLabel.width = columnWidth - 20f
         descriptionLabelCell
             .height(if (text.isEmpty()) 0f else descriptionLabel.prefHeight)
             .padTop(if (text.isEmpty()) 0f else 10f)
