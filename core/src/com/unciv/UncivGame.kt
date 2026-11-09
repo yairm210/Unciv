@@ -495,7 +495,7 @@ private fun logRunningThreads() {
         pushScreen(onScreenCreated) { MainMenuScreen() }
     }
 
-    override fun getGcCount(): Int = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
+    override fun getGcCount(): Int? = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT

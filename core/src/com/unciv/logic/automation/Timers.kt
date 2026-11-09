@@ -12,7 +12,7 @@ import kotlin.time.TimeSource.Monotonic.markNow
 class Timers {
     val spanTimesInMicroseconds = HashMap<String, GdxIntArray>()
     var timingEnabledTimestamp = NO_TIME_POINT
-    var startGcCount = 0
+    var startGcCount: Int? = null
 
     @Pure
     @Suppress("purity")
@@ -22,7 +22,7 @@ class Timers {
             for (times in spanTimesInMicroseconds.values)
                 times.clear()
         }
-        startGcCount = UncivGame.Current?.getGcCount() ?: 0
+        startGcCount = UncivGame.Current?.getGcCount()
         timingEnabledTimestamp = markNow()
     }
 
@@ -34,9 +34,15 @@ class Timers {
         val totalTimingDuration = (automationEndTime - timingEnabledTimestamp).inWholeMicroseconds
         synchronized(spanTimesInMicroseconds) {
             if (spanTimesInMicroseconds.isEmpty()) return
-            val gcCount = (UncivGame.Current?.getGcCount() ?: 0) - startGcCount
-            val gcCountPerTurn = gcCount.toDouble() / (spanTimesInMicroseconds["GameInfo.nextTurn"]?.size ?: 1)
-            Log.debug("Timing took $totalTimingDuration, with $gcCountPerTurn GCs per turn on average")
+            val initialGcCount = startGcCount
+            val finalGcCount = UncivGame.Current?.getGcCount()
+            if (initialGcCount != null && finalGcCount != null) {
+                val gcCount = finalGcCount - initialGcCount
+                val gcCountPerTurn = gcCount.toDouble() / (spanTimesInMicroseconds["GameInfo.nextTurn"]?.size ?: 1)
+                Log.debug("Timing took $totalTimingDuration, with $gcCountPerTurn GCs per turn on average")
+            } else {
+                Log.debug("Timing took $totalTimingDuration")
+            }
             Log.debug("Span Timing:\tname\tcount\tmean\t95CiMin\t95CiMax\tsum\tpercent\tstddev\tstderr\tvariance\tmin\tp50\tp90\tp95\tp99\tmax")
             val order = spanTimesInMicroseconds.keys.sorted()
             for (name in order) {
