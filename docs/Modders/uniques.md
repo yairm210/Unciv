@@ -582,6 +582,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "City-State Influence recovers at twice the normal rate"
 	Applicable to: Global
 
+??? example  "Gain [positiveAmount] Influence per turn with City-States you could demand tribute from"
+	Example: "Gain [3] Influence per turn with City-States you could demand tribute from"
+
+	Applicable to: Global
+
+??? example  "Units are [relativeAmount]% more effective at intimidating City-States"
+	Example: "Units are [+20]% more effective at intimidating City-States"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
 
