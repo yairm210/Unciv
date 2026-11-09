@@ -42,14 +42,16 @@ class ColorMarkupLabel private constructor(
      *  Use to easily color text without also coloring the icons which translation inserts as
      *  characters for recognized gameplay names.
      *
+     *  @param hideIcons passed to translation to prevent auto-insertion of symbols for gameplay names
      *  @see FontRulesetIcons.charToRulesetImageActor
      */
     constructor(
         text: String,
         textColor: Color,
         symbolColor: Color = Color.WHITE,
-        fontSize: Int = Constants.defaultFontSize
-    ) : this (fontSize, prepareText(text, textColor, symbolColor))
+        fontSize: Int = Constants.defaultFontSize,
+        hideIcons: Boolean = false
+    ) : this (fontSize, prepareText(text, textColor, symbolColor, hideIcons))
 
     /** Only if wrap was turned on, this is the prefWidth before.
      *  Used for getMaxWidth as better estimate than the default 0. */
@@ -119,8 +121,8 @@ class ColorMarkupLabel private constructor(
             return translated.replace('«', '[').replace('»', ']')
         }
 
-        fun prepareText(text: String, textColor: Color, symbolColor: Color): String {
-            val translated = text.tr()
+        fun prepareText(text: String, textColor: Color, symbolColor: Color, hideIcons: Boolean = false): String {
+            val translated = text.tr(hideIcons)
             if ((textColor == Color.WHITE && symbolColor == Color.WHITE) || translated.isBlank())
                 return translated
             val tc = textColor.toMarkup()

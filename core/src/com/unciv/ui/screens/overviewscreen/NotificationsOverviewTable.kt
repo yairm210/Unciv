@@ -186,7 +186,7 @@ class NotificationsOverviewTable(
     }
 
     private fun getNotificationTable(index: Int, notification: Notification, doHighlight: Boolean) = Table(BaseScreen.skin).apply {
-        val label = ColorMarkupLabel(notification.text, ImageGetter.CHARCOAL, fontSize = 20)
+        val label = ColorMarkupLabel(notification.text, ImageGetter.CHARCOAL, fontSize = 20, hideIcons = true)
             .apply { wrap = true }
         add(label).width(notificationWidth - iconSize * notification.icons.size)
 
