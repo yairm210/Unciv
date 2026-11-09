@@ -79,7 +79,7 @@ object HeadTowardsEnemyCityAutomation {
             // Even in the worst case of only being able to move 1 tile per turn, we would still
             // not overshoot.
             && shortestPath.size > minDistanceFromCityToConsiderForLandingArea ) {
-            unitView.tryMoveToTile(nextTileInPath)
+            unitView.tryHeadTowards(nextTileInPath)
             return true
         }
 
@@ -91,7 +91,8 @@ object HeadTowardsEnemyCityAutomation {
             return headToLandingGrounds(closestReachableEnemyCity, unitView)
         }
 
-        unitView.tryMoveToTile(nextTileInPath) // go for it!
+        // A multi-turn path waypoint can be outside this turn's reachable tiles.
+        unitView.tryHeadTowards(nextTileInPath) // resolve how far we can actually move
 
         return true
     }
