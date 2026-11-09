@@ -45,7 +45,14 @@ class LoadingScreen(
             previousScreen.render(Gdx.graphics.deltaTime)
         }
         val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight)
-        val screenshot = Texture(pixmap)
+        // The framebuffer RGB already contains the fully composited screen. Its alpha
+        // can still be translucent after drawing overlays. Reusing that alpha would
+        // blend the screenshot again, darkening tiles during every turn transition.
+        val opaquePixmap = Pixmap(pixmap.width, pixmap.height, Pixmap.Format.RGB888)
+        opaquePixmap.blending = Pixmap.Blending.None
+        opaquePixmap.drawPixmap(pixmap, 0, 0)
+        val screenshot = Texture(opaquePixmap)
+        opaquePixmap.dispose()
         pixmap.dispose()
 
         if (previousScreen != null) {
