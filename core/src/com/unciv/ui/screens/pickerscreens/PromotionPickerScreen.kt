@@ -117,7 +117,7 @@ class PromotionPickerScreen private constructor(
         if (button == null || !button.isPickable) return
 
         val path = tree.getPathTo(button.node.promotion)
-        SoundPlayer.playRepeated(UncivSound.Promote, path.size.coerceAtMost(2))
+        SoundPlayer.playRepeated(UncivSound.Promote, path.size)
 
         for (promotion in path)
             unit.tryAddPromotion(promotion.name)
