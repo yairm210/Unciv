@@ -260,7 +260,7 @@ class GameStarter private constructor(
             .shuffled().let { ArrayDeque(it.toList()) }
 
         val civNamesWithStartingLocations =
-            if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
+            if (existingMap) tileMap.startingLocations.map { it.nation }.toSet()
             else emptySet()
         @LocalState val presetRandomNationsPool = randomNationsPool
             .filter { it.name in civNamesWithStartingLocations }
