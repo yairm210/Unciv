@@ -564,13 +564,13 @@ class CityStateFunctions(val civInfo: Civilization) {
             
             // in CivV's CvMinorCivAI.cpp the military bonus from gunboats is based on both global and local mil score
             // so here we grab both and apply the modifier to the sum
-            var dreadFromUnique = 0.0f
+            var potentialDreadFromMilitary = 0.0f
             if (modifiers.containsKey("Military Rank"))
-                dreadFromUnique += modifiers["Military Rank"]!!.toFloat()
+                potentialDreadFromMilitary += modifiers["Military Rank"]!!.toFloat()
             if (modifiers.containsKey("Military near City-State"))
-                dreadFromUnique += modifiers["Military near City-State"]!!.toFloat()
+                potentialDreadFromMilitary += modifiers["Military near City-State"]!!.toFloat()
             
-            modifiers["From Uniques"] = (dreadFromUnique * dreadfulMilitaryModifier).toInt()
+            modifiers["From Uniques"] = (potentialDreadFromMilitary * dreadfulMilitaryModifier).toInt()
         }
 
         return modifiers
