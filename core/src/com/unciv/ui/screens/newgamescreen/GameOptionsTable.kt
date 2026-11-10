@@ -493,9 +493,9 @@ class GameOptionsTable(
         private val minuteValues: Array<Int> = arrayOf(0,3,5,10,15,20,25,30,35,40,45,50)
         
     ) {
-        val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "d")
-        val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "h")
-        val minuteBox: SelectBox<String> = createTimeCell(minuteValues, defaultMinuteValue, "m")
+        val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "Days")
+        val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "Hours")
+        val minuteBox: SelectBox<String> = createTimeCell(minuteValues, defaultMinuteValue, "Minutes")
         val boxes: List<SelectBox<String>> = listOf(dayBox, hourBox, minuteBox)
 
         init { for (box in boxes) {box.onChange {preventNullTime(); updateGameParameter()}} }
@@ -516,7 +516,7 @@ class GameOptionsTable(
         
         fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
             val timeBox = SelectBox<String>(BaseScreen.skin)
-            val stringValues = Array(intValues.size) { i -> "[${intValues[i]}]$suffix".tr() }
+            val stringValues = Array(intValues.size) { i -> "[${intValues[i]}] $suffix".tr() }
             timeBox.setItems(*stringValues)
             timeBox.selectedIndex = intValues.indexOf(initialValue)
             return timeBox

@@ -427,18 +427,17 @@ class TranslationTests {
         Assert.assertTrue("The stats placeholder should hold untranslated stats", Stats.isStats(stats))
     }
 
-    /** #15964: the turn time drop-downs show "3m" in English and translate the unit elsewhere */
+    /** #15964: the turn time drop-downs reuse the "[amount] Days/Hours/Minutes" templates */
     @Test
-    fun turnTimeUnitsTranslate() {
+    fun turnTimeUnitsUseTheDurationTemplates() {
         setupUncivGame()
-        Assert.assertEquals("3m", "[3]m".tr())
-        Assert.assertEquals("11d", "[11]d".tr())
+        Assert.assertEquals("3 Minutes", "[3] Minutes".tr())
 
-        UncivGame.Current.translations["[]m"] = TranslationEntry("[amount]m").apply {
+        UncivGame.Current.translations["[] Minutes"] = TranslationEntry("[amount] Minutes").apply {
             this["Russian"] = "[amount] мин."
         }
         UncivGame.Current.settings.language = "Russian"
-        Assert.assertEquals("3 мин.", "[3]m".tr())
+        Assert.assertEquals("3 мин.", "[3] Minutes".tr())
     }
 
     @Test
