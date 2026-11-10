@@ -217,10 +217,9 @@ object WorldMapTileUpdater {
         // Highlight best tiles for city founding
         if (unitView.hasUnique(UniqueType.FoundCity)
             && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
-            val unit = unitView.getUnit()
-            CityLocationTileRanker.getBestTilesToFoundCity(unit, 5, minimumValue = 50f).tileRankMap.asSequence()
-                .filter { it.key.isExplored(unit.civ) }.sortedByDescending { it.value }.take(3).forEach {
-                    tileGroups[tileMapView.getTile(it.key)]!!.layerOverlay.showGoodCityLocationIndicator()
+            CityLocationTileRanker.getBestTilesToFoundCity(unitView, 5, minimumValue = 50f).tileRankMap.asSequence()
+                .sortedByDescending { it.value }.take(3).forEach {
+                    tileGroups[it.key]!!.layerOverlay.showGoodCityLocationIndicator()
                 }
         }
     }
