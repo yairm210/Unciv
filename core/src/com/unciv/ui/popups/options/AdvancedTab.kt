@@ -31,7 +31,6 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.components.fonts.ModFonts
 import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.keyShortcuts
@@ -169,7 +168,7 @@ internal class AdvancedTab(
             emit(FontFamilyData.default)
             // List mod fonts
             if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26)
-                emitAll(ModFonts.scan(UncivGame.Current.files.getModsFolder()))
+                emitAll(Fonts.fontImplementation.getModFonts(UncivGame.Current.files.getModsFolder()))
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)
