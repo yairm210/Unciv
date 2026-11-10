@@ -185,6 +185,7 @@ class MapFileSelectTable(
         if (isActivated) {
             if (loadingIcon.isShowing()) return // Default map selection will be handled when background loading finishes
             onCategorySelectBoxChange() // Coming back to this after fully loading make sure selections are OK
+            return
         }
         // Code to only run once per NewGameScreen lifetime, after user switches from
         // generated map to custom map, no matter how many times they repeat that
