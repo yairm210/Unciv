@@ -1,5 +1,7 @@
 package com.unciv.ui.screens.savescreens
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -108,7 +110,10 @@ abstract class LoadOrSaveScreen(
                 if (show) savesColumn.add(searchSavesTextField).growX().pad(5f).row()
                 else if (searchSavesTextField.text.isNotEmpty()) searchSavesTextField.text = ""
                 savesColumn.add(savesScrollPane).grow()
-                if (newlyShown) stage.keyboardFocus = searchSavesTextField
+                
+                if (newlyShown && Gdx.app.type == Application.ApplicationType.Desktop)
+                    // Don't set focus on phones since it pops up the keyboard
+                    stage.keyboardFocus = searchSavesTextField
             }
         }
         topTable.add(savesColumn).growY()
