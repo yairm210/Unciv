@@ -32,6 +32,7 @@ internal object ImagePacker {
     private const val imagesPathBase = "Images"
     private const val existCheck2 = "Images.Icons"
     private const val settingsFileName = "TexturePacker.settings"
+    private const val suffixUsingLinear = "Icons"
     private const val atlasListFileName = "Atlases.json"
     private val imageExtensions = listOf("png", "jpg", "jpeg")
 
@@ -69,8 +70,7 @@ internal object ImagePacker {
         paddingY = 8
         duplicatePadding = true
         filterMin = Texture.TextureFilter.MipMapLinearLinear
-        // Magnification accepts only Nearest or Linear; mipmaps apply to minification.
-        filterMag = Texture.TextureFilter.Linear
+        filterMag = Texture.TextureFilter.MipMapLinearLinear // This is changed to Linear if the folder name ends in `Icons` - see `suffixUsingLinear`
     }
 
     fun packImages(isRunFromJAR: Boolean, dataDirectory: String) {
@@ -119,6 +119,9 @@ internal object ImagePacker {
         val atlasList = mutableListOf<String>()
         for ((file, packFileName) in imageFolders(baseDir)) {
             atlasList += packFileName
+            defaultSettings.filterMag = if (file.endsWith(suffixUsingLinear))
+                Texture.TextureFilter.Linear
+            else Texture.TextureFilter.MipMapLinearLinear
             packImagesIfOutdated(defaultSettings, file, output, packFileName)
         }
         val listFile = File(output, atlasListFileName)

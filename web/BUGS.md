@@ -10,7 +10,7 @@ deployment status is tracked separately in PORTING.md.
 | WEB-001 | gdx-teavm storage | Write a named save, reload, select it: date showed 1970 because WebFileHandle.lastModified returned zero. | Fixed in gdx-teavm 97c2c3e. Timestamp write/reload contract and current full-game build pass; overwrite and turn-6 reload also passed locally. Date sorting has not been stress-tested. |
 | WEB-002 | gdx-teavm lifecycle | pause/resume/dispose from visibilitychange/pagehide run directly from DOM, unlike frames/input. Suspending callbacks lack TeaVM Java context and can overlap a suspended frame. | Fixed in gdx-teavm 97c2c3e. Suspendable visibility/pagehide browser contract passes with render-thread identity and no post-dispose frames. Actual unload can terminate queued work; bfcache restore remains unvalidated. |
 | WEB-003 | web multiplayer integration | Browser capability gate disables online games; Fetch transport alone does not implement browser WebSockets. | Deferred by request to codex/webrtc-peer. Default server lacks browser CORS; WebRTC prototype is isolated and unvalidated. Main build remains single-player. |
-| WEB-004 | Unciv atlas metadata | Launch with WebGL: invalid texture magnification filter warnings from atlas MipMapLinearLinear setting. MAG filtering cannot use mipmap filters. | Fixed in Unciv commit cdbf824a2 (included in runtime 873ae6a2a) by emitting a legal magnification filter while preserving minification. Desktop compile and current gameplay run passed without the prior warning. |
+| WEB-004 | WebGL atlas loading | Atlas metadata can request MipMapLinearLinear for magnification, which WebGL does not accept. | WebGL overrides loaded atlas textures to Linear magnification while preserving minification. Shared atlases and desktop packer settings are unchanged. The override runs after TextureAtlas loading, so it does not prevent a warning from the initial metadata value. |
 | WEB-005 | web packaging | Browser build requires developer-specific absolute dependency checkouts. | Fixed: checksum-pinned public YosefLm source archives bootstrap the forks. Public-input `:web:preparePages` completed on 2026-11-08 in 5m 41s. |
 | WEB-006 | deployment | Earlier implementation was local only; no reproducible current Pages pipeline. | Fixed for the current deployment: Yosef CI and Pages run 42190407113 succeeded; live `SOURCE_COMMIT` reports 873ae6a2a. Published source-map URLs return 404. |
 | WEB-007 | web reflection policy | Load saved game: Vector2 lacks reflective constructor/fields; bounds written as empty objects. Fallback version parser also lacks constructor metadata. | Fixed f05dc7d08. JVM/generated-JS full-save roundtrip and fresh Babylon save/reload pass; nonzero bounds confirmed in IndexedDB export. |
@@ -48,8 +48,7 @@ regression or upstream game issue. This observation is not a demonstrated fix.
 Add an entry when a concrete failure is found. Include owner, minimal reproduction,
 observed behavior, fix commit, regression evidence, and remaining limitations.
 Do not label a TeaVM/backend integration issue as an upstream Unciv game-logic bug.
-No gameplay-rule defect has yet been demonstrated; WEB-004 concerns shared atlas
-configuration; the desktop packer correction is recorded in cdbf824a2.
+No gameplay-rule defect has yet been demonstrated; WEB-004 is handled at the WebGL atlas-loading boundary.
 
 ## Source-path publication audit
 
