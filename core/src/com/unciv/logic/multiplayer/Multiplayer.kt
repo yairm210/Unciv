@@ -58,7 +58,7 @@ class Multiplayer {
          * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
          *    Only for Android, obviously
          */
-        multiplayerGameUpdater = flow<Unit> {
+        multiplayerGameUpdater = if (UncivGame.Current.supportsOnlineMultiplayer) flow<Unit> {
             while (true) {
                 delay(500)
                 if (!currentCoroutineContext().isActive) return@flow
@@ -76,7 +76,7 @@ class Multiplayer {
                 val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
                 throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
-        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }.launchIn(CoroutineScope(Dispatcher.DAEMON)) else Job().apply { cancel() }
     }
 
     @Readonly

@@ -165,6 +165,9 @@ class NewGameScreen(
     
     // Should be run NOT on main thread because it contacts MP server and loads maps etc
     fun getErrorMessage(): String? {
+        if (gameSetupInfo.gameParameters.isOnlineMultiplayer && !UncivGame.Current.supportsOnlineMultiplayer)
+            return "Online multiplayer is unavailable in this browser preview."
+
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer())
                 return if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!"

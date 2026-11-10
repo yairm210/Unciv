@@ -123,7 +123,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         onlineMultiplayer = Multiplayer()
 
-        Concurrency.run {
+        if (supportsOnlineMultiplayer) Concurrency.run {
             // Check if the server is available in case the feature set has changed
             try {
                 onlineMultiplayer.multiplayerServer.checkServerStatus()
@@ -199,6 +199,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      * @param autoPlay pass in the old WorldScreen AutoPlay to retain the state throughout turns. Otherwise leave it is the default.
      */
     suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
+        if (newGameInfo.gameParameters.isOnlineMultiplayer && !supportsOnlineMultiplayer)
+            throw UncivShowableException("Online multiplayer is unavailable in this browser preview.")
+
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 

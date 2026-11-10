@@ -109,7 +109,8 @@ class GameOptionsTable(
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
-        checkboxTable.addIsOnlineMultiplayerCheckbox()
+        if (UncivGame.Current.supportsOnlineMultiplayer)
+            checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer){
             checkboxTable.addAnyoneCanSpectateCheckbox()
             selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
