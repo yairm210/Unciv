@@ -83,7 +83,7 @@ class TradeEvaluation {
                 //   these are a safeguard against future automation changes 
                 when (tradeOffer.name) {
                     Constants.peaceTreaty -> offerer.isAtWarWith(tradePartner)
-                    Constants.researchAgreement -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResearchAgreement)
+                    Constants.researchAgreement -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResearchAgreement) && offerer.gold >= tradeOffer.amount
                     Constants.defensivePact -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.DefensivePact)
                     else -> true // potentional future treaties
                 }
