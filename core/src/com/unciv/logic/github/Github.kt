@@ -22,7 +22,6 @@ import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.io.InputStream
-import java.nio.ByteBuffer
 
 
 /**
@@ -147,9 +146,7 @@ object Github {
             }
 
             val byteArray = resp.bodyAsBytes()
-            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray)
-            buffer.position(0)
-            return Pixmap(buffer)
+            return Pixmap(byteArray, 0, byteArray.size)
         } catch (_: Throwable) {
             return null
         }
