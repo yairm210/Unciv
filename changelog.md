@@ -1,27 +1,8 @@
 ## 4.22.19
 
-Minimize diff from  - Add "supportsOnlineMultiplayer" boolean at platform level, default true, for web to override to false
+Preparations for web version :)
 
-Minimize diff from  - GL minFilter accommodation for github preview image
-
-Minimize diff from  - GL minFilter accommodation for web
-
-Minimize diff from  - Ktor accommodation for fonts
-
-Minimize diff from  - Ktor accommodation for web
-
-Minimize diff from  - font accomodation for web
-
-Minimize diff from  - file accomodation for web
-
-Minimize diff from  - builtin sound list to avoid reflection
-
-Minimize diff from  - GC is optional
-
-4.22.18-patch1
-
-By ibrahim-iqbal:
-- Add the "Search saves" hint to the translation template 
+By ibrahim-iqbal: 
 - Add an "Off" label for the automatic promotions setting 
 
 By Qualia-Li:
@@ -30,8 +11,6 @@ By Qualia-Li:
 - Resolve reachable movement when approaching enemy cities 
 
 Fix GreatPerson quest completion conditions - By TinyClayMan
-
-Fix a couple typos in Guiding Principles - By Evico85
 
 ## 4.22.18
 
