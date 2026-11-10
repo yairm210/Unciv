@@ -60,7 +60,7 @@ class GameSettings {
     enum class AutomaticPromotions(private val label: String) {
         ForAllUnits("For all units"),
         ForAutomatedUnits("For automated units"),
-        Off("Disabled");
+        Off("Off");
         override fun toString() = label.tr()
     }
 
