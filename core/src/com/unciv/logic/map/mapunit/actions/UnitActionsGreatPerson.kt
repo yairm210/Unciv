@@ -24,7 +24,7 @@ object UnitActionsGreatPerson {
                     val science = if (unit.hasUnique(UniqueType.SavesResourceWhenSpawned) && unit.savedScienceOfLast8TurnsWhenSpawned != null)
                         unit.savedScienceOfLast8TurnsWhenSpawned!!
                      else unit.civ.tech.getScienceFromGreatScientist()
-                    
+
                     unit.civ.tech.addScience(science)
                     unit.consume()
                 }.takeIf {
