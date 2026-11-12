@@ -1,0 +1,363 @@
+
+UnitPromotionIcons.png
+size: 2048, 128
+format: RGBA8888
+filter: MipMapLinearLinear, Linear
+repeat: none
+UnitPromotionIcons/Accuracy
+  rotate: false
+  xy: 112, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Air Repair
+  rotate: false
+  xy: 170, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Air Targeting
+  rotate: false
+  xy: 228, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting
+  rotate: false
+  xy: 228, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Ambush
+  rotate: false
+  xy: 286, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Anti-Armor
+  rotate: false
+  xy: 286, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Amphibious
+  rotate: false
+  xy: 344, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Landing Party
+  rotate: false
+  xy: 344, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Armor Plating
+  rotate: false
+  xy: 402, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Barrage
+  rotate: false
+  xy: 460, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Besiege
+  rotate: false
+  xy: 518, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Siege
+  rotate: false
+  xy: 518, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Blitz
+  rotate: false
+  xy: 576, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Boarding Party
+  rotate: false
+  xy: 634, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Bombardment
+  rotate: false
+  xy: 692, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Charge
+  rotate: false
+  xy: 750, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Coastal Raider
+  rotate: false
+  xy: 808, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Cover
+  rotate: false
+  xy: 866, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Dogfighting
+  rotate: false
+  xy: 924, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Drill
+  rotate: false
+  xy: 982, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Evasion
+  rotate: false
+  xy: 1040, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Extended Range
+  rotate: false
+  xy: 1098, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Operational Range
+  rotate: false
+  xy: 1098, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Fallback
+  rotate: false
+  xy: 1156, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Great Generals
+  rotate: false
+  xy: 1156, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Quick Study
+  rotate: false
+  xy: 1156, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Flight Deck
+  rotate: false
+  xy: 1214, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Formation
+  rotate: false
+  xy: 1272, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Haka War Dance
+  rotate: false
+  xy: 1330, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Heal Instantly
+  rotate: false
+  xy: 1388, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Home Sweet Home
+  rotate: false
+  xy: 1446, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Ignore terrain cost
+  rotate: false
+  xy: 4, 12
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Indirect Fire
+  rotate: false
+  xy: 1504, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Interception
+  rotate: false
+  xy: 1562, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Logistics
+  rotate: false
+  xy: 1620, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/March
+  rotate: false
+  xy: 1678, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Medic
+  rotate: false
+  xy: 1736, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Mobility
+  rotate: false
+  xy: 1794, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Morale
+  rotate: false
+  xy: 1852, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Pictish Courage
+  rotate: false
+  xy: 1910, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Rejuvenation
+  rotate: false
+  xy: 1968, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting
+  rotate: false
+  xy: 112, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Sentry
+  rotate: false
+  xy: 112, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock
+  rotate: false
+  xy: 170, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Slinger Withdraw
+  rotate: false
+  xy: 228, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Sortie
+  rotate: false
+  xy: 286, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Supply
+  rotate: false
+  xy: 344, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Survivalism
+  rotate: false
+  xy: 402, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Volley
+  rotate: false
+  xy: 460, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack
+  rotate: false
+  xy: 518, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Woodsman
+  rotate: false
+  xy: 576, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1

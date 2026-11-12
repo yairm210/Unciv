@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Unciv</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #000;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            #canvas {
+                border: none;
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false">
+        <div>
+            <canvas id="canvas"></canvas>
+        </div>
+        <script>
+            async function start() {
+                main()
+            }
+            window.addEventListener("load", start);
+        </script>
+        <script type="text/javascript" charset="utf-8" src="app.js"></script>
+    </body>
+</html>
