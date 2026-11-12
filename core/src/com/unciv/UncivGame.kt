@@ -197,8 +197,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      *
      * Sets the returned `WorldScreen` as the only active screen.
      * @param autoPlay pass in the old WorldScreen AutoPlay to retain the state throughout turns. Otherwise leave it is the default.
+     * @param skipPlayerReadyScreen don't show the hotseat "Are you ready?" screen, e.g. when the same player continues after a reload
      */
-    suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
+    suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false, skipPlayerReadyScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
         if (newGameInfo.gameParameters.isOnlineMultiplayer && !supportsOnlineMultiplayer)
             throw UncivShowableException("Online multiplayer is unavailable in this browser preview.")
 
@@ -239,7 +240,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
             val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer
-            val screenToShow = if (moreThanOnePlayer && isSingleplayer) {
+            val screenToShow = if (moreThanOnePlayer && isSingleplayer && !skipPlayerReadyScreen) {
                 PlayerReadyScreen(newWorldScreen)
             } else {
                 newWorldScreen
@@ -268,7 +269,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         if (curWorldScreen == null || curGameInfo == null) return
 
-        loadGame(curGameInfo)
+        loadGame(curGameInfo, skipPlayerReadyScreen = true)
     }
 
     /**
