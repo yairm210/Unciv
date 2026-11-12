@@ -14,6 +14,14 @@ public final class UncivReflectionPolicy extends SimpleReflectionPolicy {
             "com.unciv.ui.components.fonts.FontFamilyData",
             "com.unciv.logic.multiplayer.FriendList$Friend",
             "com.unciv.ui.screens.civilopediascreen.FormattedLine",
+            // GitHub API responses parsed by libGDX JSON, including nested result types.
+            "com.unciv.logic.github.GithubAPI$RepoSearch",
+            "com.unciv.logic.github.GithubAPI$Repo",
+            "com.unciv.logic.github.GithubAPI$RepoOwner",
+            "com.unciv.logic.github.GithubAPI$TopicSearchResponse",
+            "com.unciv.logic.github.GithubAPI$TopicSearchResponse$Topic",
+            "com.unciv.logic.github.GithubAPI$Tree",
+            "com.unciv.logic.github.GithubAPI$Tree$TreeFile",
             // A fully qualified type key in the packaged Skin.json.
             "com.unciv.ui.screens.pickerscreens.PromotionScreenColors",
             // Skin colors are ordinary JSON objects with r/g/b/a fields.
