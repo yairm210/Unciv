@@ -184,9 +184,8 @@ object SpecificUnitAutomation {
             bestCityLocation = bestTilesInfo.bestTile
         }
 
-        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
-            // Try to move towards the frontier
-
+        /** No usable city location - try to move towards the frontier, explore, or at least wander */
+        fun headTowardsFrontierOrExplore() {
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
             fun getFrontierScore(city: City): Int {
@@ -202,13 +201,19 @@ object SpecificUnitAutomation {
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unitView, cache)) return // try to find new areas
             UnitAutomation.wander(unitView, tilesToAvoid = dangerousTiles) // go around aimlessly
+        }
+
+        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
+            headTowardsFrontierOrExplore()
             return
         }
 
         val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.civ.gameInfo.tileMap[bestCityLocation.position()])
-        if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.hasMovement() && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
-                throw Exception("City within distance")
+        if (foundCityAction?.action == null) { // either currentMove == 0, or the tile isn't actually settleable
+            // Tile ranking only uses what the civ knows, so the tile can be too close to a city (or in territory)
+            // we haven't discovered yet. Not an error - explore, which will reveal it
+            if (foundCityAction != null && unit.hasMovement())
+                headTowardsFrontierOrExplore()
             return
         }
 
