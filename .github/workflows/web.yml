@@ -14,20 +14,8 @@ on:
       - settings.gradle.kts
       - tests/**
       - web/**
-  push:
-    paths:
-      - .github/workflows/web.yml
-      - android/assets/**
-      - build.gradle.kts
-      - buildSrc/**
-      - core/**
-      - desktop/src/com/unciv/app/desktop/ImagePacker.kt
-      - gradle/**
-      - gradle.properties
-      - settings.gradle.kts
-      - tests/**
-      - web/**
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -101,37 +89,3 @@ jobs:
           name: web-game
           path: web/build/pages/game/
           if-no-files-found: error
-
-  deploy:
-    needs: build
-    if: >-
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      vars.WEB_DEPLOY_PAGES == 'true' &&
-      github.ref_name == vars.WEB_DEPLOY_BRANCH
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: published-site
-      - uses: actions/download-artifact@v4
-        with:
-          name: web-game
-          path: game-build
-      - name: Replace game and keep site documentation
-        run: |
-          mkdir -p published-site/game
-          rsync -a --delete game-build/ published-site/game/
-          touch published-site/.nojekyll
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: published-site
-      - uses: actions/deploy-pages@v4
-        id: deployment
