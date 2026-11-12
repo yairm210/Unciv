@@ -92,6 +92,8 @@ class CivView(civ: Civilization,
     @Readonly fun isEnhancingReligion(): Boolean = civ.religionManager.religionState == ReligionState.EnhancingReligion
     @Readonly fun hasFreeBeliefs(): Boolean = civ.religionManager.hasFreeBeliefs()
     @Readonly fun getReligion(): Religion? = civ.religionManager.religion
+    /** The holy city of our religion, which may belong to another civ */
+    @Readonly fun getHolyCity(): ForeignCityView? = civ.religionManager.getHolyCity()?.let { gameView.getForeignCityView(it) }
     @Readonly fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtFounding()
     @Readonly fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtEnhancing()
     @Readonly fun freeBeliefsAsEnums(): Counter<BeliefType> = civ.religionManager.freeBeliefsAsEnums()

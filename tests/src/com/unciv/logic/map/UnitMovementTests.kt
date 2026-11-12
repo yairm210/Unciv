@@ -22,6 +22,8 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.view.GameView
+import com.unciv.view.MapUnitView
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -624,7 +626,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
             assertFalse(cityTile.airUnits.contains(passenger))
         }
 
-        UnitAutomation.automateUnitMoves(carrier)
+        UnitAutomation.automateUnitMoves(GameView(testGame.gameInfo, civInfo).getMapUnitView(carrier))
 
         assertEquals(idsBefore, civInfo.units.getCivUnits().map { it.id }.sorted().toList())
         for (unit in civInfo.units.getCivUnits()) {
