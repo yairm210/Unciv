@@ -56,19 +56,19 @@ class TradeEvaluation {
         val goldFromThem = trade.theirOffers.filter { it.type == TradeOfferType.Gold }.sumOf { it.amount }
         val goldFromUs = trade.ourOffers.filter { it.type == TradeOfferType.Gold }.sumOf { it.amount }
         for (offer in trade.ourOffers)
-            if (!isOfferValid(offer, offerer, tradePartner, goldFromThem)) {
+            if (!isOfferValid(offer, offerer, tradePartner, goldFromThem - goldFromUs)) {
                 return false
             }            
 
         for (offer in trade.theirOffers)
-            if (!isOfferValid(offer, tradePartner, offerer, goldFromUs)) {
+            if (!isOfferValid(offer, tradePartner, offerer, goldFromUs - goldFromThem)) {
                 return false
             }
         return true
     }
 
     @Readonly
-    private fun isOfferValid(tradeOffer: TradeOffer, offerer: Civilization, tradePartner: Civilization, goldReceived: Int): Boolean {
+    private fun isOfferValid(tradeOffer: TradeOffer, offerer: Civilization, tradePartner: Civilization, netGoldReceived: Int): Boolean {
 
         @Readonly
         fun hasResource(tradeOffer: TradeOffer): Boolean {
@@ -86,7 +86,7 @@ class TradeEvaluation {
                 //   these are a safeguard against future automation changes 
                 when (tradeOffer.name) {
                     Constants.peaceTreaty -> offerer.isAtWarWith(tradePartner)
-                    Constants.researchAgreement -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResearchAgreement) && offerer.gold + goldReceived >= tradeOffer.amount
+                    Constants.researchAgreement -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.ResearchAgreement) && offerer.gold + netGoldReceived >= tradeOffer.amount
                     Constants.defensivePact -> !offerer.getDiplomacyManager(tradePartner)!!.hasFlag(DiplomacyFlags.DefensivePact)
                     else -> true // potentional future treaties
                 }
