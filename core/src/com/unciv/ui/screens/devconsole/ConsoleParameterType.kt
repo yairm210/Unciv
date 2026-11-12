@@ -45,6 +45,9 @@ internal enum class ConsoleParameterType(
     diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
     newCivName({ ruleset.nations.keys.filterNot { civilizations.any { civ -> civ.nation.name == it } } }),
     tileFilter( { UniqueParameterType.TileFilter.getKnownValuesForAutocomplete(ruleset) }, preferquoted = true),
+    gpName( { ruleset.units.values.filter { it.isGreatPerson }.map { it.name } } ),
+    quest( { ruleset.quests.keys } ),
+    cityState( { civilizations.filter { it.isCityState }.map { it.civID } } ),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()

@@ -65,7 +65,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     fun getNewGreatPerson(): String? {
-        for ((unit, value) in greatGeneralPointsCounter){
+        for ((unit, value) in greatGeneralPointsCounter) {
             if (pointsForNextGreatGeneralCounter[unit] == 0) {
                 pointsForNextGreatGeneralCounter[unit] = 200
             }
@@ -88,9 +88,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return null
     }
 
-    fun addGreatPersonPoints() {
-        greatPersonPointsCounter.add(getGreatPersonPointsForNextTurn())
+    /** Add [toAdd] points, defaults to [getGreatPersonPointsForNextTurn] */
+    fun addGreatPersonPoints(toAdd: Counter<String> = getGreatPersonPointsForNextTurn()) {
+        greatPersonPointsCounter.add(toAdd)
     }
+
+    /** Add [amount] points for [name] (used in dev console) */
+    fun addGreatPersonPoints(name: String, amount: Int) =
+        addGreatPersonPoints(Counter<String>().apply { this[name] = amount })
 
     fun triggerMayanGreatPerson() {
         if (civInfo.isSpectator) return
@@ -152,5 +157,4 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         for (city in civInfo.cities) greatPersonPoints.add(city.getGreatPersonPoints())
         return greatPersonPoints
     }
-
 }
