@@ -8,6 +8,7 @@ import com.unciv.logic.automation.Timers
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.storage.PlatformMultiplayerStorage
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
@@ -55,6 +56,13 @@ import kotlin.reflect.KClass
  *  - contains references to [the game being played][gameInfo], and high-level UI elements.
  */
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
+
+    open val multiplayerStorage: PlatformMultiplayerStorage? get() = null
+
+    open fun openMultiplayer(onReady: () -> Unit, onError: (String) -> Unit) {
+        if (supportsOnlineMultiplayer) onReady()
+        else onError("Online multiplayer is unavailable in this browser.")
+    }
 
     var deepLinkedMultiplayerGame: String? = null
     override var customDataDirectory: String? = null
@@ -111,6 +119,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
+        settings.multiplayer.platformServer = multiplayerStorage?.serverUrl
         Display.setScreenMode(settings.screenMode, settings)
         BaseScreen.recreateBatch() // old one belonged to a lost GL context
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
@@ -123,7 +132,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         onlineMultiplayer = Multiplayer()
 
-        if (supportsOnlineMultiplayer) Concurrency.run {
+        if (supportsOnlineMultiplayer && multiplayerStorage == null) Concurrency.run {
             // Check if the server is available in case the feature set has changed
             try {
                 onlineMultiplayer.multiplayerServer.checkServerStatus()

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplication
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplicationConfiguration
 import com.unciv.UncivGame
+import com.unciv.utils.Concurrency
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
@@ -50,7 +51,17 @@ internal class WebDisplay : PlatformDisplay {
 }
 
 private class WebUncivGame : UncivGame() {
-    override val supportsOnlineMultiplayer = false
+    override val supportsOnlineMultiplayer get() = WebPeerBridge.isSupported()
+    override val multiplayerStorage get() = WebPeerStorage
+
+    override fun openMultiplayer(onReady: () -> Unit, onError: (String) -> Unit) {
+        if (!supportsOnlineMultiplayer) return super.openMultiplayer(onReady, onError)
+        WebPeerBridge.showSetup(
+            settings.multiplayer.getUserId(),
+            { Concurrency.runOnGLThread { onReady() } },
+            { message -> Concurrency.runOnGLThread { onError(message) } }
+        )
+    }
 
     override fun getGcCount(): Int? = null
 }

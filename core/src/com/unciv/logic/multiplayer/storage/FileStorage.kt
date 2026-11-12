@@ -21,6 +21,15 @@ enum class AuthStatus {
     UNKNOWN
 }
 
+/** Platform save transport for games and previews, independent of server account features. */
+interface PlatformMultiplayerStorage {
+    val serverUrl: String
+    val isConnected: Boolean
+
+    suspend fun saveFileData(fileName: String, data: String)
+    suspend fun loadFileData(fileName: String): ByteArray
+}
+
 interface FileStorage {
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time

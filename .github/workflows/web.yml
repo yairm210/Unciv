@@ -59,6 +59,7 @@ jobs:
       - name: Check generated JavaScript and record inputs
         run: |
           node --check web/build/pages/game/app.js
+          node --check web/build/pages/game/scripts/unciv-peer.js
           cp web/dependencies.lock.properties web/build/pages/game/dependencies.lock.properties
           git rev-parse HEAD > web/build/pages/game/SOURCE_COMMIT
           touch web/build/pages/game/.nojekyll
@@ -67,6 +68,12 @@ jobs:
           npm install --prefix web/build/validation/headless-browser --no-save playwright@1.57.0
           web/build/validation/headless-browser/node_modules/.bin/playwright install --with-deps chromium
           sudo apt-get install -y fonts-dejavu-core
+      - name: Test WebRTC multiplayer transport
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/web/build/validation/headless-browser/node_modules/playwright
+        run: |
+          set -o pipefail
+          node web/validation/peer/run.cjs 2>&1 | tee web/build/validation/ci/web-peer.log
       - name: Test browser fonts and generated game
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/web/build/validation/headless-browser/node_modules/playwright

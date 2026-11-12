@@ -1,6 +1,6 @@
 # Browser port bug ledger
 
-Updated 2026-11-06. This ledger distinguishes upstream game issues, reusable
+Updated 2026-11-12. This ledger distinguishes upstream game issues, reusable
 TeaVM/backend issues, and browser integration gaps. A passing build does not
 close a runtime bug. Entries marked fixed refer to the validated local revision;
 deployment status is tracked separately in PORTING.md.
@@ -9,7 +9,7 @@ deployment status is tracked separately in PORTING.md.
 | --- | --- | --- | --- |
 | WEB-001 | gdx-teavm storage | Write a named save, reload, select it: date showed 1970 because WebFileHandle.lastModified returned zero. | Fixed in gdx-teavm 97c2c3e. Timestamp write/reload contract and current full-game build pass; overwrite and turn-6 reload also passed locally. Date sorting has not been stress-tested. |
 | WEB-002 | gdx-teavm lifecycle | pause/resume/dispose from visibilitychange/pagehide run directly from DOM, unlike frames/input. Suspending callbacks lack TeaVM Java context and can overlap a suspended frame. | Fixed in gdx-teavm 97c2c3e. Suspendable visibility/pagehide browser contract passes with render-thread identity and no post-dispose frames. Actual unload can terminate queued work; bfcache restore remains unvalidated. |
-| WEB-003 | web multiplayer integration | Browser capability gate disables online games; Fetch transport alone does not implement browser WebSockets. | Deferred by request to codex/webrtc-peer. Default server lacks browser CORS; WebRTC prototype is isolated and unvalidated. Main build remains single-player. |
+| WEB-003 | web multiplayer integration | Browser builds could not host or join online games. | WebRTC connects two browsers and sends game saves and previews over a reliable data channel. The Chromium contract covers signaling, chunked transfer, disconnect, and persistence across reload. Event dispatch uses Java class metadata so that multiplayer update events work in the browser. Browser access to conventional multiplayer servers remains separate work. |
 | WEB-004 | WebGL atlas loading | Atlas metadata can request MipMapLinearLinear for magnification, which WebGL does not accept. | WebGL overrides loaded atlas textures to Linear magnification while preserving minification. Shared atlases and desktop packer settings are unchanged. The override runs after TextureAtlas loading, so it does not prevent a warning from the initial metadata value. |
 | WEB-005 | web packaging | Browser build requires developer-specific absolute dependency checkouts. | Fixed: checksum-pinned public YosefLm source archives bootstrap the forks. Public-input `:web:preparePages` completed on 2026-11-08 in 5m 41s. |
 | WEB-006 | deployment | Earlier implementation was local only; no reproducible current Pages pipeline. | Fixed for the current deployment: Yosef CI and Pages run 42190407113 succeeded; live `SOURCE_COMMIT` reports 873ae6a2a. Published source-map URLs return 404. |
@@ -37,7 +37,7 @@ recalculation, and test after founding a city before classifying this as a port
 regression or upstream game issue. This observation is not a demonstrated fix.
 ## Required validation, not yet established support
 
-- Multiplayer: server compatibility, CORS, HTTPS/WSS, authentication, two-player turn exchange, reconnection and persistence.
+- Multiplayer: conventional server compatibility, CORS, WSS, authentication, and WebRTC across different networks and browsers.
 - Longer games: combat, later AI turns, and late-game serialization. Local testing has reached turn 6, completed research/production, and verified save overwrite/reload at turn 6.
 - Browser lifecycle/input: visibility, resize, focus, touch, suspended callbacks, and bounded disposal.
 - Arbitrary mod behavior beyond font discovery/rendering, file import/export/sharing, audio, WebAssembly, mobile browsers and performance remain separate work until tested. WEB-016 validates mod-font discovery and loading in the browser fixture.

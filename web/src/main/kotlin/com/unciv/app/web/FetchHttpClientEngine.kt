@@ -216,6 +216,11 @@ internal object FetchJsBridge {
             for (let i = 0; i < headerNames.length; i++) headers.append(headerNames[i], headerValues[i]);
             const options = { method: method, headers: headers, signal: signal };
             if (body.length > 0) options.body = new Uint8Array(body);
+            if (new URL(url).origin === 'https://peer.unciv.invalid') {
+                const peer = globalThis.uncivPeer;
+                if (!peer) return Promise.reject(new TypeError('Connect to a WebRTC peer first.'));
+                return peer.request(url, options);
+            }
             return fetch(url, options);
         """
     )

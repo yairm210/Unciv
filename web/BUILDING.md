@@ -27,10 +27,31 @@ then, `preparePages` excludes map files from the deployment copy.
 The full game compiler currently needs an 8 GiB TeaVM worker heap;
 `webCompilerMemory` sets that heap in MiB.
 
+## Browser multiplayer
+
+Both players open **Multiplayer** from the main menu and share their player IDs.
+The host selects **Create host offer** and sends it privately. The guest pastes
+the offer, selects **Create join answer**, and sends the answer back. The host
+pastes that answer and selects **Accept peer answer**. Both can then select
+**Continue to multiplayer**.
+
+The host starts an **Online multiplayer** game from **Start new game**, assigns
+the two player IDs to human civilizations, then shares the game ID. The guest
+uses **Add multiplayer game** to enter that ID. Keep the host tab open during
+play. Saves are stored in the host browser, so the same host can reconnect
+after a reload and resume the game.
+
+This mode pairs two browsers. A connected peer can read or change hosted saves
+by game ID. Exchange signaling privately with someone you trust. The default
+ICE configuration uses public Google STUN. For networks that need a relay,
+enter your TURN service as an array of WebRTC ICE server objects in both setup
+dialogs. Use a browser with WebRTC and IndexedDB and serve the game over HTTPS
+or localhost.
+
 ## CI and optional Pages deployment
 
 `.github/workflows/web.yml` runs `:web:test`, `:web:preparePages`, a generated
-JavaScript syntax check, and the browser font contracts on pull requests and
+JavaScript syntax check, and the browser font and WebRTC contracts on pull requests and
 pushes that change the web target or shared code/assets. It uploads test logs
 and the clean game package as run artifacts. Pull requests never deploy.
 

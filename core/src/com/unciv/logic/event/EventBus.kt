@@ -46,15 +46,19 @@ object EventBus {
 
     /** To be able to listen to an event class and get notified even when child classes are sent as an event */
     private fun <T : Event> getClassesToListenTo(eventClass: KClass<T>): List<KClass<*>> {
-        return getSuperClasses(eventClass) + eventClass
+        return getSuperClasses(eventClass.java) + eventClass
     }
 
-    private fun getSuperClasses(kClass: KClass<*>): List<KClass<*>> {
-        if (kClass.supertypes.size == 1 && kClass.supertypes[0] == Any::class) return emptyList()
-        return kClass.supertypes
-            .map { it.classifier as KClass<*> }
-            .flatMap { getSuperClasses(it) + it }
-            .filter { it != Any::class }
+    private fun getSuperClasses(javaClass: Class<*>): List<KClass<*>> = buildList {
+        val parent = javaClass.superclass
+        if (parent != null && parent != Any::class.java) {
+            addAll(getSuperClasses(parent))
+            add(parent.kotlin)
+        }
+        for (interfaceClass in javaClass.interfaces) {
+            addAll(getSuperClasses(interfaceClass))
+            add(interfaceClass.kotlin)
+        }
     }
 
     /** Removes all listeners whose WeakReference got collected and returns the ones that are still active */

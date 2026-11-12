@@ -111,19 +111,19 @@ The implementation is split locally by owning repository. Review reusable TeaVM
 changes first (class-library contracts and optimizer regressions), then the three
 gdx-teavm fixes (Pixmap buffer semantics, render callback suspension, queued input).
 Review Unciv's save-path/platform seams separately from the opt-in web module,
-launcher, Fetch engine and reflection registrations. Public fork branches preserve those boundaries; no upstream pull request has
-been opened.
+launcher, Fetch engine and reflection registrations. The opt-in browser target
+landed upstream in [#15973](https://github.com/yairm210/Unciv/pull/15973).
 
 The public branches are `codex/web-revival` (Unciv), `codex/unciv-teavm-0.16`
 (TeaVM) and `codex/pixmap-teavm-0.16` (gdx-teavm). The optional shared agent
 workflow lives under `$CODEX_HOME/skills/unciv-teavm-port/SKILL.md`.
 
-WebRTC work is deferred to the separate `codex/webrtc-peer` branch/worktree for
-a later PR. It is an unintegrated draft, not part of the main browser build.
+The browser target supports direct two-player WebRTC games. See
+[Browser multiplayer](BUILDING.md#browser-multiplayer) for the setup and reconnect steps.
 
 Before broad release, validate longer games, browser lifecycle/backgrounding,
-more browsers and hardware, and bundle size/performance. Multiplayer, mods,
-file sharing, audio and WebAssembly need separate implementation/validation.
+more browsers and hardware, and bundle size/performance. Conventional multiplayer
+servers, mods, file sharing, audio and WebAssembly need additional validation.
 The current milestone is the observed minimal vanilla gameplay path.
 
 ## Historical work

@@ -77,7 +77,8 @@ internal class MultiplayerTab(
 
         addSeparator()
 
-        addMultiplayerServerOptions(listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect))
+        if (game.multiplayerStorage == null)
+            addMultiplayerServerOptions(listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect))
 
         super.lateInitialize()
     }

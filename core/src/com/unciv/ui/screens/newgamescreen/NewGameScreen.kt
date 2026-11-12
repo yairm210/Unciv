@@ -170,7 +170,8 @@ class NewGameScreen(
 
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer())
-                return if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!"
+                return if (game.multiplayerStorage != null) "Connect to a WebRTC peer from the Multiplayer menu first."
+                    else if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!"
                     else "Couldn't connect to Dropbox!"
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
@@ -287,6 +288,7 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
+        game.multiplayerStorage?.let { return it.isConnected }
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.getServer()
             val u = URI(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer).toURL()

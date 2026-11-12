@@ -54,6 +54,17 @@ class MultiplayerServer(
         }
     }
 
+    private fun platformStorage(): PlatformMultiplayerStorage? =
+        if (UncivGame.isCurrentInitialized())
+            UncivGame.Current.multiplayerStorage?.takeIf { it.serverUrl == getServerUrl() }
+        else null
+
+    private suspend fun saveGameFile(fileName: String, data: String) {
+        val storage = platformStorage()
+        if (storage == null) fileStorage().saveFileData(fileName, data)
+        else storage.saveFileData(fileName, data)
+    }
+
     /**
      * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
      * @return true if the server is alive, false otherwise
@@ -130,8 +141,9 @@ class MultiplayerServer(
      * @throws MultiplayerAuthException if the authentication failed
      */
     suspend fun uploadGame(gameInfo: GameInfo, withPreview: Boolean) {
+        platformStorage()?.let { gameInfo.gameParameters.multiplayerServerUrl = it.serverUrl }
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
+        saveGameFile(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
         // Current player ends turn -> Uploads Game Preview
@@ -157,7 +169,7 @@ class MultiplayerServer(
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
+        saveGameFile("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 
     /**
@@ -165,7 +177,14 @@ class MultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
-        val gameInfo = UncivFiles.gameInfoFromStream { fileStorage().loadFileData(gameId) }
+        val storage = platformStorage()
+        val gameInfo = if (storage == null)
+            UncivFiles.gameInfoFromStream { fileStorage().loadFileData(gameId) }
+        else {
+            // Deserialization can reopen the data to diagnose an incompatible save version.
+            val data = storage.loadFileData(gameId)
+            UncivFiles.gameInfoFromStream { data.inputStream() }
+        }
         gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.getServer()
         return gameInfo
     }
@@ -186,7 +205,9 @@ class MultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val preview = FileConversions.readJson(fileStorage().loadFileData("${gameId}_Preview"), GameInfoPreview::class.java)
+        val fileName = "${gameId}_Preview"
+        val input = platformStorage()?.loadFileData(fileName)?.inputStream() ?: fileStorage().loadFileData(fileName)
+        val preview = FileConversions.readJson(input, GameInfoPreview::class.java)
             ?: throw SerializationException("Empty game preview for $gameId")
         preview.migrateCivID()
         return preview
