@@ -92,6 +92,15 @@ object DiplomacyTurnManager {
             val increment = getCityStateInfluenceRecovery()
             setInfluence(min(restingPoint, influence + increment))
         }
+        
+        if (civInfo.cityStateFunctions.getTributeWillingness(otherCiv) > 0
+            && otherCiv.hasUnique(UniqueType.CityStateInfluenceGainWhenAfraid)) {
+            var scaredInfluenceGain = 0.0f
+            otherCiv.forEachMatchingUnique(UniqueType.CityStateInfluenceGainWhenAfraid) {
+                    unique -> scaredInfluenceGain += unique.params[0].toFloat()
+            }
+            addInfluence(scaredInfluenceGain)
+        }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val notificationActions = civInfo.cityStateFunctions.getNotificationActions()
