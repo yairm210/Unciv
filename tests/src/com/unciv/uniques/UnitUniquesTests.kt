@@ -274,4 +274,41 @@ class UnitUniquesTests {
         UniqueTriggerActivation.triggerUnique(merchantOfVenice.getUniques().first(), merchantOfVenice)
         Assert.assertTrue(cityStateCapital.civ == mainCiv)
     }
+
+    @Test
+    fun `Great Scientist with SavesResourceWhenSpawned unique saves science of spawn time`() {
+        game.makeHexagonalMap(1)
+        val civ = game.addCiv(isPlayer = true)
+        val tile = game.getTile(HexCoord.Zero)
+
+        // Set science of last 8 turns to some specific values
+        civ.tech.scienceOfLast8Turns = intArrayOf(1, 1, 1, 1, 1, 1, 1, 1) // sum = 8
+
+        val customScientistBase = game.createBaseUnit(
+            "Civilian",
+            "Can hurry technology research",
+            "Uses the resource generated from the past 8 turns when spawned for hurry actions"
+        ).apply {
+            movement = 2
+        }
+
+        val scientist = game.addUnit(customScientistBase.name, civ, tile)
+        scientist.currentMovement = 2f
+        Assert.assertTrue(scientist.hasUnique(UniqueType.SavesResourceWhenSpawned))
+        Assert.assertEquals(8, scientist.savedScienceOfLast8TurnsWhenSpawned)
+
+        // Now change civ's science of last 8 turns
+        civ.tech.scienceOfLast8Turns = intArrayOf(2, 2, 2, 2, 2, 2, 2, 2) // sum = 16
+        civ.tech.techsToResearch.add("Pottery")
+
+        val initialTechProgress = civ.tech.researchOfTech(civ.tech.currentTechnologyName()!!)
+
+        // Hurry research using the scientist
+        Assert.assertTrue(UnitActions.invokeUnitAction(scientist, UnitActionType.HurryResearch))
+
+        val addedScience = civ.tech.researchOfTech(civ.tech.currentTechnologyName()!!) - initialTechProgress
+        // Should use saved science (8 * speed modifier), NOT current science (800 * speed modifier)
+        val expectedScience = (8 * civ.gameInfo.speed.scienceCostModifier).toInt()
+        Assert.assertEquals(expectedScience, addedScience)
+    }
 }

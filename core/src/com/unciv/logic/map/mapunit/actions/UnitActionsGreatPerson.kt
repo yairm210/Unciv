@@ -21,7 +21,11 @@ object UnitActionsGreatPerson {
                 UnitActionType.HurryResearch,
                 associatedUnique = unique,
                 action = {
-                    unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
+                    val science = if (unit.hasUnique(UniqueType.SavesResourceWhenSpawned) && unit.savedScienceOfLast8TurnsWhenSpawned != null)
+                        unit.savedScienceOfLast8TurnsWhenSpawned!!
+                     else unit.civ.tech.getScienceFromGreatScientist()
+                    
+                    unit.civ.tech.addScience(science)
                     unit.consume()
                 }.takeIf {
                     unit.hasMovement()
@@ -38,7 +42,11 @@ object UnitActionsGreatPerson {
                 UnitActionType.HurryPolicy,
                 associatedUnique = unique,
                 action = {
-                    unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
+                    val culture = if (unit.hasUnique(UniqueType.SavesResourceWhenSpawned) && unit.savedCultureOfLast8TurnsWhenSpawned != null) 
+                        unit.savedCultureOfLast8TurnsWhenSpawned!!
+                    else unit.civ.policies.getCultureFromGreatWriter()
+
+                    unit.civ.policies.addCulture(culture)
                     unit.consume()
                 }.takeIf {unit.hasMovement()}
             ))

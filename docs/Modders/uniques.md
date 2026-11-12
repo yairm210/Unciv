@@ -2169,6 +2169,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Uses the resource generated from the past 8 turns when spawned for hurry actions"
+	Applicable to: Unit
+
 ??? example  "Automation is a primary action"
 	This unique is automatically hidden from users.
 
