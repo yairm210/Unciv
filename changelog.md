@@ -1,16 +1,10 @@
-## 4.22.20
+## 5.0.0
 
-View implementation - ReligiousUnitAutomation - see 
+Web version of Unciv! - By YosefLm
 
-Resolved  - skip "player ready" screen for hotseat when changing options
+skip "player ready" screen for hotseat when changing options
 
-Resolve  - Automated Settlers can think a tile is good but it's actually unsettleable, if so, explore for a different tile
-
-Deploy web version to https://yairm210.github.io/Unciv/web !
-
-Moved unit cycling logic to UI
-
-View implementation - CityLocationTileRanker - see 
+Automated Settlers can think a tile is good but it's actually unsettleable, if so, explore for a different tile
 
 By mvanhorn:
 - Keep marble wonder production bonuses local to the owning city 
@@ -18,13 +12,9 @@ By mvanhorn:
 
 Research agreement trade is only valid while the offerer can pay - By Qualia-Li
 
-Console: civ addgpp, addquest and removequests - By SomeTroglodyte
-
-Do not match "in cities following our religion" when neither side has a religion - By ibrahim-iqbal
-
 New CS bullying uniques for BNW's Gunboat Diplomacy - By HungLTL
 
-Add opt-in TeaVM browser target for vanilla Unciv - By YosefLm
+Do not match "in cities following our religion" when neither side has a religion - By ibrahim-iqbal
 
 ## 4.22.19
 
