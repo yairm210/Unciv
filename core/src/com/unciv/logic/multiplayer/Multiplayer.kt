@@ -317,7 +317,8 @@ class Multiplayer {
     }
 
     companion object {
-        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.getServer() != Constants.dropboxMultiplayerServer
+        fun usesCustomServer() =
+            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl() != Constants.dropboxMultiplayerServer
         fun usesDropbox() = !usesCustomServer()
     }
 }

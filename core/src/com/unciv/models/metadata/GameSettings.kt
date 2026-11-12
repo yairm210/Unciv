@@ -420,10 +420,7 @@ class GameSettings {
         var userName: String = ""
 
         private var server = Constants.uncivXyzServer
-        @Transient
-        internal var platformServer: String? = null
-
-        fun getServer() = platformServer ?: server
+        fun getServer() = server
         fun setServer(value: String) {
             if (server != value) {
                 server = value

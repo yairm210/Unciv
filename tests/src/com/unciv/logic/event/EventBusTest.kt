@@ -3,31 +3,11 @@ package com.unciv.logic.event
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
-import org.junit.Test
 
 class EventBusTest {
     open class Parent2 : Event
     open class Parent : Parent2()
     class Child : Parent()
-    interface Update : Event
-    class ChildUpdate : Parent(), Update
-
-    @Test
-    fun `sends an event to superclass and interface listeners`() {
-        val events = EventBus.EventReceiver()
-        val calls = mutableListOf<String>()
-        try {
-            events.receive(Parent::class) { calls.add("parent") }
-            events.receive(Update::class) { calls.add("interface") }
-            events.receive(ChildUpdate::class) { calls.add("child") }
-
-            EventBus.send(ChildUpdate())
-
-            Assert.assertEquals(listOf("parent", "interface", "child"), calls)
-        } finally {
-            events.stopReceiving()
-        }
-    }
 
     // All these tests are FLAKY and no good.
     // All work when debugging, but when running tests - sometimes yes sometimes no

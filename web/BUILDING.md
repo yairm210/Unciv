@@ -48,19 +48,17 @@ enter your TURN service as an array of WebRTC ICE server objects in both setup
 dialogs. Use a browser with WebRTC and IndexedDB and serve the game over HTTPS
 or localhost.
 
-## CI and optional Pages deployment
+## CI and Pages deployment
 
 `.github/workflows/web.yml` runs `:web:test`, `:web:preparePages`, a generated
-JavaScript syntax check, and the browser font and WebRTC contracts on pull requests and
-pushes that change the web target or shared code/assets. It uploads test logs
-and the clean game package as run artifacts. Pull requests never deploy.
+JavaScript syntax check, and the browser font and WebRTC contracts on relevant
+pull requests and when called by the documentation workflow. It uploads test
+logs and the game package as run artifacts.
 
-To deploy from a trusted branch, set repository variables
-`WEB_DEPLOY_PAGES=true` and `WEB_DEPLOY_BRANCH` to that branch name, and enable
-GitHub Pages with GitHub Actions as the source. The deployment job checks out
-the existing `gh-pages` branch, replaces only its `game/` directory, and keeps
-the rest of that site. A repository using deployment must therefore have a
-`gh-pages` branch; repositories without the variables only build and test.
+On `master`, the documentation workflow publishes the game to the
+[`/Unciv/web/` preview](https://yairm210.github.io/Unciv/web/) on GitHub Pages.
+If the browser build fails, the workflow can still publish the documentation
+and keep the previously published browser build.
 
 ## Pinned toolchains and cache
 

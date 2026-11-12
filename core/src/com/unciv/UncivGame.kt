@@ -61,7 +61,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     open fun openMultiplayer(onReady: () -> Unit, onError: (String) -> Unit) {
         if (supportsOnlineMultiplayer) onReady()
-        else onError("Online multiplayer is unavailable in this browser.")
+        else onError("Online multiplayer is unavailable in the browser preview.")
     }
 
     var deepLinkedMultiplayerGame: String? = null
@@ -119,7 +119,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
-        settings.multiplayer.platformServer = multiplayerStorage?.serverUrl
         Display.setScreenMode(settings.screenMode, settings)
         BaseScreen.recreateBatch() // old one belonged to a lost GL context
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin

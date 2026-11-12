@@ -15,6 +15,15 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 
+/** Platform transport for saves and previews, independent of server account features. */
+interface PlatformMultiplayerStorage {
+    val serverUrl: String
+    val isConnected: Boolean
+
+    suspend fun saveFileData(fileName: String, data: String)
+    suspend fun loadFileData(fileName: String): ByteArray
+}
+
 /**
  * Allows access to games stored on a server for multiplayer purposes.
  * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
@@ -39,7 +48,9 @@ class MultiplayerServer(
         }
     }
 
-    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.getServer()
+    fun getServerUrl() = fileStorageIdentifier ?: UncivGame.Current.let {
+        it.multiplayerStorage?.serverUrl ?: it.settings.multiplayer.getServer()
+    }
 
     fun fileStorage(): FileStorage {
         val authHeader = if (authenticationHeader == null) {
@@ -185,7 +196,8 @@ class MultiplayerServer(
             val data = storage.loadFileData(gameId)
             UncivFiles.gameInfoFromStream { data.inputStream() }
         }
-        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.getServer()
+        gameInfo.gameParameters.multiplayerServerUrl = storage?.serverUrl
+            ?: UncivGame.Current.settings.multiplayer.getServer()
         return gameInfo
     }
 
