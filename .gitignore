@@ -73,6 +73,7 @@ com_crashlytics_export_strings.xml
 /desktop/build/
 /server/build/
 /html/build/
+/web/build/
 /ios/build/
 /ios-moe/build/
 /buildSrc/build
