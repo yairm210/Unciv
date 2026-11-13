@@ -81,7 +81,11 @@ object HeadTowardsEnemyCityAutomation {
         return true
     }
 
-    /** Water tile this naval unit can stand on to attack [targetTile], preferring nearer stations. */
+    /**
+     * Water tile this naval unit can stand on to attack [targetTile].
+     * Ranged ships prefer the far edge of their attack range (not closing in);
+     * melee stays adjacent. Among equal-range stations, prefer the closer one to the unit.
+     */
     @Readonly
     private fun findReachableNavalAttackStation(unitView: MapUnitView, targetTile: TileView): TileView? {
         val melee = unitView.getBaseUnit().isMelee()
@@ -89,8 +93,10 @@ object HeadTowardsEnemyCityAutomation {
         val unitTile = unitView.getTile()
         val candidates = (if (melee) targetTile.getNeighbors() else targetTile.getExploredTilesInDistance(range))
             .filter { it.isWater && (unitView.canMoveTo(it) || it == unitTile) }
-            .sortedBy { it.aerialDistanceTo(unitTile) }
-            .take(8)
+            .sortedWith(
+                compareByDescending<TileView> { it.aerialDistanceTo(targetTile) } // stay at max range
+                    .thenBy { it.aerialDistanceTo(unitTile) }
+            )
         return candidates.firstOrNull { unitView.canReach(it) }
     }
 
