@@ -119,7 +119,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    // Ranks a tile for the expansion algorithm of cities
+    /** Ranks a tile for the expansion algorithm of cities - lower values are better */
     @Readonly
     fun rankTileForExpansion(tile: Tile): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
