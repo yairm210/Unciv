@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.objectdescriptions.TechnologyDescriptions
+import com.unciv.ui.objectdescriptions.TechnologyDescriptions.getTechnologyCivilopediaTextLines
 import yairm210.purity.annotations.Readonly
 
 class Technology: RulesetObject() {
@@ -36,8 +37,7 @@ class Technology: RulesetObject() {
 
     override fun makeLink() = "Technology/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset) =
-            TechnologyDescriptions.getCivilopediaTextLines(this, ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getTechnologyCivilopediaTextLines(ruleset)
 
     override fun era(ruleset: Ruleset) = ruleset.eras[era()]
 
