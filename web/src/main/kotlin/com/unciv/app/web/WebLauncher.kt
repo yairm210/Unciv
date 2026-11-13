@@ -10,12 +10,16 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
+import com.unciv.utils.Log
+import com.unciv.utils.LogBackend
+import com.unciv.utils.Tag
 
 object WebLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
         Display.platform = WebDisplay()
         Fonts.fontImplementation = WebFont()
+        Log.backend = WebLogBackend()
 
         val config = WebApplicationConfiguration("canvas").apply {
             width = 0
@@ -53,4 +57,19 @@ private class WebUncivGame : UncivGame() {
     override val supportsOnlineMultiplayer = false
 
     override fun getGcCount(): Int? = null
+}
+
+private class WebLogBackend : LogBackend {
+    private val release = BrowserInfo.isRelease()
+
+    override fun debug(tag: Tag, curThreadName: String, msg: String) =
+        BrowserInfo.consoleLog("[$curThreadName] [${tag.name}] $msg")
+
+    override fun error(tag: Tag, curThreadName: String, msg: String) =
+        BrowserInfo.consoleError("[$curThreadName] [${tag.name}] [ERROR] $msg")
+
+    override fun isRelease() = release
+
+    override fun getSystemInfo() =
+        BrowserInfo.systemInfo() + "\nNote: browser privacy settings may alter or hide some of these values."
 }
