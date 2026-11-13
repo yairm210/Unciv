@@ -22,7 +22,7 @@ class TileSetConfig {
         toReturn.fogOfWarColor = fogOfWarColor
         toReturn.fallbackTileSet = fallbackTileSet
         toReturn.tileScale = tileScale
-        toReturn.tileScales = tileScales
+        toReturn.tileScales.putAll(tileScales)
         toReturn.ruleVariants.putAll(ruleVariants.map { Pair(it.key, it.value.clone()) })
         return toReturn
     }

@@ -387,7 +387,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newResourceUniqueMap = UniqueMap()
         for (resource in summarizedResourceSupply)
             if (resource.amount > 0)
-                newResourceUniqueMap.addUniques(resource.resource.uniqueObjects)
+                newResourceUniqueMap.addUniques(resource.resource.uniqueObjects.filterNot { it.isLocalEffect })
         
         civInfo.detailedCivResources = newDetailedCivResources
         civInfo.summarizedCivResourceSupply = summarizedResourceSupply

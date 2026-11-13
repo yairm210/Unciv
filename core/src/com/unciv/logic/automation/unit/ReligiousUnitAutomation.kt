@@ -6,7 +6,6 @@ import com.unciv.view.ForeignCityView
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.UnitActionType
@@ -88,8 +87,8 @@ object ReligiousUnitAutomation {
             }
 
     fun automateInquisitor(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
-        val civReligion = unitView.civ().getReligion()
+        val civ = unitView.civ()
+        val civReligion = civ.getReligion()
 
         if (unitView.religion != civReligion?.name || unitView.religion == null) {
             // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
@@ -97,30 +96,30 @@ object ReligiousUnitAutomation {
             return
         }
 
-        val holyCity = unit.civ.religionManager.getHolyCity()
+        val holyCity = civ.getHolyCity()
         val cityToConvert = determineBestInquisitorCityToConvert(unitView) // Also returns null if the inquisitor can't convert cities
         val pressureDeficit =
             if (cityToConvert == null) 0
-            else cityToConvert.religion.getPressureDeficit(civReligion?.name)
+            else cityToConvert.getPressureDeficit(civReligion?.name)
 
-        val citiesToProtect = unit.civ.cities.asSequence()
-            .filter { it.religion.getMajorityReligion() == civReligion }
+        val citiesToProtect = civ.cities().asSequence()
+            .filter { it.getMajorityReligion() == civReligion }
             // We only look at cities that are not currently protected or are protected by us
-            .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().neighbors }
+            .filter { !it.isProtectedByInquisitor() || unitView.getTile() in it.getCenterTile().getNeighbors() }
 
         // cities with most populations will be prioritized by the AI
-        val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }
+        val cityToProtect = citiesToProtect.maxByOrNull { it.getPopulationCount() }
 
-        val destinationCity: City? = when {
+        val destinationCity: ForeignCityView? = when {
             cityToConvert != null
                 && (cityToConvert == holyCity
                 || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference
-                || cityToConvert.religion.isBlockedHolyCity && cityToConvert.religion.religionThisIsTheHolyCityOf == civReligion?.name
+                || cityToConvert.isBlockedHolyCity() && cityToConvert.getReligionThisIsTheHolyCityOf() == civReligion?.name
                 ) && unitView.hasUnique(UniqueType.CanRemoveHeresy) -> {
                 cityToConvert
             }
             cityToProtect != null && unitView.hasUnique(UniqueType.PreventSpreadingReligion) -> {
-                if (holyCity != null && !holyCity.religion.isProtectedByInquisitor())
+                if (holyCity != null && !holyCity.isProtectedByInquisitor())
                     holyCity
                 else cityToProtect
             }
@@ -129,15 +128,16 @@ object ReligiousUnitAutomation {
         }
 
         if (destinationCity == null) return
-        val destinationTile = destinationCity.getCenterTile().neighbors
-                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
+        val unitTile = unitView.getTile()
+        val destinationTile = destinationCity.getCenterTile().getNeighbors()
+                .filter { unitView.canMoveTo(it) || it == unitTile }
+                .sortedBy { it.aerialDistanceTo(unitTile) }
+                .firstOrNull { unitView.canReach(it) }
                 ?: return
 
-        unit.movement.headTowards(destinationTile)
+        unitView.tryHeadTowards(destinationTile)
 
-        if (cityToConvert != null && unit.getTile().getCity() == destinationCity) {
+        if (cityToConvert != null && unitView.getTile().getCity() == destinationCity) {
             unitView.tryInvokeUnitAction(UnitActionType.RemoveHeresy)
         }
     }
@@ -145,52 +145,53 @@ object ReligiousUnitAutomation {
     @Readonly
     private fun determineBestInquisitorCityToConvert(
         unitView: MapUnitView,
-    ): City? {
-        val unit = unitView.getUnit()
-        if (unitView.religion != unitView.civ().getReligion()?.name || !unitView.hasUnique(UniqueType.CanRemoveHeresy))
+    ): ForeignCityView? {
+        val civ = unitView.civ()
+        val civReligion = civ.getReligion()
+        if (unitView.religion != civReligion?.name || !unitView.hasUnique(UniqueType.CanRemoveHeresy))
             return null
 
-        val holyCity = unit.civ.religionManager.getHolyCity()
+        val holyCity = civ.getHolyCity()
         // Our own holy city was taken over!
-        if (holyCity != null && holyCity.civ == unit.civ
-            && holyCity.religion.getMajorityReligion() != unitView.civ().getReligion()!!)
+        if (holyCity != null && holyCity.owningCiv() == civ
+            && holyCity.getMajorityReligion() != civReligion!!)
             return holyCity
 
-        val blockedHolyCity = unit.civ.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unitView.religion }
+        val blockedHolyCity = civ.cities().firstOrNull { it.isBlockedHolyCity() && it.getReligionThisIsTheHolyCityOf() == unitView.religion }
         if (blockedHolyCity != null)
             return blockedHolyCity
 
         // Find cities 
-        val relevantCities = unit.civ.cities.asSequence()
-            .filter { it.getCenterTile().isExplored(unit.civ) } // Cities we know about
+        val relevantCities = civ.cities().asSequence()
             // Someone else is controlling this city
             .filter { 
-                val majorityReligion = it.religion.getMajorityReligion()
-                majorityReligion != null && majorityReligion != unitView.civ().getReligion()
+                val majorityReligion = it.getMajorityReligion()
+                majorityReligion != null && majorityReligion != civReligion
             }
         
+        val unitTile = unitView.getTile()
         val closeCity = relevantCities
-            .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 }
+            .filter { it.getCenterTile().aerialDistanceTo(unitTile) <= 20 }
             // Find the city that we're the closest to converting
-            .minByOrNull { it.religion.getPressureDeficit(unitView.civ().getReligion()?.name) }
+            .minByOrNull { it.getPressureDeficit(civReligion?.name) }
         if (closeCity != null) return closeCity
         
-        return relevantCities.minByOrNull { it.religion.getPressureDeficit(unitView.civ().getReligion()?.name) }
+        return relevantCities.minByOrNull { it.getPressureDeficit(civReligion?.name) }
     }
 
 
     fun foundReligion(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
+        val unitTile = unitView.getTile()
         val cityToFoundReligionAt =
-            if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity
-            else unit.civ.cities.firstOrNull {
+            if (unitTile.isCityCenter() && !unitTile.owningCity()!!.isHolyCity()) unitTile.owningCity()
+            else unitView.civ().cities().firstOrNull {
                 !it.isHolyCity()
-                    && unit.movement.canMoveTo(it.getCenterTile())
-                    && unit.movement.canReach(it.getCenterTile())
+                    && unitView.canMoveTo(it.getCenterTile())
+                    && unitView.canReach(it.getCenterTile())
             }
         if (cityToFoundReligionAt == null) return
-        if (unit.getTile() != cityToFoundReligionAt.getCenterTile()) {
-            unit.movement.headTowards(cityToFoundReligionAt.getCenterTile())
+        if (unitTile != cityToFoundReligionAt.getCenterTile()) {
+            unitView.tryHeadTowards(cityToFoundReligionAt.getCenterTile())
             return
         }
 

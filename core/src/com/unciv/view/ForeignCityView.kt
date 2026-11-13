@@ -82,6 +82,11 @@ open class ForeignCityView(protected open val city: City,
     @Readonly fun getPressuresFromSurroundingCities(): Map<String, Int> = city.religion.getPressuresFromSurroundingCities()
     @Readonly fun getReligionThisIsTheHolyCityOf(): String? = city.religion.religionThisIsTheHolyCityOf
     @Readonly fun isBlockedHolyCity(): Boolean = city.religion.isBlockedHolyCity
+    @Readonly fun isHolyCity(): Boolean = city.isHolyCity()
+    /** `true` if a unit with [UniqueType.PreventSpreadingReligion] of a religion other than [fromReligion] (any, if `null`) stands next to this city, see [com.unciv.logic.city.managers.CityReligionManager.isProtectedByInquisitor] */
+    @Readonly fun isProtectedByInquisitor(fromReligion: String? = null): Boolean = city.religion.isProtectedByInquisitor(fromReligion)
+    /** Pressure of the majority religion minus pressure of [otherReligion] */
+    @Readonly fun getPressureDeficit(otherReligion: String?): Int = city.religion.getPressureDeficit(otherReligion)
     @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
 
     /** Wraps [city] as a [CityCombatantView] for battle purposes. */

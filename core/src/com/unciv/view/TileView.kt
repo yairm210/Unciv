@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -134,6 +135,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { tileMapView.getTile(it) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
+    @Readonly fun getContinent(): Int = tile.getContinent()
+    @Readonly fun isAdjacentToRiver(): Boolean = tile.isAdjacentToRiver()
     /** `true` if the viewer treats this tile as road-connected: has an unpillaged road, or forest/jungle that count as roads for them */
     @Readonly fun hasConnection(): Boolean = viewer != null && tile.hasConnection(viewer)
     /** `true` if a road could be planned through this tile by [viewer] */
@@ -312,3 +315,10 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 // Helpers built on top of the view API, rather than being part of it
 @Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!
 @Readonly fun TileView.getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
+@Readonly fun TileView.isHill(): Boolean = getAllTerrains().any { it.isHill }
+/** Only considers explored neighbors */
+@Readonly fun TileView.isAdjacentToCoast(): Boolean = isLand && getNeighbors().any { it.getBaseTerrain().isCoast }
+@Readonly fun TileView.isNaturalWonder(): Boolean = naturalWonder != null
+@Readonly fun TileView.terrainHasUnique(uniqueType: UniqueType): Boolean = getAllTerrains().any { it.hasUnique(uniqueType) }
+@Readonly fun TileView.getTerrainMatchingUniques(uniqueType: UniqueType): Sequence<Unique> =
+    getAllTerrains().asSequence().flatMap { it.getMatchingUniques(uniqueType) }

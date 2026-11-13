@@ -92,6 +92,8 @@ class CivView(civ: Civilization,
     @Readonly fun isEnhancingReligion(): Boolean = civ.religionManager.religionState == ReligionState.EnhancingReligion
     @Readonly fun hasFreeBeliefs(): Boolean = civ.religionManager.hasFreeBeliefs()
     @Readonly fun getReligion(): Religion? = civ.religionManager.religion
+    /** The holy city of our religion, which may belong to another civ */
+    @Readonly fun getHolyCity(): ForeignCityView? = civ.religionManager.getHolyCity()?.let { gameView.getForeignCityView(it) }
     @Readonly fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtFounding()
     @Readonly fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = civ.religionManager.getBeliefsToChooseAtEnhancing()
     @Readonly fun freeBeliefsAsEnums(): Counter<BeliefType> = civ.religionManager.freeBeliefsAsEnums()
@@ -142,6 +144,7 @@ class CivView(civ: Civilization,
 // Helpers built on top of the view API, rather than being part of it
 // This is so we can separate the minimal API, from the helpful API.
 
+@Readonly fun CivView.hasResource(resource: TileResource): Boolean = getResourceAmount(resource.name) > 0
 @Readonly fun CivView.idleUnitsCount(due: Boolean): Int = getUnits().count { it.isIdle() && it.due == due }
 @Readonly fun CivView.dueUnitsCount(): Int = getUnits().count { it.due && it.isIdle() }
 

@@ -68,14 +68,13 @@ object WorldMapTileUpdater {
 
         // Fade out less relevant images if a military unit is selected
         if (unitView.isMilitary()) {
-            val unit = unitView.getUnit()
             for (group in tileGroups.values) {
 
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
                 val shownImprovementName = group.tileView.getShownImprovement()
-                val shownImprovement = unit.civ.gameInfo.ruleset.tileImprovements[shownImprovementName]
+                val shownImprovement = group.tileView.getRuleset().tileImprovements[shownImprovementName]
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null &&
@@ -217,10 +216,9 @@ object WorldMapTileUpdater {
         // Highlight best tiles for city founding
         if (unitView.hasUnique(UniqueType.FoundCity)
             && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
-            val unit = unitView.getUnit()
-            CityLocationTileRanker.getBestTilesToFoundCity(unit, 5, minimumValue = 50f).tileRankMap.asSequence()
-                .filter { it.key.isExplored(unit.civ) }.sortedByDescending { it.value }.take(3).forEach {
-                    tileGroups[tileMapView.getTile(it.key)]!!.layerOverlay.showGoodCityLocationIndicator()
+            CityLocationTileRanker.getBestTilesToFoundCity(unitView, 5, minimumValue = 50f).tileRankMap.asSequence()
+                .sortedByDescending { it.value }.take(3).forEach {
+                    tileGroups[it.key]!!.layerOverlay.showGoodCityLocationIndicator()
                 }
         }
     }

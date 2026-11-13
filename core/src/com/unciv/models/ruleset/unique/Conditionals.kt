@@ -239,7 +239,7 @@ object Conditionals {
             UniqueType.ConditionalCityEnhancedReligion -> checkOnCity {
                 religion.getMajorityReligion()?.isEnhancedReligion() == true }
             UniqueType.ConditionalCityThisReligion -> checkOnCity {
-                religion.getMajorityReligion() == state.relevantCiv?.religionManager?.religion }
+                religion.getMajorityReligion().let { it != null && it == state.relevantCiv?.religionManager?.religion } }
             UniqueType.ConditionalWLTKD -> checkOnCity { isWeLoveTheKingDayActive() }
             UniqueType.ConditionalCityWithBuilding ->
                 checkOnCity { cityConstructions.containsBuildingOrEquivalent(conditional.params[0]) }

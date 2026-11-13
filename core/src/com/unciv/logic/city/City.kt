@@ -603,7 +603,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            "in cities following our religion" -> viewingCiv?.religionManager?.religion == religion.getMajorityReligion()
+            "in cities following our religion" -> religion.getMajorityReligion().let { it != null && it == viewingCiv?.religionManager?.religion }
             else -> civ.matchesFilter(filter, state, false)
         }
     }
@@ -664,7 +664,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         replaceWith = ReplaceWith("forEachLocalMatchingUnique"))
     fun getLocalMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
-            religion.getUniques(uniqueType)
+            religion.getUniques(uniqueType) +
+            getLocalResources().flatMap { it.uniqueMap.getUniques(uniqueType) }.filter { it.isLocalEffect }
         return uniques.filter { !it.isTimedTriggerable && it.conditionalsApply(gameContext) }
                 .flatMap { it.getMultiplied(gameContext) }
     }
@@ -674,7 +675,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun forEachLocalMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
         cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, isLocalUniqueFilter, op)
         religion.forEachMatchingUnique(uniqueType, gameContext, op)
+        for (resource in getLocalResources())
+            resource.forEachMatchingUnique(uniqueType, gameContext, isLocalUniqueFilter, op)
     }
+
+    // Local effects depend on owned, extractable deposits, even when all copies are exported.
+    // Don't use getResourcesGeneratedByCity here: resource generation itself queries city uniques.
+    @Readonly
+    private fun getLocalResources(): Sequence<TileResource> = getTiles()
+        .filter { it.providesResources(civ) }
+        .map { it.tileResource!! }
+        .distinct()
 
     // Uniques coming from this city, but that should be provided globally
     @Readonly

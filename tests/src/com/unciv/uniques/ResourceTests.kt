@@ -2,6 +2,9 @@ package com.unciv.uniques
 
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexCoord
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -19,6 +22,26 @@ class ResourceTests {
     private val game = TestGame().apply { makeHexagonalMap(2) }
     private val civInfo = game.addCiv()
     private val city = game.addCity(civInfo, game.tileMap[0,0])
+
+    @Test
+    fun `Imported Marble does not give wonder production`() {
+        val buyer = game.addCiv()
+        val buyerCity = game.addCity(buyer, game.getTile(2, 2), true)
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(buyer)
+        civInfo.tech.addTechnology("Masonry")
+        val marble = game.getTile(1, 0)
+        marble.setTileResource("Marble")
+        marble.setImprovement("Quarry")
+
+        val trade = TradeLogic(civInfo, buyer)
+        trade.currentTrade.ourOffers.add(TradeOffer("Marble", TradeOfferType.Luxury_Resource, duration = 30))
+        trade.acceptTrade()
+
+        assertEquals(1, buyer.getCivResourcesByName()["Marble"])
+        buyerCity.cityConstructions.setCurrentConstruction(game.createWonder().name)
+        buyerCity.cityStats.update()
+        assertEquals(0f, buyerCity.cityStats.statPercentBonusTree.totalStats.production)
+    }
 
     @Test
     fun testConsumesResourceUnique() {

@@ -5,9 +5,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.view.GameView
+import com.unciv.view.MapUnitView
+import com.unciv.view.getCapital
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -676,18 +679,43 @@ class WorldScreen(
         }
     }
 
+    /** The unit [cycleThroughDueUnits] returned last - the next search starts after it */
+    private var lastCycledUnit: MapUnitView? = null
+
+    /** Returns the next due unit, but preferably not [unitToSkip]: this is returned only if it is the only remaining due unit
+     *  (not with the alternate cycle order, which never returns it). */
+    private fun cycleThroughDueUnits(unitToSkip: MapUnitView?): MapUnitView? {
+        val civView = selectedGameView.getCivView(viewingCiv)
+        val nextDueUnit = if (GUI.getSettings().alternateUnitCycleOrder) {
+            val center = unitToSkip?.getTile()
+                ?: civView.getCapital()?.getCenterTile()
+                ?: selectedGameView.tileMapView.getTile(HexCoord.Zero)
+            val dueUnits = civView.getUnits().filter { it.due && it.isIdle() && it != unitToSkip }
+            if (center == null) dueUnits.firstOrNull()
+            else dueUnits.minByOrNull { it.getTile().aerialDistanceTo(center) }
+        } else {
+            // Search starts right after the unit we last cycled to
+            val units = civView.getUnits()
+            val start = units.indexOf(lastCycledUnit) + 1 // not found: 0
+            val dueUnits = (units.drop(start) + units.take(start)).filter { it.due && it.isIdle() }
+            dueUnits.firstOrNull { it != unitToSkip } ?: dueUnits.firstOrNull()
+        }
+        if (nextDueUnit != null) lastCycledUnit = nextDueUnit
+        return nextDueUnit
+    }
+
     fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.setDue(false)
-        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit?.getUnit())
+        val nextDueUnit = cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
-                nextDueUnit.currentTile.position,
+                nextDueUnit.getTile().position(),
                 immediately = false,
                 selectUnit = false
             )
-            bottomUnitTable.selectUnit(selectedGameView.getForeignMapUnitView(nextDueUnit).tryGetMapUnitView()!!)
+            bottomUnitTable.selectUnit(nextDueUnit)
         } else {
             mapHolder.removeAction(mapHolder.blinkAction)
             mapHolder.selectedTile = null

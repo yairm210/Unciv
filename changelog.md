@@ -1,3 +1,21 @@
+## 5.0.0
+
+Web version of Unciv! - By YosefLm
+
+skip "player ready" screen for hotseat when changing options
+
+Automated Settlers can think a tile is good but it's actually unsettleable, if so, explore for a different tile
+
+By mvanhorn:
+- Keep marble wonder production bonuses local to the owning city 
+- Prevent carrier healing moves from failing during payload placement 
+
+Research agreement trade is only valid while the offerer can pay - By Qualia-Li
+
+New CS bullying uniques for BNW's Gunboat Diplomacy - By HungLTL
+
+Do not match "in cities following our religion" when neither side has a religion - By ibrahim-iqbal
+
 ## 4.22.19
 
 Preparations for web version :)

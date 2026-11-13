@@ -131,43 +131,43 @@ object SpecificUnitAutomation {
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val minimumTileValue = unit.civ.gameInfo.ruleset.modOptions.constants.minimumCityLocationTileValue // To prevent AI from settling snow regions, could use a better implementation
-        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch, minimumTileValue)
-        var bestCityLocation: Tile? = null
+        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unitView, rangeToSearch, minimumTileValue)
+        var bestCityLocation: TileView? = null
 
-        if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
+        if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unitView.getTile())) {   // Special case, we want AI to settle in place on turn 1.
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val allUnsettledSettlers = unit.civ.units.getCivUnits().filter { it.hasMovement() && it.baseUnit == unit.baseUnit }
 
             // Don't settle immediately if we only have one settler, look for a better location
             val bestSettlerInRange = allUnsettledSettlers.maxByOrNull {
-                if (bestTilesInfo.tileRankMap.containsKey(it.getTile()))
-                    bestTilesInfo.tileRankMap[it.getTile()]!!
+                if (bestTilesInfo.tileRankMap.containsKey(unitView.gameView.getTile(it.getTile())))
+                    bestTilesInfo.tileRankMap[unitView.gameView.getTile(it.getTile())]!!
                 else -1f
             }
             if (bestSettlerInRange == unit && unitView.tryInvokeUnitAction(UnitActionType.FoundCity)) return
             // Since this settler is not in the best location, lets assume the best settler will found their city where they are
             if (bestSettlerInRange != null)
-                bestTilesInfo.tileRankMap = HashMap(bestTilesInfo.tileRankMap.filter { it.key.aerialDistanceTo(bestSettlerInRange.getTile()) > 4 })
+                bestTilesInfo.tileRankMap = HashMap(bestTilesInfo.tileRankMap.filter { it.key.aerialDistanceTo(unitView.gameView.getTile(bestSettlerInRange.getTile())) > 4 })
         }
 
 
         // If the tile we are currently on is close to the best tile, then lets just settle here instead
-        if (bestTilesInfo.tileRankMap.containsKey(unit.getTile())
-                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unit.getTile()]!! >= bestTilesInfo.bestTileRank - 2)) {
-                bestCityLocation = unit.getTile()
+        if (bestTilesInfo.tileRankMap.containsKey(unitView.getTile())
+                && (bestTilesInfo.bestTile == null || bestTilesInfo.tileRankMap[unitView.getTile()]!! >= bestTilesInfo.bestTileRank - 2)) {
+                bestCityLocation = unitView.getTile()
         }
 
         //Shortcut, if the best tile is nearby than lets just take it
-        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unit.movement.getShortestPath(bestTilesInfo.bestTile!!).size in 1..3) {
+        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unitView.getShortestPath(bestTilesInfo.bestTile!!).size in 1..3) {
             bestCityLocation = bestTilesInfo.bestTile
         }
 
         if (bestCityLocation == null) {
             // Find the best tile that is within
             @Readonly
-            fun isTileRankOK(it: Map.Entry<Tile, Float>): Boolean {
-                if (unitView.getTile().getTileMap().getTile(it.key) in dangerousTiles && it.key != unit.getTile()) return false
-                val pathSize = unit.movement.getShortestPath(it.key).size
+            fun isTileRankOK(it: Map.Entry<TileView, Float>): Boolean {
+                if (it.key in dangerousTiles && it.key != unitView.getTile()) return false
+                val pathSize = unitView.getShortestPath(it.key).size
                 return pathSize in 1..3
             }
 
@@ -180,13 +180,12 @@ object SpecificUnitAutomation {
 
         // We still haven't found a best city tile within 3 turns so lets just head to the best tile
         // Note that we must check that the shortest path exists or else an error will be thrown
-        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unit.movement.getShortestPath(bestTilesInfo.bestTile!!).size in 1..8) {
+        if (bestCityLocation == null && bestTilesInfo.bestTile != null && unitView.getShortestPath(bestTilesInfo.bestTile!!).size in 1..8) {
             bestCityLocation = bestTilesInfo.bestTile
         }
 
-        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
-            // Try to move towards the frontier
-
+        /** No usable city location - try to move towards the frontier, explore, or at least wander */
+        fun headTowardsFrontierOrExplore() {
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
             fun getFrontierScore(city: City): Int {
@@ -202,22 +201,28 @@ object SpecificUnitAutomation {
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unitView, cache)) return // try to find new areas
             UnitAutomation.wander(unitView, tilesToAvoid = dangerousTiles) // go around aimlessly
+        }
+
+        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
+            headTowardsFrontierOrExplore()
             return
         }
 
-        val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
-        if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
-            if (unit.hasMovement() && !unit.civ.isOneCityChallenger()) // therefore, city within 3 tiles
-                throw Exception("City within distance")
+        val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.civ.gameInfo.tileMap[bestCityLocation.position()])
+        if (foundCityAction?.action == null) { // either currentMove == 0, or the tile isn't actually settleable
+            // Tile ranking only uses what the civ knows, so the tile can be too close to a city (or in territory)
+            // we haven't discovered yet. Not an error - explore, which will reveal it
+            if (foundCityAction != null && unit.hasMovement())
+                headTowardsFrontierOrExplore()
             return
         }
 
-        val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
+        val shouldSettle = (unitView.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
         if (tryRunAwayIfNeccessary(unitView, cache)) return 
-        unit.movement.headTowards(bestCityLocation)
-        val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
+        unitView.tryHeadTowards(bestCityLocation)
+        val shouldSettleNow = (unitView.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
     }
 

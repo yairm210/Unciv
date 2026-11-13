@@ -339,7 +339,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return false
     }
 
-    private fun assignNewQuest(quest: Quest, assignees: Iterable<Civilization>) {
+    fun assignNewQuest(quest: Quest, assignees: Iterable<Civilization>) {
         val turn = civ.gameInfo.turns
 
         for (assignee in assignees) {
@@ -365,7 +365,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Returns true if [civ] can assign a quest to [challenger] */
     @Readonly
-    private fun canAssignAQuestTo(challenger: Civilization): Boolean {
+    fun canAssignAQuestTo(challenger: Civilization): Boolean {
         return !challenger.isDefeated() && challenger.isMajorCiv &&
                 civ.knows(challenger) && !civ.isAtWarWith(challenger)
     }
