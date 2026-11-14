@@ -53,4 +53,8 @@ private class WebUncivGame : UncivGame() {
     override val supportsOnlineMultiplayer = false
 
     override fun getGcCount(): Int? = null
+
+    override val canDownloadFromUrl get() = false
+    override val hasJavaFileAccess: Boolean get() = false
+    override val canExitApp: Boolean get() = false
 }
