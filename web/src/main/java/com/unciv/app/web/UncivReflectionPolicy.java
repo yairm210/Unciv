@@ -24,7 +24,12 @@ public final class UncivReflectionPolicy extends SimpleReflectionPolicy {
             "com.unciv.logic.GameInfoSerializationVersion",
             // Save picker reads this compact view from the full save JSON.
             "com.unciv.logic.GameInfoPreview",
-            "com.unciv.logic.civilization.CivilizationInfoPreview"
+            "com.unciv.logic.civilization.CivilizationInfoPreview",
+            "com.unciv.logic.github.GithubAPI$Repo",
+            "com.unciv.logic.github.GithubAPI$RepoOwner",
+            "com.unciv.logic.github.GithubAPI$RepoSearch",
+            "com.unciv.logic.github.GithubAPI$Tree",
+            "com.unciv.logic.github.GithubAPI$Tree$TreeFile"
     );
     private static final Set<String> REFLECTIVE_ENUMS = Set.of(
             "com.unciv.logic.map.mapgenerator.MapResourceSetting",
