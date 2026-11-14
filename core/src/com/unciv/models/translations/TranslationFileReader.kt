@@ -37,14 +37,16 @@ object TranslationFileReader {
         return translations
     }
 
-    fun readLanguagePercentages(): HashMap<String,Int> {
-        val hashmap = HashMap<String,Int>()
+    fun readLanguagePercentages(): HashMap<String, CompletionPercentage> {
+        val hashmap = HashMap<String, CompletionPercentage>(50)
         val percentageFile = Gdx.files.internal(percentagesFileLocation)
         if (!percentageFile.exists()) return hashmap
         percentageFile.reader(charset).forEachLine { line ->
-            hashmap[splitLine[0]] = splitLine[1].toInt()
             if (line.isCommentLine()) return@forEachLine
             val splitLine = line.split(keyValueSeparator)
+            val value = if (splitLine.size > 1) CompletionPercentage.parse(splitLine[1]) else null
+            if (value != null)
+                hashmap[splitLine[0]] = value
         }
         return hashmap
     }

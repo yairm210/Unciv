@@ -162,7 +162,7 @@ object TranslationFileWriter {
         modFolder: FileHandle? = null,
         baseTranslations: Translations? = null,
         backup: Boolean = false
-    ): HashMap<String, Int> {
+    ): HashMap<String, CompletionPercentage> {
         val linesToTranslate = ArrayList<String>((translations.size * empiricLinesToKeysFactor).roundToInt())
         val fileNameToGeneratedStrings: Map<String, Set<String>>
 
@@ -197,9 +197,9 @@ object TranslationFileWriter {
         )
 
         // Calculate the percentages of translations
-        val result = HashMap<String, Int>()
+        val result = HashMap<String, CompletionPercentage>()
         for ((language, translatedCount) in countOfTranslatedLines)
-            result[language] = if (countOfTranslatableLines <= 0) 100 else translatedCount * 100 / countOfTranslatableLines
+            result[language] = CompletionPercentage.of(translatedCount, countOfTranslatableLines)
 
         return result
     }
@@ -479,11 +479,11 @@ object TranslationFileWriter {
         appendLine(key.escapeNewLines() + keyValueSeparator + value.escapeNewLines())
     }
 
-    private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
+    private fun writeLanguagePercentages(percentages: HashMap<String, CompletionPercentage>, modFolder: FileHandle? = null) {
         val comment = "# Automatically generated - ${if (modFolder == null) "do not edit manually" else "for your info only"}\n\n"
         val output = percentages.asSequence()
             .sortedBy { it.key }
-            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value}" }
+            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value.toFileString()}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
     }
