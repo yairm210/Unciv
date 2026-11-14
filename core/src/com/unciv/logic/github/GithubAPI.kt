@@ -18,11 +18,9 @@ import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
-import java.io.File
-import java.io.FileFilter
-import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.yield
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 enum class DownloadAndExtractState {
@@ -47,7 +45,7 @@ enum class DownloadAndExtractState {
  *  - https://docs.github.com/en/rest/releases/releases
  *  - https://docs.github.com/en/rest/git/trees#get-a-tree
  */
-@Suppress("PropertyName")  // We're declaring an external API schema
+@Suppress("PropertyName", "ConstPropertyName")  // We're declaring an external API schema
 object GithubAPI {
     // region URL formatters
     /**
@@ -84,10 +82,8 @@ object GithubAPI {
         val resp = client.request(block)
         val rateLimited = consumeRateLimit(resp)
 
-        return if (rateLimited) {
-            if (maxRateLimitedRetries <= 0) return resp
-            return request(maxRateLimitedRetries - 1, block)
-        } else resp
+        return if (!rateLimited || maxRateLimitedRetries <= 0) resp
+        else request(maxRateLimitedRetries - 1, block)
     }
 
     private suspend fun paginatedRequest(
@@ -134,7 +130,6 @@ object GithubAPI {
     /**
      * Wait for rate limit to end if any and returns true if there was any rate limit
      */
-    @OptIn(ExperimentalTime::class)
     private suspend fun consumeRateLimit(resp: HttpResponse): Boolean {
         if (resp.status != HttpStatusCode.Forbidden && resp.status != HttpStatusCode.TooManyRequests) return false
 
@@ -394,7 +389,6 @@ object GithubAPI {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param modsFolder Destination handle of mods folder - also controls Android internal/external.
      * @param updateProgressPercent A function recieving a download progress percentage (0-100) roughly every 100ms. Call will run under a Coroutine context.
      * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone.
      * @return FileHandle for the downloaded Mod's folder or null if download failed.
@@ -404,7 +398,7 @@ object GithubAPI {
         updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
         val modsFolder = UncivGame.Current.files.getModsFolder()
-        
+
         var modNameFromFileName = name
 
         val defaultBranch = default_branch
@@ -516,12 +510,13 @@ object GithubAPI {
         return finalDestination
     }
 
+    /** Blocks on stream and file I/O: callers must run this on [DAEMON][com.unciv.utils.Dispatcher.DAEMON] or [NON_DAEMON][com.unciv.utils.Dispatcher.NON_DAEMON] dispatchers, never on the GL dispatcher. */
+    @Suppress("BlockingMethodInNonBlockingContext")  // Both allowed dispatchers are unbounded cached thread pools
     private suspend fun extractZipStream(stream: ZipInputStream, unzipDestination: FileHandle) {
         // Note: resolveZipStructure re-iterates the content from the file system. We might do that here,
         // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
 
-        val job = coroutineContext[Job]
-        val destinationPath = unzipDestination.file().canonicalPath + File.separator
+        val job = currentCoroutineContext()[Job]
         // Actual unpacking
         try {
             while (job?.isActive != false) {
@@ -533,6 +528,7 @@ object GithubAPI {
                 dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
                 dest.outputStream().use { stream.copyTo(it) }
                 stream.closeEntry()
+                yield()
             }
         } catch (ex: ZipException) {
             throw UncivShowableException("That is not a valid ZIP file", ex)
