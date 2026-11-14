@@ -49,4 +49,17 @@ public final class BrowserInfo {
             "}" +
             "return out.join('\\n');")
     public static native String systemInfo();
+
+    /** Cancels the browser's own Ctrl+letter shortcuts (open, save, print, find...) so only the game sees them.
+     *  @param allowed letters to leave to the browser, e.g. "cvx" */
+    @JSBody(params = {"allowed"}, script =
+        "window.addEventListener('keydown', function (e) {" +
+            "  if (!e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;" +
+            "  var k = (e.key && e.key.length === 1 && /[a-z]/i.test(e.key))" +
+            "    ? e.key.toLowerCase()" +
+            "    : (/^Key[A-Z]$/.test(e.code) ? e.code.charAt(3).toLowerCase() : '');" +
+            "  if (k === '' || allowed.indexOf(k) >= 0) return;" +
+            "  e.preventDefault();" +
+            "}, true);")
+    public static native void blockBrowserCtrlShortcuts(String allowed);
 }
