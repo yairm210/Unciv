@@ -6,13 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.LocaleCode
+import com.unciv.models.translations.CompletionPercentage
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcher
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.LanguagePickerScreen
@@ -24,11 +24,14 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 /** Represents a row in the Language picker, used both in [OptionsPopup] and in [LanguagePickerScreen]
  *  @see addLanguageTables
  */
-internal class LanguageTable(val language: String, val percentComplete: Int) : Table() {
+internal class LanguageTable private constructor(
+    val language: String,
+    val percentComplete: CompletionPercentage
+) : Table() {
     private val baseColor = BaseScreen.skinStrings.skinConfig.baseColor
     private val darkBaseColor = baseColor.darken(0.5f)
 
-    init{
+    init {
         pad(10f)
         defaults().pad(10f)
         left()
@@ -38,7 +41,7 @@ internal class LanguageTable(val language: String, val percentComplete: Int) : T
             add(Actor()).minWidth(40f)
 
         val spaceSplitLang = language.replace("_"," ")
-        add("$spaceSplitLang ($percentComplete%)".toLabel())
+        add("$spaceSplitLang (${percentComplete.toDisplayString()}%)".toLabel())
         update("")
         touchable =
             Touchable.enabled // so click listener is activated when any part is clicked, not only children
@@ -75,7 +78,7 @@ internal class LanguageTable(val language: String, val percentComplete: Int) : T
                 .percentCompleteOfLanguages
             languageTables.addAll(
                 languageCompletionPercentage
-                .map { LanguageTable(it.key, if (it.key == Constants.english) 100 else it.value) }
+                .map { LanguageTable(it.key, if (it.key == Constants.english) CompletionPercentage.COMPLETE else it.value) }
                 .sortedWith(
                     compareBy<LanguageTable> { it.language != Constants.english }
                     .thenBy { it.language != systemLanguage }
