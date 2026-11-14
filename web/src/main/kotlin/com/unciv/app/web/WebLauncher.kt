@@ -3,10 +3,14 @@ package com.unciv.app.web
 import com.badlogic.gdx.Gdx
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplication
 import com.github.xpenatan.gdx.teavm.backends.web.WebApplicationConfiguration
+import com.github.xpenatan.gdx.teavm.backends.web.WebWindowListener
+import com.github.xpenatan.gdx.teavm.backends.web.filesystem.FileData
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.filedrop.DroppedFile
+import com.unciv.ui.filedrop.FileDrop
 import com.unciv.utils.Display
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
@@ -23,6 +27,7 @@ object WebLauncher {
             useGL30 = true
             storagePrefix = "unciv"
             localStoragePrefix = "unciv"
+            windowListener = UncivWindowListener()
         }
         WebApplication(WebUncivGame(), config)
     }
@@ -53,4 +58,16 @@ private class WebUncivGame : UncivGame() {
     override val supportsOnlineMultiplayer = false
 
     override fun getGcCount(): Int? = null
+
+    override val canDownloadFromUrl get() = false
+    override val hasJavaFileAccess: Boolean get() = false
+    override val supportsFileDrop: Boolean get() = true
+    override val canExitApp: Boolean get() = false
+}
+
+private class UncivWindowListener : WebWindowListener {
+    override fun acceptFileDropped(file: String) =
+        FileDrop.accepts(file)
+    override fun filesDropped(files: Array<out FileData>) =
+        FileDrop.dispatch(files.map { DroppedFile(it.path, it.bytes) })
 }

@@ -7,7 +7,10 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinUser
+import com.unciv.ui.filedrop.DroppedFile
+import com.unciv.ui.filedrop.FileDrop
 import com.unciv.utils.Log
+import java.io.File
 import org.lwjgl.glfw.GLFWNativeWin32
 
 /**
@@ -36,6 +39,12 @@ class UncivWindowListener : Lwjgl3WindowAdapter() {
         hasFocus = true
     }
 
+    override fun filesDropped(files: Array<out String>) {
+        val droppedFiles = files.filter { FileDrop.accepts(it) }
+            .map { DroppedFile(it, File(it).readBytes()) }
+        if (droppedFiles.isNotEmpty())
+            FileDrop.dispatch(droppedFiles)
+    }
 
     /** Asks the operating system to request the player's attention */
     fun turnStarted() {

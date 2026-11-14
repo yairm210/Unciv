@@ -61,6 +61,7 @@ import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.Concurrency
+import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import yairm210.purity.annotations.Pure
@@ -203,13 +204,14 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
-            if (hasOpenPopups()) {
-                closeAllPopups()
-                return@add
+        if (PlatformSpecific.current.canExitApp)
+            globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
+                if (hasOpenPopups()) {
+                    closeAllPopups()
+                    return@add
+                }
+                game.popScreen()
             }
-            game.popScreen()
-        }
 
         val civilopediaButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
