@@ -29,7 +29,8 @@ public final class UncivReflectionPolicy extends SimpleReflectionPolicy {
             "com.unciv.logic.github.GithubAPI$RepoOwner",
             "com.unciv.logic.github.GithubAPI$RepoSearch",
             "com.unciv.logic.github.GithubAPI$Tree",
-            "com.unciv.logic.github.GithubAPI$Tree$TreeFile"
+            "com.unciv.logic.github.GithubAPI$Tree$TreeFile",
+            "com.unciv.ui.screens.modmanager.ModUIData"
     );
     private static final Set<String> REFLECTIVE_ENUMS = Set.of(
             "com.unciv.logic.map.mapgenerator.MapResourceSetting",
