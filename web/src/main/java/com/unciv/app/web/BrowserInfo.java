@@ -50,16 +50,22 @@ public final class BrowserInfo {
             "return out.join('\\n');")
     public static native String systemInfo();
 
-    /** Cancels the browser's own Ctrl+letter shortcuts (open, save, print, find...) so only the game sees them.
-     *  @param allowed letters to leave to the browser, e.g. "cvx" */
-    @JSBody(params = {"allowed"}, script =
+    /** Cancels the browser's own Ctrl+letter shortcuts (open, save, print, find...)
+     *  and some function keys so only the game sees them.
+     *  @param allowedCtrl letters to leave to the browser, e.g. "cvx"
+     *  @param fKeys function keys to intercept */
+    @JSBody(params = {"allowedCtrl", "fKeys"}, script =
+        "var blockedF = fKeys.split(',');" +
         "window.addEventListener('keydown', function (e) {" +
-            "  if (!e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;" +
-            "  var k = (e.key && e.key.length === 1 && /[a-z]/i.test(e.key))" +
-            "    ? e.key.toLowerCase()" +
-            "    : (/^Key[A-Z]$/.test(e.code) ? e.code.charAt(3).toLowerCase() : '');" +
-            "  if (k === '' || allowed.indexOf(k) >= 0) return;" +
-            "  e.preventDefault();" +
-            "}, true);")
-    public static native void blockBrowserCtrlShortcuts(String allowed);
+        "  if (e.altKey || e.metaKey) return;" +
+        "  if (e.ctrlKey) {" +
+        "    if (e.shiftKey) return;" +
+        "    var k = (e.key && e.key.length === 1 && /[a-z]/i.test(e.key)) ? e.key.toLowerCase()" +
+        "      : (/^Key[A-Z]$/.test(e.code) ? e.code.charAt(3).toLowerCase() : '');" +
+        "    if (k !== '' && allowedCtrl.indexOf(k) < 0) e.preventDefault();" +
+        "  } else if (blockedF.indexOf(e.code) >= 0) {" +
+        "    e.preventDefault();" +
+        "  }" +
+        "}, true);")
+    public static native void blockBrowserShortcuts(String allowedCtrl, String fKeys);
 }
