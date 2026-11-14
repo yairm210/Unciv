@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
-import com.unciv.ui.screens.devconsole.CliInput.Companion.equals
 
 /**
  *  Represents the method used to convert/display ruleset object (or other) names in console input.
@@ -224,14 +223,12 @@ internal class CliInput(
         private val repeatedWhiteSpaceRegex = Regex("""(?<=\s)\s+""")
         // Read: Any whitespace sequence preceded by a whitespace (using positive lookbehind, so the preceding whitespace is not part of the match)
 
-        @Suppress("RegExpRepeatedSpace", "RegExpUnnecessaryNonCapturingGroup")
-        private val splitStringRegex = Regex("""
-            "[^"]+(?:"|$)       # A quoted phrase, but the closing quote is optional at the end of the string
-            |                   # OR
-            \S+                 # consecutive non-whitespace
-            |                   # OR
-            (?:(?<=\s)$)        # a terminal empty string if preceded by whitespace
-        """, RegexOption.COMMENTS)
+        @Suppress("RegExpUnnecessaryNonCapturingGroup")
+        private val splitStringRegex = Regex(
+            """"[^"]+(?:"|$)""" +    // A quoted phrase, but the closing quote is optional at the end of the string
+                """|\S+""" +               // OR consecutive non-whitespace
+                """|(?:(?<=\s)$)"""        // OR a terminal empty string if preceded by whitespace
+        )
         // (the unfinished quoted string or empty token at the end are allowed to support autocomplete)
 
         //endregion
