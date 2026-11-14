@@ -2,7 +2,6 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
@@ -21,6 +20,8 @@ import com.unciv.models.translations.MAX_CONDITIONAL_NESTING
 import com.unciv.models.translations.TranslationCache
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
+import com.unciv.models.translations.TranslationFileReader.isCommentLine
+import com.unciv.models.translations.TranslationFileReader.keyValueSeparator
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
@@ -41,7 +42,6 @@ import com.unciv.testing.runTestParcours
 import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.Log
 import java.io.Writer
@@ -117,8 +117,8 @@ class TranslationTests {
         fun String.getInnerTemplate() = getPartsInsideCurlies().firstOrNull() ?: this
 
         val allKeys = TranslationFileReader.readTemplates { lines ->
-            lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
-                .map { it.removeSuffix(" = ").getTemplateKey() }
+            lines.filterNot { it.isCommentLine() }
+                .map { it.removeSuffix(keyValueSeparator).getTemplateKey() }
                 .toMutableSet()
         } ?: return
 
@@ -230,7 +230,7 @@ class TranslationTests {
         var failures = 0
         TranslationFileReader.readTemplates { templateLines ->
             for ((index, template) in templateLines.withIndex()) {
-                if (template.isEmpty() || template.startsWith('#')) continue
+                if (template.isCommentLine()) continue
                 val key = template.getPlaceholderText()
                 if (key in keyToEntryMap) {
                     failures++
@@ -250,7 +250,7 @@ class TranslationTests {
         var noTwoPlaceholdersAreTheSame = true
         TranslationFileReader.readTemplates { templateLines ->
             for (template in templateLines) {
-                if (template.isEmpty() || template.startsWith('#')) continue
+                if (template.isCommentLine()) continue
                 val placeholders = template.getPlaceholderParameters()
 
                 for (placeholder in placeholders)
@@ -292,14 +292,14 @@ class TranslationTests {
         var failed = false
         TranslationFileReader.readTemplates { templateLines ->
             for (line in templateLines) {
-                if (line.isEmpty() || line.startsWith('#')) continue
-                if (line.endsWith(" =")) {
+                if (line.isCommentLine()) continue
+                if (line.endsWith(keyValueSeparator.trimEnd())) {
                     println("$line ends without a space at the end")
                     failed = true
-                } else if (!line.contains(" = ")) {
+                } else if (!line.contains(keyValueSeparator)) {
                     println("$line is missing the equals sign")
                     failed = true
-                } else if (!line.endsWith(" = ")) {
+                } else if (!line.endsWith(keyValueSeparator)) {
                     println("$line has extra characters after the equals sign and space")
                     failed = true
                 }
@@ -419,8 +419,8 @@ class TranslationTests {
         val templateKeys = mutableSetOf<String>()
         TranslationFileReader.readTemplates { templateLines ->
             for (template in templateLines) {
-                if (template.isEmpty() || template.startsWith('#')) continue
-                templateKeys.add(template.substringBefore(" = ").getPlaceholderText())
+                if (template.isCommentLine()) continue
+                templateKeys.add(template.substringBefore(keyValueSeparator).getPlaceholderText())
             }
         }
         Assert.assertTrue("No template matches \"$notification\"", notification.getPlaceholderText() in templateKeys)
