@@ -20,6 +20,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -222,8 +223,8 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
                     buttonsTable.add()
                 }
             }
-        buttonsTable.add(closeButton)
-            .pad(10f)
+        if (PlatformSpecific.current.canExitApp)
+            buttonsTable.add(closeButton).pad(10f)
 
         return buttonsTable
     }
