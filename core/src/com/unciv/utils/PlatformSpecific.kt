@@ -1,5 +1,6 @@
 package com.unciv.utils
 
+import com.unciv.UncivGame
 import java.util.Locale
 
 interface PlatformSpecific {
@@ -24,4 +25,25 @@ interface PlatformSpecific {
 
     /** Get system locale, on Android 13+ app-specific locale */
     fun getDefaultLocale(): Locale = Locale.getDefault()
+
+    /** FileHandle.file() works, so java.io.File operations (rename, canonical paths) are available. */
+    // See also: https://github.com/konsoletyper/teavm/issues/792
+    val hasJavaFileAccess: Boolean get() = true
+
+    /** Arbitrary HTTP downloads work (browsers are limited by CORS). */
+    val canDownloadFromUrl: Boolean get() = true
+
+    companion object {
+        private val noPlatform by lazy {
+            object : PlatformSpecific {
+                override var customDataDirectory: String?
+                    get() = null
+                    set(value) {}
+                override fun getGcCount(): Int? = null
+            }
+        }
+        val current: PlatformSpecific
+            get() = (if (UncivGame.isCurrentInitialized()) UncivGame.Current as? PlatformSpecific else null)
+                ?: noPlatform
+    }
 }
