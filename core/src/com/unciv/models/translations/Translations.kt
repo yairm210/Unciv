@@ -32,8 +32,8 @@ import yairm210.purity.annotations.Readonly
  */
 class Translations : LinkedHashMap<String, TranslationEntry>() {
 
-    var percentCompleteOfLanguages = HashMap<String,Int>()
-            .apply { put(Constants.english, 100) } // So even if we don't manage to load the percentages, we can still pass the language screen
+    var percentCompleteOfLanguages = HashMap<String, CompletionPercentage>()
+        .apply { put(Constants.english, CompletionPercentage.COMPLETE) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
     internal var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 

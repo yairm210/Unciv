@@ -21,8 +21,19 @@ enum class VirtualMouseButtonKeys(val button: Int, val keyCode: Int, val label: 
     fun keyUp() = Gdx.input.inputProcessor?.keyUp(keyCode)
 
     companion object {
-        fun fromButton(button: Int) = entries.firstOrNull { it.button == button }
-        fun fromKey(keyCode: Int) = entries.firstOrNull { it.keyCode == keyCode }
+        // These are hardcoded because iteration caused ANRs due to memory allocation for iterators :/
+        fun fromButton(button: Int) = when (button) {
+            Input.Buttons.MIDDLE -> Middle
+            Input.Buttons.BACK -> Back
+            Input.Buttons.FORWARD -> Forward
+            else -> null
+        }
+        fun fromKey(keyCode: Int) = when (keyCode) {
+            200 -> Middle
+            201 -> Back
+            202 -> Forward
+            else -> null
+        }
         fun fromLabel(label: String) = entries.firstOrNull { it.label == label }
     }
 }

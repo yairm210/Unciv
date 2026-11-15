@@ -48,6 +48,9 @@ object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+    /** Naval units chase farther — ocean engagements are not within 5 tiles. */
+    private const val CLOSE_ENEMY_TILES_AWAY_LIMIT_NAVAL = 25
+    private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT_NAVAL = 12f
 
 
     fun automateUnitMoves(unitView: MapUnitView, cache: AutomationCache = AutomationCache()):Unit = timeThis("automateUnitMoves") {
@@ -479,11 +482,13 @@ object UnitAutomation {
     private fun tryAdvanceTowardsCloseEnemy(unitView: MapUnitView): Boolean {
         val unit = unitView.getUnit()
         // this can be sped up if we check each layer separately
+        val tileLimit = if (unit.baseUnit.isWaterUnit) CLOSE_ENEMY_TILES_AWAY_LIMIT_NAVAL else CLOSE_ENEMY_TILES_AWAY_LIMIT
+        val turnLimit = if (unit.baseUnit.isWaterUnit) CLOSE_ENEMY_TURNS_AWAY_LIMIT_NAVAL else CLOSE_ENEMY_TURNS_AWAY_LIMIT
         val unitDistanceToTiles = unit.movement.getMovementToTilesAtPosition(
                 unit.getTile().position,
-                unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
+                unit.getMaxMovement() * turnLimit
         )
-        val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
+        val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(tileLimit).toList())
             .filterNot { unitView.getBaseUnit().isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
             .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain or near enemy citadels
             .filter {

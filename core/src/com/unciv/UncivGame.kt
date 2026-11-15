@@ -457,20 +457,16 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
-        val autoSaveJob = files.autosaves.autoSaveJob
-        if (autoSaveJob != null && autoSaveJob.isActive) {
-            // onPause() call always precedes dispose() call so auto save is already in progress
-            // This is the primary cause of ANRs at the moment - 
-            //   we need some way to have the autosave keep working but remove the other threads,
-            // I'm not sure what the right way is, we can either not clear daemon threads
-            // or we can cancel the job if it takes too long...?
-            Concurrency.runBlocking { 
-                autoSaveJob.join()
-            }
-        }
-        Concurrency.stopThreadPools()
+        Concurrency.stopThreadPools() // Stops new tasks, not running ones
 
-        // On desktop this should only be this one and "DestroyJavaVM"
+        // On desktop this should only be this one and "DestroyJavaVM" and possibly autosave... that requires more explaination
+
+        // On Android - the source of ANRs - onPause() always precedes dispose(), so an autosave started by onPause() may still be running here.
+        // We don't wait for it: autosave writes to a temp file and only replaces Autosave when complete,
+        //   so the JVM exiting and killing the (daemon) save thread can't corrupt the existing autosave.
+        //.Thus the autosave thread may still be running
+        // The alternative is "wait for autosave to finish" which caused a lot of ANRs, and it's not worth it -
+        //.  ANRs, even on dispose(), are logged in Google Play and cause the game to be less promoted than it could be
         logRunningThreads()
 
         // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup

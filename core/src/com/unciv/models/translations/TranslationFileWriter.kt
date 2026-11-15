@@ -44,6 +44,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitNameGroup
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.TranslationFileReader.isCommentLine
+import com.unciv.models.translations.TranslationFileReader.keyValueSeparator
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -160,7 +162,7 @@ object TranslationFileWriter {
         modFolder: FileHandle? = null,
         baseTranslations: Translations? = null,
         backup: Boolean = false
-    ): HashMap<String, Int> {
+    ): HashMap<String, CompletionPercentage> {
         val linesToTranslate = ArrayList<String>((translations.size * empiricLinesToKeysFactor).roundToInt())
         val fileNameToGeneratedStrings: Map<String, Set<String>>
 
@@ -180,7 +182,7 @@ object TranslationFileWriter {
         // NOTE: The "total translatable lines" denominator is derived from a random language's
         // resolution state - but that's OK since countsTowardTotal isn't dependent on the language.
         val countOfTranslatableLines = if (languages.isEmpty()) 0
-        else countTranslatableLines(parsedLines, languages.first(), translations, baseTranslations)
+            else countTranslatableLines(parsedLines, languages.first(), translations, baseTranslations)
 
         val countOfTranslatedLines = java.util.concurrent.ConcurrentHashMap<String, Int>()
 
@@ -195,9 +197,9 @@ object TranslationFileWriter {
         )
 
         // Calculate the percentages of translations
-        val result = HashMap<String, Int>()
+        val result = HashMap<String, CompletionPercentage>()
         for ((language, translatedCount) in countOfTranslatedLines)
-            result[language] = if (countOfTranslatableLines <= 0) 100 else translatedCount * 100 / countOfTranslatableLines
+            result[language] = CompletionPercentage.of(translatedCount, countOfTranslatableLines)
 
         return result
     }
@@ -302,12 +304,12 @@ object TranslationFileWriter {
         val result = ArrayList<ParsedLine>(expectedCount)
 
         for (line in linesToTranslate) {
-            if (!line.contains(" = ")) {
+            if (line.isCommentLine()) {
                 result += ParsedLine(raw = line, isTranslatable = false)
                 continue
             }
 
-            val eqIndex = line.indexOf(" = ")
+            val eqIndex = line.indexOf(keyValueSeparator)
             val translationKey = line.substring(0, eqIndex).unEscapeNewLines()
             val hashMapKey = translationKey.getPlaceholderText()
             if (!existingTranslationKeys.add(hashMapKey)) continue // don't add it twice
@@ -474,14 +476,14 @@ object TranslationFileWriter {
 
     @Pure
     private fun StringBuilder.appendTranslation(key: String, value: String) {
-        appendLine(key.escapeNewLines() + " = " + value.escapeNewLines())
+        appendLine(key.escapeNewLines() + keyValueSeparator + value.escapeNewLines())
     }
 
-    private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
+    private fun writeLanguagePercentages(percentages: HashMap<String, CompletionPercentage>, modFolder: FileHandle? = null) {
         val comment = "# Automatically generated - ${if (modFolder == null) "do not edit manually" else "for your info only"}\n\n"
         val output = percentages.asSequence()
             .sortedBy { it.key }
-            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value}" }
+            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value.toFileString()}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
     }

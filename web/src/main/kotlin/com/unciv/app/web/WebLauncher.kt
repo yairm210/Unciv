@@ -20,6 +20,7 @@ object WebLauncher {
         Display.platform = WebDisplay()
         Fonts.fontImplementation = WebFont()
         Log.backend = WebLogBackend()
+        BrowserInfo.blockBrowserShortcuts("cvx", "F5,F6,F7,F10")
 
         val config = WebApplicationConfiguration("canvas").apply {
             width = 0

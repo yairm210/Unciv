@@ -223,7 +223,16 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         spyResult -= getSkillModifierPercent()
         // Subtract the experience of the counter intelligence spies
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
-        spyResult += defendingSpy?.getSkillModifierPercent() ?: 0
+        val defendingModifierUniques = if (defendingSpy == null) emptySequence()
+        else city.getMatchingUniques(UniqueType.CounterIntelligenceEffectiveness, city.state, includeCivUniques = true)
+        var defendingModifier = defendingModifierUniques
+            .filter { city.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+        defendingModifier += civInfo.getMatchingUniques(UniqueType.EnemyCounterEffectiveness)
+            .filter { city.matchesFilter(it.params[1], civInfo) }
+            .sumOf { it.params[0].toInt() }
+        val defendingEffectiveness = (defendingSpy?.getSkillModifierPercent() ?: 0)  * (defendingModifier / 100.0 + 1)
+        spyResult += defendingEffectiveness.toInt()
 
         val detectionString = when {
             spyResult >= 200 -> { // The spy was killed in the attempt (should be able to happen even if there's nothing to steal?)

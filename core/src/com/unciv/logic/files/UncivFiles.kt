@@ -32,6 +32,7 @@ import java.io.Writer
 const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
+private const val TEMP_FILE_EXTENSION = "tmp"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
 const val EXCLUDED_MOD_AUTHORS_FILE_NAME = "ExcludedModAuthors.txt"
@@ -135,7 +136,8 @@ class UncivFiles(
         debug("Local files: %s, external files: %s",
             { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) },
             { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) })
-        return localFiles + externalFiles
+        // Skip leftovers of interrupted atomic writes, they may be truncated
+        return (localFiles + externalFiles).filter { it.extension() != TEMP_FILE_EXTENSION }
     }
 
     /**
@@ -546,10 +548,16 @@ class Autosaves(val files: UncivFiles) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
 
+        // Write to a temp file first and move it over the real one when complete,
+        // so a thread dying mid-save can't leave a truncated Autosave behind
+        val autosaveFile = files.getSave(AUTOSAVE_FILE_NAME)
+        val tempFile = autosaveFile.sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
         try {
-            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
+            files.saveGame(gameInfo, tempFile)
+            tempFile.moveTo(autosaveFile)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
+            tempFile.delete()
             return  // not much we can do here
         }
 
@@ -564,6 +572,10 @@ class Autosaves(val files: UncivFiles) {
     }
 
     private fun purgeOldAutosaves(maxAutosavesStored: Int) {
+        // Leftover of an interrupted autosave - getSaves hides these, so delete explicitly
+        val tempFile = files.getSave(AUTOSAVE_FILE_NAME).sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
+        if (tempFile.exists()) tempFile.delete()
+
         // Since the latest numbered autosave is a copy of the un-numbered autosave file,
         // we add 1 so `maxAutosavesStored` numbered files AND the un-numbered one are kept (see #12790).
         val oldAutoSaves = files.getSaves()
