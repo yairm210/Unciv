@@ -2,6 +2,7 @@ package com.unciv.ui.components.fonts
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.utils.PlatformSpecific
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -30,6 +31,7 @@ object ModFonts {
     @Suppress("NewApi")
     fun scan(modsDir: FileHandle): Flow<FontFamilyData> = flow {
         if (modsDir.type() !in fileSystemTypes) return@flow
+        if (!PlatformSpecific.current.hasJavaFileAccess) return@flow // web can't do FileHandle.file() or java.nio
         val modsPath = modsDir.file().toPath()
         if (!modsPath.isDirectory()) return@flow
         java.nio.file.Files.list(modsPath).use { stream ->

@@ -7,6 +7,7 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.utils.PlatformSpecific
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -522,17 +523,27 @@ object GithubAPI {
             while (job?.isActive != false) {
                 val entry = stream.nextEntry ?: break
                 if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
-                val dest = unzipDestination.child(entry.name).file().canonicalFile
-                if (!dest.path.startsWith(destinationPath))
+                if (isUnsafeZipEntryName(entry.name))
                     throw ZipException("ZIP entry points outside the destination")
-                dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
-                dest.outputStream().use { stream.copyTo(it) }
+                val dest = unzipDestination.child(entry.name)
+                dest.parent().mkdirs() // never root here: dest is always below unzipDestination
+                dest.write(false, 16384).use { stream.copyTo(it) }
                 stream.closeEntry()
                 yield()
             }
         } catch (ex: ZipException) {
             throw UncivShowableException("That is not a valid ZIP file", ex)
         }
+    }
+
+    /** Lexical zip-slip check: true if [name] could resolve outside the extraction folder. */
+    // Instead of using FileHandle.file().canonicalPath, which breaks in the teaVM build
+    private fun isUnsafeZipEntryName(name: String): Boolean {
+        if (name.isEmpty() || '\u0000' in name) return true
+        val normalized = name.replace('\\', '/')            // treat both separators as separators, for checking only
+        if (normalized.startsWith("/")) return true            // absolute (also UNC "\\server\...")
+        if (normalized.length >= 2 && normalized[1] == ':' && normalized[0].isLetter()) return true   // "C:..." drive paths
+        return normalized.split('/').any { it == ".." }
     }
 
     private val parseAttachmentDispositionRegex =
@@ -550,7 +561,7 @@ object GithubAPI {
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {
         // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
-        if (type() == Files.FileType.Local) {
+        if (type() == Files.FileType.Local && PlatformSpecific.current.hasJavaFileAccess) {
             // See #5346: renameTo 'unpacks' a source folder if the destination exists and is an
             // empty folder, dropping the name of the source entirely.
             // Safer to ask for a move to the not-yet-existing full resulting path instead.
@@ -607,7 +618,7 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs = dir.list(FileFilter { it.isDirectory })
+        val subdirs = dir.list().filter { it.isDirectory } // Not dir.list { it.isDirectory }: unsupported on WebGL
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
