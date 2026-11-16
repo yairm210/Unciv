@@ -27,6 +27,8 @@ jobs:
     name: Build Android (Java ${{ matrix.java_version }})
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v5
         with:
@@ -81,6 +83,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v5
         with:
