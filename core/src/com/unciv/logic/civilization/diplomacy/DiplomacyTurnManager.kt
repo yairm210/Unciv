@@ -350,7 +350,8 @@ object DiplomacyTurnManager {
 
         if (!otherCiv.isCityState) return
 
-        if (isRelationshipLevelLT(RelationshipLevel.Friend)) {
+        // Only a major can be a city-state's patron: friendly city-states must not gift each other units
+        if (!civInfo.isMajorCiv || isRelationshipLevelLT(RelationshipLevel.Friend)) {
             if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
                 removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             return
