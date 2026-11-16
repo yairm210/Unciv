@@ -13,7 +13,12 @@ object BattleHelper {
     fun tryAttackNearbyEnemy(unitView: MapUnitView, stayOnTile: Boolean = false): Boolean {
         if (unitView.hasUnique(UniqueType.CannotAttack)) return false
         val distanceToTiles = unitView.getDistanceToTiles()
+        // Melee land units are crippled when attacking from water - they should not embark to attack,
+        // and if already embarked they should find a place to disembark instead
+        val mustAttackFromLand = unitView.getBaseUnit().isMelee() && unitView.getBaseUnit().isLandUnit && !unitView.hasUnique(UniqueType.CanMoveOnWater)
+            && !unitView.hasUnique(UniqueType.AttackAcrossCoast) // No penalty for attacking from water
         val attackableEnemies = unitView.getAttackableEnemies(stayOnTile = stayOnTile)
+            .filter { !mustAttackFromLand || it.getTileToAttackFrom().isLand }
             // Only take enemies we can fight without dying or are made to die
             .filter {
                 val defender = it.getTileToAttack().getCombatant()
