@@ -15,6 +15,9 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
 jobs:
   get-release-body:
     runs-on: ubuntu-latest
@@ -315,6 +318,8 @@ jobs:
   upload-github-release-and-post-to-discord:
     needs: [get-release-body, android-build, packr-build, build-msi]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload-release-action creates the release and uploads the files
     steps:
 
       - name: Download all artifacts

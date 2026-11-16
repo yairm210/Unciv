@@ -9,7 +9,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: "pages-docs"
@@ -40,6 +40,8 @@ jobs:
     # Deploy docs even if the web build failed; the previously published /web is kept in that case
     if: ${{ !cancelled() && needs.docs.result == 'success' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # pushes the built site to gh-pages
     steps:
       - uses: actions/checkout@v5
         with:

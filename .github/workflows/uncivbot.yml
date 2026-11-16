@@ -3,12 +3,17 @@ name: UncivBot
 on:
   issue_comment:
 
+permissions:
+  contents: read
+
 jobs:
 
   prepare_version_for_rollout:
     if: github.event_name == 'issue_comment' && (github.event.comment.body == 'summary' || github.event.comment.body == 'prepare version') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # add-and-commit pushes the version_rollout branch
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

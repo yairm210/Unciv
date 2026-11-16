@@ -11,6 +11,9 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # adds or removes the Conflicts label and comments
     steps:
       - name: check conflicting PRs
         uses: eps1lon/actions-label-merge-conflict@releases/2.x

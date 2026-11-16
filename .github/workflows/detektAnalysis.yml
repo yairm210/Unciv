@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 jobs:
   detekt:
     runs-on: ${{ matrix.os }}
