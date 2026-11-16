@@ -516,20 +516,33 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < -30)
             modifiers["Influence below -30"] = -300
 
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
-        if (!requireWholeList && modifiers.values.sum() < -200)
+        val constants = civInfo.gameInfo.ruleset.modOptions.constants
+        val globalModifier = constants.tributeGlobalModifier
+        val localModifier = constants.tributeLocalModifier
+        val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+        val numAlivePlayers = max(aliveMajorCivs.size, 1)
+
+        // Both constants bound their bonuses for ranked civs when the Int multiplications below fit.
+        // A matching intimidation Unique can add to those bonuses, so it requires the full calculation.
+        val canUseMilitaryBounds = !requireWholeList && globalModifier >= 0 && localModifier >= 0
+            && globalModifier.toLong() * numAlivePlayers <= Int.MAX_VALUE
+            && 4L * localModifier <= Int.MAX_VALUE
+        if (canUseMilitaryBounds
+            && modifiers.values.sum().toLong() + globalModifier + localModifier < 0
+            && demandingCiv in aliveMajorCivs
+            && !demandingCiv.hasUnique(UniqueType.CityStateEasilyIntimidatedByForce))
             return modifiers
 
         // highest force is rank=0
-        val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
+        val forceRank = aliveMajorCivs.sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
-        // probably not necessary, but just in case, avoid division by zero if there's some edge case where no players are alive
-        val numAlivePlayers = max(civInfo.gameInfo.getAliveMajorCivs().size, 1)
-        val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
         // apparently lowest force gets some pity points
         modifiers["Military Rank"] = globalModifier * (numAlivePlayers - forceRank) / numAlivePlayers
 
-        if (!requireWholeList && modifiers.values.sum() < -100)
+        if (canUseMilitaryBounds
+            && modifiers.values.sum().toLong() + localModifier < 0
+            && forceRank >= 0
+            && !demandingCiv.hasUnique(UniqueType.CityStateEasilyIntimidatedByForce))
             return modifiers
 
         val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
@@ -545,8 +558,6 @@ class CityStateFunctions(val civInfo: Civilization) {
                 else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
-        val localModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeLocalModifier
-
         modifiers["Military near City-State"] = when {
             forceRatio > 3f -> localModifier
             forceRatio > 2f -> localModifier * 4/5
