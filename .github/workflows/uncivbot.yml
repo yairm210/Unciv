@@ -15,8 +15,8 @@ jobs:
     permissions:
       contents: write # add-and-commit pushes the version_rollout branch
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v5.1.0
+      - uses: actions/setup-node@v5.0.0
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
@@ -27,7 +27,7 @@ jobs:
           rm package.json
 
       - name: Create new branch with changes
-        uses: EndBug/add-and-commit@v11
+        uses: EndBug/add-and-commit@v11.1.1
         with:
           new_branch: version_rollout
           message: 'Bump version and create initial changelog entry'
@@ -44,7 +44,7 @@ jobs:
     steps:
 
       - name: Merge Pull Request
-        uses: actions/github-script@v8
+        uses: actions/github-script@v8.0.0
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }} # Required because default workflow token can't merge PRs
           script: |
@@ -56,20 +56,20 @@ jobs:
               repo: repository.repo,
             })
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
         with: # Required for triggering the deploy on tags added by this automation
           # See https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           ref: master # By default will checkout *the version at time of trigger* which does *not* contain the PR we just merged!
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v5.0.0
 
       - name: Increment version and release
         run: |
           export version=$(node .github/workflows/releasePatch.mjs)
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v5.2.0
         with:
           commit_message: ${{env.VERSION}}
           tagging_message: ${{env.VERSION}}

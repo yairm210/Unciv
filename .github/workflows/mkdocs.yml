@@ -19,15 +19,15 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-awesome-pages-plugin
       - run: mkdocs build --site-dir site
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.6.2
         with:
           name: docs-site
           path: site
@@ -45,15 +45,15 @@ jobs:
     permissions:
       contents: write # pushes the built site to gh-pages
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
         with:
           ref: gh-pages
           path: published-site
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.3.0
         with:
           name: docs-site
           path: site
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.3.0
         if: needs.web.result == 'success'
         with:
           name: web-game

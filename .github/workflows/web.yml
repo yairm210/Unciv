@@ -29,14 +29,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4.9.1
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4.4.3
         with:
           gradle-version: '9.6.1'
       - name: Test and build the pinned browser target
@@ -77,7 +77,7 @@ jobs:
           node web/validation/web-font/run-game.cjs 2>&1 | tee web/build/validation/ci/web-font-game.log
       - name: Upload test evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: web-test-evidence
           path: |
@@ -86,7 +86,7 @@ jobs:
             web/build/reports/tests/test/
           if-no-files-found: ignore
       - name: Upload deployable game
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: web-game
           path: web/build/pages/game/
