@@ -1,3 +1,5 @@
+@file:Suppress("UsePropertyAccessSyntax") // Don't hide Button.setText()
+
 package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.Gdx
@@ -40,6 +42,8 @@ import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
+import com.unciv.ui.filedrop.DroppedFile
+import com.unciv.ui.filedrop.FileDropTarget
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -53,10 +57,12 @@ import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
+import kotlinx.coroutines.CoroutineScope
 import kotlin.math.max
 
 /**
@@ -69,16 +75,19 @@ import kotlin.math.max
 class ModManagementScreen private constructor(
     previousInstalledMods: HashMap<String, ModUIData>?,
     previousOnlineMods: HashMap<String, ModUIData>?
-): PickerScreen(disableScroll = true), RecreateOnResize {
+): PickerScreen(disableScroll = true), RecreateOnResize, FileDropTarget {
     /** The Mod Management Screen - called only from [MainMenuScreen] */
     constructor() : this(null, null)
 
+    @Suppress("ConstPropertyName")
     companion object {
         // Tweakable constants
         /** For preview.png */
         const val maxAllowedPreviewImageSize = 200f
         /** Github queries use this limit */
         const val amountPerPage = 100
+
+        const val dropHereText = "Direct downloads are not available in the browser version.\nThe Download button saves the mod's archive through your browser, which you can then drop here."
 
         fun cleanModName(modName: String): String = modName.replace("   ", " - ")
     }
@@ -132,6 +141,8 @@ class ModManagementScreen private constructor(
     // This is only set for cleanup, not when the user stops the query (by clicking the loading icon)
     // Therefore, finding `runningSearchJob?.isActive == false && !stopBackgroundTasks` means stopped by user
     private var stopBackgroundTasks = false
+
+    private val capabilities = PlatformSpecific.current
 
     override fun dispose() {
         // make sure the worker threads will not continue trying their time-intensive job
@@ -478,14 +489,20 @@ class ModManagementScreen private constructor(
             else "Download [${cleanModName(repo.name)}]"
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
-        rightSideButton.onClick {
-            rightSideButton.setStartingDownload()
-            downloadMod(repo, { state, progress ->
-                rightSideButton.setText(state.message(progress).tr())
-            }) {
-                rightSideButton.setFinishedDownload()
+        if (capabilities.canDownloadFromUrl)
+            rightSideButton.onClick {
+                rightSideButton.setStartingDownload()
+                downloadMod(repo, { state, progress ->
+                    rightSideButton.setText(state.message(progress).tr())
+                }) {
+                    rightSideButton.setFinishedDownload()
+                }
             }
-        }
+        else
+            rightSideButton.onClick {
+                val uri = GithubAPI.getUrlForBranchZip(repo.html_url, repo.default_branch)
+                Gdx.net.openURI(uri)
+            }
 
         selectedMod = repo
         modActionTable.update(repo)
@@ -503,44 +520,47 @@ class ModManagementScreen private constructor(
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((DownloadAndExtractState, Int?)->Unit)? = null, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((DownloadAndExtractState, Int?)->Unit)? = null, postAction: (() -> Unit)? = null) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder =
                     repo.downloadAndExtract(updateProgressPercent)
                         ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                launchOnGLThread {
-                    val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
-                    val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange(delete = false, modFolder.name()) {
-                        toast.close()
-                        val msg = "{[$repoName] was downloaded, but is defective!}" +
-                            "\n{For more information, see Options-Locate mod errors.}"
-                        ToastPopup(msg, this@ModManagementScreen, 4000L)
-                    }
-
-                    if (RulesetCache[repoName]?.modOptions?.hasUnique(UniqueType.ModIsAudioVisualOnly) == true)
-                        game.settings.visualMods.add(repoName)
-                    updateInstalledModUIData(repoName)
-                    refreshInstalledModTable()
-                    lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
-                    showModDescription(repoName)
-                    unMarkUpdatedMod(repoName)
-                    postAction()
-                }
+                afterDownload(modFolder.name(), postAction)
             } catch (ex: UncivShowableException) {
                 Log.error("Could not download $repo", ex)
                 launchOnGLThread {
                     ToastPopup(ex.message, this@ModManagementScreen)
-                    postAction()
+                    postAction?.invoke()
                 }
             } catch (ex: Exception) {
                 Log.error("Could not download $repo", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
-                    postAction()
+                    postAction?.invoke()
                 }
             }
+        }
+    }
+
+    private fun CoroutineScope.afterDownload(repoName: String, postAction: (() -> Unit)? = null) {
+        launchOnGLThread {
+            val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
+            reloadCachesAfterModChange(delete = false, repoName) {
+                toast.close()
+                val msg = "{[$repoName] was downloaded, but is defective!}" +
+                    "\n{For more information, see Options-Locate mod errors.}"
+                ToastPopup(msg, this@ModManagementScreen, 4000L)
+            }
+
+            if (RulesetCache[repoName]?.modOptions?.hasUnique(UniqueType.ModIsAudioVisualOnly) == true)
+                game.settings.visualMods.add(repoName)
+            updateInstalledModUIData(repoName)
+            refreshInstalledModTable()
+            lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
+            showModDescription(repoName)
+            unMarkUpdatedMod(repoName)
+            postAction?.invoke()
         }
     }
 
@@ -723,7 +743,14 @@ class ModManagementScreen private constructor(
         onlineExpanderTab?.setText(newHeaderText)
 
         onlineModsTable.clear()
-        onlineModsTable.add(getDownloadFromUrlButton()).row()
+        if (capabilities.canDownloadFromUrl)
+            onlineModsTable.add(getDownloadFromUrlButton()).row()
+        else if (capabilities.supportsFileDrop) {
+            val label = WrappableLabel(dropHereText, onlineModsTable.prefWidth.coerceAtLeast(stage.width / 3), Color.SKY)
+            label.wrap = true
+            label.setAlignment(Align.center)
+            onlineModsTable.add(label).row()
+        }
 
         val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
@@ -748,4 +775,28 @@ class ModManagementScreen private constructor(
 
     override fun recreate(): BaseScreen = ModManagementScreen(installedModInfo, onlineModInfo)
 
+    override fun acceptsDroppedFile(name: String) =
+        name.endsWith(".zip", ignoreCase = true)
+
+    override fun onFilesDropped(files: List<DroppedFile>) {
+        Concurrency.run("Unzip dropped mods") {
+            for (droppedFile in files) {
+                try {
+                    val modFolder = GithubAPI.installFromZipBytes(droppedFile.path, droppedFile.bytes)
+                        ?: continue
+                    afterDownload(modFolder.name())
+                } catch (ex: UncivShowableException) {
+                    Log.error("Could not install ${droppedFile.path}", ex)
+                    launchOnGLThread {
+                        ToastPopup(ex.message, this@ModManagementScreen)
+                    }
+                } catch (ex: Exception) {
+                    Log.error("Could not install ${droppedFile.path}", ex)
+                    launchOnGLThread {
+                        ToastPopup("Could not install [${droppedFile.path}]", this@ModManagementScreen)
+                    }
+                }
+            }
+        }
+    }
 }

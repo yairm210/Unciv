@@ -11,6 +11,7 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
 import io.ktor.client.request.forEachHeader
 import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
@@ -67,7 +68,10 @@ private class FetchHttpClientEngine(private val engineConfig: HttpClientEngineCo
             "Browser Fetch does not support separate connect or socket timeouts; use requestTimeoutMillis"
         }
         val requestHeaders = HeadersBuilder()
-        data.forEachHeader { name, value -> requestHeaders.append(name, value) }
+        data.forEachHeader { name, value ->
+            if (!name.equals(HttpHeaders.UserAgent, ignoreCase = true))
+                requestHeaders.append(name, value)
+        }
         val headerNames = requestHeaders.entries().flatMap { entry -> List(entry.value.size) { entry.key } }.toTypedArray()
         val headerValues = requestHeaders.entries().flatMap { it.value }.toTypedArray()
         val requestBody = requestBody(data.body)

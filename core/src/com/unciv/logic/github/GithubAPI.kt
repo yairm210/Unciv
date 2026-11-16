@@ -7,22 +7,22 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.utils.PlatformSpecific
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
+import java.io.ByteArrayInputStream
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
-import java.io.File
-import java.io.FileFilter
-import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.yield
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 enum class DownloadAndExtractState {
@@ -47,7 +47,7 @@ enum class DownloadAndExtractState {
  *  - https://docs.github.com/en/rest/releases/releases
  *  - https://docs.github.com/en/rest/git/trees#get-a-tree
  */
-@Suppress("PropertyName")  // We're declaring an external API schema
+@Suppress("PropertyName", "ConstPropertyName")  // We're declaring an external API schema
 object GithubAPI {
     // region URL formatters
     /**
@@ -84,10 +84,8 @@ object GithubAPI {
         val resp = client.request(block)
         val rateLimited = consumeRateLimit(resp)
 
-        return if (rateLimited) {
-            if (maxRateLimitedRetries <= 0) return resp
-            return request(maxRateLimitedRetries - 1, block)
-        } else resp
+        return if (!rateLimited || maxRateLimitedRetries <= 0) resp
+        else request(maxRateLimitedRetries - 1, block)
     }
 
     private suspend fun paginatedRequest(
@@ -134,7 +132,6 @@ object GithubAPI {
     /**
      * Wait for rate limit to end if any and returns true if there was any rate limit
      */
-    @OptIn(ExperimentalTime::class)
     private suspend fun consumeRateLimit(resp: HttpResponse): Boolean {
         if (resp.status != HttpStatusCode.Forbidden && resp.status != HttpStatusCode.TooManyRequests) return false
 
@@ -394,7 +391,6 @@ object GithubAPI {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param modsFolder Destination handle of mods folder - also controls Android internal/external.
      * @param updateProgressPercent A function recieving a download progress percentage (0-100) roughly every 100ms. Call will run under a Coroutine context.
      * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone.
      * @return FileHandle for the downloaded Mod's folder or null if download failed.
@@ -404,7 +400,7 @@ object GithubAPI {
         updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
         val modsFolder = UncivGame.Current.files.getModsFolder()
-        
+
         var modNameFromFileName = name
 
         val defaultBranch = default_branch
@@ -434,10 +430,7 @@ object GithubAPI {
             updateProgressPercent!!(state, percent.toInt())
         }
 
-        val unzipDestination = modsFolder.child(tempName)
-        // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
-        if (unzipDestination.exists())
-            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
+        val unzipDestination = prepareTempFolder(modsFolder, tempName)
 
         // Thanks to: https://stackoverflow.com/a/74328603/10585461
         UncivKtor.client.prepareRequest {
@@ -479,16 +472,60 @@ object GithubAPI {
             }
         }
 
-        if (unzipDestination.exists() && unzipDestination.list().isEmpty()) {
+        val finalDestination = installExtracted(modsFolder, unzipDestination, modNameFromFileName, defaultBranch)
+            ?: return null
+        Github.rewriteModOptions(this, finalDestination)
+        return finalDestination
+    }
+
+    /** Install a mod from zip bytes supplied by the user (file drop); no Repo metadata is available. */
+    suspend fun installFromZipBytes(fileName: String, bytes: ByteArray): FileHandle? {
+        val modsFolder = UncivGame.Current.files.getModsFolder()
+        val unzipDestination = prepareTempFolder(modsFolder, "temp-" + fileName.hashCode().toString(16))
+        try {
+            ZipInputStream(ByteArrayInputStream(bytes)).use { extractZipStream(it, unzipDestination) }
+        } catch (ex: ZipException) {          // not a zip, truncated, etc.
+            unzipDestination.deleteDirectory()
+            throw UncivShowableException("Not a valid mod archive", ex)
+        } catch (ex: Throwable) {
+            unzipDestination.deleteDirectory()
+            throw ex
+        }
+        return installExtracted(modsFolder, unzipDestination, fileName.removeSuffix(".zip"), null)
+    }
+
+    /** Shared (download/file drop) start: pick temp folder name, clear any leftovers. */
+    private fun prepareTempFolder(modsFolder: FileHandle, tempName: String): FileHandle {
+        val unzipDestination = modsFolder.child(tempName)
+        // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
+        if (unzipDestination.exists())
+            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
+        return unzipDestination
+    }
+
+    /**
+     * Shared (download/file drop) tail: [unzipDestination] holds extracted zip content; move it to its final place.
+     * @param defaultBranch When known (github), "-$defaultBranch" is stripped from the folder name.
+     * @return FileHandle of the installed mod folder, or null if the zip was empty/unusable.
+     */
+    private fun installExtracted(
+        modsFolder: FileHandle,
+        unzipDestination: FileHandle,
+        nameHint: String,
+        defaultBranch: String?
+    ): FileHandle? {
+        if (!unzipDestination.exists() || unzipDestination.list().isEmpty()) {
             unzipDestination.deleteDirectory()
             return null
         }
 
-        val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
+        val (innerFolder, modName) = resolveZipStructure(unzipDestination, nameHint)
 
         // modName can be "$repoName-$defaultBranch"
-        val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
-        // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
+        val strippedName =
+            if (defaultBranch != null) modName.replace("-$defaultBranch", "")
+            else modName.replace(Regex("-(main|master)$"), "")   // heuristic for locally supplied github zips
+        val finalDestinationName = strippedName.repoNameToFolderName()
         val finalDestination = modsFolder.child(finalDestinationName)
 
         // prevent mixing new content with old
@@ -498,45 +535,53 @@ object GithubAPI {
             finalDestination.renameOrMove(tempBackup)
         }
 
-        // Move temp unpacked content to their final place
         finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
         // The move will reset the last modified time (recursively, at least on Linux)
         // This sort will guarantee the desktop launcher will not re-pack textures and overwrite the atlas as delivered by the mod
-        for (innerFileOrFolder in innerFolder.list()
-            .sortedBy { file -> file.extension() == "atlas" }) {
+        for (innerFileOrFolder in innerFolder.list().sortedBy { file -> file.extension() == "atlas" })
             innerFileOrFolder.renameOrMove(finalDestination)
-        }
 
         // clean up
         unzipDestination.deleteDirectory()
         if (tempBackup != null)
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
-        Github.rewriteModOptions(this, finalDestination)
         return finalDestination
     }
 
+    /** Blocks on stream and file I/O: callers must run this on [DAEMON][com.unciv.utils.Dispatcher.DAEMON] or [NON_DAEMON][com.unciv.utils.Dispatcher.NON_DAEMON] dispatchers, never on the GL dispatcher. */
+    @Suppress("BlockingMethodInNonBlockingContext")  // Both allowed dispatchers are unbounded cached thread pools
     private suspend fun extractZipStream(stream: ZipInputStream, unzipDestination: FileHandle) {
         // Note: resolveZipStructure re-iterates the content from the file system. We might do that here,
         // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
 
-        val job = coroutineContext[Job]
-        val destinationPath = unzipDestination.file().canonicalPath + File.separator
+        val job = currentCoroutineContext()[Job]
         // Actual unpacking
         try {
             while (job?.isActive != false) {
                 val entry = stream.nextEntry ?: break
                 if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
-                val dest = unzipDestination.child(entry.name).file().canonicalFile
-                if (!dest.path.startsWith(destinationPath))
+                if (isUnsafeZipEntryName(entry.name))
                     throw ZipException("ZIP entry points outside the destination")
-                dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
-                dest.outputStream().use { stream.copyTo(it) }
+                val dest = unzipDestination.child(entry.name)
+                dest.parent().mkdirs() // never root here: dest is always below unzipDestination
+                dest.write(false, 16384).use { stream.copyTo(it) }
                 stream.closeEntry()
+                yield()
             }
         } catch (ex: ZipException) {
             throw UncivShowableException("That is not a valid ZIP file", ex)
         }
+    }
+
+    /** Lexical zip-slip check: true if [name] could resolve outside the extraction folder. */
+    // Instead of using FileHandle.file().canonicalPath, which breaks in the teaVM build
+    private fun isUnsafeZipEntryName(name: String): Boolean {
+        if (name.isEmpty() || '\u0000' in name) return true
+        val normalized = name.replace('\\', '/')            // treat both separators as separators, for checking only
+        if (normalized.startsWith("/")) return true            // absolute (also UNC "\\server\...")
+        if (normalized.length >= 2 && normalized[1] == ':' && normalized[0].isLetter()) return true   // "C:..." drive paths
+        return normalized.split('/').any { it == ".." }
     }
 
     private val parseAttachmentDispositionRegex =
@@ -554,7 +599,8 @@ object GithubAPI {
 
     private fun FileHandle.renameOrMove(dest: FileHandle) {
         // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
-        if (type() == Files.FileType.Local) {
+        // But remember gdx/teavm does not support **any** way to get from a FileHandle to a java.io.File
+        if (type() == Files.FileType.Local && PlatformSpecific.current.hasJavaFileAccess) {
             // See #5346: renameTo 'unpacks' a source folder if the destination exists and is an
             // empty folder, dropping the name of the source entirely.
             // Safer to ask for a move to the not-yet-existing full resulting path instead.
@@ -611,7 +657,7 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs = dir.list(FileFilter { it.isDirectory })
+        val subdirs = dir.list().filter { it.isDirectory } // Not dir.list { it.isDirectory }: unsupported on WebGL
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)

@@ -63,4 +63,6 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDat
             null
         }
     }
+
+    override val supportsFileDrop: Boolean get() = true
 }
