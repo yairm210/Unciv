@@ -1659073,18 +1659073,18 @@ culau_AirUnitAutomation__clinit_ = () => {
 culau_BattleHelper = $rt_classWithoutFields(),
 culau_BattleHelper_INSTANCE = null,
 culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
-    let $distanceToTiles, var$4, $$this$filter$iv, var$6, var$7, $unitView_0, $destination$iv$iv, $enemyTileToAttack, $attackableEnemies, $element$iv$iv, $it, $defender, $tileToAttack, $ptr, $tmp;
+    let $unitView_0, var$4, $tileToAttack, $mustAttackFromLand, var$7, $distanceToTiles, $$this$filter$iv, $destination$iv$iv, $element$iv$iv, $it, $attackableEnemies, $enemyTileToAttack, $defender, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$tileToAttack = $thread.pop();$defender = $thread.pop();$it = $thread.pop();$element$iv$iv = $thread.pop();$attackableEnemies = $thread.pop();$enemyTileToAttack = $thread.pop();$destination$iv$iv = $thread.pop();$unitView_0 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();$$this$filter$iv = $thread.pop();var$4 = $thread.pop();$distanceToTiles = $thread.pop();$stayOnTile = $thread.pop();$unitView = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();$defender = $thread.pop();$enemyTileToAttack = $thread.pop();$attackableEnemies = $thread.pop();$it = $thread.pop();$element$iv$iv = $thread.pop();$destination$iv$iv = $thread.pop();$$this$filter$iv = $thread.pop();$distanceToTiles = $thread.pop();var$7 = $thread.pop();$mustAttackFromLand = $thread.pop();$tileToAttack = $thread.pop();var$4 = $thread.pop();$unitView_0 = $thread.pop();$stayOnTile = $thread.pop();$unitView = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $distanceToTiles = $rt_s(7467);
+        $unitView_0 = $rt_s(7467);
         $ptr = 1;
     case 1:
-        kji_Intrinsics_checkNotNullParameter($unitView, $distanceToTiles);
+        kji_Intrinsics_checkNotNullParameter($unitView, $unitView_0);
         if ($rt_suspending()) {
             break main;
         }
@@ -1659095,18 +1659095,18 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filter$iv = cumru_UniqueType_CannotAttack;
-        var$6 = 0;
+        $tileToAttack = cumru_UniqueType_CannotAttack;
+        $mustAttackFromLand = 0;
         var$7 = 2;
-        $distanceToTiles = null;
+        $unitView_0 = null;
         $ptr = 3;
     case 3:
-        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $$this$filter$iv, var$6, var$7, $distanceToTiles);
+        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $tileToAttack, $mustAttackFromLand, var$7, $unitView_0);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $tmp;
-        if (!var$6) {
+        $mustAttackFromLand = $tmp;
+        if (!$mustAttackFromLand) {
             $unitView_0 = $rt_nullCheck($unitView);
             $ptr = 4;
             continue main;
@@ -1659120,6 +1659120,42 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $distanceToTiles = $tmp;
         $ptr = 5;
     case 5:
+        $tmp = cuv_ForeignMapUnitView_getBaseUnit($unitView_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unitView = $tmp;
+        if (!cumru_BaseUnit_isMelee($rt_nullCheck($unitView))) {
+            $mustAttackFromLand = 0;
+            $ptr = 8;
+            continue main;
+        }
+        $ptr = 6;
+    case 6:
+        $tmp = cuv_ForeignMapUnitView_getBaseUnit($unitView_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unitView = $tmp;
+        $unitView = $rt_nullCheck($unitView);
+        $ptr = 7;
+    case 7:
+        $tmp = cumru_BaseUnit_isLandUnit($unitView);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $mustAttackFromLand = $tmp;
+        if ($mustAttackFromLand) {
+            $unitView = cumru_UniqueType_CanMoveOnWater;
+            $mustAttackFromLand = 0;
+            var$7 = 2;
+            $tileToAttack = null;
+            $ptr = 10;
+            continue main;
+        }
+        $mustAttackFromLand = 0;
+        $ptr = 8;
+    case 8:
         $tmp = cuv_MapUnitView_getAttackableEnemies($unitView_0, $stayOnTile);
         if ($rt_suspending()) {
             break main;
@@ -1659128,57 +1659164,140 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $$this$filter$iv = $unitView;
         $destination$iv$iv = ju_ArrayList__init_();
         $unitView = $rt_nullCheck($$this$filter$iv);
-        $ptr = 6;
-    case 6:
-        $tmp = ju_AbstractList_iterator($unitView);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unitView = $tmp;
-        $enemyTileToAttack = $rt_nullCheck($unitView);
-        $ptr = 7;
-    case 7:
-        $tmp = ju_AbstractList$1_hasNext($enemyTileToAttack);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $stayOnTile = $tmp;
-        if (!$stayOnTile) {
-            $attackableEnemies = $destination$iv$iv;
-            $ptr = 8;
-            continue main;
-        }
         $ptr = 9;
-        continue main;
-    case 8:
-        $tmp = culau_BattleHelper_chooseAttackTarget($this, $unitView_0, $attackableEnemies);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $enemyTileToAttack = $tmp;
-        if ($enemyTileToAttack !== null) {
-            $ptr = 14;
-            continue main;
-        }
-        $ptr = 13;
-        continue main;
     case 9:
-        $tmp = ju_AbstractList$1_next($enemyTileToAttack);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $element$iv$iv = $tmp;
-        $it = $rt_nullCheck($rt_castToClass($element$iv$iv, cuv_AttackableTileView));
-        $ptr = 10;
-    case 10:
-        $tmp = cuv_AttackableTileView_getTileToAttack($it);
+        $tmp = ju_AbstractList_iterator($unitView);
         if ($rt_suspending()) {
             break main;
         }
         $unitView = $tmp;
         $unitView = $rt_nullCheck($unitView);
         $ptr = 11;
+        continue main;
+    case 10:
+        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $unitView, $mustAttackFromLand, var$7, $tileToAttack);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $mustAttackFromLand = $tmp;
+        if (!$mustAttackFromLand) {
+            $unitView = cumru_UniqueType_AttackAcrossCoast;
+            $mustAttackFromLand = 0;
+            var$7 = 2;
+            $tileToAttack = null;
+            $ptr = 12;
+            continue main;
+        }
+        $mustAttackFromLand = 0;
+        $ptr = 8;
+        continue main;
     case 11:
+        $tmp = ju_AbstractList$1_hasNext($unitView);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $stayOnTile = $tmp;
+        if (!$stayOnTile) {
+            $$this$filter$iv = $destination$iv$iv;
+            $destination$iv$iv = ju_ArrayList__init_();
+            $unitView = $rt_nullCheck($$this$filter$iv);
+            $ptr = 13;
+            continue main;
+        }
+        $ptr = 14;
+        continue main;
+    case 12:
+        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $unitView, $mustAttackFromLand, var$7, $tileToAttack);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $mustAttackFromLand = $tmp;
+        $mustAttackFromLand = $mustAttackFromLand ? 0 : 1;
+        $ptr = 8;
+        continue main;
+    case 13:
+        $tmp = ju_AbstractList_iterator($unitView);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unitView = $tmp;
+        $tileToAttack = $rt_nullCheck($unitView);
+        $ptr = 15;
+        continue main;
+    case 14:
+        $tmp = ju_AbstractList$1_next($unitView);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $element$iv$iv = $tmp;
+        $it = $rt_castToClass($element$iv$iv, cuv_AttackableTileView);
+        if (!$mustAttackFromLand) {
+            if (1) {
+                $tileToAttack = $rt_nullCheck($destination$iv$iv);
+                $ptr = 25;
+                continue main;
+            }
+            $ptr = 11;
+            continue main;
+        }
+        $it = $rt_nullCheck($it);
+        $ptr = 16;
+        continue main;
+    case 15:
+        $tmp = ju_AbstractList$1_hasNext($tileToAttack);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $stayOnTile = $tmp;
+        if (!$stayOnTile) {
+            $attackableEnemies = $destination$iv$iv;
+            $ptr = 17;
+            continue main;
+        }
+        $ptr = 18;
+        continue main;
+    case 16:
+        $tmp = cuv_AttackableTileView_getTileToAttackFrom($it);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $tileToAttack = $tmp;
+        if (cuv_TileView_isLand($rt_nullCheck($tileToAttack)) ? 1 : 0) {
+            $tileToAttack = $rt_nullCheck($destination$iv$iv);
+            $ptr = 25;
+            continue main;
+        }
+        $ptr = 11;
+        continue main;
+    case 17:
+        $tmp = culau_BattleHelper_chooseAttackTarget($this, $unitView_0, $attackableEnemies);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $enemyTileToAttack = $tmp;
+        if ($enemyTileToAttack !== null) {
+            $ptr = 23;
+            continue main;
+        }
+        $ptr = 22;
+        continue main;
+    case 18:
+        $tmp = ju_AbstractList$1_next($tileToAttack);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $element$iv$iv = $tmp;
+        $it = $rt_nullCheck($rt_castToClass($element$iv$iv, cuv_AttackableTileView));
+        $ptr = 19;
+    case 19:
+        $tmp = cuv_AttackableTileView_getTileToAttack($it);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unitView = $tmp;
+        $unitView = $rt_nullCheck($unitView);
+        $ptr = 20;
+    case 20:
         $tmp = cuv_TileView_getCombatant($unitView);
         if ($rt_suspending()) {
             break main;
@@ -1659186,11 +1659305,11 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $defender = $tmp;
         $unitView = cumru_UniqueType_SelfDestructs;
         $stayOnTile = 0;
-        var$6 = 2;
+        $mustAttackFromLand = 2;
         $$this$filter$iv = null;
-        $ptr = 12;
-    case 12:
-        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $unitView, $stayOnTile, var$6, $$this$filter$iv);
+        $ptr = 21;
+    case 21:
+        $tmp = cuv_ForeignMapUnitView_hasUnique$default(var$4, $unitView, $stayOnTile, $mustAttackFromLand, $$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
@@ -1659199,34 +1659318,34 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
             $stayOnTile = 1;
         else {
             if ($defender !== null) {
-                $ptr = 18;
+                $ptr = 28;
                 continue main;
             }
             $stayOnTile = 0;
         }
         if ($stayOnTile) {
             $unitView = $rt_nullCheck($destination$iv$iv);
-            $ptr = 22;
+            $ptr = 32;
             continue main;
         }
-        $ptr = 7;
+        $ptr = 15;
         continue main;
-    case 13:
+    case 22:
         $tmp = cuv_ForeignMapUnitViewKt_hasMovement(var$4);
         if ($rt_suspending()) {
             break main;
         }
         $stayOnTile = $tmp;
         return $stayOnTile ? 0 : 1;
-    case 14:
+    case 23:
         $tmp = cuv_AttackableTileView_getTileToAttack($enemyTileToAttack);
         if ($rt_suspending()) {
             break main;
         }
         $tileToAttack = $tmp;
         $tileToAttack = $rt_nullCheck($tileToAttack);
-        $ptr = 15;
-    case 15:
+        $ptr = 24;
+    case 24:
         $tmp = cuv_TileView_getMilitaryUnit($tileToAttack);
         if ($rt_suspending()) {
             break main;
@@ -1659234,24 +1659353,31 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $unitView = $tmp;
         if ($unitView !== null) {
             $stayOnTile = 1;
-            $ptr = 16;
+            $ptr = 26;
             continue main;
         }
-        $ptr = 17;
+        $ptr = 27;
         continue main;
-    case 16:
+    case 25:
+        ju_ArrayList_add($tileToAttack, $element$iv$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 11;
+        continue main;
+    case 26:
         $tmp = cuv_MapUnitView_tryMovePreparingAttack($unitView_0, $enemyTileToAttack, $stayOnTile);
         if ($rt_suspending()) {
             break main;
         }
         $stayOnTile = $tmp;
         if ($stayOnTile) {
-            $ptr = 20;
+            $ptr = 30;
             continue main;
         }
-        $ptr = 13;
+        $ptr = 22;
         continue main;
-    case 17:
+    case 27:
         $tmp = cuv_ForeignMapUnitView_getBaseUnit($unitView_0);
         if ($rt_suspending()) {
             break main;
@@ -1659259,25 +1659385,25 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $unitView = $tmp;
         if (!cumru_BaseUnit_isRanged($rt_nullCheck($unitView))) {
             $stayOnTile = 1;
-            $ptr = 16;
+            $ptr = 26;
             continue main;
         }
-        $ptr = 21;
+        $ptr = 31;
         continue main;
-    case 18:
+    case 28:
         $tmp = cuv_ForeignMapUnitView_asCombatant($unitView_0);
         if ($rt_suspending()) {
             break main;
         }
         $unitView = $tmp;
-        $tileToAttack = $unitView;
-        $$this$filter$iv = null;
+        $$this$filter$iv = $unitView;
         $attackableEnemies = null;
+        $enemyTileToAttack = null;
         $stayOnTile = 6;
         $unitView = null;
-        $ptr = 19;
-    case 19:
-        $tmp = cuv_CombatantView_calculateDamageToAttacker$default($tileToAttack, $defender, $$this$filter$iv, $attackableEnemies, $stayOnTile, $unitView);
+        $ptr = 29;
+    case 29:
+        $tmp = cuv_CombatantView_calculateDamageToAttacker$default($$this$filter$iv, $defender, $attackableEnemies, $enemyTileToAttack, $stayOnTile, $unitView);
         if ($rt_suspending()) {
             break main;
         }
@@ -1659285,22 +1659411,22 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         if ($stayOnTile >= cuv_ForeignMapUnitView_getUnitHealth($unitView_0)) {
             if (0) {
                 $unitView = $rt_nullCheck($destination$iv$iv);
-                $ptr = 22;
+                $ptr = 32;
                 continue main;
             }
-            $ptr = 7;
+            $ptr = 15;
             continue main;
         }
-        $ptr = 23;
+        $ptr = 33;
         continue main;
-    case 20:
+    case 30:
         cuv_MapUnitView_attackOrNuke($unitView_0, $enemyTileToAttack);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 13;
+        $ptr = 22;
         continue main;
-    case 21:
+    case 31:
         $tmp = cuv_MapUnitView_canMoveTo($unitView_0, $tileToAttack);
         if ($rt_suspending()) {
             break main;
@@ -1659308,27 +1659434,27 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $stayOnTile = $tmp;
         if ($stayOnTile) {
             $unitView = $rt_nullCheck($distanceToTiles);
-            $ptr = 25;
+            $ptr = 35;
             continue main;
         }
         $stayOnTile = 1;
-        $ptr = 16;
+        $ptr = 26;
         continue main;
-    case 22:
+    case 32:
         ju_ArrayList_add($unitView, $element$iv$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 7;
+        $ptr = 15;
         continue main;
-    case 23:
+    case 33:
         $tmp = cuv_AttackableTileView_getTileToAttackFrom($it);
         if ($rt_suspending()) {
             break main;
         }
         $unitView = $tmp;
-        $ptr = 24;
-    case 24:
+        $ptr = 34;
+    case 34:
         $tmp = cuv_MapUnitView_getDamageFromTerrain($unitView_0, $unitView);
         if ($rt_suspending()) {
             break main;
@@ -1659336,12 +1659462,12 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $stayOnTile = $tmp;
         if ($stayOnTile <= 0 ? 1 : 0) {
             $unitView = $rt_nullCheck($destination$iv$iv);
-            $ptr = 22;
+            $ptr = 32;
             continue main;
         }
-        $ptr = 7;
+        $ptr = 15;
         continue main;
-    case 25:
+    case 35:
         $tmp = ju_HashMap_containsKey($unitView, $tileToAttack);
         if ($rt_suspending()) {
             break main;
@@ -1659349,20 +1659475,20 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
         $stayOnTile = $tmp;
         if (!$stayOnTile) {
             $stayOnTile = 1;
-            $ptr = 16;
+            $ptr = 26;
             continue main;
         }
-        $ptr = 26;
-    case 26:
+        $ptr = 36;
+    case 36:
         cuv_MapUnitView_tryMoveToTile($unitView_0, $tileToAttack);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 13;
+        $ptr = 22;
         continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $unitView, $stayOnTile, $distanceToTiles, var$4, $$this$filter$iv, var$6, var$7, $unitView_0, $destination$iv$iv, $enemyTileToAttack, $attackableEnemies, $element$iv$iv, $it, $defender, $tileToAttack, $ptr);
+    $rt_nativeThread().push($this, $unitView, $stayOnTile, $unitView_0, var$4, $tileToAttack, $mustAttackFromLand, var$7, $distanceToTiles, $$this$filter$iv, $destination$iv$iv, $element$iv$iv, $it, $attackableEnemies, $enemyTileToAttack, $defender, $ptr);
 },
 culau_BattleHelper_tryAttackNearbyEnemy$default = (var$1, var$2, var$3, var$4, var$5) => {
     let $ptr, $tmp;
