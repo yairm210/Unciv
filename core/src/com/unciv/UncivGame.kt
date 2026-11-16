@@ -457,6 +457,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
+        // Desktop has no ANRs, so wait for the in-progress autosave (written to a temp file, then moved over Autosave)
+        //  - otherwise closing the window mid-match leaves only a partial Autosave.tmp
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            val autoSaveJob = files.autosaves.autoSaveJob
+            if (autoSaveJob != null && autoSaveJob.isActive)
+                Concurrency.runBlocking { autoSaveJob.join() }
+        }
         Concurrency.stopThreadPools() // Stops new tasks, not running ones
 
         // On desktop this should only be this one and "DestroyJavaVM" and possibly autosave... that requires more explaination
