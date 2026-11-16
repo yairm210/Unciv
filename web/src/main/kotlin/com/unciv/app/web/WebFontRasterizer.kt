@@ -77,10 +77,13 @@ object WebFontRasterizer {
             const left = Math.min(0, -m.actualBoundingBoxLeft);
             const right = Math.max(m.width, m.actualBoundingBoxRight);
             const width = Math.max(1, Math.ceil(right - left));
-            const baseline = Math.ceil(ascent + leading);
-            height = Math.max(1, Math.ceil(height));
-            if (baseline < m.actualBoundingBoxAscent || baseline + m.actualBoundingBoxDescent > height)
-                throw new Error('Glyph bounds exceed the shared browser font metrics for ' + text);
+            const sharedBaseline = Math.ceil(ascent + leading);
+            const sharedDescent = Math.max(1, Math.ceil(height)) - sharedBaseline;
+            const baseline = Math.max(sharedBaseline, Math.ceil(m.actualBoundingBoxAscent));
+            const descent = Math.max(sharedDescent, Math.ceil(m.actualBoundingBoxDescent));
+            height = baseline + descent;
+            // BitmapFont draws from the bottom. Extend downwards without moving the baseline.
+            const yOffset = sharedDescent - descent;
             canvas.width = width;
             canvas.height = height;
             ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -92,10 +95,11 @@ object WebFontRasterizer {
             ctx.clearRect(0, 0, width, height);
             ctx.fillText(text, -left, baseline);
             const data = ctx.getImageData(0, 0, width, height).data;
-            const out = new Array(2 + data.length);
+            const out = new Array(3 + data.length);
             out[0] = width;
             out[1] = height;
-            for (let i = 0; i < data.length; i++) out[2 + i] = data[i];
+            out[2] = yOffset;
+            for (let i = 0; i < data.length; i++) out[3 + i] = data[i];
             return out;
         """
     )

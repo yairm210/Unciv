@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import kotlinx.coroutines.flow.Flow
 
 interface FontImplementation {
+    /** [yOffset] moves the bottom of the pixmap relative to the shared glyph box, in pixels. */
+    class GlyphPixmap(val pixmap: Pixmap, val yOffset: Int = 0)
+
     fun setFontFamily(fontFamilyData: FontFamilyData, size: Int)
     fun getFontSize(): Int
 
@@ -19,6 +22,9 @@ interface FontImplementation {
      * */
     fun getCharPixmap(char: Char) = getCharPixmap(char.toString())
     fun getCharPixmap(symbolString: String): Pixmap
+
+    fun getGlyphPixmap(char: Char) = GlyphPixmap(getCharPixmap(char))
+    fun getGlyphPixmap(symbolString: String) = GlyphPixmap(getCharPixmap(symbolString))
 
     fun getSystemFonts(): Sequence<FontFamilyData>
 

@@ -97,6 +97,26 @@ async function main() {
             if (!(customAdvance > 0) || customAdvance === fallbackAdvance)
                 throw new Error(`Custom font advance metric did not differ from Arial (${customAdvance} vs ${fallbackAdvance})`);
 
+            const fallbackFamily = 'Arial, Helvetica, sans-serif';
+            metricCanvas.font = '64px ' + fallbackFamily;
+            const bounds = metricCanvas.measureText('g');
+            const ascent = Math.ceil(bounds.actualBoundingBoxAscent);
+            const descent = Math.ceil(bounds.actualBoundingBoxDescent);
+            const reference = rasterizeGlyphAligned('g', 64, fallbackFamily, ascent, ascent + descent, 0);
+            // Force both overflow directions, independent of the fonts installed on the runner.
+            const overflow = rasterizeGlyphAligned('g', 64, fallbackFamily, 1, 2, 0);
+            if (ascent <= 1 || descent <= 1 || overflow[2] !== 1 - descent || reference[2] !== 0)
+                throw new Error('The expanded bitmap must place the glyph on the shared baseline');
+            if (overflow[0] !== reference[0] || overflow[1] !== reference[1] ||
+                overflow.length !== reference.length || overflow.slice(3).some((value, i) => value !== reference[i + 3]))
+                throw new Error('The expanded bitmap must preserve every pixel of the glyph');
+            for (const text of ['हि', 'হি']) {
+                const glyph = rasterizeGlyphAligned(text, 64, fallbackFamily,
+                    fallbackMetrics[0], fallbackMetrics[2], fallbackMetrics[3]);
+                if (!glyph.slice(3).some((value, i) => i % 4 === 3 && value > 0))
+                    throw new Error(`Canvas returned no ink for ${text}`);
+            }
+
             removeFont(firstFace);
             if (document.fonts.has(firstFace)) throw new Error('Switch/reset did not remove the previous FontFace');
             const secondFace = registerFont(javaBytes, 'UncivFontProbe2');
