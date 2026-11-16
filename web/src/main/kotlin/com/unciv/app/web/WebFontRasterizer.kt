@@ -28,6 +28,10 @@ object WebFontRasterizer {
     """)
     external fun removeFont(face: JSObject)
 
+    /**
+     * Measures a shared reference box for glyph alignment. Fallback fonts and combining marks
+     * can require a larger bitmap than the mixed-script sample predicts.
+     */
     @JvmStatic
     @JSBody(
         params = ["fontSize", "fontFamily"],
@@ -56,6 +60,11 @@ object WebFontRasterizer {
     )
     external fun measureMetrics(fontSize: Int, fontFamily: String): FloatArray
 
+    /**
+     * Expands the bitmap to contain the glyph while preserving the shared baseline.
+     * Returns width, height, yOffset, then RGBA bytes. A negative yOffset moves the bitmap
+     * bottom down in BitmapFont coordinates to accommodate ink below the shared box.
+     */
     @JvmStatic
     @JSBody(
         params = ["text", "fontSize", "fontFamily", "ascent", "height", "leading"],
