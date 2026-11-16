@@ -103593,7 +103593,7 @@ function jur_SequenceSet$IntHash() {
     a.$table3 = null;
     a.$values45 = null;
     a.$mask8 = 0;
-    a.$size48 = 0;
+    a.$size49 = 0;
 }
 let jur_SequenceSet$IntHash__init_0 = ($this, $size) => {
     let var$2, var$3;
@@ -103608,7 +103608,7 @@ let jur_SequenceSet$IntHash__init_0 = ($this, $size) => {
     var$3 = var$3 + 1 | 0;
     $this.$table3 = $rt_createIntArray(var$3);
     $this.$values45 = $rt_createIntArray(var$3);
-    $this.$size48 = $size;
+    $this.$size49 = $size;
 },
 jur_SequenceSet$IntHash__init_ = var_0 => {
     let var_1 = new jur_SequenceSet$IntHash();
@@ -103659,7 +103659,7 @@ jur_SequenceSet$IntHash_get = ($this, $key) => {
         $i = ($i + 1 | 0) & var$2;
         $hashCode = (var$6 + $i | 0) & var$2;
     }
-    return $this.$size48;
+    return $this.$size49;
 },
 jur_AbstractCharClass$LazySpace = $rt_classWithoutFields(jur_AbstractCharClass$LazyCharClass),
 jur_AbstractCharClass$LazySpace__init_ = $this => {
@@ -173143,7 +173143,7 @@ cumm_GameSettings$ScreenSize__clinit_ = () => {
 };
 function cuu_ScreenOrientation() {
     jl_Enum.call(this);
-    this.$description7 = null;
+    this.$description8 = null;
 }
 let cuu_ScreenOrientation_Landscape = null,
 cuu_ScreenOrientation_Portrait = null,
@@ -173189,7 +173189,7 @@ cuu_ScreenOrientation__init_ = ($this, $$enum$name, $$enum$ordinal, $description
             break main;
         }
         jl_Enum__init_($this, $$enum$name, $$enum$ordinal);
-        $this.$description7 = $description;
+        $this.$description8 = $description;
         return;
     default: $rt_invalidPointer();
     }}
@@ -173209,7 +173209,7 @@ cuu_ScreenOrientation_toString = $this => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$1 = $this.$description7;
+        var$1 = $this.$description8;
         var$2 = 0;
         var$3 = 0;
         var$4 = 3;
@@ -228271,7 +228271,7 @@ function cumr_ModOptions() {
     a.$author0 = null;
     a.$lastUpdated0 = null;
     a.$modSize = 0;
-    a.$topics = null;
+    a.$topics0 = null;
     a.$name52 = null;
     a.$uniques2 = null;
     a.$uniqueObjects$delegate1 = null;
@@ -228315,7 +228315,7 @@ let cumr_ModOptions__init_ = $this => {
         $this.$defaultBranch = $rt_s(1637);
         $this.$author0 = $rt_s(5);
         $this.$lastUpdated0 = $rt_s(5);
-        $this.$topics = ju_ArrayList__init_();
+        $this.$topics0 = ju_ArrayList__init_();
         $this.$name52 = $rt_s(1638);
         $this.$uniques2 = ju_ArrayList__init_();
         var$1 = new cumr_ModOptions$uniqueObjects$2;
@@ -228466,7 +228466,7 @@ cumr_ModOptions_setTopics = ($this, $_set___) => {
         if ($rt_suspending()) {
             break main;
         }
-        $this.$topics = $_set___;
+        $this.$topics0 = $_set___;
         return;
     default: $rt_invalidPointer();
     }}
@@ -467099,7 +467099,7 @@ ikcc_HttpClientCall__clinit_ = () => {
 function ikh_HttpStatusCode() {
     let a = this; jl_Object.call(a);
     a.$value13 = 0;
-    a.$description5 = null;
+    a.$description6 = null;
 }
 let ikh_HttpStatusCode_Companion = null,
 ikh_HttpStatusCode_Continue = null,
@@ -467203,7 +467203,7 @@ ikh_HttpStatusCode__init_ = ($this, $value, $description) => {
             break main;
         }
         $this.$value13 = $value;
-        $this.$description5 = $description;
+        $this.$description6 = $description;
         return;
     default: $rt_invalidPointer();
     }}
@@ -467241,7 +467241,7 @@ ikh_HttpStatusCode_toString = $this => {
         jl_AbstractStringBuilder__init_(var$1);
         jl_AbstractStringBuilder_append1(var$1, $this.$value13);
         jl_AbstractStringBuilder_append0(var$1, 32);
-        jl_AbstractStringBuilder_append(var$1, $this.$description5);
+        jl_AbstractStringBuilder_append(var$1, $this.$description6);
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -617620,7 +617620,7 @@ function cumrue_Operator$UnaryOperators() {
     let a = this; jl_Enum.call(a);
     a.$symbol1 = null;
     a.$implementation1 = null;
-    a.$description3 = null;
+    a.$description4 = null;
 }
 let cumrue_Operator$UnaryOperators_Negation = null,
 cumrue_Operator$UnaryOperators_Ciel = null,
@@ -617671,7 +617671,7 @@ cumrue_Operator$UnaryOperators__init_ = ($this, $$enum$name, $$enum$ordinal, $sy
         jl_Enum__init_($this, $$enum$name, $$enum$ordinal);
         $this.$symbol1 = $symbol;
         $this.$implementation1 = $implementation;
-        $this.$description3 = $description;
+        $this.$description4 = $description;
         return;
     default: $rt_invalidPointer();
     }}
@@ -617960,7 +617960,7 @@ cumru_Countables$Expression$_init_$lambda$_0_1_invoke = (var$0, var$1) => {
         var$3 = $rt_nullCheck(var$1);
         jl_AbstractStringBuilder_append(var$2, var$3.$symbol1);
         jl_AbstractStringBuilder_append(var$2, $rt_s(1119));
-        jl_AbstractStringBuilder_append(var$2, var$3.$description3);
+        jl_AbstractStringBuilder_append(var$2, var$3.$description4);
         jl_AbstractStringBuilder_append0(var$2, 41);
         $ptr = 2;
     case 2:
@@ -630667,14 +630667,14 @@ culcd_RelationshipLevel__clinit_ = () => {
 function cumr_PerpetualConstruction() {
     let a = this; jl_Object.call(a);
     a.$name18 = null;
-    a.$description1 = null;
+    a.$description2 = null;
 }
 let cumr_PerpetualConstruction_Companion = null,
 cumr_PerpetualConstruction_getName = $this => {
     return $this.$name18;
 },
 cumr_PerpetualConstruction_getDescription = $this => {
-    return $this.$description1;
+    return $this.$description2;
 },
 cumr_PerpetualConstruction_shouldBeDisplayed = ($this, $cityConstructions, $queue) => {
     let var$3, var$4, $ptr, $tmp;
@@ -630776,7 +630776,7 @@ cumr_PerpetualConstruction_getResourceRequirementsPerTurn = ($this, $state) => {
 },
 cumr_PerpetualConstruction__init_ = ($this, $name, $description, $$constructor_marker) => {
     $this.$name18 = $name;
-    $this.$description1 = $description;
+    $this.$description2 = $description;
 },
 cumr_PerpetualConstruction__clinit_ = () => {
     cumr_PerpetualConstruction_Companion = new cumr_PerpetualConstruction$Companion;
@@ -684006,7 +684006,7 @@ cbgu_LongMap$Keys_toArray = $this => {
         $array = new cbgu_LongArray;
         var$2 = ($rt_nullCheck($this.$map2)).$size20;
         $array.$ordered4 = 1;
-        $array.$items8 = $rt_createLongArray(var$2);
+        $array.$items9 = $rt_createLongArray(var$2);
         if ($this.$hasNext7) {
             $ptr = 1;
             continue main;
@@ -684018,14 +684018,14 @@ cbgu_LongMap$Keys_toArray = $this => {
             break main;
         }
         var$3 = $tmp;
-        var$4 = $array.$items8;
+        var$4 = $array.$items9;
         var$2 = $array.$size42;
         var$4 = $rt_nullCheck(var$4);
         if (var$2 == var$4.data.length) {
             var$4 = $rt_createLongArray(jl_Math_max0(8, $rt_doubleToInt(var$2 * 1.75)));
             var$5 = var$4.data;
-            jl_System_fastArraycopy($array.$items8, 0, var$4, 0, jl_Math_min($array.$size42, var$5.length));
-            $array.$items8 = var$4;
+            jl_System_fastArraycopy($array.$items9, 0, var$4, 0, jl_Math_min($array.$size42, var$5.length));
+            $array.$items9 = var$4;
         }
         var$4 = var$4.data;
         var$6 = $array.$size42;
@@ -685079,7 +685079,7 @@ cbgu_LongMap$Entry_toString = $this => {
 };
 function cbgu_LongArray() {
     let a = this; jl_Object.call(a);
-    a.$items8 = null;
+    a.$items9 = null;
     a.$size42 = 0;
     a.$ordered4 = 0;
 }
@@ -685092,8 +685092,8 @@ let cbgu_LongArray_equals = ($this, $object) => {
                 if ($array.$ordered4) {
                     $n = $this.$size42;
                     if ($n == $array.$size42) {
-                        $items1 = $this.$items8;
-                        $items2 = $array.$items8;
+                        $items1 = $this.$items9;
+                        $items2 = $array.$items9;
                         $i = 0;
                         while ($i < $n) {
                             $items1 = $rt_nullCheck($items1);
@@ -751191,11 +751191,11 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$suspendImpl = ($$this, $missingMo
     $rt_nativeThread().push($$this, $missingMods, $onModDownloaded, $onCompleted, $$completion, $$continuation, $capacity$iv, $$result, var$9, $repoName, $rawModName, $it$iv$iv, $exceptions, $cachedReposByName, $cachedRepos, $element$iv$iv, $element$iv$iv$iv, var$18, var$19, $cachedRepos_0, $destination$iv$iv, $exceptions_0, $$this$associateBy$iv, $repo, $e, $$this$mapNotNull$iv, var$27, $it, $ptr);
 },
 cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $repoName, $$completion) => {
-    let $$continuation, var$5, $$result, $reposFromGithub, $$this$firstOrNull$iv, $cachedRepo, var$10, $element$iv, $ptr, $tmp;
+    let $$continuation, var$5, $$result, $reposFromGithub, $cachedRepo, var$9, $element$iv, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$element$iv = $thread.pop();var$10 = $thread.pop();$cachedRepo = $thread.pop();$$this$firstOrNull$iv = $thread.pop();$reposFromGithub = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$repoName = $thread.pop();$cachedReposByName = $thread.pop();
+        $ptr = $thread.pop();$element$iv = $thread.pop();var$9 = $thread.pop();$cachedRepo = $thread.pop();$reposFromGithub = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$repoName = $thread.pop();$cachedReposByName = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -751232,7 +751232,7 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
                 k_ResultKt_throwOnFailure($$result);
                 $reposFromGithub = $rt_castToClass($$result, culg_GithubAPI$RepoSearch);
                 if ($reposFromGithub !== null) {
-                    $$this$firstOrNull$iv = $rt_nullCheck($reposFromGithub.$items9);
+                    $cachedReposByName = $rt_nullCheck($reposFromGithub.$items7);
                     $ptr = 6;
                     continue main;
                 }
@@ -751263,7 +751263,7 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
             culg_Github_$callClinit();
             $cachedReposByName = culg_Github_INSTANCE;
             var$5 = 1;
-            var$10 = 10;
+            var$9 = 10;
             $$continuation.$L$0281 = null;
             $$continuation.$L$1118 = $repoName;
             $$continuation.$L$2121 = null;
@@ -751280,7 +751280,7 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         }
         $rt_throw($cachedReposByName);
     case 5:
-        $tmp = culg_Github_tryGetGithubReposWithTopic($cachedReposByName, var$5, var$10, $repoName, $$continuation);
+        $tmp = culg_Github_tryGetGithubReposWithTopic($cachedReposByName, var$5, var$9, $repoName, $$continuation);
         if ($rt_suspending()) {
             break main;
         }
@@ -751288,7 +751288,7 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         if ($$result !== $$completion) {
             $reposFromGithub = $rt_castToClass($$result, culg_GithubAPI$RepoSearch);
             if ($reposFromGithub !== null) {
-                $$this$firstOrNull$iv = $rt_nullCheck($reposFromGithub.$items9);
+                $cachedReposByName = $rt_nullCheck($reposFromGithub.$items7);
                 $ptr = 6;
                 continue main;
             }
@@ -751302,12 +751302,12 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         }
         return $$completion;
     case 6:
-        $tmp = $$this$firstOrNull$iv.$iterator();
+        $tmp = ju_AbstractList_iterator($cachedReposByName);
         if ($rt_suspending()) {
             break main;
         }
         $cachedReposByName = $tmp;
-        $cachedReposByName = $rt_nullCheck($cachedReposByName);
+        $$continuation = $rt_nullCheck($cachedReposByName);
         $ptr = 8;
         continue main;
     case 7:
@@ -751317,14 +751317,14 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         }
         $rt_throw($cachedReposByName);
     case 8:
-        $tmp = $cachedReposByName.$hasNext();
+        $tmp = ju_AbstractList$1_hasNext($$continuation);
         if ($rt_suspending()) {
             break main;
         }
         var$5 = $tmp;
         if (!var$5) {
             $element$iv = null;
-            $cachedReposByName = $element$iv;
+            $cachedReposByName = $rt_castToClass($element$iv, culg_GithubAPI$Repo);
             if ($cachedReposByName === null) {
                 $cachedReposByName = new cul_UncivShowableException;
                 $$completion = new jl_StringBuilder;
@@ -751339,43 +751339,43 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         }
         $ptr = 9;
     case 9:
-        $tmp = $cachedReposByName.$next();
+        $tmp = ju_AbstractList$1_next($$continuation);
         if ($rt_suspending()) {
             break main;
         }
         $element$iv = $tmp;
-        $$continuation = ($rt_nullCheck($element$iv)).$name9;
+        $$completion = ($rt_nullCheck($rt_castToClass($element$iv, culg_GithubAPI$Repo))).$name9;
         $ptr = 10;
     case 10:
         ju_Locale_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        $$completion = ju_Locale_ROOT;
-        $$continuation = $rt_nullCheck($$continuation);
+        $cachedReposByName = ju_Locale_ROOT;
+        $$completion = $rt_nullCheck($$completion);
         $ptr = 11;
     case 11:
-        $tmp = jl_String_toLowerCase($$continuation, $$completion);
+        $tmp = jl_String_toLowerCase($$completion, $cachedReposByName);
         if ($rt_suspending()) {
             break main;
         }
-        $$completion = $tmp;
-        $$continuation = $rt_s(396);
+        $cachedReposByName = $tmp;
+        $$completion = $rt_s(396);
         $ptr = 12;
     case 12:
-        kji_Intrinsics_checkNotNullExpressionValue($$completion, $$continuation);
+        kji_Intrinsics_checkNotNullExpressionValue($cachedReposByName, $$completion);
         if ($rt_suspending()) {
             break main;
         }
         $ptr = 13;
     case 13:
-        $tmp = kji_Intrinsics_areEqual($$completion, $repoName);
+        $tmp = kji_Intrinsics_areEqual($cachedReposByName, $repoName);
         if ($rt_suspending()) {
             break main;
         }
         var$5 = $tmp;
         if (var$5) {
-            $cachedReposByName = $element$iv;
+            $cachedReposByName = $rt_castToClass($element$iv, culg_GithubAPI$Repo);
             if ($cachedReposByName === null) {
                 $cachedReposByName = new cul_UncivShowableException;
                 $$completion = new jl_StringBuilder;
@@ -751388,7 +751388,6 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
             }
             return $cachedReposByName;
         }
-        $cachedReposByName = $rt_nullCheck($cachedReposByName);
         $ptr = 8;
         continue main;
     case 14:
@@ -751409,7 +751408,7 @@ cuuss_LoadOrSaveScreen$Helpers_loadMissingMods$getRepo = ($cachedReposByName, $r
         $rt_throw($cachedReposByName);
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($cachedReposByName, $repoName, $$completion, $$continuation, var$5, $$result, $reposFromGithub, $$this$firstOrNull$iv, $cachedRepo, var$10, $element$iv, $ptr);
+    $rt_nativeThread().push($cachedReposByName, $repoName, $$completion, $$continuation, var$5, $$result, $reposFromGithub, $cachedRepo, var$9, $element$iv, $ptr);
 };
 function ikcpw_BuildersKt$webSocketSession$2$1$1() {
     jl_Object.call(this);
@@ -808785,7 +808784,7 @@ culg_Github_getRepoSize = ($this, $repo, $$completion) => {
         }
         return $$completion;
     case 10:
-        $tmp = $repo.$iterator();
+        $tmp = ju_AbstractList_iterator($repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -808797,10 +808796,10 @@ culg_Github_getRepoSize = ($this, $repo, $$completion) => {
         if ($rt_suspending()) {
             break main;
         }
-        $repo = $rt_nullCheck($repo);
+        $$continuation = $rt_nullCheck($repo);
         $ptr = 12;
     case 12:
-        $tmp = $repo.$hasNext();
+        $tmp = ju_AbstractList$1_hasNext($$continuation);
         if ($rt_suspending()) {
             break main;
         }
@@ -808811,20 +808810,19 @@ culg_Github_getRepoSize = ($this, $repo, $$completion) => {
         }
         return kcji_Boxing_boxInt(Long_lo(Long_asIntN(64, Long_asIntN(64, $totalSizeBytes + 512n) / 1024n)));
     case 13:
-        $tmp = $repo.$next();
+        $tmp = ju_AbstractList$1_next($$continuation);
         if ($rt_suspending()) {
             break main;
         }
-        $$completion = $tmp;
-        $$continuation = $rt_s(294);
+        $repo = $tmp;
+        $$completion = $rt_s(294);
         $ptr = 14;
     case 14:
-        kji_Intrinsics_checkNotNullExpressionValue($$completion, $$continuation);
+        kji_Intrinsics_checkNotNullExpressionValue($repo, $$completion);
         if ($rt_suspending()) {
             break main;
         }
-        $totalSizeBytes = Long_asIntN(64, $totalSizeBytes + ($rt_nullCheck($$completion)).$size50);
-        $repo = $rt_nullCheck($repo);
+        $totalSizeBytes = Long_asIntN(64, $totalSizeBytes + ($rt_nullCheck($rt_castToClass($repo, culg_GithubAPI$Tree$TreeFile))).$size47);
         $ptr = 12;
         continue main;
     default: $rt_invalidPointer();
@@ -809058,7 +809056,7 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
         if (!$overwriteAlways) {
             $modOptions = $rt_nullCheck($repo);
             $modFolder = ($rt_nullCheck($modOptions.$owner1)).$avatar_url;
-            if (!($modFolder !== null && $modFolder.$length()) ? 1 : 0) {
+            if (!($modFolder !== null && ($rt_nullCheck($modFolder)).$nativeString.length) ? 1 : 0) {
                 if (!(($rt_nullCheck(($rt_nullCheck($modOptions.$owner1)).$login)).$nativeString.length ? 0 : 1)) {
                     $modFolder = new jl_StringBuilder;
                     jl_AbstractStringBuilder__init_($modFolder);
@@ -809239,11 +809237,11 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
                 if (!(!$overwriteAlways && $modOptions.$modSize))
                     $modOptions.$modSize = $repo_0.$size37;
                 if (!$overwriteAlways) {
-                    $repo = $rt_nullCheck($modOptions.$topics);
+                    $repo = $rt_nullCheck($modOptions.$topics0);
                     $ptr = 23;
                     continue main;
                 }
-                $repo = $repo_0.$topics0;
+                $repo = $repo_0.$topics;
                 $ptr = 22;
                 continue main;
             }
@@ -809272,11 +809270,11 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
                 if (!(!$overwriteAlways && $modOptions.$modSize))
                     $modOptions.$modSize = $repo_0.$size37;
                 if (!$overwriteAlways) {
-                    $repo = $rt_nullCheck($modOptions.$topics);
+                    $repo = $rt_nullCheck($modOptions.$topics0);
                     $ptr = 23;
                     continue main;
                 }
-                $repo = $repo_0.$topics0;
+                $repo = $repo_0.$topics;
                 $ptr = 22;
                 continue main;
             }
@@ -809297,11 +809295,11 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
             if (!(!$overwriteAlways && $modOptions.$modSize))
                 $modOptions.$modSize = $repo_0.$size37;
             if (!$overwriteAlways) {
-                $repo = $rt_nullCheck($modOptions.$topics);
+                $repo = $rt_nullCheck($modOptions.$topics0);
                 $ptr = 23;
                 continue main;
             }
-            $repo = $repo_0.$topics0;
+            $repo = $repo_0.$topics;
             $ptr = 22;
             continue main;
         }
@@ -809315,11 +809313,11 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
         if (!(!$overwriteAlways && $modOptions.$modSize))
             $modOptions.$modSize = $repo_0.$size37;
         if (!$overwriteAlways) {
-            $repo = $rt_nullCheck($modOptions.$topics);
+            $repo = $rt_nullCheck($modOptions.$topics0);
             $ptr = 23;
             continue main;
         }
-        $repo = $repo_0.$topics0;
+        $repo = $repo_0.$topics;
         $ptr = 22;
     case 22:
         cumr_ModOptions_setTopics($modOptions, $repo);
@@ -809340,7 +809338,7 @@ let culg_Github_rewriteModOptions = ($this, $repo, $modFolder) => {
             $ptr = 24;
             continue main;
         }
-        $repo = $repo_0.$topics0;
+        $repo = $repo_0.$topics;
         $ptr = 22;
         continue main;
     case 24:
@@ -895160,7 +895158,7 @@ cuv_OwnedView_isOwnedByViewer = $this => {
 function cuv_ForeignCivView() {
     let a = this; cuv_OwnedView.call(a);
     a.$civ1 = null;
-    a.$ruleset10 = null;
+    a.$ruleset11 = null;
 }
 let cuv_ForeignCivView__init_ = ($this, $civ, $viewer, $spectatorMode, $gameView) => {
     let var$5, $ptr, $tmp;
@@ -895215,7 +895213,7 @@ let cuv_ForeignCivView__init_ = ($this, $civ, $viewer, $spectatorMode, $gameView
             break main;
         }
         $civ = $tmp;
-        $this.$ruleset10 = $civ;
+        $this.$ruleset11 = $civ;
         return;
     default: $rt_invalidPointer();
     }}
@@ -895245,7 +895243,7 @@ cuv_ForeignCivView_isCityState = $this => {
     return ($rt_nullCheck($this.$civ1)).$isCityState1;
 },
 cuv_ForeignCivView_getRuleset = $this => {
-    return $this.$ruleset10;
+    return $this.$ruleset11;
 },
 cuv_ForeignCivView_getCivPublic = $this => {
     return $this.$civ1;
@@ -895861,7 +895859,7 @@ function cumr_Quest() {
     let a = this; jl_Object.call(a);
     a.$name23 = null;
     a.$questNameInstance$delegate = null;
-    a.$description2 = null;
+    a.$description3 = null;
     a.$type21 = null;
     a.$influence0 = 0.0;
     a.$duration3 = 0;
@@ -895888,7 +895886,7 @@ let cumr_Quest__init_ = $this => {
         }
         var$1 = $tmp;
         $this.$questNameInstance$delegate = var$1;
-        $this.$description2 = $rt_s(5);
+        $this.$description3 = $rt_s(5);
         $ptr = 2;
     case 2:
         cumr_QuestType_$callClinit();
@@ -932909,7 +932907,7 @@ culcmq_QuestImplementation$Invest_getAssignedQuestData = ($this, $civ, $quest, $
         if ($rt_suspending()) {
             break main;
         }
-        $civ = ($rt_nullCheck($quest)).$description2;
+        $civ = ($rt_nullCheck($quest)).$description3;
         $ptr = 4;
     case 4:
         $tmp = cumt_TranslationExtensionsKt_getPlaceholderParameters($civ);
@@ -1005891,7 +1005889,7 @@ culac_NextTurnAutomation_automateCivMoves = ($this, $civInfo, $tradeAndChangeSta
             break main;
         }
         if ($tradeAndChangeState && $civInfo_0.$isMajorCiv0) {
-            $civInfo = ($rt_nullCheck($civView.$ruleset10)).$modOptions;
+            $civInfo = ($rt_nullCheck($civView.$ruleset11)).$modOptions;
             $ptr = 23;
             continue main;
         }
@@ -1009362,7 +1009360,7 @@ culac_NextTurnAutomation_freeUpSpaceResources = ($this, $civView) => {
             break main;
         }
         $element$iv = $tmp;
-        $civView = $rt_nullCheck(($rt_nullCheck($civView_0.$ruleset10)).$buildings);
+        $civView = $rt_nullCheck(($rt_nullCheck($civView_0.$ruleset11)).$buildings);
         $ptr = 30;
     case 30:
         $tmp = $civView.$values();
@@ -1030905,7 +1030903,7 @@ cuui_ImageAttempter_tryEraImage = ($this, $civView, $locationToCheck, $style, $t
         }
         if ($active) {
             $civView_0 = $rt_nullCheck($civView);
-            $civView = $rt_nullCheck(($rt_nullCheck($civView_0.$ruleset10)).$eras);
+            $civView = $rt_nullCheck(($rt_nullCheck($civView_0.$ruleset11)).$eras);
             $ptr = 4;
             continue main;
         }
@@ -1305240,7 +1305238,7 @@ let culau_CityLocationTileRanker$getBestTilesToFoundCity$lambda$_1_2_invoke = (v
         }
         var$6 = $rt_nullCheck(culau_CityLocationTileRanker_INSTANCE);
         var$7 = $rt_nullCheck(var$2);
-        var$8 = ($rt_nullCheck(($rt_nullCheck(var$7.$ruleset10)).$modOptions)).$constants;
+        var$8 = ($rt_nullCheck(($rt_nullCheck(var$7.$ruleset11)).$modOptions)).$constants;
         var$9 = $rt_nullCheck(var$1);
         if (!cuv_TileView_isLand(var$9)) {
             if (0) {
@@ -1367606,7 +1367604,7 @@ jtf_DateTimeFormatterBuilder_appendZoneRegionId = $this => {
             break main;
         }
         var$1.$query3 = jtf_DateTimeFormatterBuilder_QUERY_REGION_ONLY;
-        var$1.$description6 = $rt_s(10544);
+        var$1.$description7 = $rt_s(10544);
         $ptr = 2;
     case 2:
         jtf_DateTimeFormatterBuilder_appendInternal($this, var$1);
@@ -1393704,7 +1393702,7 @@ jtf_DateTimeFormatterBuilder$FractionPrinterParser_toString = $this => {
 function jtf_DateTimeFormatterBuilder$ZoneIdPrinterParser() {
     let a = this; jl_Object.call(a);
     a.$query3 = null;
-    a.$description6 = null;
+    a.$description7 = null;
 }
 let jtf_DateTimeFormatterBuilder$ZoneIdPrinterParser_cachedSubstringTree = null,
 jtf_DateTimeFormatterBuilder$ZoneIdPrinterParser_parse = ($this, $context, $text, $position) => {
@@ -1394461,7 +1394459,7 @@ jtf_DateTimeFormatterBuilder$ZoneIdPrinterParser_prepareParser = $availableIDs =
     $rt_nativeThread().push($availableIDs, $ids, $tree, var$4, $id, $ptr);
 },
 jtf_DateTimeFormatterBuilder$ZoneIdPrinterParser_toString = $this => {
-    return $this.$description6;
+    return $this.$description7;
 };
 function jtf_DateTimeFormatterBuilder$StringLiteralPrinterParser() {
     jl_Object.call(this);
@@ -1407253,65 +1407251,65 @@ cuusm_ModManagementScreen_tryDownloadPage = ($this, $pageNum) => {
     $rt_nativeThread().push($this, $pageNum, var$2, var$3, var$4, var$5, var$6, $ptr);
 },
 cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageNum) => {
-    let $repoSearch_0, $ex, $isUpdatedVersionOfInstalledMod, $mod, $modInfo, $it, $repo, var$10, $$this$firstOrNull$iv, $element$iv, $installedMod, var$14, var$15, $$je, $ptr, $tmp;
+    let $repoSearch_0, $repo, $ex, $isUpdatedVersionOfInstalledMod, $$this$firstOrNull$iv, $element$iv, $it, $repo_0, var$11, $installedMod, $mod, var$14, var$15, $modInfo, $$je, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();$installedMod = $thread.pop();$element$iv = $thread.pop();$$this$firstOrNull$iv = $thread.pop();var$10 = $thread.pop();$repo = $thread.pop();$it = $thread.pop();$modInfo = $thread.pop();$mod = $thread.pop();$isUpdatedVersionOfInstalledMod = $thread.pop();$ex = $thread.pop();$repoSearch_0 = $thread.pop();$pageNum = $thread.pop();$repoSearch = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();$modInfo = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();$mod = $thread.pop();$installedMod = $thread.pop();var$11 = $thread.pop();$repo_0 = $thread.pop();$it = $thread.pop();$element$iv = $thread.pop();$$this$firstOrNull$iv = $thread.pop();$isUpdatedVersionOfInstalledMod = $thread.pop();$ex = $thread.pop();$repo = $thread.pop();$repoSearch_0 = $thread.pop();$pageNum = $thread.pop();$repoSearch = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
         $repoSearch_0 = $rt_nullCheck($repoSearch);
-        $repoSearch = $rt_nullCheck($repoSearch_0.$items9);
+        $repoSearch = $rt_nullCheck($repoSearch_0.$items7);
         $ptr = 1;
     case 1:
-        $tmp = $repoSearch.$iterator();
+        $tmp = ju_AbstractList_iterator($repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $ex = $tmp;
+        $repo = $tmp;
         $repoSearch = $rt_s(293);
         $ptr = 2;
     case 2:
-        kji_Intrinsics_checkNotNullExpressionValue($ex, $repoSearch);
+        kji_Intrinsics_checkNotNullExpressionValue($repo, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $ex = $rt_nullCheck($ex);
+        $ex = $rt_nullCheck($repo);
         $ptr = 3;
     case 3:
-        $tmp = $ex.$hasNext();
+        $tmp = ju_AbstractList$1_hasNext($ex);
         if ($rt_suspending()) {
             break main;
         }
         $isUpdatedVersionOfInstalledMod = $tmp;
         if (!$isUpdatedVersionOfInstalledMod) {
             cuu_Concurrency_$callClinit();
-            $mod = cuu_Concurrency_INSTANCE;
-            $modInfo = $rt_s(10806);
+            $$this$firstOrNull$iv = cuu_Concurrency_INSTANCE;
+            $element$iv = $rt_s(10806);
             $it = null;
             $repoSearch = new cuusm_ModManagementScreen$addModInfoFromRepoSearch$1;
-            $ex = null;
+            $repo = null;
             $ptr = 4;
             continue main;
         }
         $ptr = 7;
         continue main;
     case 4:
-        cuusm_ModManagementScreen$addModInfoFromRepoSearch$1__init_($repoSearch, $this, $ex);
+        cuusm_ModManagementScreen$addModInfoFromRepoSearch$1__init_($repoSearch, $this, $repo);
         if ($rt_suspending()) {
             break main;
         }
         $repoSearch = $repoSearch;
         $isUpdatedVersionOfInstalledMod = 2;
-        $ex = null;
+        $repo = null;
         $ptr = 5;
     case 5:
-        cuu_Concurrency_run$default($mod, $modInfo, $it, $repoSearch, $isUpdatedVersionOfInstalledMod, $ex);
+        cuu_Concurrency_run$default($$this$firstOrNull$iv, $element$iv, $it, $repoSearch, $isUpdatedVersionOfInstalledMod, $repo);
         if ($rt_suspending()) {
             break main;
         }
-        $repoSearch = $rt_nullCheck($repoSearch_0.$items9);
+        $repoSearch = $rt_nullCheck($repoSearch_0.$items7);
         $ptr = 6;
     case 6:
         $tmp = $repoSearch.$size();
@@ -1407327,27 +1407325,27 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         $ptr = 9;
         continue main;
     case 7:
-        $tmp = $ex.$next();
+        $tmp = ju_AbstractList$1_next($ex);
         if ($rt_suspending()) {
             break main;
         }
         $repoSearch = $tmp;
-        $mod = $rt_s(294);
+        $repo = $rt_s(294);
         $ptr = 8;
     case 8:
-        kji_Intrinsics_checkNotNullExpressionValue($repoSearch, $mod);
+        kji_Intrinsics_checkNotNullExpressionValue($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
-        $repo = $repoSearch;
+        $repo = $rt_castToClass($repoSearch, culg_GithubAPI$Repo);
         if (!$this.$stopBackgroundTasks) {
             culg_Github_$callClinit();
-            $mod = culg_Github_INSTANCE;
-            $repo = $rt_nullCheck($repo);
-            $repoSearch = $repo.$name9;
+            $repoSearch = culg_Github_INSTANCE;
+            $repo_0 = $rt_nullCheck($repo);
+            $$this$firstOrNull$iv = $repo_0.$name9;
             $isUpdatedVersionOfInstalledMod = 0;
-            var$10 = 1;
-            $modInfo = null;
+            var$11 = 1;
+            $repo = null;
             $ptr = 12;
             continue main;
         }
@@ -1407358,11 +1407356,11 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             break main;
         }
         $repoSearch = $this.$scrollOnlineMods;
-        $ex = $this.$onlineModsTable;
+        $repo = $this.$onlineModsTable;
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 10;
     case 10:
-        cbgssu_ScrollPane_setActor($repoSearch, $ex);
+        cbgssu_ScrollPane_setActor($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407381,14 +1407379,14 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         }
         return;
     case 12:
-        $tmp = culg_Github_repoNameToFolderName$default($mod, $repoSearch, $isUpdatedVersionOfInstalledMod, var$10, $modInfo);
+        $tmp = culg_Github_repoNameToFolderName$default($repoSearch, $$this$firstOrNull$iv, $isUpdatedVersionOfInstalledMod, var$11, $repo);
         if ($rt_suspending()) {
             break main;
         }
         $repoSearch = $tmp;
         $ptr = 13;
     case 13:
-        culg_GithubAPI$Repo_setName($repo, $repoSearch);
+        culg_GithubAPI$Repo_setName($repo_0, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407400,23 +1407398,23 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         if ($rt_suspending()) {
             break main;
         }
-        $repoSearch = $tmp;
-        $mod = $rt_s(300);
+        $repo = $tmp;
+        $repoSearch = $rt_s(300);
         $ptr = 15;
     case 15:
-        kji_Intrinsics_checkNotNullExpressionValue($repoSearch, $mod);
+        kji_Intrinsics_checkNotNullExpressionValue($repo, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$firstOrNull$iv = $rt_nullCheck($repoSearch);
+        $$this$firstOrNull$iv = $rt_nullCheck($repo);
         $ptr = 16;
     case 16:
         $tmp = $$this$firstOrNull$iv.$iterator();
         if ($rt_suspending()) {
             break main;
         }
-        $modInfo = $tmp;
-        $modInfo = $rt_nullCheck($modInfo);
+        $repoSearch = $tmp;
+        $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 18;
         continue main;
     case 17:
@@ -1407428,7 +1407426,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         $ptr = 9;
         continue main;
     case 18:
-        $tmp = $modInfo.$hasNext();
+        $tmp = $repoSearch.$hasNext();
         if ($rt_suspending()) {
             break main;
         }
@@ -1407439,7 +1407437,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if ($installedMod !== null) {
                 $it = $installedMod.$modOptions;
                 if ($it !== null) {
-                    $mod = $it.$lastUpdated0;
+                    $repo = $it.$lastUpdated0;
                     $repoSearch = $rt_s(5);
                     $ptr = 22;
                     continue main;
@@ -1407449,7 +1407447,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if ($installedMod !== null) {
                 if ($isUpdatedVersionOfInstalledMod) {
                     $repoSearch = $this.$installedModInfo;
-                    $mod = $repo.$name9;
+                    $repo = $repo_0.$name9;
                     $repoSearch = $rt_nullCheck($repoSearch);
                     $ptr = 26;
                     continue main;
@@ -1407457,7 +1407455,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
                 if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
                     try {
                         $repoSearch = culg_Github_INSTANCE;
-                        $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                        $repo = cumr_Ruleset_getFolderLocation($installedMod);
                         $ptr = 41;
                         continue main;
                     } catch ($$e) {
@@ -1407490,16 +1407488,16 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         }
         return;
     case 20:
-        $tmp = $modInfo.$next();
+        $tmp = $repoSearch.$next();
         if ($rt_suspending()) {
             break main;
         }
         $element$iv = $tmp;
-        $mod = ($rt_nullCheck($rt_castToClass($element$iv, cumr_Ruleset))).$name4;
-        $repoSearch = $repo.$name9;
+        $$this$firstOrNull$iv = ($rt_nullCheck($rt_castToClass($element$iv, cumr_Ruleset))).$name4;
+        $repo = $repo_0.$name9;
         $ptr = 21;
     case 21:
-        $tmp = kji_Intrinsics_areEqual($mod, $repoSearch);
+        $tmp = kji_Intrinsics_areEqual($$this$firstOrNull$iv, $repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407509,7 +1407507,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if ($installedMod !== null) {
                 $it = $installedMod.$modOptions;
                 if ($it !== null) {
-                    $mod = $it.$lastUpdated0;
+                    $repo = $it.$lastUpdated0;
                     $repoSearch = $rt_s(5);
                     $ptr = 22;
                     continue main;
@@ -1407519,7 +1407517,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if ($installedMod !== null) {
                 if ($isUpdatedVersionOfInstalledMod) {
                     $repoSearch = $this.$installedModInfo;
-                    $mod = $repo.$name9;
+                    $repo = $repo_0.$name9;
                     $repoSearch = $rt_nullCheck($repoSearch);
                     $ptr = 26;
                     continue main;
@@ -1407527,7 +1407525,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
                 if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
                     try {
                         $repoSearch = culg_Github_INSTANCE;
-                        $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                        $repo = cumr_Ruleset_getFolderLocation($installedMod);
                         $ptr = 41;
                         continue main;
                     } catch ($$e) {
@@ -1407551,11 +1407549,11 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             $ptr = 23;
             continue main;
         }
-        $modInfo = $rt_nullCheck($modInfo);
+        $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 18;
         continue main;
     case 22:
-        $tmp = kji_Intrinsics_areEqual($mod, $repoSearch);
+        $tmp = kji_Intrinsics_areEqual($repo, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407565,7 +1407563,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if ($installedMod !== null) {
                 if ($isUpdatedVersionOfInstalledMod) {
                     $repoSearch = $this.$installedModInfo;
-                    $mod = $repo.$name9;
+                    $repo = $repo_0.$name9;
                     $repoSearch = $rt_nullCheck($repoSearch);
                     $ptr = 26;
                     continue main;
@@ -1407573,7 +1407571,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
                 if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
                     try {
                         $repoSearch = culg_Github_INSTANCE;
-                        $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                        $repo = cumr_Ruleset_getFolderLocation($installedMod);
                         $ptr = 41;
                         continue main;
                     } catch ($$e) {
@@ -1407597,39 +1407595,39 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             $ptr = 23;
             continue main;
         }
-        $mod = $it.$lastUpdated0;
-        $repoSearch = $repo.$pushed_at;
+        $repo = $it.$lastUpdated0;
+        $repoSearch = $repo_0.$pushed_at;
         $ptr = 24;
         continue main;
     case 23:
-        kji_Intrinsics_checkNotNullParameter($repo, $repoSearch);
+        kji_Intrinsics_checkNotNullParameter($repo_0, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $installedMod = $repo.$name9;
-        $it = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($it);
-        $repoSearch = $repo.$description8;
-        if ($repoSearch !== null) {
-            jl_AbstractStringBuilder_append($it, $repoSearch);
-            jl_AbstractStringBuilder_append0($it, 10);
-            $repoSearch = new jl_StringBuilder;
-            jl_AbstractStringBuilder__init_($repoSearch);
-            jl_AbstractStringBuilder_append0($repoSearch, 91);
-            jl_AbstractStringBuilder_append1($repoSearch, $repo.$stargazers_count);
-            jl_AbstractStringBuilder_append($repoSearch, $rt_s(10807));
+        $element$iv = $repo_0.$name9;
+        $repoSearch = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($repoSearch);
+        $repo = $repo_0.$description5;
+        if ($repo !== null) {
+            jl_AbstractStringBuilder_append($repoSearch, $repo);
+            jl_AbstractStringBuilder_append0($repoSearch, 10);
+            $repo = new jl_StringBuilder;
+            jl_AbstractStringBuilder__init_($repo);
+            jl_AbstractStringBuilder_append0($repo, 91);
+            jl_AbstractStringBuilder_append1($repo, $repo_0.$stargazers_count);
+            jl_AbstractStringBuilder_append($repo, $rt_s(10807));
             $ptr = 29;
             continue main;
         }
-        $repoSearch = $rt_s(10808);
-        var$10 = 0;
+        $repo = $rt_s(10808);
+        var$11 = 0;
         var$14 = 0;
         var$15 = 3;
-        $modInfo = null;
+        $$this$firstOrNull$iv = null;
         $ptr = 25;
         continue main;
     case 24:
-        $tmp = kji_Intrinsics_areEqual($mod, $repoSearch);
+        $tmp = kji_Intrinsics_areEqual($repo, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407638,7 +1407636,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         if ($installedMod !== null) {
             if ($isUpdatedVersionOfInstalledMod) {
                 $repoSearch = $this.$installedModInfo;
-                $mod = $repo.$name9;
+                $repo = $repo_0.$name9;
                 $repoSearch = $rt_nullCheck($repoSearch);
                 $ptr = 26;
                 continue main;
@@ -1407646,7 +1407644,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
                 try {
                     $repoSearch = culg_Github_INSTANCE;
-                    $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                    $repo = cumr_Ruleset_getFolderLocation($installedMod);
                     $ptr = 41;
                     continue main;
                 } catch ($$e) {
@@ -1407670,22 +1407668,22 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         $ptr = 23;
         continue main;
     case 25:
-        $tmp = cumt_TranslationExtensionsKt_tr$default($repoSearch, var$10, var$14, var$15, $modInfo);
+        $tmp = cumt_TranslationExtensionsKt_tr$default($repo, var$11, var$14, var$15, $$this$firstOrNull$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $repoSearch = $tmp;
-        jl_AbstractStringBuilder_append($it, $repoSearch);
-        jl_AbstractStringBuilder_append0($it, 10);
-        $repoSearch = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($repoSearch);
-        jl_AbstractStringBuilder_append0($repoSearch, 91);
-        jl_AbstractStringBuilder_append1($repoSearch, $repo.$stargazers_count);
-        jl_AbstractStringBuilder_append($repoSearch, $rt_s(10807));
+        $repo = $tmp;
+        jl_AbstractStringBuilder_append($repoSearch, $repo);
+        jl_AbstractStringBuilder_append0($repoSearch, 10);
+        $repo = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($repo);
+        jl_AbstractStringBuilder_append0($repo, 91);
+        jl_AbstractStringBuilder_append1($repo, $repo_0.$stargazers_count);
+        jl_AbstractStringBuilder_append($repo, $rt_s(10807));
         $ptr = 29;
         continue main;
     case 26:
-        $tmp = ju_HashMap_get($repoSearch, $mod);
+        $tmp = ju_HashMap_get($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407711,7 +1407709,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
                 try {
                     $repoSearch = culg_Github_INSTANCE;
-                    $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                    $repo = cumr_Ruleset_getFolderLocation($installedMod);
                     $ptr = 41;
                     continue main;
                 } catch ($$e) {
@@ -1407737,37 +1407735,37 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         $ptr = 36;
         continue main;
     case 29:
+        $tmp = jl_AbstractStringBuilder_toString($repo);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$firstOrNull$iv = $tmp;
+        var$15 = 0;
+        var$11 = 0;
+        var$14 = 3;
+        $repo = null;
+        $ptr = 30;
+    case 30:
+        $tmp = cumt_TranslationExtensionsKt_tr$default($$this$firstOrNull$iv, var$15, var$11, var$14, $repo);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $repo = $tmp;
+        jl_AbstractStringBuilder_append($repoSearch, $repo);
+        $ptr = 31;
+    case 31:
         $tmp = jl_AbstractStringBuilder_toString($repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $modInfo = $tmp;
-        var$10 = 0;
-        var$14 = 0;
-        var$15 = 3;
-        $repoSearch = null;
-        $ptr = 30;
-    case 30:
-        $tmp = cumt_TranslationExtensionsKt_tr$default($modInfo, var$10, var$14, var$15, $repoSearch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $repoSearch = $tmp;
-        jl_AbstractStringBuilder_append($it, $repoSearch);
-        $ptr = 31;
-    case 31:
-        $tmp = jl_AbstractStringBuilder_toString($it);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $it = $tmp;
-        cuusm_ModUIData__init_0($mod, $installedMod, $it, null, $repo, 0, $isUpdatedVersionOfInstalledMod, 16, null);
+        $$this$firstOrNull$iv = $tmp;
+        cuusm_ModUIData__init_($mod, $element$iv, $$this$firstOrNull$iv, null, $repo_0, 0, $isUpdatedVersionOfInstalledMod, 16, null);
         $repoSearch = $this.$onlineModInfo;
-        $modInfo = $repo.$name9;
+        $repo = $repo_0.$name9;
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 32;
     case 32:
-        ju_HashMap_putImpl($repoSearch, $modInfo, $mod);
+        ju_HashMap_putImpl($repoSearch, $repo, $mod);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407793,14 +1407791,13 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             break main;
         }
         $isUpdatedVersionOfInstalledMod = $tmp;
-        if (!$isUpdatedVersionOfInstalledMod) {
-            $ex = $rt_nullCheck($ex);
-            $ptr = 3;
+        if ($isUpdatedVersionOfInstalledMod) {
+            $repoSearch = $this.$excludedModAuthors;
+            $repo = cuusm_ModUIData_author($mod);
+            $ptr = 37;
             continue main;
         }
-        $repoSearch = $this.$excludedModAuthors;
-        $modInfo = cuusm_ModUIData_author($mod);
-        $ptr = 37;
+        $ptr = 3;
         continue main;
     case 36:
         cuusm_ModDecoratedButton_updateIndicators($repoSearch);
@@ -1407810,7 +1407807,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         if (($rt_nullCheck(($rt_nullCheck($installedMod.$modOptions)).$author0)).$nativeString.length ? 0 : 1) {
             try {
                 $repoSearch = culg_Github_INSTANCE;
-                $mod = cumr_Ruleset_getFolderLocation($installedMod);
+                $repo = cumr_Ruleset_getFolderLocation($installedMod);
                 $ptr = 41;
                 continue main;
             } catch ($$e) {
@@ -1407833,29 +1407830,29 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         $ptr = 23;
         continue main;
     case 37:
-        $tmp = kc_CollectionsKt___CollectionsKt_contains($repoSearch, $modInfo);
+        $tmp = kc_CollectionsKt___CollectionsKt_contains($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
         $isUpdatedVersionOfInstalledMod = $tmp;
-        if ($isUpdatedVersionOfInstalledMod) {
-            $ex = $rt_nullCheck($ex);
-            $ptr = 3;
+        if (!$isUpdatedVersionOfInstalledMod) {
+            $repoSearch = $this.$onlineModsTable;
+            $ptr = 38;
             continue main;
         }
-        $repoSearch = $this.$onlineModsTable;
-        $ptr = 38;
+        $ptr = 3;
+        continue main;
     case 38:
         $tmp = cuusm_ModManagementScreen_getCachedModButton($this, $mod);
         if ($rt_suspending()) {
             break main;
         }
-        $mod = $tmp;
-        $mod = $mod;
+        $repo = $tmp;
+        $repo = $repo;
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 39;
     case 39:
-        $tmp = cbgssu_Table_add($repoSearch, $mod);
+        $tmp = cbgssu_Table_add($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407867,14 +1407864,13 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         if ($rt_suspending()) {
             break main;
         }
-        $ex = $rt_nullCheck($ex);
         $ptr = 3;
         continue main;
     case 41:
         try {
             a: {
                 try {
-                    kji_Intrinsics_checkNotNull($mod);
+                    kji_Intrinsics_checkNotNull($repo);
                     if ($rt_suspending()) {
                         break main;
                     }
@@ -1407908,7 +1407904,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             try {
                 c: {
                     try {
-                        culg_Github_rewriteModOptions($repoSearch, $repo, $mod);
+                        culg_Github_rewriteModOptions($repoSearch, $repo_0, $repo);
                         if ($rt_suspending()) {
                             break main;
                         }
@@ -1407936,9 +1407932,9 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             $ptr = 43;
             continue main;
         }
-        $modInfo = $installedMod.$modOptions;
-        $mod = ($rt_nullCheck($repo.$owner1)).$login;
-        $repoSearch = $rt_nullCheck($modInfo);
+        $repo = $installedMod.$modOptions;
+        $repoSearch = culg_GithubAPI$RepoOwner_getLogin($rt_nullCheck(culg_GithubAPI$Repo_getOwner($repo_0)));
+        $repo = $rt_nullCheck($repo);
         $ptr = 47;
         continue main;
     case 43:
@@ -1407947,12 +1407943,12 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             break main;
         }
         $repoSearch = cuu_Log_INSTANCE;
-        $mod = $rt_s(10809);
-        $ex = $ex;
+        $repo = $rt_s(10809);
+        $$this$firstOrNull$iv = $ex;
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 44;
     case 44:
-        cuu_Log_error($repoSearch, $mod, $ex);
+        cuu_Log_error($repoSearch, $repo, $$this$firstOrNull$iv);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407963,30 +1407959,30 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
             break main;
         }
         $repoSearch = cuu_Log_INSTANCE;
-        $mod = $rt_s(10809);
-        $ex = $ex;
+        $repo = $rt_s(10809);
+        $$this$firstOrNull$iv = $ex;
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 46;
     case 46:
-        cuu_Log_error($repoSearch, $mod, $ex);
+        cuu_Log_error($repoSearch, $repo, $$this$firstOrNull$iv);
         if ($rt_suspending()) {
             break main;
         }
         return;
     case 47:
-        cumr_ModOptions_setAuthor($repoSearch, $mod);
+        cumr_ModOptions_setAuthor($repo, $repoSearch);
         if ($rt_suspending()) {
             break main;
         }
-        $repoSearch = $installedMod.$modOptions;
-        var$10 = $repo.$size37;
-        cumr_ModOptions_setModSize($rt_nullCheck($repoSearch), var$10);
         $repoSearch = cumr_Ruleset_getModOptions($installedMod);
-        $mod = culg_GithubAPI$Repo_getTopics($repo);
+        var$11 = culg_GithubAPI$Repo_getSize($repo_0);
+        cumr_ModOptions_setModSize($rt_nullCheck($repoSearch), var$11);
+        $repoSearch = cumr_Ruleset_getModOptions($installedMod);
+        $repo = culg_GithubAPI$Repo_getTopics($repo_0);
         $repoSearch = $rt_nullCheck($repoSearch);
         $ptr = 48;
     case 48:
-        cumr_ModOptions_setTopics($repoSearch, $mod);
+        cumr_ModOptions_setTopics($repoSearch, $repo);
         if ($rt_suspending()) {
             break main;
         }
@@ -1407996,7 +1407992,7 @@ cuusm_ModManagementScreen_addModInfoFromRepoSearch = ($this, $repoSearch, $pageN
         continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $repoSearch, $pageNum, $repoSearch_0, $ex, $isUpdatedVersionOfInstalledMod, $mod, $modInfo, $it, $repo, var$10, $$this$firstOrNull$iv, $element$iv, $installedMod, var$14, var$15, $ptr);
+    $rt_nativeThread().push($this, $repoSearch, $pageNum, $repoSearch_0, $repo, $ex, $isUpdatedVersionOfInstalledMod, $$this$firstOrNull$iv, $element$iv, $it, $repo_0, var$11, $installedMod, $mod, var$14, var$15, $modInfo, $ptr);
 },
 cuusm_ModManagementScreen_markOnlineQueryIncomplete = $this => {
     let $retryLabel, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
@@ -1409148,7 +1409144,7 @@ cuusm_ModManagementScreen_refreshInstalledModInfo = $this => {
         var$4 = $tmp;
         $ptr = 12;
     case 12:
-        cuusm_ModUIData__init_($mod, $mod_0, var$4);
+        cuusm_ModUIData__init_0($mod, $mod_0, var$4);
         if ($rt_suspending()) {
             break main;
         }
@@ -1409435,7 +1409431,7 @@ cuusm_ModManagementScreen_installedButtonAction = ($this, $mod, $button) => {
         if ($rt_suspending()) {
             break main;
         }
-        $mod = $mod_0.$ruleset11;
+        $mod = $mod_0.$ruleset10;
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNull($mod);
@@ -1409490,7 +1409486,7 @@ cuusm_ModManagementScreen_installedButtonAction = ($this, $mod, $button) => {
             break main;
         }
         $mod = cuusp_PickerScreen_getRightSideButton($this);
-        var$7 = ($rt_nullCheck($mod_0.$ruleset11)).$folderLocation === null ? 0 : 1;
+        var$7 = ($rt_nullCheck($mod_0.$ruleset10)).$folderLocation === null ? 0 : 1;
         $ptr = 8;
     case 8:
         cuuce_Scene2dExtensionsKt_setEnabled($mod, var$7);
@@ -1410030,7 +1410026,7 @@ cuusm_ModManagementScreen_showModDescription = ($this, $modName) => {
             $onlineModDescription = $tmp;
             $onlineModDescription = $rt_castToClass($onlineModDescription, cuusm_ModUIData);
             if ($onlineModDescription !== null) {
-                $onlineModDescription = $onlineModDescription.$description4;
+                $onlineModDescription = $onlineModDescription.$description1;
                 if ($onlineModDescription !== null)
                     break a;
             }
@@ -1410047,7 +1410043,7 @@ cuusm_ModManagementScreen_showModDescription = ($this, $modName) => {
             $modName = $tmp;
             $modName = $rt_castToClass($modName, cuusm_ModUIData);
             if ($modName !== null) {
-                $installedModDescription = $modName.$description4;
+                $installedModDescription = $modName.$description1;
                 if ($installedModDescription !== null)
                     break a;
             }
@@ -1495154,29 +1495150,31 @@ cuaw_FetchHttpClientEngine$execute$$inlined$forEachHeader$1_invoke = ($this, $p1
             break main;
         }
         if (!$this.$$skipContentLengthHeader) {
-            var$3 = $rt_nullCheck($this.$$requestHeaders$inlined);
-            $ptr = 3;
-            continue main;
+            if (!kt_StringsKt__StringsJVMKt_equals($p1, $rt_s(4963), 1)) {
+                var$3 = $rt_nullCheck($this.$$requestHeaders$inlined);
+                $ptr = 4;
+                continue main;
+            }
+            return k_Unit_INSTANCE;
         }
         var$3 = $rt_s(4965);
-        $ptr = 4;
-        continue main;
+        $ptr = 3;
     case 3:
-        iku_StringValuesBuilderImpl_append(var$3, $p1, $p2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    case 4:
         $tmp = kji_Intrinsics_areEqual($p1, var$3);
         if ($rt_suspending()) {
             break main;
         }
         var$4 = $tmp;
-        if (!var$4) {
+        if (!var$4 && !kt_StringsKt__StringsJVMKt_equals($p1, $rt_s(4963), 1)) {
             var$3 = $rt_nullCheck($this.$$requestHeaders$inlined);
-            $ptr = 3;
+            $ptr = 4;
             continue main;
+        }
+        return k_Unit_INSTANCE;
+    case 4:
+        iku_StringValuesBuilderImpl_append(var$3, $p1, $p2);
+        if ($rt_suspending()) {
+            break main;
         }
         return k_Unit_INSTANCE;
     default: $rt_invalidPointer();
@@ -1594298,7 +1594296,7 @@ cuusd_DiplomacyScreen_isNotPlayersTurn$Unciv_core = $this => {
     $rt_nativeThread().push($this, var$1, var$2, $ptr);
 },
 cuusd_DiplomacyScreen_getCivilopediaRuleset = $this => {
-    return ($rt_nullCheck($this.$viewingCivView)).$ruleset10;
+    return ($rt_nullCheck($this.$viewingCivView)).$ruleset11;
 },
 cuusd_DiplomacyScreen_positionCloseButton = $this => {
     let var$1, var$2, var$3, var$4, $ptr, $tmp;
@@ -1616443,7 +1616441,7 @@ cuuso_EmpireOverviewScreen_dispose = $this => {
     $rt_nativeThread().push($this, var$1, var$2, var$3, var$4, var$5, $ptr);
 },
 cuuso_EmpireOverviewScreen_getCivilopediaRuleset = $this => {
-    return ($rt_nullCheck($this.$viewingPlayer0)).$ruleset10;
+    return ($rt_nullCheck($this.$viewingPlayer0)).$ruleset11;
 },
 cuuso_EmpireOverviewScreen_recreate = $this => {
     let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, $ptr, $tmp;
@@ -1643722,7 +1643720,7 @@ cuusc_ConstructionInfoTable_updateSelectedConstructionTable = ($this, $construct
                     continue main;
                 }
                 $specialConstruction = $rt_nullCheck($rt_castToClass($construction_0, cumr_PerpetualConstruction$StatConversion));
-                $construction = $specialConstruction.$description1;
+                $construction = $specialConstruction.$description2;
                 $$this$updateSelectedConstructionTable_u24lambda_u240 = $rt_s(12184);
                 $link = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_($link);
@@ -1654021,7 +1654019,7 @@ culau_CivilianUnitAutomation_isLateGame = ($this, $civ) => {
             break main;
         }
         $civ_0 = $rt_nullCheck($civ);
-        $civ = $rt_nullCheck(($rt_nullCheck($civ_0.$ruleset10)).$technologies);
+        $civ = $rt_nullCheck(($rt_nullCheck($civ_0.$ruleset11)).$technologies);
         $ptr = 2;
     case 2:
         $tmp = $civ.$keySet();
@@ -1677051,13 +1677049,13 @@ let cuusm_ModManagementScreen$_init_$lambda$_0_0_invoke = var$0 => {
 function cuusm_ModUIData() {
     let a = this; jl_Object.call(a);
     a.$name10 = null;
-    a.$description4 = null;
-    a.$ruleset11 = null;
+    a.$description1 = null;
+    a.$ruleset10 = null;
     a.$repo = null;
     a.$isVisual = 0;
     a.$hasUpdate = 0;
 }
-let cuusm_ModUIData__init_0 = (var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8) => {
+let cuusm_ModUIData__init_ = (var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8) => {
     if (var$7 & 4)
         var$3 = null;
     if (var$7 & 8)
@@ -1677067,21 +1677065,29 @@ let cuusm_ModUIData__init_0 = (var$0, var$1, var$2, var$3, var$4, var$5, var$6, 
     if (var$7 & 32)
         var$6 = 0;
     var$0.$name10 = var$1;
-    var$0.$description4 = var$2;
-    var$0.$ruleset11 = var$3;
+    var$0.$description1 = var$2;
+    var$0.$ruleset10 = var$3;
     var$0.$repo = var$4;
     var$0.$isVisual = var$5;
     var$0.$hasUpdate = var$6;
 },
-cuusm_ModUIData__init_1 = (var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7) => {
+cuusm_ModUIData__init_2 = (var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7) => {
     let var_8 = new cuusm_ModUIData();
-    cuusm_ModUIData__init_0(var_8, var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7);
+    cuusm_ModUIData__init_(var_8, var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7);
     return var_8;
 },
 cuusm_ModUIData_getName = $this => {
     return $this.$name10;
 },
-cuusm_ModUIData__init_ = ($this, $ruleset, $isVisual) => {
+cuusm_ModUIData__init_1 = $this => {
+    cuusm_ModUIData__init_($this, $rt_s(5), $rt_s(5), null, null, 0, 0, 60, null);
+},
+cuusm_ModUIData__init_4 = () => {
+    let var_0 = new cuusm_ModUIData();
+    cuusm_ModUIData__init_1(var_0);
+    return var_0;
+},
+cuusm_ModUIData__init_0 = ($this, $ruleset, $isVisual) => {
     let var$3, $it, var$5, var$6, var$7, var$8, var$9, var$10, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
@@ -1677146,24 +1677152,24 @@ cuusm_ModUIData__init_ = ($this, $ruleset, $isVisual) => {
             break main;
         }
         var$6 = $tmp;
-        cuusm_ModUIData__init_0($this, var$3, var$6, $ruleset, null, $isVisual, 0, 32, null);
+        cuusm_ModUIData__init_($this, var$3, var$6, $ruleset, null, $isVisual, 0, 32, null);
         return;
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push($this, $ruleset, $isVisual, var$3, $it, var$5, var$6, var$7, var$8, var$9, var$10, $ptr);
 },
-cuusm_ModUIData__init_2 = (var_0, var_1) => {
+cuusm_ModUIData__init_3 = (var_0, var_1) => {
     let var_2 = new cuusm_ModUIData();
-    cuusm_ModUIData__init_(var_2, var_0, var_1);
+    cuusm_ModUIData__init_0(var_2, var_0, var_1);
     return var_2;
 },
 cuusm_ModUIData_isInstalled = $this => {
-    return $this.$ruleset11 === null ? 0 : 1;
+    return $this.$ruleset10 === null ? 0 : 1;
 },
 cuusm_ModUIData_lastUpdated = $this => {
     let var$1;
     a: {
-        var$1 = $this.$ruleset11;
+        var$1 = $this.$ruleset10;
         if (var$1 !== null) {
             var$1 = var$1.$modOptions;
             if (var$1 !== null) {
@@ -1677188,7 +1677194,7 @@ cuusm_ModUIData_stargazers = $this => {
 cuusm_ModUIData_author = $this => {
     let var$1;
     a: {
-        var$1 = $this.$ruleset11;
+        var$1 = $this.$ruleset10;
         if (var$1 !== null) {
             var$1 = var$1.$modOptions;
             if (var$1 !== null) {
@@ -1677268,7 +1677274,7 @@ cuusm_ModUIData_matchesFilter$Unciv_core = ($this, $filter) => {
         }
         $filter = $this.$repo;
         if ($filter !== null) {
-            $filter = $filter.$topics0;
+            $filter = $filter.$topics;
             if ($filter !== null) {
                 var$2 = $filter_0.$topic0;
                 $filter = $rt_nullCheck($filter);
@@ -1677278,7 +1677284,7 @@ cuusm_ModUIData_matchesFilter$Unciv_core = ($this, $filter) => {
         }
         a: {
             b: {
-                $filter = $this.$ruleset11;
+                $filter = $this.$ruleset10;
                 if ($filter !== null) {
                     $filter = $filter.$modOptions;
                     if ($filter !== null)
@@ -1677287,7 +1677293,7 @@ cuusm_ModUIData_matchesFilter$Unciv_core = ($this, $filter) => {
                 $filter = null;
                 break a;
             }
-            $filter = $filter.$topics;
+            $filter = $filter.$topics0;
         }
         $ptr = 5;
     case 5:
@@ -1685961,7 +1685967,7 @@ cuusd_CityStateDiplomacyTable_getQuestTable = ($this, $assignedQuest) => {
             break main;
         }
         $assignedQuest = $tmp;
-        $assignedQuest = ($rt_nullCheck($assignedQuest)).$description2;
+        $assignedQuest = ($rt_nullCheck($assignedQuest)).$description3;
         var$9 = $rt_createArray(jl_String, 1);
         var$9.data[0] = $assignedQuest_0.$data1;
         $ptr = 7;
@@ -1728223,7 +1728229,7 @@ culau_RoadBetweenCitiesAutomation_tryConnectingCities$Unciv_core = ($this, $unit
         var$5 = $tmp;
         if (!var$5) {
             $unitView = $this.$bestRoadAvailable;
-            $candidateCities = ($rt_nullCheck($this.$civView0)).$ruleset10;
+            $candidateCities = ($rt_nullCheck($this.$civView0)).$ruleset11;
             $unitView = $rt_nullCheck($unitView);
             $ptr = 43;
             continue main;
@@ -1737898,11 +1737904,11 @@ let cuusm_ModDecoratedButton__init_ = ($this, $modInfo) => {
             $this.$modInfo = $modInfo;
             ($rt_nullCheck($this)).$touchable = cbgss_Touchable_enabled;
             $modInfo = $rt_nullCheck($modInfo);
-            $topicString = $modInfo.$ruleset11;
+            $topicString = $modInfo.$ruleset10;
             if ($topicString !== null) {
                 $topicString = $topicString.$modOptions;
                 if ($topicString !== null) {
-                    $topics = $topicString.$topics;
+                    $topics = $topicString.$topics0;
                     if ($topics !== null)
                         break a;
                 }
@@ -1737911,7 +1737917,7 @@ let cuusm_ModDecoratedButton__init_ = ($this, $modInfo) => {
             if ($modInfo === null)
                 $topics = kc_CollectionsKt__CollectionsKt_emptyList();
             else
-                $topics = $modInfo.$topics0;
+                $topics = $modInfo.$topics;
         }
         $categories = ju_ArrayList__init_();
         $ptr = 3;
@@ -1737946,7 +1737952,7 @@ let cuusm_ModDecoratedButton__init_ = ($this, $modInfo) => {
         var$5 = $tmp;
         if (!var$5) {
             $modInfo = $rt_nullCheck($this.$modInfo);
-            $topicString = $modInfo.$ruleset11;
+            $topicString = $modInfo.$ruleset10;
             if ($topicString === null) {
                 if ($modInfo.$repo !== null) {
                     $topicString = new jl_StringBuilder;
@@ -1738104,7 +1738110,7 @@ let cuusm_ModDecoratedButton__init_ = ($this, $modInfo) => {
         if ($rt_suspending()) {
             break main;
         }
-        if (($rt_nullCheck($this.$modInfo)).$ruleset11 !== null) {
+        if (($rt_nullCheck($this.$modInfo)).$ruleset10 !== null) {
             $modInfo = new cuusm_ModDecoratedButton$ModStateImages;
             $ptr = 22;
             continue main;
@@ -1738548,19 +1738554,36 @@ function culg_GithubAPI$Repo() {
     a.$release_tag = null;
     a.$name9 = null;
     a.$full_name = null;
-    a.$description8 = null;
+    a.$description5 = null;
     a.$owner1 = null;
     a.$stargazers_count = 0;
     a.$default_branch = null;
     a.$html_url = null;
     a.$pushed_at = null;
     a.$size37 = 0;
-    a.$topics0 = null;
+    a.$topics = null;
 }
 let culg_GithubAPI$Repo_Companion = null,
 culg_GithubAPI$Repo_$callClinit = () => {
     culg_GithubAPI$Repo_$callClinit = $rt_eraseClinit(culg_GithubAPI$Repo);
     culg_GithubAPI$Repo__clinit_();
+},
+culg_GithubAPI$Repo__init_ = $this => {
+    culg_GithubAPI$Repo_$callClinit();
+    $this.$direct_zip_url = $rt_s(5);
+    $this.$release_tag = $rt_s(5);
+    $this.$name9 = $rt_s(5);
+    $this.$full_name = $rt_s(5);
+    $this.$owner1 = culg_GithubAPI$RepoOwner__init_0();
+    $this.$default_branch = $rt_s(5);
+    $this.$html_url = $rt_s(5);
+    $this.$pushed_at = $rt_s(5);
+    $this.$topics = ju_ArrayList__init_();
+},
+culg_GithubAPI$Repo__init_0 = () => {
+    let var_0 = new culg_GithubAPI$Repo();
+    culg_GithubAPI$Repo__init_(var_0);
+    return var_0;
 },
 culg_GithubAPI$Repo_getDirect_zip_url = $this => {
     return $this.$direct_zip_url;
@@ -1738637,6 +1738660,9 @@ culg_GithubAPI$Repo_setName = ($this, $_set___) => {
     }}
     $rt_nativeThread().push($this, $_set___, var$2, $ptr);
 },
+culg_GithubAPI$Repo_getOwner = $this => {
+    return $this.$owner1;
+},
 culg_GithubAPI$Repo_getDefault_branch = $this => {
     return $this.$default_branch;
 },
@@ -1738691,7 +1738717,7 @@ culg_GithubAPI$Repo_getSize = $this => {
     return $this.$size37;
 },
 culg_GithubAPI$Repo_getTopics = $this => {
-    return $this.$topics0;
+    return $this.$topics;
 },
 culg_GithubAPI$Repo_toString = $this => {
     let var$1;
@@ -1738712,6 +1738738,18 @@ let culg_GithubAPI$RepoOwner_Companion = null,
 culg_GithubAPI$RepoOwner_$callClinit = () => {
     culg_GithubAPI$RepoOwner_$callClinit = $rt_eraseClinit(culg_GithubAPI$RepoOwner);
     culg_GithubAPI$RepoOwner__clinit_();
+},
+culg_GithubAPI$RepoOwner__init_ = $this => {
+    culg_GithubAPI$RepoOwner_$callClinit();
+    $this.$login = $rt_s(5);
+},
+culg_GithubAPI$RepoOwner__init_0 = () => {
+    let var_0 = new culg_GithubAPI$RepoOwner();
+    culg_GithubAPI$RepoOwner__init_(var_0);
+    return var_0;
+},
+culg_GithubAPI$RepoOwner_getLogin = $this => {
+    return $this.$login;
 },
 culg_GithubAPI$RepoOwner_setLogin = ($this, $_set___) => {
     let var$2, $ptr, $tmp;
@@ -1757850,11 +1757888,11 @@ cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_6_invoke = (var$0, va
 },
 culg_GithubAPI$Repo$Companion = $rt_classWithoutFields(),
 culg_GithubAPI$Repo$Companion_parseUrl = ($this, $url, $$completion) => {
-    let var$3, var$4, var$5, $ptr, $tmp;
+    let var$3, var$4, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1757865,20 +1757903,7 @@ culg_GithubAPI$Repo$Companion_parseUrl = ($this, $url, $$completion) => {
             break main;
         }
         var$3 = culg_GithubAPI_INSTANCE;
-        var$4 = new culg_GithubAPI$Repo;
-        culg_GithubAPI$Repo_$callClinit();
-        var$4.$direct_zip_url = $rt_s(5);
-        var$4.$release_tag = $rt_s(5);
-        var$4.$name9 = $rt_s(5);
-        var$4.$full_name = $rt_s(5);
-        var$5 = new culg_GithubAPI$RepoOwner;
-        culg_GithubAPI$RepoOwner_$callClinit();
-        var$5.$login = $rt_s(5);
-        var$4.$owner1 = var$5;
-        var$4.$default_branch = $rt_s(5);
-        var$4.$html_url = $rt_s(5);
-        var$4.$pushed_at = $rt_s(5);
-        var$4.$topics0 = ju_ArrayList__init_();
+        var$4 = culg_GithubAPI$Repo__init_0();
         $ptr = 2;
     case 2:
         $tmp = culg_GithubAPI_access$parseUrl(var$3, var$4, $url, $$completion);
@@ -1757889,7 +1757914,7 @@ culg_GithubAPI$Repo$Companion_parseUrl = ($this, $url, $$completion) => {
         return $url;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $url, $$completion, var$3, var$4, var$5, $ptr);
+    $rt_nativeThread().push($this, $url, $$completion, var$3, var$4, $ptr);
 },
 culg_GithubAPI$Repo$Companion_query = ($this, $owner, $repoName, $$completion) => {
     let $$continuation, var$5, $$result, $resp, $resp_0, var$9, $ptr, $tmp;
@@ -1766484,6 +1766509,3658 @@ ksj_JsonElementSerializer__clinit_ = () => {
     }}
     $rt_nativeThread().push(var$1, var$2, var$3, var$4, $ptr);
 },
+culg_GithubAPI = $rt_classWithoutFields(),
+culg_GithubAPI_INSTANCE = null,
+culg_GithubAPI_client = null,
+culg_GithubAPI_githubArchiveUrlRegex = null,
+culg_GithubAPI_parseAttachmentDispositionRegex = null,
+culg_GithubAPI_goodFolders = null,
+culg_GithubAPI_goodFiles = null,
+culg_GithubAPI_$_teavm_clinitCalled_$ = false,
+culg_GithubAPI_$callClinit = () => {
+    let $ptr = 0;
+    if ($rt_resuming()) {
+        $ptr = $rt_nativeThread().pop();
+    } else if (culg_GithubAPI_$_teavm_clinitCalled_$) {
+        return;
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        culg_GithubAPI_$_teavm_clinitCalled_$ = true;
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI__clinit_();
+        if ($rt_suspending()) {
+            break main;
+        }
+        culg_GithubAPI_$callClinit = $rt_eraseClinit(culg_GithubAPI);
+        return;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($ptr);
+},
+culg_GithubAPI_request = ($this, $maxRateLimitedRetries, $block, $$completion) => {
+    let $$continuation, var$5, $$result, $block_0, $resp, $rateLimited, $$this$request$iv, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$$this$request$iv = $thread.pop();$rateLimited = $thread.pop();$resp = $thread.pop();$block_0 = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$block = $thread.pop();$maxRateLimitedRetries = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        if ($$completion instanceof culg_GithubAPI$request$1) {
+            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$request$1));
+            var$5 = $$continuation.$label33;
+            if (var$5 & (-2147483648)) {
+                $$continuation.$label33 = var$5 + (-2147483648) | 0;
+                $$result = $$continuation.$result21;
+                $ptr = 2;
+                continue main;
+            }
+        }
+        $$continuation = new culg_GithubAPI$request$1;
+        $$continuation.$this$0454 = $this;
+        $ptr = 1;
+    case 1:
+        kcji_ContinuationImpl__init_($$continuation, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $$continuation.$result21;
+        $ptr = 2;
+    case 2:
+        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        switch ($$continuation.$label33) {
+            case 0:
+                k_ResultKt_throwOnFailure($$result);
+                $ptr = 3;
+                continue main;
+            case 1:
+                $maxRateLimitedRetries = $$continuation.$I$09;
+                $block_0 = $$continuation.$L$047;
+                k_ResultKt_throwOnFailure($$result);
+                $resp = $rt_castToClass($$result, ikcs_HttpResponse);
+                $$continuation.$L$047 = $block_0;
+                $$continuation.$L$136 = $resp;
+                $$continuation.$L$268 = null;
+                $$continuation.$L$344 = null;
+                $$continuation.$I$09 = $maxRateLimitedRetries;
+                $$continuation.$label33 = 2;
+                $ptr = 9;
+                continue main;
+            case 2:
+                $maxRateLimitedRetries = $$continuation.$I$09;
+                $resp = $$continuation.$L$136;
+                $block_0 = $$continuation.$L$047;
+                k_ResultKt_throwOnFailure($$result);
+                $rateLimited = ($rt_nullCheck($rt_castToClass($$result, jl_Boolean))).$value3;
+                if ($rateLimited) {
+                    if ($maxRateLimitedRetries > 0) {
+                        var$5 = $maxRateLimitedRetries - 1 | 0;
+                        $$continuation.$L$047 = null;
+                        $$continuation.$L$136 = null;
+                        $$continuation.$I$09 = $maxRateLimitedRetries;
+                        $$continuation.$Z$08 = $rateLimited;
+                        $$continuation.$label33 = 3;
+                        $ptr = 10;
+                        continue main;
+                    }
+                    return $resp;
+                }
+                return $resp;
+            case 3:
+                break;
+            default:
+                $block = new jl_IllegalStateException;
+                $$completion = $rt_s(136);
+                $ptr = 8;
+                continue main;
+        }
+        k_ResultKt_throwOnFailure($$result);
+        return $$result;
+    case 3:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$request$iv = culg_GithubAPI_client;
+        $$result = new ikcr_HttpRequestBuilder;
+        $ptr = 4;
+    case 4:
+        ikcr_HttpRequestBuilder__init_($$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $block_0 = $rt_nullCheck($block);
+        $ptr = 5;
+    case 5:
+        $block_0.$invoke0($$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $block = new ikcs_HttpStatement;
+        $ptr = 6;
+    case 6:
+        ikcs_HttpStatement__init_($block, $$result, $$this$request$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$continuation.$L$047 = $block_0;
+        $$continuation.$L$136 = null;
+        $$continuation.$L$268 = null;
+        $$continuation.$L$344 = null;
+        $$continuation.$I$09 = $maxRateLimitedRetries;
+        $$continuation.$label33 = 1;
+        $ptr = 7;
+    case 7:
+        $tmp = ikcs_HttpStatement_fetchResponse($block, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        if ($$result !== $$completion) {
+            $resp = $rt_castToClass($$result, ikcs_HttpResponse);
+            $$continuation.$L$047 = $block_0;
+            $$continuation.$L$136 = $resp;
+            $$continuation.$L$268 = null;
+            $$continuation.$L$344 = null;
+            $$continuation.$I$09 = $maxRateLimitedRetries;
+            $$continuation.$label33 = 2;
+            $ptr = 9;
+            continue main;
+        }
+        return $$completion;
+    case 8:
+        jl_Throwable__init_($block, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($block);
+    case 9:
+        $tmp = culg_GithubAPI_consumeRateLimit($this, $resp, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        if ($$result !== $$completion) {
+            $rateLimited = ($rt_nullCheck($rt_castToClass($$result, jl_Boolean))).$value3;
+            if ($rateLimited) {
+                if ($maxRateLimitedRetries > 0) {
+                    var$5 = $maxRateLimitedRetries - 1 | 0;
+                    $$continuation.$L$047 = null;
+                    $$continuation.$L$136 = null;
+                    $$continuation.$I$09 = $maxRateLimitedRetries;
+                    $$continuation.$Z$08 = $rateLimited;
+                    $$continuation.$label33 = 3;
+                    $ptr = 10;
+                    continue main;
+                }
+                return $resp;
+            }
+            return $resp;
+        }
+        return $$completion;
+    case 10:
+        $tmp = culg_GithubAPI_request($this, var$5, $block_0, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        if ($$result !== $$completion)
+            return $$result;
+        return $$completion;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $maxRateLimitedRetries, $block, $$completion, $$continuation, var$5, $$result, $block_0, $resp, $rateLimited, $$this$request$iv, $ptr);
+},
+culg_GithubAPI_request$default = (var$1, var$2, var$3, var$4, var$5, var$6) => {
+    let $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        if (var$5 & 1)
+            var$2 = 3;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 2;
+    case 2:
+        $tmp = culg_GithubAPI_request(var$1, var$2, var$3, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        return var$1;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
+},
+culg_GithubAPI_getUrlForBranchZip$Unciv_core = ($this, $gitRepoUrl, $branch) => {
+    let $$this$all$iv, $branch_0, var$5, $element$iv, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$element$iv = $thread.pop();var$5 = $thread.pop();$branch_0 = $thread.pop();$$this$all$iv = $thread.pop();$branch = $thread.pop();$gitRepoUrl = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $$this$all$iv = $rt_s(12657);
+        $ptr = 1;
+    case 1:
+        kji_Intrinsics_checkNotNullParameter($gitRepoUrl, $$this$all$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$all$iv = $rt_s(6206);
+        $ptr = 2;
+    case 2:
+        a: {
+            kji_Intrinsics_checkNotNullParameter($branch, $$this$all$iv);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $branch_0 = $rt_nullCheck($branch);
+            if ($branch_0.$nativeString.length == 40) {
+                $$this$all$iv = $branch_0;
+                var$5 = 0;
+                $$this$all$iv = $rt_nullCheck($$this$all$iv);
+                if (var$5 >= $$this$all$iv.$nativeString.length) {
+                    if (!1)
+                        break a;
+                    else {
+                        $branch = new jl_StringBuilder;
+                        jl_AbstractStringBuilder__init_($branch);
+                        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
+                        jl_AbstractStringBuilder_append($branch, $rt_s(12658));
+                        jl_AbstractStringBuilder_append($branch, $branch_0);
+                        jl_AbstractStringBuilder_append($branch, $rt_s(12659));
+                        $ptr = 7;
+                        continue main;
+                    }
+                }
+                $ptr = 4;
+                continue main;
+            }
+        }
+        $branch = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($branch);
+        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
+        jl_AbstractStringBuilder_append($branch, $rt_s(12660));
+        jl_AbstractStringBuilder_append($branch, $branch_0);
+        jl_AbstractStringBuilder_append($branch, $rt_s(12659));
+        $ptr = 3;
+    case 3:
+        $tmp = jl_AbstractStringBuilder_toString($branch);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $gitRepoUrl = $tmp;
+        return $gitRepoUrl;
+    case 4:
+        $tmp = jl_String_charAt($$this$all$iv, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $element$iv = $tmp;
+        $ptr = 5;
+    case 5:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $branch = $rt_nullCheck(culg_GithubAPI_INSTANCE);
+        $ptr = 6;
+    case 6:
+        $tmp = culg_GithubAPI_isHex($branch, $element$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $element$iv = $tmp;
+        if (!$element$iv)
+            var$5 = 0;
+        else {
+            var$5 = var$5 + 1 | 0;
+            if (var$5 < $$this$all$iv.$nativeString.length) {
+                $ptr = 4;
+                continue main;
+            }
+            var$5 = 1;
+        }
+        if (var$5) {
+            $branch = new jl_StringBuilder;
+            jl_AbstractStringBuilder__init_($branch);
+            jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
+            jl_AbstractStringBuilder_append($branch, $rt_s(12658));
+            jl_AbstractStringBuilder_append($branch, $branch_0);
+            jl_AbstractStringBuilder_append($branch, $rt_s(12659));
+            $ptr = 7;
+            continue main;
+        }
+        $branch = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($branch);
+        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
+        jl_AbstractStringBuilder_append($branch, $rt_s(12660));
+        jl_AbstractStringBuilder_append($branch, $branch_0);
+        jl_AbstractStringBuilder_append($branch, $rt_s(12659));
+        $ptr = 3;
+        continue main;
+    case 7:
+        $tmp = jl_AbstractStringBuilder_toString($branch);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $gitRepoUrl = $tmp;
+        return $gitRepoUrl;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $gitRepoUrl, $branch, $$this$all$iv, $branch_0, var$5, $element$iv, $ptr);
+},
+culg_GithubAPI_toCodeloadUrl = ($this, $url) => {
+    let $match, $owner, var$4, $repo, $ref, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$ref = $thread.pop();$repo = $thread.pop();var$4 = $thread.pop();$owner = $thread.pop();$match = $thread.pop();$url = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $match = $rt_s(5062);
+        $ptr = 1;
+    case 1:
+        kji_Intrinsics_checkNotNullParameter($url, $match);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 2;
+    case 2:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $match = culg_GithubAPI_githubArchiveUrlRegex;
+        $owner = $url;
+        $match = $rt_nullCheck($match);
+        $ptr = 3;
+    case 3:
+        $tmp = kt_Regex_matchEntire($match, $owner);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $match = $tmp;
+        if ($match !== null) {
+            $url = $rt_nullCheck($match);
+            $ptr = 4;
+            continue main;
+        }
+        return $url;
+    case 4:
+        $tmp = kt_MatcherMatchResult_getDestructured($url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        $match = $rt_nullCheck($url);
+        $url = $rt_nullCheck($match.$match1);
+        $ptr = 5;
+    case 5:
+        $tmp = kt_MatcherMatchResult_getGroupValues($url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        var$4 = 1;
+        $url = $rt_nullCheck($url);
+        $ptr = 6;
+    case 6:
+        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        $owner = $url;
+        $url = $rt_nullCheck($match.$match1);
+        $ptr = 7;
+    case 7:
+        $tmp = kt_MatcherMatchResult_getGroupValues($url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        var$4 = 2;
+        $url = $rt_nullCheck($url);
+        $ptr = 8;
+    case 8:
+        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        $repo = $url;
+        $url = $rt_nullCheck($match.$match1);
+        $ptr = 9;
+    case 9:
+        $tmp = kt_MatcherMatchResult_getGroupValues($url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        var$4 = 3;
+        $url = $rt_nullCheck($url);
+        $ptr = 10;
+    case 10:
+        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        $ref = $url;
+        $url = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($url);
+        jl_AbstractStringBuilder_append($url, $rt_s(12661));
+        jl_AbstractStringBuilder_append($url, $owner);
+        jl_AbstractStringBuilder_append0($url, 47);
+        jl_AbstractStringBuilder_append($url, $repo);
+        jl_AbstractStringBuilder_append($url, $rt_s(12662));
+        jl_AbstractStringBuilder_append($url, $ref);
+        $ptr = 11;
+    case 11:
+        $tmp = jl_AbstractStringBuilder_toString($url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $tmp;
+        return $url;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $url, $match, $owner, var$4, $repo, $ref, $ptr);
+},
+culg_GithubAPI_consumeRateLimit = ($this, $resp, $$completion) => {
+    let $$continuation, $remainingRequests, $$result, $resp_0, $resetEpoch, var$8, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$8 = $thread.pop();$resetEpoch = $thread.pop();$resp_0 = $thread.pop();$$result = $thread.pop();$remainingRequests = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$resp = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        if ($$completion instanceof culg_GithubAPI$consumeRateLimit$1) {
+            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$consumeRateLimit$1));
+            $remainingRequests = $$continuation.$label113;
+            if ($remainingRequests & (-2147483648)) {
+                $$continuation.$label113 = $remainingRequests + (-2147483648) | 0;
+                $$result = $$continuation.$result14;
+                $ptr = 2;
+                continue main;
+            }
+        }
+        $$continuation = new culg_GithubAPI$consumeRateLimit$1;
+        $$continuation.$this$0472 = $this;
+        $ptr = 1;
+    case 1:
+        kcji_ContinuationImpl__init_($$continuation, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $$continuation.$result14;
+        $ptr = 2;
+    case 2:
+        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        switch ($$continuation.$label113) {
+            case 0:
+                k_ResultKt_throwOnFailure($$result);
+                $resp_0 = $rt_nullCheck($resp);
+                $resp = $resp_0.$getStatus();
+                $ptr = 3;
+                continue main;
+            case 1:
+                break;
+            default:
+                $resp = new jl_IllegalStateException;
+                $$completion = $rt_s(136);
+                $ptr = 6;
+                continue main;
+        }
+        k_ResultKt_throwOnFailure($$result);
+        return jl_Boolean_valueOf(1);
+    case 3:
+        ikh_HttpStatusCode_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $rt_nullCheck(ikh_HttpStatusCode_Companion);
+        $ptr = 4;
+    case 4:
+        $tmp = ikh_HttpStatusCode$Companion_getForbidden($$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        $ptr = 5;
+    case 5:
+        $tmp = kji_Intrinsics_areEqual($resp, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $remainingRequests = $tmp;
+        if ($remainingRequests) {
+            $resp = $resp_0.$getHeaders();
+            $$result = $rt_s(12663);
+            $resp = $rt_nullCheck($resp);
+            $ptr = 7;
+            continue main;
+        }
+        $resp = $resp_0.$getStatus();
+        $$result = $rt_nullCheck(ikh_HttpStatusCode_Companion);
+        $ptr = 8;
+        continue main;
+    case 6:
+        jl_Throwable__init_($resp, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($resp);
+    case 7:
+        $tmp = iku_StringValuesImpl_get($resp, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        if ($resp === null) {
+            $remainingRequests = 0;
+            if ($remainingRequests >= 1) {
+                $resp = $resp_0.$getHeaders();
+                $$result = $rt_s(12664);
+                $resp = $rt_nullCheck($resp);
+                $ptr = 11;
+                continue main;
+            }
+            return jl_Boolean_valueOf(0);
+        }
+        $ptr = 10;
+        continue main;
+    case 8:
+        $tmp = ikh_HttpStatusCode$Companion_getTooManyRequests($$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        $ptr = 9;
+    case 9:
+        $tmp = kji_Intrinsics_areEqual($resp, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $remainingRequests = $tmp;
+        if ($remainingRequests) {
+            $resp = $resp_0.$getHeaders();
+            $$result = $rt_s(12663);
+            $resp = $rt_nullCheck($resp);
+            $ptr = 7;
+            continue main;
+        }
+        return jl_Boolean_valueOf(0);
+    case 10:
+        $tmp = kt_StringsKt__StringNumberConversionsKt_toIntOrNull($resp);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        $remainingRequests = $resp === null ? 0 : $resp.$value2;
+        if ($remainingRequests >= 1) {
+            $resp = $resp_0.$getHeaders();
+            $$result = $rt_s(12664);
+            $resp = $rt_nullCheck($resp);
+            $ptr = 11;
+            continue main;
+        }
+        return jl_Boolean_valueOf(0);
+    case 11:
+        $tmp = iku_StringValuesImpl_get($resp, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        if ($resp === null) {
+            $resetEpoch = 0n;
+            $ptr = 13;
+            continue main;
+        }
+        $ptr = 12;
+    case 12:
+        $tmp = kt_StringsKt__StringNumberConversionsKt_toLongOrNull($resp);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        $resetEpoch = $resp === null ? 0n : $resp.$value6;
+        $ptr = 13;
+    case 13:
+        kt_Instant_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = kt_Instant_Companion;
+        var$8 = 0n;
+        $resp = $rt_nullCheck($resp);
+        $ptr = 14;
+    case 14:
+        $tmp = kt_Instant$Companion_fromEpochSeconds0($resp, $resetEpoch, var$8);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        $resp = $rt_nullCheck(kt_Clock$System_INSTANCE);
+        $ptr = 15;
+    case 15:
+        $tmp = kt_Clock$System_now($resp);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        $$result = $rt_nullCheck($$result);
+        $ptr = 16;
+    case 16:
+        $tmp = kt_Instant_minus_UwyO8pc($$result, $resp);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        $$continuation.$L$0298 = null;
+        $$continuation.$I$069 = $remainingRequests;
+        $$continuation.$J$014 = $resetEpoch;
+        $$continuation.$label113 = 1;
+        $ptr = 17;
+    case 17:
+        $tmp = kc_DelayKt_delay_VtjQ1oo(var$8, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $resp = $tmp;
+        if ($resp !== $$completion)
+            return jl_Boolean_valueOf(1);
+        return $$completion;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $resp, $$completion, $$continuation, $remainingRequests, $$result, $resp_0, $resetEpoch, var$8, $ptr);
+},
+culg_GithubAPI_fetchPreviewImageOrNull = ($this, $modUrl, $branch, $ext, $$completion) => {
+    let var$5, var$6, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$$completion = $thread.pop();$ext = $thread.pop();$branch = $thread.pop();$modUrl = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        cul_UncivKtor_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = cul_UncivKtor_INSTANCE;
+        var$6 = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_(var$6);
+        jl_AbstractStringBuilder_append(var$6, $modUrl);
+        jl_AbstractStringBuilder_append0(var$6, 47);
+        jl_AbstractStringBuilder_append(var$6, $branch);
+        jl_AbstractStringBuilder_append(var$6, $rt_s(12665));
+        jl_AbstractStringBuilder_append(var$6, $ext);
+        $ptr = 2;
+    case 2:
+        $tmp = jl_AbstractStringBuilder_toString(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ext = $tmp;
+        $modUrl = new culg_GithubAPI$fetchPreviewImageOrNull$lambda$_13_0;
+        $branch = $rt_nullCheck(var$5);
+        $ptr = 3;
+    case 3:
+        $tmp = cul_UncivKtor_getOrNull($branch, $ext, $modUrl, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $modUrl = $tmp;
+        return $modUrl;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $modUrl, $branch, $ext, $$completion, var$5, var$6, $ptr);
+},
+culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
+    let $$continuation, var$5, $$result, $$this$parseUrl_0, $repo, var$9, $matchZip, $matchBranch, $matchTagArchive, $matchTagPage, $matchCommit, $matchRepo, $matchAnyZip, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$matchAnyZip = $thread.pop();$matchRepo = $thread.pop();$matchCommit = $thread.pop();$matchTagPage = $thread.pop();$matchTagArchive = $thread.pop();$matchBranch = $thread.pop();$matchZip = $thread.pop();var$9 = $thread.pop();$repo = $thread.pop();$$this$parseUrl_0 = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$$this$parseUrl = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        if ($$completion instanceof culg_GithubAPI$parseUrl$1) {
+            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$parseUrl$1));
+            var$5 = $$continuation.$label103;
+            if (var$5 & (-2147483648)) {
+                $$continuation.$label103 = var$5 + (-2147483648) | 0;
+                $$result = $$continuation.$result22;
+                $ptr = 2;
+                continue main;
+            }
+        }
+        $$continuation = new culg_GithubAPI$parseUrl$1;
+        $$continuation.$this$0441 = $this;
+        $ptr = 1;
+    case 1:
+        kcji_ContinuationImpl__init_($$continuation, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $$continuation.$result22;
+        $ptr = 2;
+    case 2:
+        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        switch ($$continuation.$label103) {
+            case 0:
+                break;
+            case 1:
+                $url = $$continuation.$L$1115;
+                $$this$parseUrl_0 = $$continuation.$L$0223;
+                k_ResultKt_throwOnFailure($$result);
+                $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
+                if ($repo === null) {
+                    $$this$parseUrl = $rt_s(7470);
+                    var$5 = 0;
+                    var$9 = 2;
+                    $$completion = null;
+                    $ptr = 19;
+                    continue main;
+                }
+                return $repo;
+            default:
+                $$this$parseUrl = new jl_IllegalStateException;
+                $url = $rt_s(136);
+                $ptr = 7;
+                continue main;
+        }
+        k_ResultKt_throwOnFailure($$result);
+        $$this$parseUrl_0 = $rt_nullCheck($$this$parseUrl);
+        $ptr = 3;
+    case 3:
+        culg_GithubAPI$Repo_setHtml_url($$this$parseUrl_0, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $rt_s(1637);
+        $ptr = 4;
+    case 4:
+        culg_GithubAPI$Repo_setDefault_branch($$this$parseUrl_0, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $$result = $rt_s(12666);
+        $ptr = 5;
+    case 5:
+        kt_Regex__init_($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $url;
+        $ptr = 6;
+    case 6:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchZip = $tmp;
+        if ($matchZip !== null) {
+            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchZip)).$groups);
+            $ptr = 10;
+            continue main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $matchBranch = $rt_s(12667);
+        $ptr = 8;
+        continue main;
+    case 7:
+        jl_Throwable__init_($$this$parseUrl, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($$this$parseUrl);
+    case 8:
+        kt_Regex__init_($$this$parseUrl, $matchBranch);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 9;
+    case 9:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchBranch = $tmp;
+        if ($matchBranch !== null) {
+            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchBranch)).$groups);
+            $ptr = 13;
+            continue main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $matchTagArchive = $rt_s(12668);
+        $ptr = 11;
+        continue main;
+    case 10:
+        $tmp = $$this$parseUrl.$getSize();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 4) {
+            $$this$parseUrl = new kt_Regex;
+            $matchBranch = $rt_s(12667);
+            $ptr = 8;
+            continue main;
+        }
+        $ptr = 14;
+        continue main;
+    case 11:
+        kt_Regex__init_($$this$parseUrl, $matchTagArchive);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 12;
+    case 12:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchTagArchive = $tmp;
+        if ($matchTagArchive !== null) {
+            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchTagArchive)).$groups);
+            $ptr = 17;
+            continue main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $matchTagPage = $rt_s(12669);
+        $ptr = 15;
+        continue main;
+    case 13:
+        $tmp = $$this$parseUrl.$getSize();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 4) {
+            $$this$parseUrl = new kt_Regex;
+            $matchTagArchive = $rt_s(12668);
+            $ptr = 11;
+            continue main;
+        }
+        $ptr = 18;
+        continue main;
+    case 14:
+        $tmp = culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchZip);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        return $$this$parseUrl;
+    case 15:
+        kt_Regex__init_($$this$parseUrl, $matchTagPage);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 16;
+    case 16:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchTagPage = $tmp;
+        if ($matchTagPage !== null) {
+            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchTagPage)).$groups);
+            $ptr = 22;
+            continue main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $matchCommit = $rt_s(12670);
+        $ptr = 20;
+        continue main;
+    case 17:
+        $tmp = $$this$parseUrl.$getSize();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 4) {
+            $$this$parseUrl = new kt_Regex;
+            $matchTagPage = $rt_s(12669);
+            $ptr = 15;
+            continue main;
+        }
+        $ptr = 23;
+        continue main;
+    case 18:
+        $tmp = culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchBranch);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        return $$this$parseUrl;
+    case 19:
+        $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($url, $$this$parseUrl, var$5, var$9, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (!var$5) {
+            $$this$parseUrl = $rt_s(7471);
+            var$5 = 0;
+            var$9 = 2;
+            $$completion = null;
+            $ptr = 32;
+            continue main;
+        }
+        $$this$parseUrl = $rt_s(5);
+        $$completion = $rt_nullCheck($$this$parseUrl_0);
+        $ptr = 26;
+        continue main;
+    case 20:
+        kt_Regex__init_($$this$parseUrl, $matchCommit);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 21;
+    case 21:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchCommit = $tmp;
+        if ($matchCommit !== null) {
+            $$this$parseUrl = $rt_nullCheck(kt_MatcherMatchResult_getGroups($rt_nullCheck($matchCommit)));
+            $ptr = 35;
+            continue main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $matchRepo = $rt_s(12671);
+        $ptr = 33;
+        continue main;
+    case 22:
+        $tmp = $$this$parseUrl.$getSize();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 4) {
+            $$this$parseUrl = new kt_Regex;
+            $matchCommit = $rt_s(12670);
+            $ptr = 20;
+            continue main;
+        }
+        $ptr = 36;
+        continue main;
+    case 23:
+        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchTagArchive);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $$this$parseUrl_0.$default_branch;
+        $ptr = 24;
+    case 24:
+        culg_GithubAPI$Repo_setRelease_tag($$this$parseUrl_0, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 25;
+    case 25:
+        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $$this$parseUrl_0;
+    case 26:
+        culg_GithubAPI$Repo_setHtml_url($$completion, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 27;
+    case 27:
+        culg_GithubAPI$Repo_setDirect_zip_url($$completion, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$continuation = $$completion.$owner1;
+        $$this$parseUrl = $rt_s(12672);
+        $$continuation = $rt_nullCheck($$continuation);
+        $ptr = 28;
+    case 28:
+        culg_GithubAPI$RepoOwner_setLogin($$continuation, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $rt_s(1637);
+        $ptr = 29;
+    case 29:
+        culg_GithubAPI$Repo_setDefault_branch($$completion, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = new kt_Regex;
+        $$continuation = $rt_s(12673);
+        $ptr = 30;
+    case 30:
+        kt_Regex__init_($$this$parseUrl, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $url;
+        $ptr = 31;
+    case 31:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchAnyZip = $tmp;
+        if ($matchAnyZip !== null) {
+            $url = $rt_nullCheck($matchAnyZip);
+            $$this$parseUrl = $rt_nullCheck($url.$groups);
+            $ptr = 41;
+            continue main;
+        }
+        $url = $$completion.$name9;
+        $$this$parseUrl = $rt_s(24);
+        $ptr = 40;
+        continue main;
+    case 32:
+        $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($url, $$this$parseUrl, var$5, var$9, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $$this$parseUrl = $rt_s(5);
+            $$completion = $rt_nullCheck($$this$parseUrl_0);
+            $ptr = 26;
+            continue main;
+        }
+        return null;
+    case 33:
+        kt_Regex__init_($$this$parseUrl, $matchRepo);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 34;
+    case 34:
+        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchRepo = $tmp;
+        if ($matchRepo === null) {
+            $$this$parseUrl = $rt_s(7470);
+            var$5 = 0;
+            var$9 = 2;
+            $$completion = null;
+            $ptr = 19;
+            continue main;
+        }
+        $$result = $rt_nullCheck($matchRepo);
+        $$this$parseUrl = $rt_nullCheck(kt_MatcherMatchResult_getGroups($$result));
+        $ptr = 42;
+        continue main;
+    case 35:
+        $tmp = kc_AbstractCollection_size($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 4) {
+            $$this$parseUrl = new kt_Regex;
+            $matchRepo = $rt_s(12671);
+            $ptr = 33;
+            continue main;
+        }
+        $ptr = 43;
+        continue main;
+    case 36:
+        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchTagPage);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $$this$parseUrl_0.$default_branch;
+        $ptr = 37;
+    case 37:
+        culg_GithubAPI$Repo_setRelease_tag($$this$parseUrl_0, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($$this$parseUrl);
+        jl_AbstractStringBuilder_append($$this$parseUrl, $$this$parseUrl_0.$html_url);
+        jl_AbstractStringBuilder_append($$this$parseUrl, $rt_s(12674));
+        $$this$parseUrl = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($$this$parseUrl, culg_GithubAPI$Repo_getRelease_tag($$this$parseUrl_0))), $rt_s(12659)));
+        $ptr = 38;
+    case 38:
+        $tmp = jl_StringBuilder_toString($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        $ptr = 39;
+    case 39:
+        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $$this$parseUrl_0;
+    case 40:
+        kji_Intrinsics_checkNotNullParameter($url, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion.$full_name = $url;
+        return $$completion;
+    case 41:
+        $tmp = $$this$parseUrl.$getSize();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$9 = $tmp;
+        if (var$9 > 1) {
+            $$this$parseUrl = $url.$groups;
+            var$5 = 1;
+            $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
+            $ptr = 45;
+            continue main;
+        }
+        $url = $$completion.$name9;
+        $$this$parseUrl = $rt_s(24);
+        $ptr = 40;
+        continue main;
+    case 42:
+        $tmp = kc_AbstractCollection_size($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5 <= 2) {
+            $$this$parseUrl = $rt_s(7470);
+            var$5 = 0;
+            var$9 = 2;
+            $$completion = null;
+            $ptr = 19;
+            continue main;
+        }
+        $matchAnyZip = culg_GithubAPI$Repo_Companion;
+        $$this$parseUrl = kt_MatcherMatchResult_getGroups($$result);
+        var$5 = 1;
+        $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
+        $ptr = 48;
+        continue main;
+    case 43:
+        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchCommit);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 44;
+    case 44:
+        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $url);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $$this$parseUrl_0;
+    case 45:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        $ptr = 46;
+    case 46:
+        kji_Intrinsics_checkNotNull($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = ($rt_nullCheck($$this$parseUrl)).$value21;
+        $ptr = 47;
+    case 47:
+        culg_GithubAPI$Repo_setName($$completion, $$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $url = $$completion.$name9;
+        $$this$parseUrl = $rt_s(24);
+        $ptr = 40;
+        continue main;
+    case 48:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        $ptr = 49;
+    case 49:
+        kji_Intrinsics_checkNotNull($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $repo = kt_MatchGroup_getValue($rt_nullCheck($$this$parseUrl));
+        $$this$parseUrl = kt_MatcherMatchResult_getGroups($$result);
+        var$5 = 2;
+        $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
+        $ptr = 50;
+    case 50:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseUrl = $tmp;
+        $ptr = 51;
+    case 51:
+        kji_Intrinsics_checkNotNull($$this$parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = kt_MatchGroup_getValue($rt_nullCheck($$this$parseUrl));
+        $$continuation.$L$0223 = $$this$parseUrl_0;
+        $$continuation.$L$1115 = $url;
+        $$continuation.$L$2118 = kcji_SpillingKt_nullOutSpilledVariable($matchZip);
+        $$continuation.$L$381 = kcji_SpillingKt_nullOutSpilledVariable($matchBranch);
+        $$continuation.$L$450 = kcji_SpillingKt_nullOutSpilledVariable($matchTagArchive);
+        $$continuation.$L$531 = kcji_SpillingKt_nullOutSpilledVariable($matchTagPage);
+        $$continuation.$L$624 = kcji_SpillingKt_nullOutSpilledVariable($matchCommit);
+        $$continuation.$L$715 = kcji_SpillingKt_nullOutSpilledVariable($matchRepo);
+        $$continuation.$label103 = 1;
+        $$this$parseUrl = $rt_nullCheck($matchAnyZip);
+        $ptr = 52;
+    case 52:
+        $tmp = culg_GithubAPI$Repo$Companion_query($$this$parseUrl, $repo, $$result, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        if ($$result !== $$completion) {
+            $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
+            if ($repo === null) {
+                $$this$parseUrl = $rt_s(7470);
+                var$5 = 0;
+                var$9 = 2;
+                $$completion = null;
+                $ptr = 19;
+                continue main;
+            }
+            return $repo;
+        }
+        return $$completion;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $$this$parseUrl, $url, $$completion, $$continuation, var$5, $$result, $$this$parseUrl_0, $repo, var$9, $matchZip, $matchBranch, $matchTagArchive, $matchTagPage, $matchCommit, $matchRepo, $matchAnyZip, $ptr);
+},
+culg_GithubAPI_downloadAndExtract = ($this, $$this$downloadAndExtract, $updateProgressPercent, $$completion) => {
+    let $$continuation, var$5, $$result, $finalDestination, $unzipDestination, $defaultBranch, $modNameFromFileName, $modsFolder, $$this$downloadAndExtract_0, $gitRepoUrl, $innerFolder, $modName, var$16, $finalDestinationName, $tempBackup, $$this$sortedBy$iv, $fallbackSize, $$this$prepareRequest$iv, $innerFileOrFolder, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$innerFileOrFolder = $thread.pop();$$this$prepareRequest$iv = $thread.pop();$fallbackSize = $thread.pop();$$this$sortedBy$iv = $thread.pop();$tempBackup = $thread.pop();$finalDestinationName = $thread.pop();var$16 = $thread.pop();$modName = $thread.pop();$innerFolder = $thread.pop();$gitRepoUrl = $thread.pop();$$this$downloadAndExtract_0 = $thread.pop();$modsFolder = $thread.pop();$modNameFromFileName = $thread.pop();$defaultBranch = $thread.pop();$unzipDestination = $thread.pop();$finalDestination
+        = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$updateProgressPercent = $thread.pop();$$this$downloadAndExtract = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        if ($$completion instanceof culg_GithubAPI$downloadAndExtract$1) {
+            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$downloadAndExtract$1));
+            var$5 = $$continuation.$label102;
+            if (var$5 & (-2147483648)) {
+                $$continuation.$label102 = var$5 + (-2147483648) | 0;
+                $$result = $$continuation.$result42;
+                $ptr = 2;
+                continue main;
+            }
+        }
+        $$continuation = new culg_GithubAPI$downloadAndExtract$1;
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI$downloadAndExtract$1__init_($$continuation, $this, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $$continuation.$result42;
+        $ptr = 2;
+    case 2:
+        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $finalDestination = $tmp;
+        switch ($$continuation.$label102) {
+            case 0:
+                break;
+            case 1:
+                $unzipDestination = $$continuation.$L$711;
+                $defaultBranch = $$continuation.$L$438;
+                $modNameFromFileName = $$continuation.$L$363;
+                $modsFolder = $$continuation.$L$290;
+                $$this$downloadAndExtract_0 = $$continuation.$L$0237;
+                k_ResultKt_throwOnFailure($$result);
+                $updateProgressPercent = $rt_nullCheck($unzipDestination);
+                $ptr = 8;
+                continue main;
+            default:
+                $$this$downloadAndExtract = new jl_IllegalStateException;
+                $updateProgressPercent = $rt_s(136);
+                $ptr = 7;
+                continue main;
+        }
+        k_ResultKt_throwOnFailure($$result);
+        $ptr = 3;
+    case 3:
+        cu_UncivGame_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $rt_nullCheck(cu_UncivGame_Companion);
+        $ptr = 4;
+    case 4:
+        $tmp = cu_UncivGame$Companion_getCurrent($$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        $$completion = $rt_nullCheck($$completion);
+        $ptr = 5;
+    case 5:
+        $tmp = cu_UncivGame_getFiles($$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        $$completion = $rt_nullCheck($$completion);
+        $ptr = 6;
+    case 6:
+        $tmp = culf_UncivFiles_getModsFolder($$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $modsFolder = $tmp;
+        $modNameFromFileName = kji_Ref$ObjectRef__init_();
+        $$this$downloadAndExtract_0 = $rt_nullCheck($$this$downloadAndExtract);
+        $modNameFromFileName.$element0 = culg_GithubAPI$Repo_getName($$this$downloadAndExtract_0);
+        $defaultBranch = culg_GithubAPI$Repo_getDefault_branch($$this$downloadAndExtract_0);
+        if (!(jl_String_length($rt_nullCheck(culg_GithubAPI$Repo_getDirect_zip_url($$this$downloadAndExtract_0))) ? 0 : 1)) {
+            $$result = culg_GithubAPI$Repo_getDirect_zip_url($$this$downloadAndExtract_0);
+            $$completion = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(991));
+            $ptr = 18;
+            continue main;
+        }
+        $gitRepoUrl = culg_GithubAPI$Repo_getHtml_url($$this$downloadAndExtract_0);
+        $ptr = 24;
+        continue main;
+    case 7:
+        jl_IllegalStateException__init_($$this$downloadAndExtract, $updateProgressPercent);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($$this$downloadAndExtract);
+    case 8:
+        $tmp = cgxgtbw_WebFileHandle_exists($updateProgressPercent);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $ptr = 16;
+            continue main;
+        }
+        $ptr = 9;
+    case 9:
+        kji_Intrinsics_checkNotNull($unzipDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $rt_castToClass(($rt_nullCheck($modNameFromFileName)).$element0, jl_String);
+        $ptr = 10;
+    case 10:
+        $tmp = culg_GithubAPI_resolveZipStructure($this, $unzipDestination, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
+        $innerFolder = $rt_castToClass(k_Pair_component1($$this$downloadAndExtract), cbgf_FileHandle);
+        $modName = $rt_castToClass(k_Pair_component2($$this$downloadAndExtract), jl_String);
+        culg_Github_$callClinit();
+        $$completion = culg_Github_INSTANCE;
+        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 45)), $defaultBranch));
+        $ptr = 11;
+    case 11:
+        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$continuation = $tmp;
+        $gitRepoUrl = $rt_s(5);
+        var$5 = 0;
+        var$16 = 4;
+        $$this$downloadAndExtract = null;
+        $ptr = 12;
+    case 12:
+        $tmp = kt_StringsKt__StringsJVMKt_replace$default($modName, $$continuation, $gitRepoUrl, var$5, var$16, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        var$5 = 0;
+        var$16 = 1;
+        $$continuation = null;
+        $ptr = 13;
+    case 13:
+        $tmp = culg_Github_repoNameToFolderName$default($$completion, $$this$downloadAndExtract, var$5, var$16, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $finalDestinationName = $tmp;
+        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
+        $ptr = 14;
+    case 14:
+        $tmp = cgxgtbw_WebFileHandle_child($$this$downloadAndExtract, $finalDestinationName);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $finalDestination = $tmp;
+        $tempBackup = null;
+        $$continuation = $rt_nullCheck($finalDestination);
+        $ptr = 15;
+    case 15:
+        $tmp = cgxgtbw_WebFileHandle_exists($$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $finalDestinationName)), $rt_s(12675)));
+            $ptr = 30;
+            continue main;
+        }
+        $ptr = 37;
+        continue main;
+    case 16:
+        $tmp = cgxgtbw_WebFileHandle_list($updateProgressPercent);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$sortedBy$iv = $tmp;
+        $$this$downloadAndExtract = $rt_s(989);
+        $ptr = 17;
+    case 17:
+        kji_Intrinsics_checkNotNullExpressionValue($$this$sortedBy$iv, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        if (($rt_nullCheck($$this$sortedBy$iv)).data.length ? 0 : 1) {
+            $ptr = 51;
+            continue main;
+        }
+        $ptr = 9;
+        continue main;
+    case 18:
+        $tmp = culg_GithubAPI$Repo_toString($$this$downloadAndExtract_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
+        $ptr = 19;
+    case 19:
+        $tmp = jl_String_hashCode($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        var$16 = 16;
+        $ptr = 20;
+    case 20:
+        $tmp = kt_CharsKt__CharJVMKt_checkRadix(var$16);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$16 = $tmp;
+        $ptr = 21;
+    case 21:
+        $tmp = jl_Integer_toString0(var$5, var$16);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $gitRepoUrl = $tmp;
+        $$this$downloadAndExtract = $rt_s(78);
+        $ptr = 22;
+    case 22:
+        kji_Intrinsics_checkNotNullExpressionValue($gitRepoUrl, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$completion), $gitRepoUrl));
+        $ptr = 23;
+    case 23:
+        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $tempBackup = $tmp;
+        $fallbackSize = Long_asIntN(64, Long_asIntN(64, Long_asIntN(64, Long_fromInt(culg_GithubAPI$Repo_getSize($$this$downloadAndExtract_0)) * 1024n) * 4n) / 5n);
+        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
+        $ptr = 35;
+        continue main;
+    case 24:
+        $tmp = culg_GithubAPI_getUrlForBranchZip$Unciv_core($this, $gitRepoUrl, $defaultBranch);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$result = $tmp;
+        $$this$downloadAndExtract = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(991));
+        $gitRepoUrl = $rt_nullCheck($gitRepoUrl);
+        $ptr = 25;
+    case 25:
+        $tmp = jl_String_hashCode($gitRepoUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        var$16 = 16;
+        $ptr = 26;
+    case 26:
+        $tmp = kt_CharsKt__CharJVMKt_checkRadix(var$16);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$16 = $tmp;
+        $ptr = 27;
+    case 27:
+        $tmp = jl_Integer_toString0(var$5, var$16);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        $gitRepoUrl = $rt_s(78);
+        $ptr = 28;
+    case 28:
+        kji_Intrinsics_checkNotNullExpressionValue($$completion, $gitRepoUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$this$downloadAndExtract), $$completion));
+        $ptr = 29;
+    case 29:
+        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $tempBackup = $tmp;
+        $fallbackSize = Long_asIntN(64, Long_asIntN(64, Long_asIntN(64, Long_fromInt(culg_GithubAPI$Repo_getSize($$this$downloadAndExtract_0)) * 1024n) * 4n) / 5n);
+        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
+        $ptr = 35;
+        continue main;
+    case 30:
+        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $ptr = 31;
+    case 31:
+        $tmp = cgxgtbw_WebFileHandle_sibling($$continuation, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $tempBackup = $tmp;
+        $ptr = 32;
+    case 32:
+        kji_Intrinsics_checkNotNull($finalDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 33;
+    case 33:
+        kji_Intrinsics_checkNotNull($tempBackup);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 34;
+    case 34:
+        culg_GithubAPI_renameOrMove($this, $finalDestination, $tempBackup);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 37;
+        continue main;
+    case 35:
+        $tmp = cgxgtbw_WebFileHandle_child($$this$downloadAndExtract, $tempBackup);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unzipDestination = $tmp;
+        $$this$downloadAndExtract = $rt_nullCheck($unzipDestination);
+        $ptr = 36;
+    case 36:
+        $tmp = cgxgtbw_WebFileHandle_exists($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $ptr = 49;
+            continue main;
+        }
+        $ptr = 42;
+        continue main;
+    case 37:
+        cgxgtbw_WebFileHandle_mkdirs($$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $innerFolder = $rt_nullCheck($innerFolder);
+        $ptr = 38;
+    case 38:
+        $tmp = $innerFolder.$list0();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$sortedBy$iv = $tmp;
+        $$this$downloadAndExtract = $rt_s(989);
+        $ptr = 39;
+    case 39:
+        kji_Intrinsics_checkNotNullExpressionValue($$this$sortedBy$iv, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$sortedBy$iv = $$this$sortedBy$iv;
+        $$this$downloadAndExtract = culg_GithubAPI$downloadAndExtract$$inlined$sortedBy$1__init_0();
+        $ptr = 40;
+    case 40:
+        $tmp = kc_ArraysKt___ArraysKt_sortedWith($$this$sortedBy$iv, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
+        $ptr = 41;
+    case 41:
+        $tmp = ju_AbstractList_iterator($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $$completion = $rt_nullCheck($$this$downloadAndExtract);
+        $ptr = 50;
+        continue main;
+    case 42:
+        cul_UncivKtor_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $rt_nullCheck(cul_UncivKtor_INSTANCE);
+        $ptr = 43;
+    case 43:
+        $tmp = cul_UncivKtor_getClient($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$prepareRequest$iv = $tmp;
+        $$this$downloadAndExtract = new ikcr_HttpRequestBuilder;
+        $ptr = 44;
+    case 44:
+        ikcr_HttpRequestBuilder__init_($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 45;
+    case 45:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $rt_nullCheck(culg_GithubAPI_INSTANCE);
+        $ptr = 46;
+    case 46:
+        $tmp = culg_GithubAPI_toCodeloadUrl($$completion, $$result);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        $ptr = 47;
+    case 47:
+        ikcr_HttpRequestKt_url($$this$downloadAndExtract, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = culg_GithubAPI$downloadAndExtract$lambda$_15_0__init_();
+        $ptr = 48;
+    case 48:
+        ikcp_HttpTimeoutKt_timeout($$this$downloadAndExtract, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        if ($updateProgressPercent !== null) {
+            $$completion = culg_GithubAPI$downloadAndExtract$2$2__init_0($fallbackSize, $updateProgressPercent);
+            $ptr = 55;
+            continue main;
+        }
+        $$completion = new ikcs_HttpStatement;
+        $ptr = 52;
+        continue main;
+    case 49:
+        $tmp = cgxgtbw_WebFileHandle_isDirectory($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $ptr = 57;
+            continue main;
+        }
+        $ptr = 56;
+        continue main;
+    case 50:
+        $tmp = ju_AbstractList$1_hasNext($$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $ptr = 59;
+            continue main;
+        }
+        $ptr = 58;
+        continue main;
+    case 51:
+        cgxgtbw_WebFileHandle_deleteDirectory($updateProgressPercent);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return null;
+    case 52:
+        ikcs_HttpStatement__init_($$completion, $$this$downloadAndExtract, $$this$prepareRequest$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $gitRepoUrl = new culg_GithubAPI$downloadAndExtract$3;
+        $$this$downloadAndExtract = null;
+        $ptr = 53;
+    case 53:
+        culg_GithubAPI$downloadAndExtract$3__init_($gitRepoUrl, $modNameFromFileName, $unzipDestination, $$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $gitRepoUrl;
+        $$continuation.$L$0237 = $$this$downloadAndExtract_0;
+        $$continuation.$L$1178 = kcji_SpillingKt_nullOutSpilledVariable($updateProgressPercent);
+        $$continuation.$L$290 = $modsFolder;
+        $$continuation.$L$363 = $modNameFromFileName;
+        $$continuation.$L$438 = $defaultBranch;
+        $$continuation.$L$535 = kcji_SpillingKt_nullOutSpilledVariable($$result);
+        $$continuation.$L$626 = kcji_SpillingKt_nullOutSpilledVariable($tempBackup);
+        $$continuation.$L$711 = $unzipDestination;
+        $$continuation.$J$013 = $fallbackSize;
+        $$continuation.$label102 = 1;
+        $ptr = 54;
+    case 54:
+        $tmp = ikcs_HttpStatement_execute($$completion, $$this$downloadAndExtract, $$continuation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        if ($$this$downloadAndExtract !== $finalDestination) {
+            $updateProgressPercent = $rt_nullCheck($unzipDestination);
+            $ptr = 8;
+            continue main;
+        }
+        return $finalDestination;
+    case 55:
+        ikcp_BodyProgressKt_onDownload($$this$downloadAndExtract, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = new ikcs_HttpStatement;
+        $ptr = 52;
+        continue main;
+    case 56:
+        cgxgtbw_WebFileHandle_delete($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 42;
+        continue main;
+    case 57:
+        cgxgtbw_WebFileHandle_deleteDirectory($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 42;
+        continue main;
+    case 58:
+        cgxgtbw_WebFileHandle_deleteDirectory($updateProgressPercent);
+        if ($rt_suspending()) {
+            break main;
+        }
+        if ($tempBackup !== null) {
+            $$this$downloadAndExtract = $rt_nullCheck($tempBackup);
+            $ptr = 65;
+            continue main;
+        }
+        $$this$downloadAndExtract = culg_Github_INSTANCE;
+        $ptr = 63;
+        continue main;
+    case 59:
+        $tmp = ju_AbstractList$1_next($$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $tmp;
+        $innerFileOrFolder = $rt_castToClass($$this$downloadAndExtract, cbgf_FileHandle);
+        $ptr = 60;
+    case 60:
+        kji_Intrinsics_checkNotNull($innerFileOrFolder);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 61;
+    case 61:
+        kji_Intrinsics_checkNotNull($finalDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 62;
+    case 62:
+        culg_GithubAPI_renameOrMove($this, $innerFileOrFolder, $finalDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 50;
+        continue main;
+    case 63:
+        kji_Intrinsics_checkNotNull($finalDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
+        $ptr = 64;
+    case 64:
+        culg_Github_rewriteModOptions($$this$downloadAndExtract, $$this$downloadAndExtract_0, $finalDestination);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $finalDestination;
+    case 65:
+        $tmp = cgxgtbw_WebFileHandle_isDirectory($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (var$5) {
+            $ptr = 67;
+            continue main;
+        }
+        $ptr = 66;
+    case 66:
+        cgxgtbw_WebFileHandle_delete($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = culg_Github_INSTANCE;
+        $ptr = 63;
+        continue main;
+    case 67:
+        cgxgtbw_WebFileHandle_deleteDirectory($$this$downloadAndExtract);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$downloadAndExtract = culg_Github_INSTANCE;
+        $ptr = 63;
+        continue main;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $$this$downloadAndExtract, $updateProgressPercent, $$completion, $$continuation, var$5, $$result, $finalDestination, $unzipDestination, $defaultBranch, $modNameFromFileName, $modsFolder, $$this$downloadAndExtract_0, $gitRepoUrl, $innerFolder, $modName, var$16, $finalDestinationName, $tempBackup, $$this$sortedBy$iv, $fallbackSize, $$this$prepareRequest$iv, $innerFileOrFolder, $ptr);
+},
+culg_GithubAPI_downloadAndExtract$default = (var$1, var$2, var$3, var$4, var$5, var$6) => {
+    let $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        if (var$5 & 1)
+            var$3 = null;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 2;
+    case 2:
+        $tmp = culg_GithubAPI_downloadAndExtract(var$1, var$2, var$3, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        return var$1;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
+},
+culg_GithubAPI_renameOrMove = ($this, $$this$renameOrMove, $dest) => {
+    let $$this$renameOrMove_0, var$4, var$5, var$6, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$$this$renameOrMove_0 = $thread.pop();$dest = $thread.pop();$$this$renameOrMove = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $$this$renameOrMove_0 = $rt_nullCheck($$this$renameOrMove);
+        if ($$this$renameOrMove_0.$type() === cbg_Files$FileType_Local) {
+            $ptr = 2;
+            continue main;
+        }
+        $ptr = 1;
+    case 1:
+        $$this$renameOrMove_0.$moveTo($dest);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return;
+    case 2:
+        $tmp = $$this$renameOrMove_0.$isDirectory();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (var$4) {
+            $ptr = 3;
+            continue main;
+        }
+        $ptr = 1;
+        continue main;
+    case 3:
+        $tmp = $$this$renameOrMove_0.$file();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$renameOrMove = $tmp;
+        var$5 = $$this$renameOrMove_0.$name();
+        var$6 = $rt_nullCheck($dest);
+        $ptr = 4;
+    case 4:
+        $tmp = cgxgtbw_WebFileHandle_child(var$6, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        var$5 = $rt_nullCheck(var$5);
+        $ptr = 5;
+    case 5:
+        $tmp = cgxgtbw_WebFileHandle_file(var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        $$this$renameOrMove = $rt_nullCheck($$this$renameOrMove);
+        $ptr = 6;
+    case 6:
+        $tmp = ji_File_renameTo($$this$renameOrMove, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (!var$4) {
+            $ptr = 7;
+            continue main;
+        }
+        return;
+    case 7:
+        $tmp = $$this$renameOrMove_0.$file();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$renameOrMove = $tmp;
+        $ptr = 8;
+    case 8:
+        $tmp = cgxgtbw_WebFileHandle_file(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        $$this$renameOrMove = $rt_nullCheck($$this$renameOrMove);
+        $ptr = 9;
+    case 9:
+        $tmp = ji_File_renameTo($$this$renameOrMove, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (!var$4) {
+            $ptr = 1;
+            continue main;
+        }
+        return;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $$this$renameOrMove, $dest, $$this$renameOrMove_0, var$4, var$5, var$6, $ptr);
+},
+culg_GithubAPI_regexListOf = ($this, $pattern) => {
+    let var$2, var$3, $destination$iv$iv, var$5, $item$iv$iv, var$7, var$8, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();$item$iv$iv = $thread.pop();var$5 = $thread.pop();$destination$iv$iv = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$pattern = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$2 = new ju_ArrayList;
+        $pattern = ($rt_nullCheck($pattern)).data;
+        var$3 = $pattern.length;
+        ju_ArrayList__init_0(var$2, var$3);
+        $destination$iv$iv = var$2;
+        if (0 < var$3) {
+            var$5 = $rt_checkLowerBound(0);
+            $item$iv$iv = $pattern[var$5];
+            var$7 = new kt_Regex;
+            $ptr = 1;
+            continue main;
+        }
+        return $destination$iv$iv;
+    case 1:
+        kt_RegexOption_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = kt_RegexOption_IGNORE_CASE;
+        $ptr = 2;
+    case 2:
+        kt_Regex__init_0(var$7, $item$iv$iv, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck($destination$iv$iv);
+        $ptr = 3;
+    case 3:
+        ju_ArrayList_add(var$2, var$7);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = var$5 + 1 | 0;
+        if (var$8 < var$3) {
+            var$5 = $rt_checkLowerBound(var$8);
+            $item$iv$iv = $pattern[var$5];
+            var$7 = new kt_Regex;
+            $ptr = 1;
+            continue main;
+        }
+        return $destination$iv$iv;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $pattern, var$2, var$3, $destination$iv$iv, var$5, $item$iv$iv, var$7, var$8, $ptr);
+};
+let culg_GithubAPI_isValidModFolder = ($this, $dir) => {
+    let $good, $bad, var$4, var$5, var$6, $file, var$8, $$this$any$iv, $element$iv, $it, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$it = $thread.pop();$element$iv = $thread.pop();$$this$any$iv = $thread.pop();var$8 = $thread.pop();$file = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$bad = $thread.pop();$good = $thread.pop();$dir = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $good = 0;
+        $bad = 0;
+        $dir = $rt_nullCheck($dir);
+        $ptr = 1;
+    case 1:
+        $tmp = $dir.$list0();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        $dir = $rt_s(989);
+        $ptr = 2;
+    case 2:
+        kji_Intrinsics_checkNotNullExpressionValue(var$4, $dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = ($rt_nullCheck(var$4)).data;
+        var$5 = var$4.length;
+        if (0 < var$5) {
+            var$6 = $rt_checkLowerBound(0);
+            $file = $rt_nullCheck(var$4[var$6]);
+            $ptr = 3;
+            continue main;
+        }
+        return !($good > 0 && $good > $bad) ? 0 : 1;
+    case 3:
+        $tmp = $file.$isDirectory();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        if (var$8) {
+            $ptr = 5;
+            continue main;
+        }
+        $ptr = 4;
+    case 4:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$any$iv = culg_GithubAPI_goodFiles;
+        if ($rt_isInstance($$this$any$iv, ju_Collection)) {
+            $dir = $rt_nullCheck($$this$any$iv);
+            $ptr = 7;
+            continue main;
+        }
+        $dir = $rt_nullCheck($$this$any$iv);
+        $ptr = 6;
+        continue main;
+    case 5:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$any$iv = culg_GithubAPI_goodFolders;
+        if ($rt_isInstance($$this$any$iv, ju_Collection)) {
+            $dir = $rt_nullCheck($$this$any$iv);
+            $ptr = 7;
+            continue main;
+        }
+        $dir = $rt_nullCheck($$this$any$iv);
+        $ptr = 6;
+    case 6:
+        $tmp = ju_AbstractList_iterator($dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $dir = $tmp;
+        $$this$any$iv = $rt_nullCheck($dir);
+        $ptr = 8;
+        continue main;
+    case 7:
+        $tmp = ju_AbstractCollection_isEmpty($dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        if (var$8) {
+            if (!0)
+                $bad = $bad + 1 | 0;
+            else
+                $good = $good + 1 | 0;
+            var$8 = var$6 + 1 | 0;
+            if (var$8 < var$5) {
+                var$6 = $rt_checkLowerBound(var$8);
+                $file = $rt_nullCheck(var$4[var$6]);
+                $ptr = 3;
+                continue main;
+            }
+            return !($good > 0 && $good > $bad) ? 0 : 1;
+        }
+        $dir = $rt_nullCheck($$this$any$iv);
+        $ptr = 6;
+        continue main;
+    case 8:
+        $tmp = ju_AbstractList$1_hasNext($$this$any$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        if (!var$8) {
+            if (!0)
+                $bad = $bad + 1 | 0;
+            else
+                $good = $good + 1 | 0;
+            var$8 = var$6 + 1 | 0;
+            if (var$8 < var$5) {
+                var$6 = $rt_checkLowerBound(var$8);
+                $file = $rt_nullCheck(var$4[var$6]);
+                $ptr = 3;
+                continue main;
+            }
+            return !($good > 0 && $good > $bad) ? 0 : 1;
+        }
+        $ptr = 9;
+    case 9:
+        $tmp = ju_AbstractList$1_next($$this$any$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $element$iv = $tmp;
+        $it = $rt_castToClass($element$iv, kt_Regex);
+        $dir = $file.$name();
+        $element$iv = $rt_s(990);
+        $ptr = 10;
+    case 10:
+        kji_Intrinsics_checkNotNullExpressionValue($dir, $element$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $dir = $dir;
+        $it = $rt_nullCheck($it);
+        $ptr = 11;
+    case 11:
+        $tmp = kt_Regex_matches($it, $dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        if (var$8) {
+            if (!1)
+                $bad = $bad + 1 | 0;
+            else
+                $good = $good + 1 | 0;
+            var$8 = var$6 + 1 | 0;
+            if (var$8 < var$5) {
+                var$6 = $rt_checkLowerBound(var$8);
+                $file = $rt_nullCheck(var$4[var$6]);
+                $ptr = 3;
+                continue main;
+            }
+            return !($good > 0 && $good > $bad) ? 0 : 1;
+        }
+        $ptr = 8;
+        continue main;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $dir, $good, $bad, var$4, var$5, var$6, $file, var$8, $$this$any$iv, $element$iv, $it, $ptr);
+},
+culg_GithubAPI_resolveZipStructure = ($this, $dir, $defaultModName) => {
+    let var$3, var$4, $subdirs, var$6, var$7, var$8, var$9, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();$subdirs = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$defaultModName = $thread.pop();$dir = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        $tmp = culg_GithubAPI_isValidModFolder($this, $dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (!var$3) {
+            var$4 = new culg_GithubAPI$resolveZipStructure$lambda$_22_0;
+            $dir = $rt_nullCheck($dir);
+            $ptr = 2;
+            continue main;
+        }
+        return k_TuplesKt_to($dir, $defaultModName);
+    case 2:
+        $tmp = cgxgtbw_WebFileHandle_list0($dir, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $subdirs = $tmp;
+        $subdirs = ($rt_nullCheck($subdirs)).data;
+        if ($subdirs.length != 1) {
+            var$6 = new cul_UncivShowableException;
+            $dir = $rt_s(12676);
+            $defaultModName = null;
+            var$3 = 2;
+            var$4 = null;
+            $ptr = 3;
+            continue main;
+        }
+        $dir = $subdirs[$rt_checkUpperBound(0, $subdirs)];
+        var$4 = $rt_s(2314);
+        $ptr = 4;
+        continue main;
+    case 3:
+        cul_UncivShowableException__init_(var$6, $dir, $defaultModName, var$3, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw(var$6);
+    case 4:
+        kji_Intrinsics_checkNotNullExpressionValue($dir, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 5;
+    case 5:
+        $tmp = culg_GithubAPI_isValidModFolder($this, $dir);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (var$3) {
+            $dir = $subdirs[$rt_checkUpperBound(0, $subdirs)];
+            var$4 = ($rt_nullCheck($subdirs[$rt_checkUpperBound(0, $subdirs)])).$name();
+            var$6 = $rt_s(990);
+            $ptr = 6;
+            continue main;
+        }
+        var$6 = new cul_UncivShowableException;
+        $dir = $rt_s(12676);
+        $defaultModName = null;
+        var$3 = 2;
+        var$4 = null;
+        $ptr = 3;
+        continue main;
+    case 6:
+        kji_Intrinsics_checkNotNullExpressionValue(var$4, var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$7 = $defaultModName;
+        var$3 = 0;
+        var$8 = $rt_nullCheck(var$7);
+        if (var$3 >= var$8.$nativeString.length) {
+            if (1) {
+                var$9 = 0;
+                var$3 = 2;
+                var$6 = null;
+                $ptr = 10;
+                continue main;
+            }
+            var$3 = 1;
+            $ptr = 9;
+            continue main;
+        }
+        $ptr = 7;
+    case 7:
+        $tmp = jl_String_charAt(var$8, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$9 = $tmp;
+        var$6 = $rt_nullCheck(culg_GithubAPI_INSTANCE);
+        $ptr = 8;
+    case 8:
+        $tmp = culg_GithubAPI_isHex(var$6, var$9);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$9 = $tmp;
+        if (!var$9)
+            var$3 = 0;
+        else {
+            var$3 = var$3 + 1 | 0;
+            if (var$3 < var$8.$nativeString.length) {
+                $ptr = 7;
+                continue main;
+            }
+            var$3 = 1;
+        }
+        if (var$3) {
+            var$9 = 0;
+            var$3 = 2;
+            var$6 = null;
+            $ptr = 10;
+            continue main;
+        }
+        var$3 = 1;
+        $ptr = 9;
+    case 9:
+        $tmp = kt_StringsKt__StringsJVMKt_startsWith($defaultModName, var$4, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (var$3) {
+            $ptr = 11;
+            continue main;
+        }
+        return k_TuplesKt_to($dir, var$4);
+    case 10:
+        $tmp = kt_StringsKt__StringsJVMKt_endsWith$default(var$4, $defaultModName, var$9, var$3, var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (!var$3) {
+            var$3 = 1;
+            $ptr = 9;
+            continue main;
+        }
+        $ptr = 12;
+        continue main;
+    case 11:
+        $tmp = culg_GithubAPI_choosePrettierName$isMixedCase($defaultModName);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (var$3) {
+            $ptr = 14;
+            continue main;
+        }
+        return k_TuplesKt_to($dir, var$4);
+    case 12:
+        $tmp = kt_StringsKt__StringsKt_removeSuffix(var$4, var$7);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $defaultModName = $tmp;
+        var$4 = $rt_s(1823);
+        $ptr = 13;
+    case 13:
+        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        return k_TuplesKt_to($dir, var$4);
+    case 14:
+        $tmp = culg_GithubAPI_choosePrettierName$isMixedCase(var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        if (!var$3) {
+            var$4 = $rt_s(12677);
+            $ptr = 15;
+            continue main;
+        }
+        return k_TuplesKt_to($dir, var$4);
+    case 15:
+        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $defaultModName = $tmp;
+        var$4 = $rt_s(12678);
+        $ptr = 16;
+    case 16:
+        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        return k_TuplesKt_to($dir, var$4);
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $dir, $defaultModName, var$3, var$4, $subdirs, var$6, var$7, var$8, var$9, $ptr);
+},
+culg_GithubAPI_isHex = ($this, $$this$isHex) => {
+    let $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$$this$isHex = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        return !((($$this$isHex - 48 | 0) & 65535) >= 10 && (($$this$isHex - 65 | 0) & 65503) >= 6) ? 1 : 0;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $$this$isHex, $ptr);
+},
+culg_GithubAPI_parseUrl$processMatch = ($$this_parseUrl, $matchResult) => {
+    let var$3, var$4, $$this_parseUrl_0, var$6, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();$$this_parseUrl_0 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$matchResult = $thread.pop();$$this_parseUrl = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $rt_nullCheck($matchResult);
+        $matchResult = var$3.$groups;
+        var$4 = 1;
+        $matchResult = $rt_nullCheck($matchResult);
+        $ptr = 2;
+    case 2:
+        $tmp = kt_MatcherMatchResult$groups$1_get($matchResult, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchResult = $tmp;
+        $ptr = 3;
+    case 3:
+        kji_Intrinsics_checkNotNull($matchResult);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchResult = ($rt_nullCheck($matchResult)).$value21;
+        $$this_parseUrl_0 = $rt_nullCheck($$this_parseUrl);
+        $ptr = 4;
+    case 4:
+        culg_GithubAPI$Repo_setHtml_url($$this_parseUrl_0, $matchResult);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6 = $$this_parseUrl_0.$owner1;
+        $$this_parseUrl = var$3.$groups;
+        var$4 = 2;
+        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
+        $ptr = 5;
+    case 5:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = $tmp;
+        $ptr = 6;
+    case 6:
+        kji_Intrinsics_checkNotNull($$this_parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $matchResult = ($rt_nullCheck($$this_parseUrl)).$value21;
+        $$this_parseUrl = $rt_nullCheck(var$6);
+        $ptr = 7;
+    case 7:
+        culg_GithubAPI$RepoOwner_setLogin($$this_parseUrl, $matchResult);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = var$3.$groups;
+        var$4 = 3;
+        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
+        $ptr = 8;
+    case 8:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = $tmp;
+        $ptr = 9;
+    case 9:
+        kji_Intrinsics_checkNotNull($$this_parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = ($rt_nullCheck($$this_parseUrl)).$value21;
+        $ptr = 10;
+    case 10:
+        culg_GithubAPI$Repo_setName($$this_parseUrl_0, $$this_parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = var$3.$groups;
+        var$4 = 4;
+        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
+        $ptr = 11;
+    case 11:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = $tmp;
+        $ptr = 12;
+    case 12:
+        kji_Intrinsics_checkNotNull($$this_parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this_parseUrl = ($rt_nullCheck($$this_parseUrl)).$value21;
+        $ptr = 13;
+    case 13:
+        culg_GithubAPI$Repo_setDefault_branch($$this_parseUrl_0, $$this_parseUrl);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $$this_parseUrl_0;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this_parseUrl, $matchResult, var$3, var$4, $$this_parseUrl_0, var$6, $ptr);
+},
+culg_GithubAPI_parseNameFromDisposition$removeZipExtension = $$this$parseNameFromDisposition_u24removeZipExtension => {
+    let var$2, var$3, var$4, var$5, var$6, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$$this$parseNameFromDisposition_u24removeZipExtension = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_s(12659);
+        $ptr = 2;
+    case 2:
+        $tmp = kt_StringsKt__StringsKt_removeSuffix($$this$parseNameFromDisposition_u24removeZipExtension, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        var$3 = 46;
+        var$4 = 32;
+        var$5 = 0;
+        var$6 = 4;
+        $$this$parseNameFromDisposition_u24removeZipExtension = null;
+        $ptr = 3;
+    case 3:
+        $tmp = kt_StringsKt__StringsJVMKt_replace$default0(var$2, var$3, var$4, var$5, var$6, $$this$parseNameFromDisposition_u24removeZipExtension);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$parseNameFromDisposition_u24removeZipExtension = $tmp;
+        return $$this$parseNameFromDisposition_u24removeZipExtension;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this$parseNameFromDisposition_u24removeZipExtension, var$2, var$3, var$4, var$5, var$6, $ptr);
+},
+culg_GithubAPI_choosePrettierName$isMixedCase = $$this$choosePrettierName_u24isMixedCase => {
+    let var$2, $$this$choosePrettierName_u24isMixedCase_0, var$4, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$4 = $thread.pop();$$this$choosePrettierName_u24isMixedCase_0 = $thread.pop();var$2 = $thread.pop();$$this$choosePrettierName_u24isMixedCase = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 2;
+    case 2:
+        ju_Locale_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = ju_Locale_ROOT;
+        $$this$choosePrettierName_u24isMixedCase_0 = $rt_nullCheck($$this$choosePrettierName_u24isMixedCase);
+        $ptr = 3;
+    case 3:
+        $tmp = jl_String_toLowerCase($$this$choosePrettierName_u24isMixedCase_0, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        $$this$choosePrettierName_u24isMixedCase = $rt_s(396);
+        $ptr = 4;
+    case 4:
+        kji_Intrinsics_checkNotNullExpressionValue(var$2, $$this$choosePrettierName_u24isMixedCase);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 5;
+    case 5:
+        $tmp = kji_Intrinsics_areEqual($$this$choosePrettierName_u24isMixedCase_0, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (!var$4) {
+            $$this$choosePrettierName_u24isMixedCase = ju_Locale_ROOT;
+            $ptr = 6;
+            continue main;
+        }
+        return 0;
+    case 6:
+        $tmp = jl_String_toUpperCase($$this$choosePrettierName_u24isMixedCase_0, $$this$choosePrettierName_u24isMixedCase);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$choosePrettierName_u24isMixedCase = $tmp;
+        var$2 = $rt_s(393);
+        $ptr = 7;
+    case 7:
+        kji_Intrinsics_checkNotNullExpressionValue($$this$choosePrettierName_u24isMixedCase, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 8;
+    case 8:
+        $tmp = kji_Intrinsics_areEqual($$this$choosePrettierName_u24isMixedCase_0, $$this$choosePrettierName_u24isMixedCase);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        return var$4 ? 0 : 1;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this$choosePrettierName_u24isMixedCase, var$2, $$this$choosePrettierName_u24isMixedCase_0, var$4, $ptr);
+},
+culg_GithubAPI_access$parseUrl = ($$this, $$receiver, $url, $$completion) => {
+    let $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$$receiver = $thread.pop();$$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $rt_nullCheck($$this);
+        $ptr = 2;
+    case 2:
+        $tmp = culg_GithubAPI_parseUrl($$this, $$receiver, $url, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        return $$this;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this, $$receiver, $url, $$completion, $ptr);
+},
+culg_GithubAPI_access$parseNameFromDisposition = ($$this, $disposition, $default) => {
+    let var$4, var$5, var$6, var$7, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$default = $thread.pop();$disposition = $thread.pop();$$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $rt_nullCheck($$this);
+        if ($disposition !== null) {
+            $$this = culg_GithubAPI_parseAttachmentDispositionRegex;
+            $disposition = $disposition;
+            var$4 = 0;
+            $$this = $rt_nullCheck($$this);
+            var$5 = $rt_s(205);
+            $ptr = 2;
+            continue main;
+        }
+        $ptr = 3;
+        continue main;
+    case 2:
+        kji_Intrinsics_checkNotNullParameter($disposition, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $rt_nullCheck(jur_Pattern_matcher($rt_nullCheck($$this.$nativePattern), $disposition));
+        $$this = $rt_nullCheck(var$5.$matchResult);
+        $$this.$anchoringBounds = 0;
+        $$this.$transparentBounds = 1;
+        var$6 = ($rt_nullCheck($disposition)).$nativeString.length;
+        if (var$4 <= var$6 && var$6 >= 0 && var$4 <= ($rt_nullCheck(var$5.$string3)).$length() && var$6 <= ($rt_nullCheck(var$5.$string3)).$length()) {
+            var$5.$leftBound0 = var$4;
+            var$5.$rightBound0 = var$6;
+            jur_MatchResultImpl_reset($rt_nullCheck(var$5.$matchResult), null, var$4, var$6);
+            var$5.$appendPos = 0;
+            var$5.$replacement0 = null;
+            var$7 = var$5.$leftBound0;
+            var$4 = 1;
+            $ptr = 7;
+            continue main;
+        }
+        $$this = new jl_IndexOutOfBoundsException;
+        $disposition = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($disposition);
+        jl_AbstractStringBuilder_append1($disposition, var$4);
+        $default = $rt_s(174);
+        $ptr = 4;
+        continue main;
+    case 3:
+        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($default);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        return $$this;
+    case 4:
+        $tmp = jl_StringBuilder_append0($disposition, $default);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $default = $tmp;
+        jl_AbstractStringBuilder_append1($rt_nullCheck($default), var$6);
+        $ptr = 5;
+    case 5:
+        $tmp = jl_AbstractStringBuilder_toString($disposition);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $disposition = $tmp;
+        $ptr = 6;
+    case 6:
+        jl_Throwable__init_($$this, $disposition);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($$this);
+    case 7:
+        $tmp = jur_Matcher_lookingAt(var$5, var$7, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (!var$4) {
+            $$this = null;
+            $$this = $$this;
+            if ($$this !== null) {
+                $$this = ($rt_nullCheck($$this)).$groups;
+                var$4 = 2;
+                $$this = $rt_nullCheck($$this);
+                $ptr = 10;
+                continue main;
+            }
+            $ptr = 13;
+            continue main;
+        }
+        $$this = new kt_MatcherMatchResult;
+        $ptr = 8;
+    case 8:
+        kji_Intrinsics_checkNotNull(var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 9;
+    case 9:
+        kt_MatcherMatchResult__init_($$this, var$5, $disposition);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $$this;
+        if ($$this !== null) {
+            $$this = ($rt_nullCheck($$this)).$groups;
+            var$4 = 2;
+            $$this = $rt_nullCheck($$this);
+            $ptr = 10;
+            continue main;
+        }
+        $ptr = 13;
+        continue main;
+    case 10:
+        $tmp = kt_MatcherMatchResult$groups$1_get($$this, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        $ptr = 11;
+    case 11:
+        kji_Intrinsics_checkNotNull($$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = ($rt_nullCheck($$this)).$value21;
+        $ptr = 12;
+    case 12:
+        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        return $$this;
+    case 13:
+        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($default);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        return $$this;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this, $disposition, $default, var$4, var$5, var$6, var$7, $ptr);
+},
+culg_GithubAPI_access$extractZipStream = ($$this, $stream, $unzipDestination, $$completion) => {
+    let var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $$je, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$$completion = $thread.pop();$unzipDestination = $thread.pop();$stream = $thread.pop();$$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $rt_nullCheck($$this);
+        $$this = $rt_nullCheck($$completion);
+        $ptr = 2;
+    case 2:
+        $tmp = kcji_ContinuationImpl_getContext($$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$completion = $tmp;
+        kc_Job_$callClinit();
+        $$this = kc_Job_Key;
+        $$completion = $rt_nullCheck($$completion);
+        $ptr = 3;
+    case 3:
+        $tmp = $$completion.$get6($$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this = $tmp;
+        $$completion = $rt_castToInterface($$this, kc_Job);
+        $$this = new jl_StringBuilder;
+        jl_AbstractStringBuilder__init_($$this);
+        var$5 = $rt_nullCheck($unzipDestination);
+        $ptr = 4;
+    case 4:
+        $tmp = cgxgtbw_WebFileHandle_file(var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unzipDestination = $tmp;
+        $unzipDestination = $rt_nullCheck($unzipDestination);
+        $ptr = 5;
+    case 5:
+        $tmp = $unzipDestination.$getCanonicalPath();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unzipDestination = $tmp;
+        jl_AbstractStringBuilder_append($$this, $unzipDestination);
+        jl_AbstractStringBuilder_append($$this, ji_File_separator);
+        $ptr = 6;
+    case 6:
+        $tmp = jl_AbstractStringBuilder_toString($$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6 = $tmp;
+        a: {
+            try {
+                if ($$completion !== null) {
+                    $ptr = 8;
+                    continue main;
+                }
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+            b: {
+                try {
+                    if (!0)
+                        break b;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof juz_ZipException) {
+                        $$this = $$je;
+                        break a;
+                    } else {
+                        throw $$e;
+                    }
+                }
+                return k_Unit_INSTANCE;
+            }
+            try {
+                $stream = $rt_nullCheck($stream);
+                $ptr = 9;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+        }
+        $stream = new cul_UncivShowableException;
+        $unzipDestination = $rt_s(12679);
+        $$this = $$this;
+        $ptr = 7;
+    case 7:
+        cul_UncivShowableException__init_0($stream, $unzipDestination, $$this);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $rt_throw($stream);
+    case 8:
+        a: {
+            try {
+                $tmp = $$completion.$isActive();
+                if ($rt_suspending()) {
+                    break main;
+                }
+                var$7 = $tmp;
+                var$7 = var$7 ? 0 : 1;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+            c: {
+                try {
+                    if (!var$7)
+                        break c;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof juz_ZipException) {
+                        $$this = $$je;
+                        break a;
+                    } else {
+                        throw $$e;
+                    }
+                }
+                return k_Unit_INSTANCE;
+            }
+            try {
+                $stream = $rt_nullCheck($stream);
+                $ptr = 9;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+        }
+        $stream = new cul_UncivShowableException;
+        $unzipDestination = $rt_s(12679);
+        $$this = $$this;
+        $ptr = 7;
+        continue main;
+    case 9:
+        a: {
+            d: {
+                try {
+                    b: {
+                        $tmp = juz_ZipInputStream_getNextEntry($stream);
+                        if ($rt_suspending()) {
+                            break main;
+                        }
+                        $$this = $tmp;
+                        if ($$this !== null) {
+                            if (juz_ZipEntry_isDirectory($$this)) {
+                                if ($$completion === null) {
+                                    if (0)
+                                        break b;
+                                    else
+                                        break d;
+                                }
+                                $ptr = 8;
+                                continue main;
+                            }
+                            $$this = juz_ZipEntry_getName($$this);
+                            $ptr = 10;
+                            continue main;
+                        }
+                    }
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof juz_ZipException) {
+                        $$this = $$je;
+                        break a;
+                    } else {
+                        throw $$e;
+                    }
+                }
+                return k_Unit_INSTANCE;
+            }
+            try {
+                $stream = $rt_nullCheck($stream);
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+        }
+        $stream = new cul_UncivShowableException;
+        $unzipDestination = $rt_s(12679);
+        $$this = $$this;
+        $ptr = 7;
+        continue main;
+    case 10:
+        try {
+            $tmp = cgxgtbw_WebFileHandle_child(var$5, $$this);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $$this = $tmp;
+            $$this = $rt_nullCheck($$this);
+            $ptr = 11;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 11:
+        try {
+            $tmp = cgxgtbw_WebFileHandle_file($$this);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $$this = $tmp;
+            var$8 = $rt_nullCheck(($rt_nullCheck($$this)).$getCanonicalFile());
+            $unzipDestination = var$8.$getPath();
+            $$this = $rt_s(11198);
+            $ptr = 12;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 12:
+        try {
+            kji_Intrinsics_checkNotNullExpressionValue($unzipDestination, $$this);
+            if ($rt_suspending()) {
+                break main;
+            }
+            var$9 = 0;
+            var$7 = 2;
+            $$this = null;
+            $ptr = 13;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 13:
+        try {
+            $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($unzipDestination, var$6, var$9, var$7, $$this);
+            if ($rt_suspending()) {
+                break main;
+            }
+            var$7 = $tmp;
+            if (!var$7) {
+                $$this = new juz_ZipException;
+                $stream = $rt_s(12680);
+                $ptr = 15;
+                continue main;
+            }
+            $ptr = 14;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 14:
+        try {
+            $tmp = var$8.$getParentFile();
+            if ($rt_suspending()) {
+                break main;
+            }
+            $$this = $tmp;
+            if ($$this === null) {
+                $$this = new ji_FileOutputStream;
+                $ptr = 17;
+                continue main;
+            }
+            $ptr = 16;
+            continue main;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 15:
+        try {
+            juz_ZipException__init_($$this, $stream);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $rt_throw($$this);
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 16:
+        try {
+            $tmp = $$this.$mkdirs1();
+            if ($rt_suspending()) {
+                break main;
+            }
+            var$7 = $tmp;
+            kcji_Boxing_boxBoolean(var$7);
+            $$this = new ji_FileOutputStream;
+            $ptr = 17;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 17:
+        try {
+            kji_Intrinsics_checkNotNull(var$8);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $ptr = 18;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 18:
+        try {
+            ji_FileOutputStream__init_0($$this, var$8);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $$this = $$this;
+            $unzipDestination = null;
+            try {
+                try {
+                    var$10 = $unzipDestination;
+                    var$8 = $$this;
+                    var$11 = $stream;
+                    var$8 = var$8;
+                    var$7 = 0;
+                    var$9 = 2;
+                    var$12 = null;
+                    $ptr = 19;
+                    continue main;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof jl_Throwable) {
+                        $stream = $$je;
+                    } else {
+                        throw $$e;
+                    }
+                }
+                var$10 = $stream;
+                var$10 = $unzipDestination;
+                $rt_throw($stream);
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $stream = $$je;
+                $ptr = 20;
+                continue main;
+
+            }
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 19:
+        try {
+            try {
+                b: {
+                    c: {
+                        try {
+                            ki_ByteStreamsKt_copyTo$default(var$11, var$8, var$7, var$9, var$12);
+                            if ($rt_suspending()) {
+                                break main;
+                            }
+                            break b;
+                        } catch ($$e) {
+                            $$je = $rt_wrapException($$e);
+                            if ($$je instanceof jl_Throwable) {
+                                $stream = $$je;
+                                break c;
+                            } else {
+                                throw $$e;
+                            }
+                        }
+                    }
+                    var$10 = $stream;
+                    var$10 = $unzipDestination;
+                    $rt_throw($stream);
+                }
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $stream = $$je;
+                $ptr = 20;
+                continue main;
+
+            }
+            $ptr = 21;
+            continue main;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 20:
+        try {
+            ki_CloseableKt_closeFinally($$this, var$10);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $rt_throw($stream);
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 21:
+        try {
+            ki_CloseableKt_closeFinally($$this, $unzipDestination);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $ptr = 22;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof juz_ZipException) {
+                $$this = $$je;
+                $stream = new cul_UncivShowableException;
+                $unzipDestination = $rt_s(12679);
+                $$this = $$this;
+                $ptr = 7;
+                continue main;
+            } else {
+                throw $$e;
+            }
+        }
+    case 22:
+        a: {
+            try {
+                juz_ZipInputStream_closeEntry($stream);
+                if ($rt_suspending()) {
+                    break main;
+                }
+                if ($$completion !== null) {
+                    $ptr = 8;
+                    continue main;
+                }
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+            b: {
+                try {
+                    if (!0)
+                        break b;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof juz_ZipException) {
+                        $$this = $$je;
+                        break a;
+                    } else {
+                        throw $$e;
+                    }
+                }
+                return k_Unit_INSTANCE;
+            }
+            try {
+                $stream = $rt_nullCheck($stream);
+                $ptr = 9;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof juz_ZipException) {
+                    $$this = $$je;
+                    break a;
+                } else {
+                    throw $$e;
+                }
+            }
+        }
+        $stream = new cul_UncivShowableException;
+        $unzipDestination = $rt_s(12679);
+        $$this = $$this;
+        $ptr = 7;
+        continue main;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($$this, $stream, $unzipDestination, $$completion, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $ptr);
+},
+culg_GithubAPI__clinit_ = () => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = new culg_GithubAPI;
+        $ptr = 1;
+    case 1:
+        culg_GithubAPI_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        culg_GithubAPI_INSTANCE = var$1;
+        $ptr = 2;
+    case 2:
+        cul_UncivKtor_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $rt_nullCheck(cul_UncivKtor_INSTANCE);
+        $ptr = 3;
+    case 3:
+        $tmp = cul_UncivKtor_getClient(var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        var$2 = new culg_GithubAPI$_clinit_$lambda$_46_0;
+        var$1 = $rt_nullCheck(var$1);
+        var$3 = $rt_s(349);
+        $ptr = 4;
+    case 4:
+        kji_Intrinsics_checkNotNullParameter(var$2, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = var$1.$engine0;
+        var$4 = new ikc_HttpClientConfig;
+        $ptr = 5;
+    case 5:
+        ikc_HttpClientConfig__init_(var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = var$1.$userConfig;
+        $ptr = 6;
+    case 6:
+        ikc_HttpClientConfig_plusAssign(var$4, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(var$2);
+        var$2 = var$4;
+        var$5 = $rt_s(12681);
+        $ptr = 7;
+    case 7:
+        kji_Intrinsics_checkNotNullParameter(var$2, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = new culg_GithubAPI$client$lambda$0$lambda$_30_0;
+        $ptr = 8;
+    case 8:
+        ikcp_DefaultRequestKt_defaultRequest(var$2, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6 = var$1.$manageEngine;
+        var$1 = new ikc_HttpClient;
+        $ptr = 9;
+    case 9:
+        ikc_HttpClient__init_(var$1, var$3, var$4, var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        culg_GithubAPI_client = var$1;
+        var$2 = new kt_Regex;
+        var$1 = $rt_s(12682);
+        $ptr = 10;
+    case 10:
+        kt_Regex__init_(var$2, var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        culg_GithubAPI_githubArchiveUrlRegex = var$2;
+        var$1 = new kt_Regex;
+        var$2 = $rt_s(12683);
+        $ptr = 11;
+    case 11:
+        kt_Regex__init_(var$1, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        culg_GithubAPI_parseAttachmentDispositionRegex = var$1;
+        var$2 = culg_GithubAPI_INSTANCE;
+        var$7 = $rt_wrapArray(jl_String, [$rt_s(10945), $rt_s(1507), $rt_s(10839), $rt_s(1034), $rt_s(953), $rt_s(1044), $rt_s(1046), $rt_s(12684), $rt_s(12685)]);
+        var$1 = $rt_nullCheck(var$2);
+        $ptr = 12;
+    case 12:
+        $tmp = culg_GithubAPI_regexListOf(var$1, var$7);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        culg_GithubAPI_goodFolders = var$1;
+        var$1 = culg_GithubAPI_INSTANCE;
+        var$7 = $rt_wrapArray(jl_String, [$rt_s(12686), $rt_s(12687), $rt_s(7302), $rt_s(12688), $rt_s(1123), $rt_s(12689), $rt_s(12690)]);
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 13;
+    case 13:
+        $tmp = culg_GithubAPI_regexListOf(var$1, var$7);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        culg_GithubAPI_goodFiles = var$1;
+        return;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
+},
 jnfs_FileSystemProvider = $rt_classWithoutFields(),
 jnfi_DefaultFileSystemProvider = $rt_classWithoutFields(jnfs_FileSystemProvider),
 jnfi_DefaultFileSystemProvider_INSTANCE = null,
@@ -1766923,7 +1770600,7 @@ cuusc_CityScreenTileTable$addAdditionalContent$2__clinit_ = () => {
     let var$1;
     var$1 = new cuusc_CityScreenTileTable$addAdditionalContent$2;
     cuusc_CityScreenTileTable$addAdditionalContent$2_$callClinit();
-    kji_FunctionReferenceImpl__init_(var$1, 2, $rt_cls(cuv_CityView), $rt_s(12657), $rt_s(12658), 0);
+    kji_FunctionReferenceImpl__init_(var$1, 2, $rt_cls(cuv_CityView), $rt_s(12691), $rt_s(12692), 0);
     cuusc_CityScreenTileTable$addAdditionalContent$2_INSTANCE = var$1;
 },
 cuusc_CityScreenTileTable$addAdditionalContent$1 = $rt_classWithoutFields(kji_FunctionReferenceImpl),
@@ -1767001,7 +1770678,7 @@ cuusc_CityScreenTileTable$addAdditionalContent$1__clinit_ = () => {
     let var$1;
     var$1 = new cuusc_CityScreenTileTable$addAdditionalContent$1;
     cuusc_CityScreenTileTable$addAdditionalContent$1_$callClinit();
-    kji_FunctionReferenceImpl__init_(var$1, 2, $rt_cls(cuv_CityView), $rt_s(12659), $rt_s(12660), 0);
+    kji_FunctionReferenceImpl__init_(var$1, 2, $rt_cls(cuv_CityView), $rt_s(12693), $rt_s(12694), 0);
     cuusc_CityScreenTileTable$addAdditionalContent$1_INSTANCE = var$1;
 };
 function cuusc_CityScreenTileTable$addAdditionalContent$lambda$_3_0() {
@@ -1768019,14 +1771696,14 @@ cuusv_VictoryScreenIllustrations_select = $this => {
             break main;
         }
         $element$iv = $tmp;
-        $it = $rt_s(12661);
+        $it = $rt_s(12695);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter($$this$firstOrNull$iv, $it);
         if ($rt_suspending()) {
             break main;
         }
-        $it = $rt_s(12662);
+        $it = $rt_s(12696);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter($element$iv, $it);
@@ -1769472,7 +1773149,7 @@ cuusv_VictoryScreenIllustrations_getImages = ($this, $victory) => {
             break main;
         }
         $key = cuusv_VictoryScreenIllustrations_Companion;
-        $image = $rt_s(12663);
+        $image = $rt_s(12697);
         $milestone = new cuusv_VictoryScreenIllustrations$getImages$lambda$_6_0;
         $ptr = 2;
     case 2:
@@ -1769530,7 +1773207,7 @@ cuusv_VictoryScreenIllustrations_getImages = ($this, $victory) => {
             break main;
         }
         $result = cuusv_VictoryScreenIllustrations_Companion;
-        $key = $rt_s(12664);
+        $key = $rt_s(12698);
         $ptr = 8;
     case 8:
         $tmp = cuusv_VictoryScreenIllustrations$Companion_access$getImageOrNull($result, $victory, $key);
@@ -1769630,7 +1773307,7 @@ cuusv_VictoryScreenIllustrations_getImages = ($this, $victory) => {
             break main;
         }
         $image = cuusv_VictoryScreenIllustrations_Companion;
-        $result = $rt_s(12665);
+        $result = $rt_s(12699);
         $ptr = 17;
     case 17:
         $tmp = cuusv_VictoryScreenIllustrations$Companion_access$getImageOrNull($image, $victory, $result);
@@ -1769958,7 +1773635,7 @@ cuusv_VictoryScreenIllustrations__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         cuusv_VictoryScreenIllustrations_Companion = new cuusv_VictoryScreenIllustrations$Companion;
-        var$1 = $rt_wrapArray(jl_String, [$rt_s(12665), $rt_s(12664), $rt_s(12663)]);
+        var$1 = $rt_wrapArray(jl_String, [$rt_s(12699), $rt_s(12698), $rt_s(12697)]);
         $ptr = 1;
     case 1:
         $tmp = kc_CollectionsKt__CollectionsKt_listOf(var$1);
@@ -1770480,7 +1774157,7 @@ otrfm_InMemoryVirtualFile_createFile = ($this, $fileName) => {
         var$2 = new ji_IOException;
         var$3 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$3);
-        var$4 = $rt_s(12666);
+        var$4 = $rt_s(12700);
         $ptr = 1;
     case 1:
         $tmp = jl_StringBuilder_append0(var$3, var$4);
@@ -1770496,7 +1774173,7 @@ otrfm_InMemoryVirtualFile_createFile = ($this, $fileName) => {
             break main;
         }
         $fileName = $tmp;
-        var$4 = $rt_s(12667);
+        var$4 = $rt_s(12701);
         $fileName = $rt_nullCheck($fileName);
         $ptr = 3;
     case 3:
@@ -1770535,7 +1774212,7 @@ otrfm_InMemoryVirtualFile_length = $this => {
 },
 cuupo_DisplayTab$lateInitialize$3 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$3__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12668), $rt_s(12669), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12702), $rt_s(12703), 0);
 },
 cuupo_DisplayTab$lateInitialize$3__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$3();
@@ -1770643,7 +1774320,7 @@ cuupo_DisplayTab$lateInitialize$lambda$_1_1_invoke = (var$0, var$1) => {
 },
 cuupo_DisplayTab$lateInitialize$6 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$6__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12670), $rt_s(12671), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12704), $rt_s(12705), 0);
 },
 cuupo_DisplayTab$lateInitialize$6__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$6();
@@ -1770661,7 +1774338,7 @@ cuupo_DisplayTab$lateInitialize$6_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$7 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$7__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12672), $rt_s(12673), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12706), $rt_s(12707), 0);
 },
 cuupo_DisplayTab$lateInitialize$7__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$7();
@@ -1770679,7 +1774356,7 @@ cuupo_DisplayTab$lateInitialize$7_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$8 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$8__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12674), $rt_s(12675), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12708), $rt_s(12709), 0);
 },
 cuupo_DisplayTab$lateInitialize$8__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$8();
@@ -1770697,7 +1774374,7 @@ cuupo_DisplayTab$lateInitialize$8_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$9 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$9__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12676), $rt_s(12677), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12710), $rt_s(12711), 0);
 },
 cuupo_DisplayTab$lateInitialize$9__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$9();
@@ -1770715,7 +1774392,7 @@ cuupo_DisplayTab$lateInitialize$9_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$10 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$10__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12678), $rt_s(12679), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12712), $rt_s(12713), 0);
 },
 cuupo_DisplayTab$lateInitialize$10__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$10();
@@ -1770733,7 +1774410,7 @@ cuupo_DisplayTab$lateInitialize$10_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$11 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$11__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12680), $rt_s(12681), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12714), $rt_s(12715), 0);
 },
 cuupo_DisplayTab$lateInitialize$11__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$11();
@@ -1770751,7 +1774428,7 @@ cuupo_DisplayTab$lateInitialize$11_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$12 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$12__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12682), $rt_s(12683), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12716), $rt_s(12717), 0);
 },
 cuupo_DisplayTab$lateInitialize$12__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$12();
@@ -1770769,7 +1774446,7 @@ cuupo_DisplayTab$lateInitialize$12_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$13 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$13__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12684), $rt_s(12685), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12718), $rt_s(12719), 0);
 },
 cuupo_DisplayTab$lateInitialize$13__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$13();
@@ -1770787,7 +1774464,7 @@ cuupo_DisplayTab$lateInitialize$13_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$14 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$14__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12686), $rt_s(12687), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12720), $rt_s(12721), 0);
 },
 cuupo_DisplayTab$lateInitialize$14__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$14();
@@ -1770805,7 +1774482,7 @@ cuupo_DisplayTab$lateInitialize$14_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$15 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$15__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12688), $rt_s(12689), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12722), $rt_s(12723), 0);
 };
 let cuupo_DisplayTab$lateInitialize$15__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$15();
@@ -1770928,7 +1774605,7 @@ cuupo_DisplayTab$lateInitialize$lambda$_1_4_run = var$0 => {
 },
 cuupo_DisplayTab$lateInitialize$19 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$19__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12690), $rt_s(12691), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12724), $rt_s(12725), 0);
 },
 cuupo_DisplayTab$lateInitialize$19__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$19();
@@ -1770946,7 +1774623,7 @@ cuupo_DisplayTab$lateInitialize$19_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$20 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$20__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12692), $rt_s(12693), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12726), $rt_s(12727), 0);
 },
 cuupo_DisplayTab$lateInitialize$20__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$20();
@@ -1770964,7 +1774641,7 @@ cuupo_DisplayTab$lateInitialize$20_set = ($this, $value) => {
 },
 cuupo_DisplayTab$lateInitialize$1 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DisplayTab$lateInitialize$1__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12694), $rt_s(12695), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12728), $rt_s(12729), 0);
 },
 cuupo_DisplayTab$lateInitialize$1__init_0 = var_0 => {
     let var_1 = new cuupo_DisplayTab$lateInitialize$1();
@@ -1771490,7 +1775167,7 @@ let cuupo_AutomationTab$lateInitialize$lambda$_5_3_invoke = (var$0, var$1) => {
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_01011;
-        var$3 = $rt_s(12696);
+        var$3 = $rt_s(12730);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1771498,7 +1775175,7 @@ let cuupo_AutomationTab$lateInitialize$lambda$_5_3_invoke = (var$0, var$1) => {
             break main;
         }
         var$4 = var$2;
-        var$3 = $rt_s(12697);
+        var$3 = $rt_s(12731);
         var$5 = $rt_nullCheck(var$2);
         $ptr = 2;
     case 2:
@@ -1771560,14 +1775237,14 @@ let cuupo_MultiplayerSelectBoxHelpers$RefreshSelectOptions__init_ = ($this, $pro
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12698);
+        var$4 = $rt_s(12732);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($extraCustomServerOptions, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12699);
+        var$4 = $rt_s(12733);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($dropboxOptions, var$4);
@@ -1772118,7 +1775795,7 @@ culf_IMediaFinder$LabeledSounds_getLabeledSounds = $this => {
         jl_AbstractStringBuilder__init_(var$1);
         jl_AbstractStringBuilder_append0(var$1, 91);
         jl_AbstractStringBuilder_append(var$1, ($rt_nullCheck(var$5)).$name1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(12700));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(12734));
         $ptr = 16;
     case 16:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1772470,7 +1776147,7 @@ culf_IMediaFinder$LabeledSounds_cacheMods = $this => {
         }
         if (!(($rt_nullCheck($sound)).$nativeString.length <= 0 ? 0 : 1)) {
             jl_AbstractStringBuilder_append($folder_0, $sound);
-            jl_AbstractStringBuilder_append($folder_0, $rt_s(12701));
+            jl_AbstractStringBuilder_append($folder_0, $rt_s(12735));
             $ptr = 35;
             continue main;
         }
@@ -1772510,9 +1776187,9 @@ culf_IMediaFinder$LabeledSounds_cacheMods = $this => {
         }
         $sound = $tmp;
         jl_AbstractStringBuilder_append($file, $sound);
-        jl_AbstractStringBuilder_append($file, $rt_s(12702));
+        jl_AbstractStringBuilder_append($file, $rt_s(12736));
         jl_AbstractStringBuilder_append($file, ($rt_nullCheck($unit)).$name1);
-        jl_AbstractStringBuilder_append($file, $rt_s(12703));
+        jl_AbstractStringBuilder_append($file, $rt_s(12737));
         $ptr = 28;
     case 28:
         $tmp = jl_AbstractStringBuilder_toString($file);
@@ -1772568,7 +1776245,7 @@ culf_IMediaFinder$LabeledSounds_cacheMods = $this => {
         }
         $folder = $tmp;
         jl_AbstractStringBuilder_append($folder_0, $folder);
-        jl_AbstractStringBuilder_append($folder_0, $rt_s(12701));
+        jl_AbstractStringBuilder_append($folder_0, $rt_s(12735));
         $ptr = 35;
     case 35:
         $tmp = jl_AbstractStringBuilder_toString($folder_0);
@@ -1772610,12 +1776287,12 @@ culf_IMediaFinder$LabeledSounds__clinit_ = () => {
         var$1 = $rt_createArray(k_Pair, 9);
         var$2 = var$1.data;
         var$2[0] = k_TuplesKt_to($rt_s(5), $rt_s(1381));
-        var$2[1] = k_TuplesKt_to($rt_s(1432), $rt_s(12704));
-        var$2[2] = k_TuplesKt_to($rt_s(1433), $rt_s(12705));
+        var$2[1] = k_TuplesKt_to($rt_s(1432), $rt_s(12738));
+        var$2[2] = k_TuplesKt_to($rt_s(1433), $rt_s(12739));
         var$2[3] = k_TuplesKt_to($rt_s(1429), $rt_s(12330));
         var$2[4] = k_TuplesKt_to($rt_s(1153), $rt_s(7181));
         var$2[5] = k_TuplesKt_to($rt_s(1434), $rt_s(9141));
-        var$2[6] = k_TuplesKt_to($rt_s(1435), $rt_s(12706));
+        var$2[6] = k_TuplesKt_to($rt_s(1435), $rt_s(12740));
         var$2[7] = k_TuplesKt_to($rt_s(1437), $rt_s(7177));
         var$2[8] = k_TuplesKt_to($rt_s(1439), $rt_s(7153));
         $ptr = 1;
@@ -1772763,7 +1776440,7 @@ cuupo_MultiplayerTab$lateInitialize$currentSoundProxy$1_set = ($this, $value) =>
 },
 cuupo_MultiplayerTab$lateInitialize$otherSoundProxy$1 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_MultiplayerTab$lateInitialize$otherSoundProxy$1__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings$GameSettingsMultiplayer), $rt_s(12707), $rt_s(12708), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings$GameSettingsMultiplayer), $rt_s(12741), $rt_s(12742), 0);
 },
 cuupo_MultiplayerTab$lateInitialize$otherSoundProxy$1__init_0 = var_0 => {
     let var_1 = new cuupo_MultiplayerTab$lateInitialize$otherSoundProxy$1();
@@ -1772800,7 +1776477,7 @@ cuupo_MultiplayerTab$lateInitialize$otherSoundProxy$1_set = ($this, $value) => {
 },
 cuupo_MultiplayerTab$lateInitialize$4 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_MultiplayerTab$lateInitialize$4__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuupo_MultiplayerSelectBoxHelpers$UncivSoundProxy), $rt_s(1223), $rt_s(12709), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuupo_MultiplayerSelectBoxHelpers$UncivSoundProxy), $rt_s(1223), $rt_s(12743), 0);
 },
 cuupo_MultiplayerTab$lateInitialize$4__init_0 = var_0 => {
     let var_1 = new cuupo_MultiplayerTab$lateInitialize$4();
@@ -1772858,7 +1776535,7 @@ function cuupo_MultiplayerTab$lateInitialize$5() {
 }
 let cuupo_MultiplayerTab$lateInitialize$5__init_ = ($this, $$labeledSounds) => {
     $this.$$labeledSounds = $$labeledSounds;
-    kji_AdaptedFunctionReference__init_0($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12710), $rt_s(12711), 4);
+    kji_AdaptedFunctionReference__init_0($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12744), $rt_s(12745), 4);
 },
 cuupo_MultiplayerTab$lateInitialize$5__init_0 = var_0 => {
     let var_1 = new cuupo_MultiplayerTab$lateInitialize$5();
@@ -1772930,7 +1776607,7 @@ cuupo_MultiplayerTab$lateInitialize$lambda$_5_0_invoke = (var$0, var$1) => {
 },
 cuupo_MultiplayerTab$lateInitialize$7 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_MultiplayerTab$lateInitialize$7__init_0 = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuupo_MultiplayerSelectBoxHelpers$UncivSoundProxy), $rt_s(1223), $rt_s(12709), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuupo_MultiplayerSelectBoxHelpers$UncivSoundProxy), $rt_s(1223), $rt_s(12743), 0);
 },
 cuupo_MultiplayerTab$lateInitialize$7__init_ = var_0 => {
     let var_1 = new cuupo_MultiplayerTab$lateInitialize$7();
@@ -1772988,7 +1776665,7 @@ function cuupo_MultiplayerTab$lateInitialize$8() {
 }
 let cuupo_MultiplayerTab$lateInitialize$8__init_ = ($this, $$labeledSounds) => {
     $this.$$labeledSounds0 = $$labeledSounds;
-    kji_AdaptedFunctionReference__init_0($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12710), $rt_s(12711), 4);
+    kji_AdaptedFunctionReference__init_0($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12744), $rt_s(12745), 4);
 },
 cuupo_MultiplayerTab$lateInitialize$8__init_0 = var_0 => {
     let var_1 = new cuupo_MultiplayerTab$lateInitialize$8();
@@ -1773090,7 +1776767,7 @@ cuupo_AdvancedTab$lateInitialize$3_set = ($this, $value) => {
 },
 cuupo_AdvancedTab$lateInitialize$4 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_AdvancedTab$lateInitialize$4__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12712), $rt_s(12713), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12746), $rt_s(12747), 0);
 },
 cuupo_AdvancedTab$lateInitialize$4__init_0 = var_0 => {
     let var_1 = new cuupo_AdvancedTab$lateInitialize$4();
@@ -1773244,7 +1776921,7 @@ cuupo_DebugTab$lateInitialize$1_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$2 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$2__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12714), $rt_s(12715), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12748), $rt_s(12749), 0);
 },
 cuupo_DebugTab$lateInitialize$2__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$2();
@@ -1773298,7 +1776975,7 @@ cuupo_DebugTab$lateInitialize$2_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$3 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$3__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12716), $rt_s(12717), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12750), $rt_s(12751), 0);
 },
 cuupo_DebugTab$lateInitialize$3__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$3();
@@ -1773353,7 +1777030,7 @@ cuupo_DebugTab$lateInitialize$3_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$4 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$4__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12718), $rt_s(12719), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12752), $rt_s(12753), 0);
 },
 cuupo_DebugTab$lateInitialize$4__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$4();
@@ -1773408,7 +1777085,7 @@ cuupo_DebugTab$lateInitialize$4_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$5 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$5__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12720), $rt_s(12721), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12754), $rt_s(12755), 0);
 },
 cuupo_DebugTab$lateInitialize$5__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$5();
@@ -1773463,7 +1777140,7 @@ cuupo_DebugTab$lateInitialize$5_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$6 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$6__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12722), $rt_s(12723), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuu_DebugUtils), $rt_s(12756), $rt_s(12757), 0);
 },
 cuupo_DebugTab$lateInitialize$6__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$6();
@@ -1773518,7 +1777195,7 @@ cuupo_DebugTab$lateInitialize$6_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$8 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$8__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(culf_UncivFiles$Companion), $rt_s(12724), $rt_s(12725), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(culf_UncivFiles$Companion), $rt_s(12758), $rt_s(12759), 0);
 },
 cuupo_DebugTab$lateInitialize$8__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$8();
@@ -1773573,7 +1777250,7 @@ cuupo_DebugTab$lateInitialize$8_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$9 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$9__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(culf_MapSaver), $rt_s(12724), $rt_s(12725), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(culf_MapSaver), $rt_s(12758), $rt_s(12759), 0);
 },
 cuupo_DebugTab$lateInitialize$9__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$9();
@@ -1773594,7 +1777271,7 @@ cuupo_DebugTab$lateInitialize$9_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$10 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$10__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuusb_BaseScreen$Companion), $rt_s(12726), $rt_s(12727), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cuusb_BaseScreen$Companion), $rt_s(12760), $rt_s(12761), 0);
 },
 cuupo_DebugTab$lateInitialize$10__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$10();
@@ -1773714,7 +1777391,7 @@ cuupo_DebugTab$lateInitialize$lambda$_1_0_invoke = (var$0, var$1, var$2) => {
 },
 cuupo_DebugTab$lateInitialize$12 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$12__init_ = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12728), $rt_s(12729), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameSettings), $rt_s(12762), $rt_s(12763), 0);
 },
 cuupo_DebugTab$lateInitialize$12__init_0 = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$12();
@@ -1773771,7 +1777448,7 @@ cuupo_DebugTab$lateInitialize$lambda$_1_1_invoke = (var$0, var$1, var$2) => {
 },
 cuupo_DebugTab$lateInitialize$7 = $rt_classWithoutFields(kji_MutablePropertyReference0Impl),
 cuupo_DebugTab$lateInitialize$7__init_0 = ($this, $receiver) => {
-    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameParameters), $rt_s(12730), $rt_s(12731), 0);
+    kji_PropertyReference__init_($this, $receiver, $rt_cls(cumm_GameParameters), $rt_s(12764), $rt_s(12765), 0);
 },
 cuupo_DebugTab$lateInitialize$7__init_ = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$7();
@@ -1773789,7 +1777466,7 @@ cuupo_DebugTab$lateInitialize$7_set = ($this, $value) => {
 },
 cuupo_DebugTab$lateInitialize$16 = $rt_classWithoutFields(kji_FunctionReferenceImpl),
 cuupo_DebugTab$lateInitialize$16__init_0 = ($this, $receiver0) => {
-    kji_FunctionReference__init_($this, 0, $receiver0, $rt_cls(cuupo_DebugTab), $rt_s(12732), $rt_s(12733), 0);
+    kji_FunctionReference__init_($this, 0, $receiver0, $rt_cls(cuupo_DebugTab), $rt_s(12766), $rt_s(12767), 0);
 },
 cuupo_DebugTab$lateInitialize$16__init_ = var_0 => {
     let var_1 = new cuupo_DebugTab$lateInitialize$16();
@@ -1774120,14 +1777797,14 @@ cuupo_DebugTab$lateInitialize$lambda$_1_3_invoke = var$0 => {
         }
         var$4 = new ks_MergingSequence;
         var$5 = new ks_SequencesKt___SequencesKt$zip$lambda$_174_0;
-        var$6 = $rt_s(12734);
+        var$6 = $rt_s(12768);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullParameter(var$2, var$6);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(12735);
+        var$6 = $rt_s(12769);
         $ptr = 11;
     case 11:
         kji_Intrinsics_checkNotNullParameter(var$1, var$6);
@@ -1774307,7 +1777984,7 @@ cuupo_DebugTab$lateInitialize$lambda$_1_4_invoke = var$0 => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cul_UncivShowableException;
-        var$2 = $rt_s(12736);
+        var$2 = $rt_s(12770);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -1774365,7 +1778042,7 @@ cuupo_DebugTab$lateInitialize$lambda$_1_5_invoke = var$0 => {
         }
         cuu_Concurrency_$callClinit();
         var$2 = cuu_Concurrency_INSTANCE;
-        var$6 = $rt_s(12737);
+        var$6 = $rt_s(12771);
         var$8 = null;
         var$9 = new cuupo_DebugTab$lateInitialize$17$1;
         var$1 = null;
@@ -1774536,7 +1778213,7 @@ let ksji_JsonTreeReader_readObject = ($this_$iv, $$this$readObject, $$completion
                 continue main;
             }
             $$this$readObject = $this_$iv.$lexer0;
-            $$completion = $rt_s(12738);
+            $$completion = $rt_s(12772);
             $$i$a$_readObjectImpl_JsonTreeReader$readObject$3 = 0;
             $$continuation = null;
             $$i$f$readObjectImpl = 6;
@@ -1774771,7 +1778448,7 @@ let ksji_JsonTreeReader_readObject = ($this_$iv, $$this$readObject, $$completion
                 continue main;
             }
             $$this$readObject = $this_$iv.$lexer0;
-            $$completion = $rt_s(12738);
+            $$completion = $rt_s(12772);
             $$i$a$_readObjectImpl_JsonTreeReader$readObject$3 = 0;
             $$continuation = null;
             $$i$f$readObjectImpl = 6;
@@ -1775064,7 +1778741,7 @@ ksji_JsonTreeReader_read = $this => {
                     $result = $this.$lexer0;
                     var$4 = new jl_StringBuilder;
                     jl_AbstractStringBuilder__init_(var$4);
-                    jl_AbstractStringBuilder_append(var$4, $rt_s(12739));
+                    jl_AbstractStringBuilder_append(var$4, $rt_s(12773));
                     jl_AbstractStringBuilder_append(var$4, ksji_AbstractJsonLexerKt_tokenDescription($token));
                     $ptr = 4;
                     continue main;
@@ -1775486,7 +1779163,7 @@ ksji_JsonTreeReader_read = $this => {
                 continue main;
             }
             var$4 = $this.$lexer0;
-            var$5 = $rt_s(12738);
+            var$5 = $rt_s(12772);
             $token = 0;
             var$6 = null;
             var$3 = 6;
@@ -1775633,7 +1779310,7 @@ ksji_WriteModeKt_switchMode = ($$this$switchMode, $desc) => {
         if ($rt_suspending()) {
             break main;
         }
-        $keyDescriptor$iv = $rt_s(12740);
+        $keyDescriptor$iv = $rt_s(12774);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($desc, $keyDescriptor$iv);
@@ -1776607,7 +1780284,7 @@ cuusws_AutoPlayMenu$createContentTable$2_invoke = $this => {
             continue main;
         }
         var$3 = var$1.$autoPlay1;
-        var$5 = $rt_s(12741);
+        var$5 = $rt_s(12775);
         var$1 = var$1.$worldScreen4;
         var$4 = 0;
         var$3 = $rt_nullCheck(var$3);
@@ -1776651,7 +1780328,7 @@ cuusws_AutoPlayMenu$createContentTable$3_invoke = $this => {
             continue main;
         }
         var$2 = var$1.$autoPlay1;
-        var$4 = $rt_s(12742);
+        var$4 = $rt_s(12776);
         var$1 = var$1.$worldScreen4;
         var$5 = 1;
         var$2 = $rt_nullCheck(var$2);
@@ -1776696,7 +1780373,7 @@ cuusws_AutoPlayMenu$createContentTable$4_invoke = $this => {
             continue main;
         }
         var$2 = var$1.$autoPlay1;
-        var$4 = $rt_s(12743);
+        var$4 = $rt_s(12777);
         var$1 = var$1.$worldScreen4;
         var$5 = 1;
         var$2 = $rt_nullCheck(var$2);
@@ -1776969,7 +1780646,7 @@ cuuc_ParticleEffectFireworks$configure$lambda$_2_1_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12744);
+        var$2 = $rt_s(12778);
         var$3 = 0;
         var$4 = 2;
         var$5 = null;
@@ -1777038,7 +1780715,7 @@ cuuc_ParticleEffectFireworks$configure$lambda$_2_3_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(12744);
+        var$3 = $rt_s(12778);
         var$4 = 0;
         var$5 = 2;
         var$2 = null;
@@ -1777072,7 +1780749,7 @@ cuuc_ParticleEffectFireworks$configure$lambda$_2_4_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(12745);
+        var$3 = $rt_s(12779);
         var$4 = 0;
         var$5 = 2;
         var$2 = null;
@@ -1777227,7 +1780904,7 @@ let cuusww_ConnectRoadOverlayButtonData$getConnectRoadButton$lambda$_4_0_invoke 
         cuua_SoundPlayer_$callClinit();
         var$1 = cuua_SoundPlayer_INSTANCE;
         var$3 = new cum_UncivSound;
-        var$4 = $rt_s(12746);
+        var$4 = $rt_s(12780);
         $ptr = 7;
     case 7:
         cum_UncivSound__init_(var$3, var$4);
@@ -1777443,7 +1781120,7 @@ let cuusc_CityScreenTileTable$addBuyTileButton$lambda$_4_1_invoke = var$0 => {
         var$1 = var$0.$_02077;
         var$2 = var$0.$_1735;
         var$3 = new cuusc_CityScreenTileTable$TileBuyMenu;
-        var$4 = $rt_s(12747);
+        var$4 = $rt_s(12781);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$2, var$4);
@@ -1777839,7 +1781516,7 @@ ksj_JsonObjectSerializer$JsonObjectDescriptor__clinit_ = () => {
         var$2 = $tmp;
         var$1.$$$delegate_00 = ($rt_nullCheck(var$2)).$descriptor2;
         ksj_JsonObjectSerializer$JsonObjectDescriptor_INSTANCE = var$1;
-        ksj_JsonObjectSerializer$JsonObjectDescriptor_serialName = $rt_s(12748);
+        ksj_JsonObjectSerializer$JsonObjectDescriptor_serialName = $rt_s(12782);
         return;
     default: $rt_invalidPointer();
     }}
@@ -1777888,7 +1781565,7 @@ ksj_JsonElementSerializer$_clinit_$lambda$_12_0_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12749);
+        var$2 = $rt_s(12783);
         var$7 = new ksj_JsonElementSerializer$descriptor$lambda$0$lambda$_9_1;
         $ptr = 5;
     case 5:
@@ -1777907,7 +1781584,7 @@ ksj_JsonElementSerializer$_clinit_$lambda$_12_0_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12750);
+        var$2 = $rt_s(12784);
         var$7 = new ksj_JsonElementSerializer$descriptor$lambda$0$lambda$_9_2;
         $ptr = 7;
     case 7:
@@ -1777926,7 +1781603,7 @@ ksj_JsonElementSerializer$_clinit_$lambda$_12_0_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12751);
+        var$2 = $rt_s(12785);
         var$7 = new ksj_JsonElementSerializer$descriptor$lambda$0$lambda$_9_3;
         $ptr = 9;
     case 9:
@@ -1777945,7 +1781622,7 @@ ksj_JsonElementSerializer$_clinit_$lambda$_12_0_invoke = (var$0, var$1) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12752);
+        var$2 = $rt_s(12786);
         var$7 = new ksj_JsonElementSerializer$descriptor$lambda$0$lambda$_9_4;
         $ptr = 11;
     case 11:
@@ -1779721,7 +1783398,7 @@ cuusv_VictoryScreenDemographics_buildDemographicsHeaders = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12753);
+        var$2 = $rt_s(12787);
         $ptr = 3;
     case 3:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel(var$2);
@@ -1781186,14 +1784863,14 @@ cuusv_VictoryScreenCharts_updateChart = $this => {
         var$2 = $tmp;
         var$3 = $this.$selectedCiv2;
         var$1 = $rt_nullCheck(var$1);
-        var$4 = $rt_s(12754);
+        var$4 = $rt_s(12788);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$2, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12755);
+        var$4 = $rt_s(12789);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$4);
@@ -1782419,7 +1786096,7 @@ let cuusv_VictoryScreenReplay__init_ = ($this, $worldScreen) => {
         $worldScreen = cuucw_UncivSlider$TipType_None;
         var$2 = null;
         var$4 = new cuusv_VictoryScreenReplay$1;
-        kji_FunctionReference__init_(var$4, 1, $this, $rt_cls(cuusv_VictoryScreenReplay), $rt_s(12756), $rt_s(12757), 0);
+        kji_FunctionReference__init_(var$4, 1, $this, $rt_cls(cuusv_VictoryScreenReplay), $rt_s(12790), $rt_s(12791), 0);
         var$4 = var$4;
         var$14 = 280;
         var$5 = null;
@@ -1782492,7 +1786169,7 @@ let cuusv_VictoryScreenReplay__init_ = ($this, $worldScreen) => {
             break main;
         }
         $worldScreen = new cuusv_VictoryScreenReplay$2$1;
-        kji_FunctionReference__init_($worldScreen, 0, $this, $rt_cls(cuusv_VictoryScreenReplay), $rt_s(12758), $rt_s(12759), 0);
+        kji_FunctionReference__init_($worldScreen, 0, $this, $rt_cls(cuusv_VictoryScreenReplay), $rt_s(12792), $rt_s(12793), 0);
         $worldScreen = $worldScreen;
         $ptr = 23;
     case 23:
@@ -1783078,7 +1786755,7 @@ let cuupo_DisplayTab$addScreenOrientationSelectBox$lambda$_7_0_invoke = (var$0, 
         var$1 = $rt_castToClass(var$1, cuu_ScreenOrientation);
         var$2 = $rt_castToClass(var$2, cuu_ScreenOrientation);
         var$3 = var$0.$_02402;
-        var$4 = $rt_s(12760);
+        var$4 = $rt_s(12794);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$4);
@@ -1783093,7 +1786770,7 @@ let cuupo_DisplayTab$addScreenOrientationSelectBox$lambda$_7_0_invoke = (var$0, 
             break main;
         }
         var$2 = $rt_nullCheck(cuu_Display_INSTANCE);
-        var$4 = $rt_s(12760);
+        var$4 = $rt_s(12794);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$1, var$4);
@@ -1783108,7 +1786785,7 @@ let cuupo_DisplayTab$addScreenOrientationSelectBox$lambda$_7_0_invoke = (var$0, 
         }
         var$2 = $tmp;
         var$2 = $rt_nullCheck(var$2);
-        var$2 = $rt_s(12760);
+        var$2 = $rt_s(12794);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$1, var$2);
@@ -1783640,8 +1787317,8 @@ let cuupo_DisplayTab$addResetTutorials$lambda$_11_0_invoke = var$0 => {
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(12761);
-        var$7 = $rt_s(12762);
+        var$6 = $rt_s(12795);
+        var$7 = $rt_s(12796);
         var$8 = 0;
         var$9 = null;
         var$5 = new cuupo_DisplayTab$addResetTutorials$lambda$0$lambda$_31_0;
@@ -1783904,7 +1787581,7 @@ let cuupo_SoundTab$addDownloadMusic$lambda$_2_0_invoke = var$0 => {
         }
         cuu_Concurrency_$callClinit();
         var$5 = cuu_Concurrency_INSTANCE;
-        var$6 = $rt_s(12763);
+        var$6 = $rt_s(12797);
         var$1 = null;
         var$2 = new cuupo_SoundTab$addDownloadMusic$1$1;
         var$7 = null;
@@ -1784060,7 +1787737,7 @@ cuupo_MultiplayerTab$addMultiplayerServerOptions$lambda$_6_0_acceptChar = (var$0
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(12764);
+        var$3 = $rt_s(12798);
         var$4 = 0;
         var$5 = 2;
         var$1 = null;
@@ -1784147,7 +1787824,7 @@ let cuupo_MultiplayerTab$addMultiplayerServerOptions$lambda$_6_2_invoke = (var$0
             break main;
         }
         var$6 = new kt_Regex;
-        var$11 = $rt_s(12765);
+        var$11 = $rt_s(12799);
         $ptr = 3;
     case 3:
         kt_Regex__init_(var$6, var$11);
@@ -1784483,7 +1788160,7 @@ let cuupo_MultiplayerTab$addMultiplayerServerOptions$lambda$_6_2_invoke = (var$0
             var$12 = $tmp;
             if (!var$12) {
                 var$1 = new jl_Error;
-                var$6 = $rt_s(12766);
+                var$6 = $rt_s(12800);
                 $ptr = 27;
                 continue main;
             }
@@ -1784684,7 +1788361,7 @@ let cuupo_MultiplayerTab$addMultiplayerServerOptions$lambda$_6_3_invoke = var$0 
         var$1.$_2265 = var$2;
         cuu_Concurrency_$callClinit();
         var$11 = cuu_Concurrency_INSTANCE;
-        var$2 = $rt_s(12767);
+        var$2 = $rt_s(12801);
         var$3 = null;
         var$8 = new cuupo_MultiplayerTab$successfullyConnectedToServer$1;
         var$5 = null;
@@ -1784852,7 +1788529,7 @@ cuupo_MultiplayerTab$addMultiplayerServerOptions$5_invoke = ($this, $p1, $p2) =>
                         var$6 = ($rt_nullCheck(var$6)).data;
                         switch (var$6[$rt_checkBounds(var$7, var$6)]) {
                             case 1:
-                                $p2 = $rt_s(12768);
+                                $p2 = $rt_s(12802);
                                 break a;
                             case 2:
                                 break d;
@@ -1784866,13 +1788543,13 @@ cuupo_MultiplayerTab$addMultiplayerServerOptions$5_invoke = ($this, $p1, $p2) =>
                         jl_Throwable__init_0($p1);
                         $rt_throw($p1);
                     }
-                    $p2 = $rt_s(12769);
+                    $p2 = $rt_s(12803);
                     break a;
                 }
-                $p2 = $rt_s(12770);
+                $p2 = $rt_s(12804);
                 break a;
             }
-            $p2 = $rt_s(12771);
+            $p2 = $rt_s(12805);
         }
         cuu_Concurrency_$callClinit();
         var$3 = cuu_Concurrency_INSTANCE;
@@ -1784917,7 +1788594,7 @@ cuupo_AdvancedTab$addAutosaveField$lambda$_4_0_acceptChar = (var$0, var$1, var$2
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(12772);
+        var$3 = $rt_s(12806);
         var$4 = 0;
         var$5 = 2;
         var$1 = null;
@@ -1785015,7 +1788692,7 @@ let cuupo_AdvancedTab$addAutosaveField$lambda$_4_1_invoke = var$0 => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12773);
+        var$5 = $rt_s(12807);
         var$6 = 0;
         var$10 = 0;
         var$9 = cbgg_Color_RED;
@@ -1785083,7 +1788760,7 @@ let cuupo_AdvancedTab$addAutosaveField$lambda$_4_1_invoke = var$0 => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12774);
+        var$5 = $rt_s(12808);
         var$6 = 0;
         var$10 = 0;
         var$9 = cbgg_Color_ORANGE;
@@ -1785183,7 +1788860,7 @@ let cuupo_AdvancedTab$addAutosaveField$lambda$_4_3_invoke = (var$0, var$1) => {
         var$1 = var$1;
         var$2 = var$0.$_01832;
         var$3 = var$0.$_1655;
-        var$4 = $rt_s(12696);
+        var$4 = $rt_s(12730);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$4);
@@ -1785343,7 +1789020,7 @@ cuupo_AdvancedTab$addFontFamilySelect$2_invoke = ($this, $$completion) => {
         if (!(var$3 !== null ? 0 : 1)) {
             $$completion = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($$completion);
-            jl_AbstractStringBuilder_append($$completion, $rt_s(12775));
+            jl_AbstractStringBuilder_append($$completion, $rt_s(12809));
             $ptr = 5;
             continue main;
         }
@@ -1785422,7 +1789099,7 @@ cuupo_AdvancedTab$addFontFamilySelect$2__clinit_ = () => {
     let var$1;
     var$1 = new cuupo_AdvancedTab$addFontFamilySelect$2;
     cuupo_AdvancedTab$addFontFamilySelect$2_$callClinit();
-    kji_AdaptedFunctionReference__init_0(var$1, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12776), $rt_s(12777), 4);
+    kji_AdaptedFunctionReference__init_0(var$1, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12810), $rt_s(12811), 4);
     cuupo_AdvancedTab$addFontFamilySelect$2_INSTANCE = var$1;
 };
 function cuupo_AdvancedTab$addFontFamilySelect$lambda$_7_0() {
@@ -1785679,7 +1789356,7 @@ let cuupo_AdvancedTab$addSetUserId$lambda$_14_0_invoke = var$0 => {
             break main;
         }
         var$2 = $tmp;
-        var$3 = $rt_s(12778);
+        var$3 = $rt_s(12812);
         var$5 = 0;
         var$6 = 0;
         var$7 = 3;
@@ -1785722,7 +1789399,7 @@ let cuupo_AdvancedTab$addSetUserId$lambda$_14_0_invoke = var$0 => {
         if ($rt_suspending()) {
             break main;
         }
-        var$10 = $rt_s(12779);
+        var$10 = $rt_s(12813);
         var$11 = $rt_s(11644);
         var$7 = 0;
         var$3 = null;
@@ -1785816,7 +1789493,7 @@ let cuupo_AdvancedTab$addTranslationGeneration$lambda$_11_1_invoke = (var$0, var
         var$3 = var$0.$_1554;
         var$4 = var$0.$_2217;
         var$5 = var$0.$_389;
-        var$6 = $rt_s(12696);
+        var$6 = $rt_s(12730);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$6);
@@ -1785920,7 +1789597,7 @@ let cuupo_AdvancedTab$addTranslationGeneration$lambda$_11_2_invoke = var$0 => {
         }
         cuu_Concurrency_$callClinit();
         var$2 = cuu_Concurrency_INSTANCE;
-        var$6 = $rt_s(12780);
+        var$6 = $rt_s(12814);
         var$12 = null;
         var$13 = new cuupo_AdvancedTab$addTranslationGeneration$3$1;
         var$1 = null;
@@ -1785981,7 +1789658,7 @@ let cuupo_AdvancedTab$addScreenhotGeneration$lambda$_12_0_invoke = var$0 => {
         }
         cuu_Concurrency_$callClinit();
         var$3 = cuu_Concurrency_INSTANCE;
-        var$7 = $rt_s(12781);
+        var$7 = $rt_s(12815);
         var$8 = null;
         var$9 = new cuupo_AdvancedTab$addScreenhotGeneration$1$1;
         var$1 = null;
@@ -1786149,7 +1789826,7 @@ ks_UnknownFieldException__init_ = ($this, $index) => {
     case 0:
         var$2 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$2);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(12782));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(12816));
         jl_AbstractStringBuilder_append1(var$2, $index);
         $ptr = 1;
     case 1:
@@ -1786679,7 +1790356,7 @@ let cuuso_StatsOverviewTab__init_ = ($this, $viewingPlayer, $overviewScreen) => 
         if ($rt_suspending()) {
             break main;
         }
-        $viewingPlayer = ($rt_nullCheck($viewingPlayer_0.$ruleset10)).$modOptions;
+        $viewingPlayer = ($rt_nullCheck($viewingPlayer_0.$ruleset11)).$modOptions;
         $ptr = 25;
     case 25:
         cumru_UniqueType_$callClinit();
@@ -1787063,7 +1790740,7 @@ cuuso_StatsOverviewTab_activated = ($this, $index, $caption, $pager) => {
             break main;
         }
         var$4 = $tmp;
-        var$5 = $rt_s(12783);
+        var$5 = $rt_s(12817);
         var$4 = $rt_nullCheck(var$4);
         $ptr = 4;
     case 4:
@@ -1787750,7 +1791427,7 @@ cuuso_StatsOverviewTab_addGoldSlider = ($this, $$this$addGoldSlider) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12784);
+        var$2 = $rt_s(12818);
         $ptr = 3;
     case 3:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel(var$2);
@@ -1787901,7 +1791578,7 @@ cuuso_StatsOverviewTab_updateGreatPeopleTable = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12785);
+        var$4 = $rt_s(12819);
         $greatPersonPointsPerTurn = null;
         $pointsToGreatGeneral = 24;
         var$9 = 0;
@@ -1787955,7 +1791632,7 @@ cuuso_StatsOverviewTab_updateGreatPeopleTable = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $greatPeopleIcon = $rt_s(12786);
+        $greatPeopleIcon = $rt_s(12820);
         $ptr = 14;
     case 14:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($greatPeopleIcon);
@@ -1787970,7 +1791647,7 @@ cuuso_StatsOverviewTab_updateGreatPeopleTable = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $greatPeopleIcon = $rt_s(12787);
+        $greatPeopleIcon = $rt_s(12821);
         $ptr = 16;
     case 16:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($greatPeopleIcon);
@@ -1788368,7 +1792045,7 @@ let cuuso_TradesOverviewTab__init_ = ($this, $viewingPlayer, $overviewScreen) =>
         }
         var$4 = $tmp;
         if (var$4 ? 0 : 1) {
-            $viewingPlayer = $rt_s(12788);
+            $viewingPlayer = $rt_s(12822);
             $overviewScreen = null;
             var$4 = 24;
             var$11 = 0;
@@ -1788639,7 +1792316,7 @@ let cuuso_TradesOverviewTab__init_ = ($this, $viewingPlayer, $overviewScreen) =>
         }
         var$4 = $tmp;
         if (var$4 ? 0 : 1) {
-            $overviewScreen = $rt_s(12789);
+            $overviewScreen = $rt_s(12823);
             $$this$filter$iv = null;
             var$11 = 24;
             var$12 = 0;
@@ -1789034,7 +1792711,7 @@ cuuso_TradesOverviewTab_createOffersTable = ($this, $civ, $offersList, $numberOf
             break main;
         }
         $titleTable = $tmp;
-        $offer = $rt_s(12790);
+        $offer = $rt_s(12824);
         $offerText = null;
         $civ_0 = $rt_nullCheck($civ);
         $ptr = 5;
@@ -1789585,7 +1793262,7 @@ let cuuso_ReligionOverviewTab__init_ = ($this, $viewingPlayer, $overviewScreen, 
             break main;
         }
         $this.$religionButtons = $viewingPlayer;
-        $viewingPlayer = $rt_s(12791);
+        $viewingPlayer = $rt_s(12825);
         $ptr = 6;
     case 6:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($viewingPlayer);
@@ -1789797,7 +1793474,7 @@ cuuso_ReligionOverviewTab_addCivSpecificStats = ($this, $$this$addCivSpecificSta
         }
         var$6 = $tmp;
         if (var$6) {
-            $headerText = $rt_s(12792);
+            $headerText = $rt_s(12826);
             $religionCountExpander = new cuucw_ExpanderTab;
             var$6 = 18;
             $manager = null;
@@ -1789819,7 +1793496,7 @@ cuuso_ReligionOverviewTab_addCivSpecificStats = ($this, $$this$addCivSpecificSta
         }
         $manager = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($manager);
-        jl_AbstractStringBuilder_append($manager, $rt_s(12793));
+        jl_AbstractStringBuilder_append($manager, $rt_s(12827));
         $manager_0 = $rt_nullCheck($manager_0);
         $ptr = 3;
     case 3:
@@ -1789885,14 +1793562,14 @@ cuuso_ReligionOverviewTab_addCivSpecificStats = ($this, $$this$addCivSpecificSta
         }
         var$6 = $tmp;
         if (var$6) {
-            $$this$addCivSpecificStats = $rt_s(12794);
+            $$this$addCivSpecificStats = $rt_s(12828);
             var$19 = $rt_createArray(jl_String, 1);
             var$20 = var$19.data;
             var$6 = 0;
             $ptr = 15;
             continue main;
         }
-        $$this$addCivSpecificStats = $rt_s(12795);
+        $$this$addCivSpecificStats = $rt_s(12829);
         $ptr = 9;
     case 9:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($$this$addCivSpecificStats);
@@ -1790004,7 +1793681,7 @@ cuuso_ReligionOverviewTab_addCivSpecificStats = ($this, $$this$addCivSpecificSta
         if ($rt_suspending()) {
             break main;
         }
-        $$this$addCivSpecificStats = $rt_s(12795);
+        $$this$addCivSpecificStats = $rt_s(12829);
         $ptr = 9;
         continue main;
     default: $rt_invalidPointer();
@@ -1790496,7 +1794173,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             break main;
         }
         var$5 = $tmp;
-        $foundingCivName = !var$5 ? $rt_s(12796) : $rt_s(12797);
+        $foundingCivName = !var$5 ? $rt_s(12830) : $rt_s(12831);
         $ptr = 22;
         continue main;
     case 12:
@@ -1790547,7 +1794224,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             break main;
         }
         $$this$firstOrNull$iv = $tmp;
-        $element$iv = $rt_s(12798);
+        $element$iv = $rt_s(12832);
         $it = null;
         $holyCity = $rt_nullCheck(cuusb_BaseScreen_Companion);
         $ptr = 17;
@@ -1790639,7 +1794316,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             break main;
         }
         $religion = $this.$statsTable;
-        $foundingCivName = $rt_s(12799);
+        $foundingCivName = $rt_s(12833);
         $ptr = 28;
     case 28:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($foundingCivName);
@@ -1790750,7 +1794427,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
         $religion = $tmp;
         $manager = ($rt_nullCheck($religion)).$religionManager;
         $religion = $this.$statsTable;
-        $foundingCivName = $rt_s(12800);
+        $foundingCivName = $rt_s(12834);
         $ptr = 40;
     case 40:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($foundingCivName);
@@ -1790799,7 +1794476,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             break main;
         }
         $religion = $this.$statsTable;
-        $foundingCivName = $rt_s(12801);
+        $foundingCivName = $rt_s(12835);
         $ptr = 46;
     case 46:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($foundingCivName);
@@ -1790927,7 +1794604,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             $holyCity = $rt_castToClass($element$iv, culc_City);
             if ($holyCity !== null) {
                 $religion = $this.$statsTable;
-                $foundingCivName = $rt_s(12802);
+                $foundingCivName = $rt_s(12836);
                 $ptr = 64;
                 continue main;
             }
@@ -1790972,7 +1794649,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             $holyCity = $rt_castToClass($element$iv, culc_City);
             if ($holyCity !== null) {
                 $religion = $this.$statsTable;
-                $foundingCivName = $rt_s(12802);
+                $foundingCivName = $rt_s(12836);
                 $ptr = 64;
                 continue main;
             }
@@ -1791371,19 +1795048,19 @@ let cuuso_WonderOverviewTab_createGrid = $this => {
                                     $ptr = 30;
                                     continue main;
                                 }
-                                $locationText = $rt_s(12803);
+                                $locationText = $rt_s(12837);
                                 break a;
                             }
                             $image = new jl_StringBuilder;
                             jl_AbstractStringBuilder__init_($image);
-                            jl_AbstractStringBuilder_append($image, $rt_s(12804));
+                            jl_AbstractStringBuilder_append($image, $rt_s(12838));
                             $locationText = $wonder.$city10;
                             $ptr = 26;
                             continue main;
                         }
                         $locationText = new jl_StringBuilder;
                         jl_AbstractStringBuilder__init_($locationText);
-                        jl_AbstractStringBuilder_append($locationText, $rt_s(12805));
+                        jl_AbstractStringBuilder_append($locationText, $rt_s(12839));
                         $image = ($rt_nullCheck($wonder.$location2)).$owningCity0;
                         $ptr = 23;
                         continue main;
@@ -1791623,7 +1795300,7 @@ cuuso_NotificationsOverviewTable__init_ = ($this, $viewingPlayer, $overviewScree
         var$9 = null;
         var$6 = null;
         $viewingPlayer_0 = ju_LinkedHashSet__init_();
-        var$10 = $rt_s(12806);
+        var$10 = $rt_s(12840);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($viewingPlayer_0, var$10);
@@ -1791654,8 +1795331,8 @@ cuuso_NotificationsOverviewTable__init_ = ($this, $viewingPlayer, $overviewScree
             break main;
         }
         $viewingPlayer = $tmp;
-        $overviewScreen = $rt_s(12807);
-        $persistedData = $rt_s(12808);
+        $overviewScreen = $rt_s(12841);
+        $persistedData = $rt_s(12842);
         $ptr = 7;
     case 7:
         $tmp = cbgg_Color_valueOf($persistedData);
@@ -1791680,8 +1795357,8 @@ cuuso_NotificationsOverviewTable__init_ = ($this, $viewingPlayer, $overviewScree
             break main;
         }
         $viewingPlayer = $tmp;
-        $overviewScreen = $rt_s(12809);
-        $persistedData = $rt_s(12810);
+        $overviewScreen = $rt_s(12843);
+        $persistedData = $rt_s(12844);
         $ptr = 10;
     case 10:
         $tmp = cbgg_Color_valueOf($persistedData);
@@ -1792324,10 +1796001,10 @@ cuuso_NotificationsOverviewTable_oneTurnTable = ($this, $turn, $notifications, $
         $notifications = $tmp;
         $selectLabel = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($selectLabel);
-        jl_AbstractStringBuilder_append($selectLabel, $doHighlight ? $rt_s(5) : $rt_s(12811));
-        jl_AbstractStringBuilder_append($selectLabel, $rt_s(12812));
+        jl_AbstractStringBuilder_append($selectLabel, $doHighlight ? $rt_s(5) : $rt_s(12845));
+        jl_AbstractStringBuilder_append($selectLabel, $rt_s(12846));
         jl_AbstractStringBuilder_append1($selectLabel, $turn);
-        jl_AbstractStringBuilder_append($selectLabel, $rt_s(12813));
+        jl_AbstractStringBuilder_append($selectLabel, $rt_s(12847));
         jl_AbstractStringBuilder_append($selectLabel, $notifications);
         $ptr = 7;
     case 7:
@@ -1792371,7 +1796048,7 @@ cuuso_NotificationsOverviewTable_oneTurnTable = ($this, $turn, $notifications, $
             $ptr = 12;
             continue main;
         }
-        $notifications = $rt_s(12814);
+        $notifications = $rt_s(12848);
         $ptr = 11;
     case 11:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($notifications);
@@ -1792652,7 +1796329,7 @@ cuusc_ICivilopediaText$assembleCivilopediaText$newLines$1_invokeSuspend = ($this
                                 $middleDone = $this.$I$02;
                                 $header = $this.$L$16;
                                 k_ResultKt_throwOnFailure($$result);
-                                $$result = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(12815))), ($rt_nullCheck($this.$this$038)).$getOriginRuleset())), 93));
+                                $$result = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(12849))), ($rt_nullCheck($this.$this$038)).$getOriginRuleset())), 93));
                                 $ptr = 12;
                                 continue main;
                             case 10:
@@ -1792866,7 +1796543,7 @@ cuusc_ICivilopediaText$assembleCivilopediaText$newLines$1_invokeSuspend = ($this
         var$13 = 0;
         var$14 = 0;
         var$15 = 0.0;
-        var$8 = $rt_s(12816);
+        var$8 = $rt_s(12850);
         var$17 = 0;
         var$18 = 1;
         var$19 = 0;
@@ -1793229,7 +1796906,7 @@ cuusc_ICivilopediaText$assembleCivilopediaText$newLines$1_invokeSuspend = ($this
         }
         $$result = $tmp;
         if ($$result !== var$3) {
-            $$result = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(12815))), ($rt_nullCheck($this.$this$038)).$getOriginRuleset())), 93));
+            $$result = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(12849))), ($rt_nullCheck($this.$this$038)).$getOriginRuleset())), 93));
             $ptr = 12;
             continue main;
         }
@@ -1793520,7 +1797197,7 @@ let jt_SimpleDatePatternParser_parsePattern = ($this, $pattern) => {
                         $pattern = new jl_IllegalArgumentException;
                         $c = $this.$index2;
                         $sb = jl_StringBuilder__init_();
-                        var$5 = $rt_s(12817);
+                        var$5 = $rt_s(12851);
                         $ptr = 25;
                         continue main;
                     }
@@ -1794659,7 +1798336,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
             break main;
         }
         if ($this.$active) {
-            var$2 = $rt_s(12818);
+            var$2 = $rt_s(12852);
             $ptr = 2;
             continue main;
         }
@@ -1794671,7 +1798348,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         }
         var$3 = $tmp;
         $this.$highMin = var$3;
-        var$2 = $rt_s(12819);
+        var$2 = $rt_s(12853);
         $ptr = 3;
     case 3:
         $tmp = cbggg_ParticleEmitter_readFloat($reader, var$2);
@@ -1794680,7 +1798357,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         }
         var$3 = $tmp;
         $this.$highMax = var$3;
-        var$2 = $rt_s(12820);
+        var$2 = $rt_s(12854);
         $ptr = 4;
     case 4:
         $tmp = cbggg_ParticleEmitter_readBoolean($reader, var$2);
@@ -1794689,7 +1798366,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         }
         $i = $tmp;
         $this.$relative = $i;
-        var$2 = $rt_s(12821);
+        var$2 = $rt_s(12855);
         $ptr = 5;
     case 5:
         $tmp = cbggg_ParticleEmitter_readInt($reader, var$2);
@@ -1794703,12 +1798380,12 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         if ($i < var$5.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12822));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12856));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 7;
             continue main;
         }
-        var$2 = $rt_s(12823);
+        var$2 = $rt_s(12857);
         $ptr = 6;
     case 6:
         $tmp = cbggg_ParticleEmitter_readInt($reader, var$2);
@@ -1794722,7 +1798399,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         if ($i < var$5.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12824));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12858));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 9;
             continue main;
@@ -1794748,12 +1798425,12 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         if ($i < var$5.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12822));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12856));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 7;
             continue main;
         }
-        var$2 = $rt_s(12823);
+        var$2 = $rt_s(12857);
         $ptr = 6;
         continue main;
     case 9:
@@ -1794776,7 +1798453,7 @@ cbggg_ParticleEmitter$ScaledNumericValue_load = ($this, $reader) => {
         if ($i < var$5.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12824));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12858));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 9;
             continue main;
@@ -1794842,11 +1798519,11 @@ let cbggg_ParticleEmitter$IndependentScaledNumericValue_load0 = ($this, $reader)
         }
         $line = $tmp;
         if ($line !== null) {
-            if (!jl_String_contains($line, $rt_s(12825))) {
+            if (!jl_String_contains($line, $rt_s(12859))) {
                 $reader = $rt_nullCheck($reader_0);
-                $errorMessage = $rt_s(12826);
+                $errorMessage = $rt_s(12860);
                 $reader = cbg_Gdx_app;
-                $line = $rt_s(12827);
+                $line = $rt_s(12861);
                 $reader = $rt_nullCheck($reader);
                 $ptr = 4;
                 continue main;
@@ -1794855,7 +1798532,7 @@ let cbggg_ParticleEmitter$IndependentScaledNumericValue_load0 = ($this, $reader)
             return;
         }
         $reader = new ji_IOException;
-        $line = $rt_s(12828);
+        $line = $rt_s(12862);
         $ptr = 3;
     case 3:
         jl_Throwable__init_($reader, $line);
@@ -1794986,7 +1798663,7 @@ cbggg_ParticleEmitter$GradientColorValue_load = ($this, $reader) => {
             break main;
         }
         if ($this.$active) {
-            var$2 = $rt_s(12829);
+            var$2 = $rt_s(12863);
             $ptr = 2;
             continue main;
         }
@@ -1795008,7 +1798685,7 @@ cbggg_ParticleEmitter$GradientColorValue_load = ($this, $reader) => {
             $ptr = 4;
             continue main;
         }
-        var$2 = $rt_s(12823);
+        var$2 = $rt_s(12857);
         $ptr = 3;
     case 3:
         $tmp = cbggg_ParticleEmitter_readInt($reader, var$2);
@@ -1795022,7 +1798699,7 @@ cbggg_ParticleEmitter$GradientColorValue_load = ($this, $reader) => {
         if ($i < var$4.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12824));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12858));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 6;
             continue main;
@@ -1795053,7 +1798730,7 @@ cbggg_ParticleEmitter$GradientColorValue_load = ($this, $reader) => {
             $ptr = 4;
             continue main;
         }
-        var$2 = $rt_s(12823);
+        var$2 = $rt_s(12857);
         $ptr = 3;
         continue main;
     case 6:
@@ -1795076,7 +1798753,7 @@ cbggg_ParticleEmitter$GradientColorValue_load = ($this, $reader) => {
         if ($i < var$4.length) {
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12824));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12858));
             jl_AbstractStringBuilder_append1(var$2, $i);
             $ptr = 6;
             continue main;
@@ -1795120,7 +1798797,7 @@ cbggg_ParticleEmitter$SpawnShapeValue_load = ($this, $reader) => {
             break main;
         }
         if ($this.$active) {
-            var$2 = $rt_s(12830);
+            var$2 = $rt_s(12864);
             $ptr = 2;
             continue main;
         }
@@ -1795142,7 +1798819,7 @@ cbggg_ParticleEmitter$SpawnShapeValue_load = ($this, $reader) => {
         var$3 = $rt_castToClass(var$2, cbggg_ParticleEmitter$SpawnShape);
         $this.$shape0 = var$3;
         if (var$3 === cbggg_ParticleEmitter$SpawnShape_ellipse) {
-            var$2 = $rt_s(12831);
+            var$2 = $rt_s(12865);
             $ptr = 4;
             continue main;
         }
@@ -1795154,7 +1798831,7 @@ cbggg_ParticleEmitter$SpawnShapeValue_load = ($this, $reader) => {
         }
         var$4 = $tmp;
         $this.$edges = var$4;
-        var$2 = $rt_s(12832);
+        var$2 = $rt_s(12866);
         $ptr = 5;
     case 5:
         $tmp = cbggg_ParticleEmitter_readString($reader, var$2);
@@ -1795206,13 +1798883,13 @@ cbggg_ParticleEmitter$SpriteMode_valueOf = $name => {
 cbggg_ParticleEmitter$SpriteMode__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbggg_ParticleEmitter$SpriteMode;
-    jl_Enum__init_(var$1, $rt_s(12833), 0);
+    jl_Enum__init_(var$1, $rt_s(12867), 0);
     cbggg_ParticleEmitter$SpriteMode_single = var$1;
     var$1 = new cbggg_ParticleEmitter$SpriteMode;
     jl_Enum__init_(var$1, $rt_s(244), 1);
     cbggg_ParticleEmitter$SpriteMode_random = var$1;
     var$1 = new cbggg_ParticleEmitter$SpriteMode;
-    jl_Enum__init_(var$1, $rt_s(12834), 2);
+    jl_Enum__init_(var$1, $rt_s(12868), 2);
     cbggg_ParticleEmitter$SpriteMode_animated = var$1;
     var$2 = $rt_createArray(cbggg_ParticleEmitter$SpriteMode, 3);
     var$3 = var$2.data;
@@ -1795503,7 +1799180,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12835);
+        var$2 = $rt_s(12869);
         var$3 = 0;
         var$4 = 12;
         $ptr = 1;
@@ -1795514,7 +1799191,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
         }
         culmm_RiverGenerator$RiverDirections_North = var$1;
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12836);
+        var$2 = $rt_s(12870);
         var$3 = 1;
         var$4 = 2;
         $ptr = 2;
@@ -1795525,7 +1799202,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
         }
         culmm_RiverGenerator$RiverDirections_NorthEast = var$1;
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12837);
+        var$2 = $rt_s(12871);
         var$3 = 2;
         var$4 = 4;
         $ptr = 3;
@@ -1795536,7 +1799213,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
         }
         culmm_RiverGenerator$RiverDirections_SouthEast = var$1;
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12838);
+        var$2 = $rt_s(12872);
         var$3 = 3;
         var$4 = 6;
         $ptr = 4;
@@ -1795547,7 +1799224,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
         }
         culmm_RiverGenerator$RiverDirections_South = var$1;
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12839);
+        var$2 = $rt_s(12873);
         var$3 = 4;
         var$4 = 8;
         $ptr = 5;
@@ -1795558,7 +1799235,7 @@ culmm_RiverGenerator$RiverDirections__clinit_ = () => {
         }
         culmm_RiverGenerator$RiverDirections_SouthWest = var$1;
         var$1 = new culmm_RiverGenerator$RiverDirections;
-        var$2 = $rt_s(12840);
+        var$2 = $rt_s(12874);
         var$3 = 5;
         var$4 = 10;
         $ptr = 6;
@@ -1795644,7 +1799321,7 @@ function cuuo_BaseUnitDescriptions$getBaseUnitCivilopediaTextLines$1$seeAlso$1()
 }
 let cuuo_BaseUnitDescriptions$getBaseUnitCivilopediaTextLines$1$seeAlso$1__init_ = ($this, $$receiver) => {
     $this.$$this_getBaseUnitCivilopediaTextLines = $$receiver;
-    kji_FunctionReferenceImpl__init_($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12841), $rt_s(12842), 0);
+    kji_FunctionReferenceImpl__init_($this, 1, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(12875), $rt_s(12876), 0);
 },
 cuuo_BaseUnitDescriptions$getBaseUnitCivilopediaTextLines$1$seeAlso$1__init_0 = var_0 => {
     let var_1 = new cuuo_BaseUnitDescriptions$getBaseUnitCivilopediaTextLines$1$seeAlso$1();
@@ -1796463,7 +1800140,7 @@ let cuusp_PromotionPickerScreen__init_0 = ($this, $unit, $closeOnPick, $original
             continue main;
         }
         $originalName = cuusp_PickerScreen_getRightSideButton($this);
-        $onChange = $rt_s(12843);
+        $onChange = $rt_s(12877);
         $closeOnPick = 0;
         var$5 = 0;
         var$6 = 3;
@@ -1796879,7 +1800556,7 @@ cuusp_PromotionPickerScreen_getCivilopediaRuleset = $this => {
             break main;
         }
         var$1 = $tmp;
-        return ($rt_nullCheck(var$1)).$ruleset10;
+        return ($rt_nullCheck(var$1)).$ruleset11;
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push($this, var$1, $ptr);
@@ -1797177,7 +1800854,7 @@ cuusp_PromotionPickerScreen_fillTable = $this => {
             if (0) {
                 $node = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_($node);
-                jl_AbstractStringBuilder_append($node, $rt_s(12844));
+                jl_AbstractStringBuilder_append($node, $rt_s(12878));
                 $placedButtons = $rt_nullCheck($this.$unit5);
                 $ptr = 18;
                 continue main;
@@ -1797243,7 +1800920,7 @@ cuusp_PromotionPickerScreen_fillTable = $this => {
             break main;
         }
         $node = $tmp;
-        var$12 = $rt_s(12845);
+        var$12 = $rt_s(12879);
         $ptr = 14;
     case 14:
         kji_Intrinsics_checkNotNull0($node, var$12);
@@ -1797285,7 +1800962,7 @@ cuusp_PromotionPickerScreen_fillTable = $this => {
         if (!($maxColumns && !var$12.$isPuppet0) ? 0 : 1) {
             $node = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($node);
-            jl_AbstractStringBuilder_append($node, $rt_s(12844));
+            jl_AbstractStringBuilder_append($node, $rt_s(12878));
             $placedButtons = $rt_nullCheck($this.$unit5);
             $ptr = 18;
             continue main;
@@ -1797451,7 +1801128,7 @@ cuusp_PromotionPickerScreen_getButton = ($this, $tree, $node) => {
             $button = new cuusp_PromotionButton;
             var$5 = $this.$promotedLabelStyle;
             var$6 = $this.$buttonCellMaxWidth - 60.0;
-            var$7 = $rt_s(12846);
+            var$7 = $rt_s(12880);
             $ptr = 2;
             continue main;
         }
@@ -1797468,21 +1801145,21 @@ cuusp_PromotionPickerScreen_getButton = ($this, $tree, $node) => {
         $button = new cuusp_PromotionButton;
         var$5 = $this.$promotedLabelStyle;
         var$6 = $this.$buttonCellMaxWidth - 60.0;
-        var$7 = $rt_s(12846);
+        var$7 = $rt_s(12880);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($node, var$7);
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(12847);
+        var$7 = $rt_s(12881);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$5, var$7);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $rt_s(12848);
+        var$9 = $rt_s(12882);
         $ptr = 4;
     case 4:
         cuusb_BaseScreen_$callClinit();
@@ -1797789,7 +1801466,7 @@ cuusp_PromotionPickerScreen_addStatuses = $this => {
         jl_AbstractStringBuilder_append($$this$sortedBy$iv, $status.$name25);
         jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(8227));
         jl_AbstractStringBuilder_append1($$this$sortedBy$iv, $status.$turnsLeft);
-        jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(12849));
+        jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(12883));
         $ptr = 14;
     case 14:
         $tmp = jl_AbstractStringBuilder_toString($$this$sortedBy$iv);
@@ -1797817,7 +1801494,7 @@ cuusp_PromotionPickerScreen_addStatuses = $this => {
             break main;
         }
         $$this$sortedBy$iv = $tmp;
-        $$this$sortedBy$iv = ($rt_nullCheck(($rt_nullCheck($$this$sortedBy$iv)).$ruleset10)).$unitPromotions;
+        $$this$sortedBy$iv = ($rt_nullCheck(($rt_nullCheck($$this$sortedBy$iv)).$ruleset11)).$unitPromotions;
         $status = $status.$name25;
         $$this$sortedBy$iv = $rt_nullCheck($$this$sortedBy$iv);
         $ptr = 17;
@@ -1798414,9 +1802091,9 @@ cuusp_PromotionPickerScreen_updateDescriptionLabel = ($this, $isPickable, $tree,
             if ($isAmbiguous) {
                 $path = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_($path);
-                jl_AbstractStringBuilder_append($path, $rt_s(12850));
+                jl_AbstractStringBuilder_append($path, $rt_s(12884));
                 jl_AbstractStringBuilder_append($path, ($rt_nullCheck($node.$promotion)).$name1);
-                jl_AbstractStringBuilder_append($path, $rt_s(12851));
+                jl_AbstractStringBuilder_append($path, $rt_s(12885));
                 $ptr = 4;
                 continue main;
             }
@@ -1799191,7 +1802868,7 @@ ksji_StringOpsKt__clinit_ = () => {
         var$2[$rt_checkUpperBound(8, var$2)] = $rt_s(10473);
         var$2[$rt_checkUpperBound(10, var$2)] = $rt_s(1292);
         var$2[$rt_checkUpperBound(13, var$2)] = $rt_s(1293);
-        var$2[$rt_checkUpperBound(12, var$2)] = $rt_s(12852);
+        var$2[$rt_checkUpperBound(12, var$2)] = $rt_s(12886);
         ksji_StringOpsKt_ESCAPE_STRINGS = var$1;
         var$1 = $rt_createByteArray(93);
         var$2 = var$1.data;
@@ -1799241,7 +1802918,7 @@ ksji_StringOpsKt__clinit_ = () => {
         $c4 = $tmp;
         var$8 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$8);
-        jl_AbstractStringBuilder_append(var$8, $rt_s(12853));
+        jl_AbstractStringBuilder_append(var$8, $rt_s(12887));
         jl_AbstractStringBuilder_append0(var$8, $c1);
         jl_AbstractStringBuilder_append0(var$8, $c2);
         jl_AbstractStringBuilder_append0(var$8, $c3);
@@ -1799267,7 +1802944,7 @@ ksji_StringOpsKt__clinit_ = () => {
         var$2[$rt_checkUpperBound(8, var$2)] = $rt_s(10473);
         var$2[$rt_checkUpperBound(10, var$2)] = $rt_s(1292);
         var$2[$rt_checkUpperBound(13, var$2)] = $rt_s(1293);
-        var$2[$rt_checkUpperBound(12, var$2)] = $rt_s(12852);
+        var$2[$rt_checkUpperBound(12, var$2)] = $rt_s(12886);
         ksji_StringOpsKt_ESCAPE_STRINGS = var$1;
         var$1 = $rt_createByteArray(93);
         var$2 = var$1.data;
@@ -1799811,7 +1803488,7 @@ cuupo_ModCheckTab$runModChecker$1$1_invoke = ($this, $p1, $p2) => {
             break main;
         }
         var$7 = $tmp;
-        var$8 = $rt_s(12854);
+        var$8 = $rt_s(12888);
         var$3 = null;
         var$4 = cbgg_Color_DARK_GRAY;
         var$9 = 2;
@@ -1799898,7 +1803575,7 @@ cuupo_ModCheckTab$runModChecker$1$1_invoke = ($this, $p1, $p2) => {
         cuuc_UncivTooltip_$callClinit();
         var$10 = cuuc_UncivTooltip_Companion;
         var$7 = var$5;
-        var$8 = $rt_s(12855);
+        var$8 = $rt_s(12889);
         var$6 = 16.0;
         var$11 = 0;
         var$12 = 2;
@@ -1800166,7 +1803843,7 @@ let cuusw_WorldScreen$loadLatestMultiplayerState$2$3$invokeSuspend$lambda$_1_0_i
     case 0:
         var$1 = var$0.$_0241;
         var$2 = var$0.$_1102;
-        var$3 = $rt_s(12856);
+        var$3 = $rt_s(12890);
         var$4 = new cuusw_WorldScreen$loadLatestMultiplayerState$2$3$1$1;
         var$5 = null;
         $ptr = 1;
@@ -1800329,7 +1804006,7 @@ let cuup_AuthPopup__init_0 = ($this, $stage, $authSuccessful) => {
             break main;
         }
         $this.$passwordField = $authSuccessful;
-        $stage = $rt_s(12857);
+        $stage = $rt_s(12891);
         $authSuccessful = null;
         var$5 = 0;
         var$8 = 3;
@@ -1800383,7 +1804060,7 @@ let cuup_AuthPopup__init_0 = ($this, $stage, $authSuccessful) => {
         if ($rt_suspending()) {
             break main;
         }
-        $stage = $rt_s(12858);
+        $stage = $rt_s(12892);
         $ptr = 11;
     case 11:
         cuup_AuthPopup_addComponents($this, $stage);
@@ -1800524,7 +1804201,7 @@ cuup_AuthPopup_access$getPasswordField$p = $$this => {
 },
 cuusw_WorldScreen$nextTurn$1$2$1 = $rt_classWithoutFields(kji_AdaptedFunctionReference),
 cuusw_WorldScreen$nextTurn$1$2$1__init_0 = ($this, $receiver0) => {
-    kji_AdaptedFunctionReference__init_($this, 1, $receiver0, $rt_cls(kc_CompletableDeferred), $rt_s(12859), $rt_s(12860), 8);
+    kji_AdaptedFunctionReference__init_($this, 1, $receiver0, $rt_cls(kc_CompletableDeferred), $rt_s(12893), $rt_s(12894), 8);
 },
 cuusw_WorldScreen$nextTurn$1$2$1__init_ = var_0 => {
     let var_1 = new cuusw_WorldScreen$nextTurn$1$2$1();
@@ -1800747,14 +1804424,23 @@ cuusm_ModManagementScreen$tryDownloadPage$1$1_invoke = ($this, $p1, $p2) => {
 };
 function culg_GithubAPI$RepoSearch() {
     let a = this; jl_Object.call(a);
+    a.$total_count = 0;
     a.$incomplete_results = 0;
-    a.$items9 = null;
+    a.$items7 = null;
 }
-let culg_GithubAPI$RepoSearch_getIncomplete_results = $this => {
+let culg_GithubAPI$RepoSearch__init_ = $this => {
+    $this.$items7 = ju_ArrayList__init_();
+},
+culg_GithubAPI$RepoSearch__init_0 = () => {
+    let var_0 = new culg_GithubAPI$RepoSearch();
+    culg_GithubAPI$RepoSearch__init_(var_0);
+    return var_0;
+},
+culg_GithubAPI$RepoSearch_getIncomplete_results = $this => {
     return $this.$incomplete_results;
 },
 culg_GithubAPI$RepoSearch_getItems = $this => {
-    return $this.$items9;
+    return $this.$items7;
 };
 function cuusc_CityConstructionsTable$updateAvailableConstructions$1$1() {
     let a = this; kcji_SuspendLambda.call(a);
@@ -1800911,7 +1804597,7 @@ cuusc_CityConstructionsTable$updateAvailableConstructions$1$1_invokeSuspend = ($
         if ($rt_suspending()) {
             break main;
         }
-        $$result = $rt_s(12861);
+        $$result = $rt_s(12895);
         $dto = cuuci_KeyboardBinding_BuildNationalWonders;
         var$12 = 0;
         var$15 = 16;
@@ -1801445,14 +1805131,14 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(12862);
+        var$3 = $rt_s(12896);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($pediaScreen, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(12863);
+        var$3 = $rt_s(12897);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($linkAction, var$3);
@@ -1801520,7 +1805206,7 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
         var$8 = $tmp;
         cbgu_Array__init_3($linkAction, var$8 + 1 | 0);
         var$3 = new cuusc_CivilopediaSearchPopup$ModSelectEntry;
-        var$7 = $rt_s(12864);
+        var$7 = $rt_s(12898);
         var$6 = 1;
         $ptr = 9;
     case 9:
@@ -1801593,7 +1805279,7 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
         $this.$modSelect = $pediaScreen;
         $this.$checkLine = new cuusc_CivilopediaSearchPopup$_init_$lambda$_0_0;
         ($rt_nullCheck($this.$searchText)).$maxLength = 100;
-        $pediaScreen = $rt_s(12865);
+        $pediaScreen = $rt_s(12899);
         $ptr = 17;
     case 17:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($pediaScreen);
@@ -1801623,7 +1805309,7 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
         if ($rt_suspending()) {
             break main;
         }
-        $pediaScreen = $rt_s(12866);
+        $pediaScreen = $rt_s(12900);
         $ptr = 21;
     case 21:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($pediaScreen);
@@ -1801661,7 +1805347,7 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
         }
         $pediaScreen = $tmp;
         $pediaScreen = cbgssu_Cell_growX($rt_nullCheck(cbgssu_Cell_colspan($rt_nullCheck($pediaScreen), 2)));
-        $linkAction = $rt_s(12867);
+        $linkAction = $rt_s(12901);
         $ptr = 26;
     case 26:
         kji_Intrinsics_checkNotNullExpressionValue($pediaScreen, $linkAction);
@@ -1801677,7 +1805363,7 @@ let cuusc_CivilopediaSearchPopup__init_ = ($this, $pediaScreen, $linkAction) => 
         if ($rt_suspending()) {
             break main;
         }
-        $pediaScreen = $rt_s(12868);
+        $pediaScreen = $rt_s(12902);
         $linkAction = $rt_nullCheck(cuuci_KeyCharAndCode_Companion);
         var$4 = cuuci_KeyCharAndCode_RETURN;
         $linkAction = null;
@@ -1801786,7 +1805472,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             $ptr = 6;
             continue main;
         }
-        var$4 = $rt_s(12869);
+        var$4 = $rt_s(12903);
         var$5 = 0;
         var$6 = 2;
         $regex = null;
@@ -1801810,7 +1805496,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
                 }
             }
             $text = new cuup_ToastPopup;
-            $regex = $rt_s(12870);
+            $regex = $rt_s(12904);
             $words = $this.$pediaScreen;
             var$7 = 4000n;
             $ptr = 7;
@@ -1801834,7 +1805520,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jl_Exception) {
                 $text = new cuup_ToastPopup;
-                $regex = $rt_s(12870);
+                $regex = $rt_s(12904);
                 $words = $this.$pediaScreen;
                 var$7 = 4000n;
                 $ptr = 7;
@@ -1801854,7 +1805540,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jl_Exception) {
                 $text = new cuup_ToastPopup;
-                $regex = $rt_s(12870);
+                $regex = $rt_s(12904);
                 $words = $this.$pediaScreen;
                 var$7 = 4000n;
                 $ptr = 7;
@@ -1801886,7 +1805572,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
                 }
             }
             $text = new cuup_ToastPopup;
-            $regex = $rt_s(12870);
+            $regex = $rt_s(12904);
             $words = $this.$pediaScreen;
             var$7 = 4000n;
             $ptr = 7;
@@ -1801909,7 +1805595,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             $text = $this.$resultExpander;
             if ($text === null) {
                 var$9 = new cuucw_ExpanderTab;
-                var$10 = $rt_s(12871);
+                var$10 = $rt_s(12905);
                 var$6 = 0;
                 $words = null;
                 var$5 = 0;
@@ -1801976,7 +1805662,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             }
         }
         $text = new cuup_ToastPopup;
-        $regex = $rt_s(12870);
+        $regex = $rt_s(12904);
         $words = $this.$pediaScreen;
         var$7 = 4000n;
         $ptr = 7;
@@ -1802006,7 +1805692,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
         $text = $this.$resultExpander;
         if ($text === null) {
             var$9 = new cuucw_ExpanderTab;
-            var$10 = $rt_s(12871);
+            var$10 = $rt_s(12905);
             var$6 = 0;
             $words = null;
             var$5 = 0;
@@ -1802071,7 +1805757,7 @@ cuusc_CivilopediaSearchPopup_startSearch = ($this, $text) => {
             $ptr = 23;
             continue main;
         }
-        $text = $rt_s(12872);
+        $text = $rt_s(12906);
         $ptr = 18;
         continue main;
     case 17:
@@ -1802462,14 +1806148,14 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12873);
+        var$2 = $rt_s(12907);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$9, var$2);
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12874);
+        var$2 = $rt_s(12908);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$10, var$2);
@@ -1802567,7 +1806253,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
             break main;
         }
         var$2 = $tmp;
-        var$9 = $rt_s(12875);
+        var$9 = $rt_s(12909);
         var$2 = $rt_nullCheck(var$2);
         var$8 = var$2.$roundedEdgeRectangleSmallShape;
         var$10 = ($rt_nullCheck(var$2.$skinConfig)).$baseColor;
@@ -1802590,7 +1806276,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12876);
+        var$2 = $rt_s(12910);
         $ptr = 19;
     case 19:
         kji_Intrinsics_checkNotNullParameter(var$6, var$2);
@@ -1802618,7 +1806304,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
         }
         var$2 = $tmp;
         var$10 = var$9.$style3;
-        var$1 = $rt_s(12877);
+        var$1 = $rt_s(12911);
         $ptr = 22;
     case 22:
         kji_Intrinsics_checkNotNull0(var$10, var$1);
@@ -1802644,7 +1806330,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
         cuuc_UncivTooltip_$callClinit();
         var$10 = cuuc_UncivTooltip_Companion;
         var$2 = var$9.$image1;
-        var$1 = $rt_s(12878);
+        var$1 = $rt_s(12912);
         $ptr = 25;
     case 25:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -1802652,7 +1806338,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
             break main;
         }
         var$8 = var$2;
-        var$5 = $rt_s(12879);
+        var$5 = $rt_s(12913);
         var$11 = 18.0;
         var$12 = 0;
         var$13 = 20;
@@ -1802691,7 +1806377,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
         var$3.$conflictStyle = var$1;
         var$1.$fontColor0 = cbgg_Color_cpy($rt_nullCheck(cbgg_Color_RED));
         var$1 = new cuucw_KeyCapturingButton$ButtonListener;
-        var$2 = $rt_s(12880);
+        var$2 = $rt_s(12914);
         $ptr = 29;
     case 29:
         kji_Intrinsics_checkNotNullParameter(var$3, var$2);
@@ -1802730,7 +1806416,7 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
         if ($rt_suspending()) {
             break main;
         }
-        $question = $rt_s(12881);
+        $question = $rt_s(12915);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($modCheckResult, $question);
@@ -1802774,7 +1806460,7 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
         }
         $action = $tmp;
         if ($action === null) {
-            $question = $rt_s(12882);
+            $question = $rt_s(12916);
             $label1 = new cuucw_ColorMarkupLabel;
             var$6 = 24;
             $action = null;
@@ -1802792,7 +1806478,7 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
         if ($rt_suspending()) {
             break main;
         }
-        $question = $rt_s(12882);
+        $question = $rt_s(12916);
         $label1 = new cuucw_ColorMarkupLabel;
         var$6 = 24;
         $action = null;
@@ -1802848,8 +1806534,8 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
         if ($rt_suspending()) {
             break main;
         }
-        $action = $rt_s(12883);
-        $question = $rt_s(12884);
+        $action = $rt_s(12917);
+        $question = $rt_s(12918);
         var$6 = 0;
         var$8 = 4;
         $label1 = null;
@@ -1802883,8 +1806569,8 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
         if ($rt_suspending()) {
             break main;
         }
-        $action = $rt_s(12883);
-        $question = $rt_s(12884);
+        $action = $rt_s(12917);
+        $question = $rt_s(12918);
         var$6 = 0;
         var$8 = 4;
         $label1 = null;
@@ -1802895,8 +1806581,8 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
             break main;
         }
         $modCheckResult = $tmp;
-        $action = $rt_s(12885);
-        $question = $rt_s(12886);
+        $action = $rt_s(12919);
+        $question = $rt_s(12920);
         var$6 = 0;
         var$8 = 4;
         $label1 = null;
@@ -1802907,8 +1806593,8 @@ cuusn_AcceptModErrorsPopup__init_ = ($this, $screen, $modCheckResult, $action) =
             break main;
         }
         $modCheckResult = $tmp;
-        $action = $rt_s(12887);
-        $question = $rt_s(12888);
+        $action = $rt_s(12921);
+        $question = $rt_s(12922);
         var$6 = 0;
         var$8 = 4;
         $label1 = null;
@@ -1803286,7 +1806972,7 @@ cuusv_VictoryScreenDemographics$RankLabels__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cuusv_VictoryScreenDemographics$RankLabels;
-        var$2 = $rt_s(12889);
+        var$2 = $rt_s(12923);
         var$3 = 0;
         $ptr = 1;
     case 1:
@@ -1803296,7 +1806982,7 @@ cuusv_VictoryScreenDemographics$RankLabels__clinit_ = () => {
         }
         cuusv_VictoryScreenDemographics$RankLabels_Rank = var$1;
         var$1 = new cuusv_VictoryScreenDemographics$RankLabels;
-        var$2 = $rt_s(12890);
+        var$2 = $rt_s(12924);
         var$3 = 1;
         $ptr = 2;
     case 2:
@@ -1803306,7 +1806992,7 @@ cuusv_VictoryScreenDemographics$RankLabels__clinit_ = () => {
         }
         cuusv_VictoryScreenDemographics$RankLabels_Value = var$1;
         var$1 = new cuusv_VictoryScreenDemographics$RankLabels;
-        var$2 = $rt_s(12891);
+        var$2 = $rt_s(12925);
         var$3 = 2;
         $ptr = 3;
     case 3:
@@ -1803316,7 +1807002,7 @@ cuusv_VictoryScreenDemographics$RankLabels__clinit_ = () => {
         }
         cuusv_VictoryScreenDemographics$RankLabels_Best = var$1;
         var$1 = new cuusv_VictoryScreenDemographics$RankLabels;
-        var$2 = $rt_s(12892);
+        var$2 = $rt_s(12926);
         var$3 = 3;
         $ptr = 4;
     case 4:
@@ -1803326,7 +1807012,7 @@ cuusv_VictoryScreenDemographics$RankLabels__clinit_ = () => {
         }
         cuusv_VictoryScreenDemographics$RankLabels_Average = var$1;
         var$1 = new cuusv_VictoryScreenDemographics$RankLabels;
-        var$2 = $rt_s(12893);
+        var$2 = $rt_s(12927);
         var$3 = 4;
         $ptr = 5;
     case 5:
@@ -1803809,7 +1807495,7 @@ cuusv_VictoryScreenCivGroup__init_0 = ($this, $civ, $separator, $additionalInfo,
             break main;
         }
         $civ = $tmp;
-        $separator = $rt_s(12894);
+        $separator = $rt_s(12928);
         $additionalInfo = $rt_nullCheck(cuusb_BaseScreen_Companion);
         $ptr = 17;
     case 17:
@@ -1803877,7 +1807563,7 @@ cuusv_VictoryScreenCivGroup__init_1 = ($this, $civEntry, $currentPlayer, $defeat
     main: while (true) { switch ($ptr) {
     case 0:
         cuusv_VictoryScreenCivGroup_$callClinit();
-        var$4 = $rt_s(12895);
+        var$4 = $rt_s(12929);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($civEntry, var$4);
@@ -1808573,7 +1812259,7 @@ cuuss_LoadGameScreen$getCopyExistingSaveToClipboardButton$1$1_invoke = ($this, $
             }
         }
         var$4 = cuuss_LoadGameScreen_Companion;
-        var$5 = $rt_s(12896);
+        var$5 = $rt_s(12930);
         var$6 = null;
         var$7 = 4;
         var$8 = null;
@@ -1808597,7 +1812283,7 @@ cuuss_LoadGameScreen$getCopyExistingSaveToClipboardButton$1$1_invoke = ($this, $
             if ($$je instanceof jl_Throwable) {
                 $p1 = $$je;
                 var$4 = cuuss_LoadGameScreen_Companion;
-                var$5 = $rt_s(12896);
+                var$5 = $rt_s(12930);
                 var$6 = null;
                 var$7 = 4;
                 var$8 = null;
@@ -1808661,7 +1812347,7 @@ cuuss_LoadGameScreen$getCopyExistingSaveToClipboardButton$1$1_invoke = ($this, $
             break main;
         }
         var$4 = cuu_Log_INSTANCE;
-        var$6 = $rt_s(12896);
+        var$6 = $rt_s(12930);
         var$4 = $rt_nullCheck(var$4);
         $ptr = 9;
     case 9:
@@ -1808707,7 +1812393,7 @@ cuuss_LoadGameScreen$getCopyExistingSaveToClipboardButton$1$1_invoke = ($this, $
             break main;
         }
         var$4 = cuu_Log_INSTANCE;
-        var$5 = $rt_s(12896);
+        var$5 = $rt_s(12930);
         var$4 = $rt_nullCheck(var$4);
         $ptr = 12;
     case 12:
@@ -1809098,7 +1812784,7 @@ let cuusm_MultiplayerScreen$createDeleteButton$lambda$1$lambda$_34_0_invoke = va
             break main;
         }
         var$4 = cuu_Log_INSTANCE;
-        var$3 = $rt_s(12897);
+        var$3 = $rt_s(12931);
         var$1 = var$1;
         var$4 = $rt_nullCheck(var$4);
         $ptr = 9;
@@ -1809108,7 +1812794,7 @@ let cuusm_MultiplayerScreen$createDeleteButton$lambda$1$lambda$_34_0_invoke = va
             break main;
         }
         var$1 = new cuup_ToastPopup;
-        var$4 = $rt_s(12897);
+        var$4 = $rt_s(12931);
         var$2 = var$2;
         var$5 = 0n;
         var$6 = 4;
@@ -1809186,21 +1812872,21 @@ let cuusm_MultiplayerScreen$createRenameButton$lambda$1$lambda$_37_0_invoke = va
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(12898);
+        var$7 = $rt_s(12932);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$1, var$7);
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(12899);
+        var$7 = $rt_s(12933);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter(var$4, var$7);
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(12900);
+        var$7 = $rt_s(12934);
         var$8 = $rt_createArray(jl_Object, 2);
         var$9 = var$8.data;
         var$10 = $rt_nullCheck(var$2);
@@ -1809282,7 +1812968,7 @@ let cuusm_MultiplayerScreen$createRenameButton$lambda$1$lambda$_37_0_invoke = va
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(12898);
+        var$6 = $rt_s(12932);
         $ptr = 17;
     case 17:
         kji_Intrinsics_checkNotNullParameter(var$1, var$6);
@@ -1810209,7 +1813895,7 @@ cuusc_DetailedStatsPopup_update = $this => {
         $cityView = $tmp;
         cbgssu_Cell_padBottom($rt_nullCheck($cityView), 2.0);
         $cityView = $this.$totalTable;
-        $stats = $rt_s(12901);
+        $stats = $rt_s(12935);
         $ptr = 17;
     case 17:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($stats);
@@ -1810276,7 +1813962,7 @@ cuusc_DetailedStatsPopup_update = $this => {
         $cityView = $tmp;
         cbgssu_Cell_padBottom($rt_nullCheck($cityView), 2.0);
         $cityView = $this.$totalTable;
-        $stats = $rt_s(12902);
+        $stats = $rt_s(12936);
         $ptr = 23;
     case 23:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($stats);
@@ -1810344,7 +1814030,7 @@ cuusc_DetailedStatsPopup_update = $this => {
         $cityView = $tmp;
         cbgssu_Cell_padBottom($rt_nullCheck($cityView), 2.0);
         $cityView = $this.$totalTable;
-        $stats = $rt_s(12903);
+        $stats = $rt_s(12937);
         $ptr = 29;
     case 29:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($stats);
@@ -1811227,7 +1814913,7 @@ cuusc_DetailedStatsPopup_traverseTree = ($this, $table, $stats, $statTreeNode, $
         $statTreeNode = $tmp;
         $child = $rt_castToClass($statTreeNode, culc_StatTreeNode);
         $statTreeNode = jl_StringBuilder__init_();
-        $text = $rt_s(12904);
+        $text = $rt_s(12938);
         $ptr = 10;
     case 10:
         $tmp = kt_StringsKt__StringsJVMKt_repeat($text, $indentation);
@@ -1812837,7 +1816523,7 @@ cuuss_LoadGameScreen$addLoadFromCustomLocationButton$1$1_invoke = ($this, $p1, $
         var$5.$_02406 = var$3;
         var$5.$_1856 = $p1;
         $p1 = $rt_nullCheck($p2);
-        $p1 = $rt_s(12905);
+        $p1 = $rt_s(12939);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$4, $p1);
@@ -1812864,7 +1816550,7 @@ cuuss_LoadGameScreen$addLoadFromCustomLocationButton$1$1_invoke = ($this, $p1, $
         var$3 = new culf_UncivFiles$loadGameFromCustomLocation$lambda$_34_1;
         var$3.$_02398 = var$5;
         $p1 = $rt_nullCheck($p1);
-        var$4 = $rt_s(12905);
+        var$4 = $rt_s(12939);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter($p2, var$4);
@@ -1813138,7 +1816824,7 @@ cuuss_SaveGameScreen$addSaveToCustomLocation$1$1_invoke = ($this, $p1, $p2) => {
                 break main;
             }
             $p1 = $tmp;
-            $p2 = $rt_s(12906);
+            $p2 = $rt_s(12940);
             var$11 = $rt_wrapArray(jl_Object, [cul_GameInfo_getGameId(var$8), var$3]);
             $ptr = 15;
         } catch ($$e) {
@@ -1813316,7 +1817002,7 @@ cuusm_MapEditorWesnothImporter_getTranslationCodes = $this => {
             break main;
         }
         var$2 = $tmp;
-        var$1 = $rt_s(12907);
+        var$1 = $rt_s(12941);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -1813374,7 +1817060,7 @@ cuusm_MapEditorWesnothImporter_parse = ($this, $$this$parse) => {
             $width = 0;
             if ($width <= 0) {
                 $$this$parse = new cul_UncivShowableException;
-                $lines = $rt_s(12908);
+                $lines = $rt_s(12942);
                 $map = null;
                 $width = 2;
                 $cellCode = null;
@@ -1813419,7 +1817105,7 @@ cuusm_MapEditorWesnothImporter_parse = ($this, $$this$parse) => {
         $width = $width - 2 | 0;
         if ($width <= 0) {
             $$this$parse = new cul_UncivShowableException;
-            $lines = $rt_s(12908);
+            $lines = $rt_s(12942);
             $map = null;
             $width = 2;
             $cellCode = null;
@@ -1813646,9 +1817332,9 @@ cuusm_MapEditorWesnothImporter_paintFromWesnothCode = ($this, $$this$paintFromWe
             $$this$paintFromWesnothCode = new cul_UncivShowableException;
             $map = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($map);
-            jl_AbstractStringBuilder_append($map, $rt_s(12909));
+            jl_AbstractStringBuilder_append($map, $rt_s(12943));
             jl_AbstractStringBuilder_append($map, $cellCode);
-            jl_AbstractStringBuilder_append($map, $rt_s(12910));
+            jl_AbstractStringBuilder_append($map, $rt_s(12944));
             $ptr = 4;
             continue main;
         }
@@ -1813664,7 +1817350,7 @@ cuusm_MapEditorWesnothImporter_paintFromWesnothCode = ($this, $$this$paintFromWe
         $cellCode = $tmp;
         $start = $cellCode === null ? null : $cellCode.$value21;
         $cellCode = $matches.$groups;
-        $element$iv = $rt_s(12911);
+        $element$iv = $rt_s(12945);
         $ptr = 6;
         continue main;
     case 4:
@@ -1814310,7 +1817996,7 @@ culf_FileChooser__init_ = ($this, $stageToShowOn, $title, $startFile, $resultLis
         $this.$filter3 = culf_FileChooser$_init_$lambda$_0_0__init_0();
         $this.$directoryBrowsingEnabled = 1;
         $resultListener = new cuucw_UncivTextField;
-        var$5 = $rt_s(12912);
+        var$5 = $rt_s(12946);
         var$8 = null;
         var$9 = null;
         var$7 = 6;
@@ -1814322,7 +1818008,7 @@ culf_FileChooser__init_ = ($this, $stageToShowOn, $title, $startFile, $resultLis
             break main;
         }
         $this.$fileNameInput = $resultListener;
-        $resultListener = $rt_s(12913);
+        $resultListener = $rt_s(12947);
         $ptr = 5;
     case 5:
         $tmp = cuuce_Scene2dExtensionsKt_toLabel($resultListener);
@@ -1814581,7 +1818267,7 @@ culf_FileChooser__init_ = ($this, $stageToShowOn, $title, $startFile, $resultLis
         $stageToShowOn = $tmp;
         $this.$absoluteLocalPath = $stageToShowOn;
         if (!cgxgtbw_WebFiles_isExternalStorageAvailable($rt_nullCheck(cbg_Gdx_files))) {
-            $this.$absoluteExternalPath = $rt_s(12914);
+            $this.$absoluteExternalPath = $rt_s(12948);
             $this.$filterWithFolders = culf_FileChooser$_init_$lambda$_0_1__init_($this);
             cbgssu_Table_left($rt_nullCheck(cbgssu_Table_top($rt_nullCheck(cuup_Popup_getInnerTable($this)))));
             cbgssu_Selection_setProgrammaticChangeEvents($rt_nullCheck(cbgssu_List_getSelection($rt_nullCheck($this.$fileList))), 0);
@@ -1814722,7 +1818408,7 @@ culf_FileChooser__init_ = ($this, $stageToShowOn, $title, $startFile, $resultLis
         }
         $title = $tmp;
         $title = cbgssu_Cell_growX($rt_nullCheck(cbgssu_Cell_colspan($rt_nullCheck($title), 2)));
-        $resultListener = $rt_s(12867);
+        $resultListener = $rt_s(12901);
         $ptr = 48;
     case 48:
         kji_Intrinsics_checkNotNullExpressionValue($title, $resultListener);
@@ -1815030,7 +1818716,7 @@ culf_FileChooser_reportResult = ($this, $success) => {
             var$6 = $this.$stageToShowOn;
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(12915));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(12949));
             jl_AbstractStringBuilder_append(var$2, $file.$name());
             jl_AbstractStringBuilder_append0(var$2, 63);
             $ptr = 8;
@@ -1815105,7 +1818791,7 @@ culf_FileChooser_makeRelative = ($this, $file) => {
             break main;
         }
         var$4 = $this.$absoluteLocalPath;
-        $file = $rt_s(12916);
+        $file = $rt_s(12950);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullExpressionValue(var$4, $file);
@@ -1815124,7 +1818810,7 @@ culf_FileChooser_makeRelative = ($this, $file) => {
         var$5 = $tmp;
         if (!var$5) {
             $file = $this.$absoluteExternalPath;
-            var$4 = $rt_s(12917);
+            var$4 = $rt_s(12951);
             $ptr = 4;
             continue main;
         }
@@ -1815148,7 +1818834,7 @@ culf_FileChooser_makeRelative = ($this, $file) => {
         if (var$5) {
             $file = cbg_Gdx_files;
             var$4 = $this.$absoluteExternalPath;
-            $file_0 = $rt_s(12917);
+            $file_0 = $rt_s(12951);
             $ptr = 14;
             continue main;
         }
@@ -1815175,7 +1818861,7 @@ culf_FileChooser_makeRelative = ($this, $file) => {
         }
         $file = $tmp;
         var$4 = $this.$absoluteLocalPath;
-        $file_0 = $rt_s(12916);
+        $file_0 = $rt_s(12950);
         $ptr = 9;
     case 9:
         kji_Intrinsics_checkNotNullExpressionValue(var$4, $file_0);
@@ -1815254,7 +1818940,7 @@ culf_FileChooser_makeRelative = ($this, $file) => {
             break main;
         }
         $file = $tmp;
-        $path = $rt_s(12918);
+        $path = $rt_s(12952);
         $ptr = 19;
     case 19:
         kji_Intrinsics_checkNotNullExpressionValue($file, $path);
@@ -1815299,10 +1818985,10 @@ culf_FileChooser_changeDirectory = ($this, $directory) => {
                             default:
                                 break b;
                         }
-                        $relativeFile_0 = k_TuplesKt_to($rt_s(12919), cbgg_Color_CHARTREUSE);
+                        $relativeFile_0 = k_TuplesKt_to($rt_s(12953), cbgg_Color_CHARTREUSE);
                         break a;
                     }
-                    $relativeFile_0 = k_TuplesKt_to($rt_s(12920), cbgg_Color_TAN);
+                    $relativeFile_0 = k_TuplesKt_to($rt_s(12954), cbgg_Color_TAN);
                     break a;
                 }
                 $relativeFile_0 = k_TuplesKt_to($rt_s(5), cbgg_Color_WHITE);
@@ -1815345,10 +1819031,10 @@ culf_FileChooser_changeDirectory = ($this, $directory) => {
                         default:
                             break a;
                     }
-                    $relativeFile_0 = k_TuplesKt_to($rt_s(12919), cbgg_Color_CHARTREUSE);
+                    $relativeFile_0 = k_TuplesKt_to($rt_s(12953), cbgg_Color_CHARTREUSE);
                     break d;
                 }
-                $relativeFile_0 = k_TuplesKt_to($rt_s(12920), cbgg_Color_TAN);
+                $relativeFile_0 = k_TuplesKt_to($rt_s(12954), cbgg_Color_TAN);
                 break d;
             }
             $relativeFile_0 = k_TuplesKt_to($rt_s(5), cbgg_Color_WHITE);
@@ -1815471,7 +1819157,7 @@ culf_FileChooser_changeDirectory = ($this, $directory) => {
         }
         var$4 = 0;
         $label = new culf_FileChooser$FileListItem;
-        $directory = $rt_s(12921);
+        $directory = $rt_s(12955);
         $ptr = 14;
         continue main;
     case 13:
@@ -1815504,7 +1819190,7 @@ culf_FileChooser_changeDirectory = ($this, $directory) => {
             break main;
         }
         $color = $tmp;
-        $relativeFile_0 = $rt_s(12922);
+        $relativeFile_0 = $rt_s(12956);
         $ptr = 15;
     case 15:
         kji_Intrinsics_checkNotNullExpressionValue($color, $relativeFile_0);
@@ -1815889,7 +1819575,7 @@ culf_FileChooser$Companion_createExtensionFilter = ($this, $extensions) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(12923);
+        var$2 = $rt_s(12957);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($extensions, var$2);
@@ -1816099,7 +1819785,7 @@ let cuusd_MajorCivDiplomacyTable$getDenounceButton$lambda$0$lambda$_13_0_invoke 
         }
         var$2 = $tmp;
         if (!(($rt_nullCheck(($rt_nullCheck(var$2)).$denounced)).$nativeString.length <= 0 ? 0 : 1)) {
-            var$3 = $rt_s(12924);
+            var$3 = $rt_s(12958);
             var$2 = $rt_s(9629);
             var$1 = $rt_nullCheck(var$1);
             $ptr = 5;
@@ -1816153,7 +1819839,7 @@ let cuusd_MajorCivDiplomacyTable$getDenounceButton$lambda$0$lambda$_13_0_invoke 
         }
         var$3 = $tmp;
         jl_AbstractStringBuilder_append(var$2, ($rt_nullCheck(var$3)).$name1);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(12925));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(12959));
         $ptr = 10;
     case 10:
         $tmp = jl_AbstractStringBuilder_toString(var$2);
@@ -1816271,7 +1819957,7 @@ let cuusd_DiplomacyScreen$getDeclareWarButton$lambda$0$lambda$_29_0_invoke = var
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
         jl_AbstractStringBuilder_append(var$1, var$3.$civName);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(12926));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(12960));
         $ptr = 11;
     case 11:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1816709,7 +1820395,7 @@ cuusc_GreatPersonPointsBreakdownPopup__init_ = ($this, $cityScreen, $gppBreakdow
         if ($rt_suspending()) {
             break main;
         }
-        $gppBreakdown_0 = $rt_s(12927);
+        $gppBreakdown_0 = $rt_s(12961);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($gppBreakdown, $gppBreakdown_0);
@@ -1816730,9 +1820416,9 @@ cuusc_GreatPersonPointsBreakdownPopup__init_ = ($this, $cityScreen, $gppBreakdow
         $lines = ju_ArrayList__init_();
         $gppBreakdown_0 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($gppBreakdown_0);
-        jl_AbstractStringBuilder_append($gppBreakdown_0, $rt_s(12928));
-        jl_AbstractStringBuilder_append($gppBreakdown_0, $greatPerson === null ? $rt_s(12785) : $greatPerson);
-        jl_AbstractStringBuilder_append($gppBreakdown_0, $rt_s(12929));
+        jl_AbstractStringBuilder_append($gppBreakdown_0, $rt_s(12962));
+        jl_AbstractStringBuilder_append($gppBreakdown_0, $greatPerson === null ? $rt_s(12819) : $greatPerson);
+        jl_AbstractStringBuilder_append($gppBreakdown_0, $rt_s(12963));
         $cityScreen_0 = $rt_nullCheck($cityScreen);
         jl_AbstractStringBuilder_append($gppBreakdown_0, cuv_ForeignCityView_getName($rt_nullCheck($cityScreen_0.$cityView)));
         jl_AbstractStringBuilder_append($gppBreakdown_0, $rt_s(6921));
@@ -1817818,7 +1821504,7 @@ ksi_PluginExceptionsKt_throwMissingFieldException = ($seen, $goldenMask, $descri
             if ($i >= 32) {
                 var$7 = new ks_MissingFieldException;
                 var$8 = ($rt_nullCheck($descriptor)).$serialName0;
-                $descriptor = $rt_s(12930);
+                $descriptor = $rt_s(12964);
                 $ptr = 2;
                 continue main;
             }
@@ -1817847,14 +1821533,14 @@ ksi_PluginExceptionsKt_throwMissingFieldException = ($seen, $goldenMask, $descri
         if ($descriptor.$size9 == 1) {
             var$9 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$9);
-            jl_AbstractStringBuilder_append(var$9, $rt_s(12931));
+            jl_AbstractStringBuilder_append(var$9, $rt_s(12965));
             $seen = 0;
             $ptr = 6;
             continue main;
         }
         $descriptor = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($descriptor);
-        jl_AbstractStringBuilder_append($descriptor, $rt_s(12932));
+        jl_AbstractStringBuilder_append($descriptor, $rt_s(12966));
         $ptr = 4;
     case 4:
         $tmp = jl_StringBuilder_append0($descriptor, $missingFields);
@@ -1817863,9 +1821549,9 @@ ksi_PluginExceptionsKt_throwMissingFieldException = ($seen, $goldenMask, $descri
         }
         $descriptor = $tmp;
         $descriptor = $rt_nullCheck($descriptor);
-        jl_AbstractStringBuilder_append($descriptor, $rt_s(12933));
+        jl_AbstractStringBuilder_append($descriptor, $rt_s(12967));
         jl_AbstractStringBuilder_append($descriptor, var$8);
-        jl_AbstractStringBuilder_append($descriptor, $rt_s(12934));
+        jl_AbstractStringBuilder_append($descriptor, $rt_s(12968));
         $ptr = 5;
     case 5:
         $tmp = jl_AbstractStringBuilder_toString($descriptor);
@@ -1817882,9 +1821568,9 @@ ksi_PluginExceptionsKt_throwMissingFieldException = ($seen, $goldenMask, $descri
         }
         $descriptor = $tmp;
         jl_AbstractStringBuilder_append(var$9, $rt_castToClass($descriptor, jl_String));
-        jl_AbstractStringBuilder_append(var$9, $rt_s(12935));
+        jl_AbstractStringBuilder_append(var$9, $rt_s(12969));
         jl_AbstractStringBuilder_append(var$9, var$8);
-        jl_AbstractStringBuilder_append(var$9, $rt_s(12936));
+        jl_AbstractStringBuilder_append(var$9, $rt_s(12970));
         $ptr = 7;
     case 7:
         $tmp = jl_AbstractStringBuilder_toString(var$9);
@@ -1817913,7 +1821599,7 @@ ksi_PluginExceptionsKt_throwMissingFieldException = ($seen, $goldenMask, $descri
             if ($i >= 32) {
                 var$7 = new ks_MissingFieldException;
                 var$8 = ($rt_nullCheck($descriptor)).$serialName0;
-                $descriptor = $rt_s(12930);
+                $descriptor = $rt_s(12964);
                 $ptr = 2;
                 continue main;
             }
@@ -1818150,7 +1821836,7 @@ ksji_JsonTreeReader$readDeepRecursive$1_invokeSuspend = ($this, $$result) => {
                 if (var$4 != 6) {
                     if (var$4 != 8) {
                         var$3 = ksji_JsonTreeReader_access$getLexer$p($this.$this$080);
-                        var$5 = $rt_s(12937);
+                        var$5 = $rt_s(12971);
                         var$6 = 0;
                         $$result = null;
                         var$4 = 6;
@@ -1819527,7 +1823213,7 @@ let ikcc_ObservableContent_getContent = ($this, $delegate) => {
         }
         var$5 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$5);
-        jl_AbstractStringBuilder_append(var$5, $rt_s(12938));
+        jl_AbstractStringBuilder_append(var$5, $rt_s(12972));
         $delegate = jl_Object_getClass($rt_nullCheck($delegate));
         $ptr = 4;
     case 4:
@@ -1819749,7 +1823435,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$none$iv = $rt_s(12939);
+        $$this$none$iv = $rt_s(12973);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($$this$first$iv, $$this$none$iv);
@@ -1819839,7 +1823525,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
         if (!$this.$separateHeader) {
             if (!1) {
                 $data = new jl_IllegalArgumentException;
-                $$this$first$iv = $rt_nullCheck($rt_s(12940));
+                $$this$first$iv = $rt_nullCheck($rt_s(12974));
                 $ptr = 28;
                 continue main;
             }
@@ -1819919,7 +1823605,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
         if ($separateHeader) {
             if (!(1 ? 1 : 0)) {
                 $data = new jl_IllegalArgumentException;
-                $$this$first$iv = $rt_nullCheck($rt_s(12940));
+                $$this$first$iv = $rt_nullCheck($rt_s(12974));
                 $ptr = 28;
                 continue main;
             }
@@ -1820053,7 +1823739,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
         if (!$separateHeader) {
             if (!(1 ? 1 : 0)) {
                 $data = new jl_IllegalArgumentException;
-                $$this$first$iv = $rt_nullCheck($rt_s(12940));
+                $$this$first$iv = $rt_nullCheck($rt_s(12974));
                 $ptr = 28;
                 continue main;
             }
@@ -1820096,7 +1823782,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
             if (0) {
                 if (!(0 ? 1 : 0)) {
                     $data = new jl_IllegalArgumentException;
-                    $$this$first$iv = $rt_nullCheck($rt_s(12940));
+                    $$this$first$iv = $rt_nullCheck($rt_s(12974));
                     $ptr = 28;
                     continue main;
                 }
@@ -1820120,7 +1823806,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
         $separateHeader = $tmp;
         if ($separateHeader) {
             $$this$first$iv = new jl_IllegalStateException;
-            $data = $rt_s(12941);
+            $data = $rt_s(12975);
             $ptr = 41;
             continue main;
         }
@@ -1820157,7 +1823843,7 @@ let cuucw_SortableGrid__init_ = ($this, $$this$first$iv, $data, $actionContext, 
         if (!$separateHeader ? 0 : 1) {
             if (!(0 ? 1 : 0)) {
                 $data = new jl_IllegalArgumentException;
-                $$this$first$iv = $rt_nullCheck($rt_s(12940));
+                $$this$first$iv = $rt_nullCheck($rt_s(12974));
                 $ptr = 28;
                 continue main;
             }
@@ -1820380,7 +1824066,7 @@ cuucw_SortableGrid_getHeader = $this => {
     case 0:
         if (!$this.$separateHeader) {
             var$1 = new jl_IllegalStateException;
-            var$2 = $rt_s(12942);
+            var$2 = $rt_s(12976);
             $ptr = 1;
             continue main;
         }
@@ -1820705,7 +1824391,7 @@ cuucw_SortableGrid_updateDetails = $this => {
         }
         $sortedData = $tmp;
         $cellsToEqualize = ju_Comparator_reversed($rt_nullCheck($comparator));
-        $comparator = $rt_s(12943);
+        $comparator = $rt_s(12977);
         $ptr = 9;
     case 9:
         kji_Intrinsics_checkNotNullExpressionValue($cellsToEqualize, $comparator);
@@ -1821152,7 +1824838,7 @@ cuucw_SortableGrid_getHeaderElement = ($this, $column) => {
             if (!($headerActor instanceof cbgssu_Image) && !($headerActor instanceof cuucw_IconCircleGroup)) {
                 if ($rt_isInstance($headerActor, cbgssu_Layout)) {
                     $column = new cuucw_SortableGrid$LayoutHeaderElement;
-                    var$5 = $rt_s(12944);
+                    var$5 = $rt_s(12978);
                     $ptr = 6;
                     continue main;
                 }
@@ -1821202,7 +1824888,7 @@ cuucw_SortableGrid_getHeaderElement = ($this, $column) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12945);
+        var$5 = $rt_s(12979);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter($headerActor, var$5);
@@ -1822099,7 +1825785,7 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cuuso_CityOverviewTabColumn$CityColumn;
-        var$2 = $rt_s(12946);
+        var$2 = $rt_s(12980);
         var$3 = 0;
         var$4 = null;
         $ptr = 1;
@@ -1822122,10 +1825808,10 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$headerTip2 = $rt_s(12947);
+        var$1.$headerTip2 = $rt_s(12981);
         cuuso_CityOverviewTabColumn_Status = var$1;
         var$1 = new cuuso_CityOverviewTabColumn$ConstructionIcon;
-        var$2 = $rt_s(12948);
+        var$2 = $rt_s(12982);
         var$3 = 2;
         var$4 = null;
         $ptr = 3;
@@ -1822245,7 +1825931,7 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         var$1.$headerTip3 = $rt_s(1800);
         cuuso_CityOverviewTabColumn_WLTK = var$1;
         var$1 = new cuuso_CityOverviewTabColumn$Garrison;
-        var$2 = $rt_s(12949);
+        var$2 = $rt_s(12983);
         var$3 = 13;
         var$4 = null;
         $ptr = 14;
@@ -1822254,10 +1825940,10 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$headerTip7 = $rt_s(12950);
+        var$1.$headerTip7 = $rt_s(12984);
         cuuso_CityOverviewTabColumn_Garrison = var$1;
         var$1 = new cuuso_CityOverviewTabColumn$CityDefense;
-        var$2 = $rt_s(12951);
+        var$2 = $rt_s(12985);
         var$3 = 14;
         var$4 = null;
         $ptr = 15;
@@ -1822266,7 +1825952,7 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$headerTip4 = $rt_s(12952);
+        var$1.$headerTip4 = $rt_s(12986);
         cuuso_CityOverviewTabColumn_CityDefense = var$1;
         var$1 = new cuuso_CityOverviewTabColumn$Religion;
         var$2 = $rt_s(1595);
@@ -1822278,7 +1825964,7 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$headerTip5 = $rt_s(12953);
+        var$1.$headerTip5 = $rt_s(12987);
         cuuso_CityOverviewTabColumn_Religion = var$1;
         var$5 = $rt_createArray(cuuso_CityOverviewTabColumn, 16);
         var$6 = var$5.data;
@@ -1822339,14 +1826025,14 @@ let cuuso_CityOverviewTab$_init_$lambda$_0_0_invoke = (var$0, var$1, var$2, var$
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12954);
+        var$5 = $rt_s(12988);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$2, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12955);
+        var$5 = $rt_s(12989);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
@@ -1823469,7 +1827155,7 @@ cuuso_UnitOverviewTabColumn_getEntryActor0 = ($this, $item, $iconSize, $actionCo
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1823727,7 +1827413,7 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         var$1.$fillX4 = 1;
         cuuso_UnitOverviewTabColumn_Name = var$1;
         var$1 = new cuuso_UnitOverviewTabColumn$EditName;
-        var$2 = $rt_s(12957);
+        var$2 = $rt_s(12991);
         var$3 = 1;
         var$4 = $rt_s(5);
         var$5 = null;
@@ -1823759,7 +1827445,7 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         var$1 = new cuuso_UnitOverviewTabColumn$Strength;
         var$2 = $rt_s(3573);
         var$3 = 3;
-        var$4 = $rt_s(12958);
+        var$4 = $rt_s(12992);
         var$5 = $rt_s(3573);
         var$6 = 1;
         var$8 = null;
@@ -1823771,10 +1827457,10 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         }
         cuuso_UnitOverviewTabColumn_Strength = var$1;
         var$1 = new cuuso_UnitOverviewTabColumn$RangedStrength;
-        var$2 = $rt_s(12959);
+        var$2 = $rt_s(12993);
         var$3 = 4;
-        var$4 = $rt_s(12960);
-        var$5 = $rt_s(12961);
+        var$4 = $rt_s(12994);
+        var$5 = $rt_s(12995);
         var$6 = 1;
         var$8 = null;
         $ptr = 5;
@@ -1823787,7 +1827473,7 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         var$1 = new cuuso_UnitOverviewTabColumn$Movement;
         var$2 = $rt_s(3587);
         var$3 = 5;
-        var$4 = $rt_s(12962);
+        var$4 = $rt_s(12996);
         var$5 = $rt_s(3587);
         var$6 = 1;
         var$8 = null;
@@ -1823799,9 +1827485,9 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         }
         cuuso_UnitOverviewTabColumn_Movement = var$1;
         var$1 = new cuuso_UnitOverviewTabColumn$ClosestCity;
-        var$2 = $rt_s(12963);
+        var$2 = $rt_s(12997);
         var$3 = 6;
-        var$4 = $rt_s(12964);
+        var$4 = $rt_s(12998);
         var$5 = null;
         var$6 = 0;
         var$7 = 6;
@@ -1823844,7 +1827530,7 @@ cuuso_UnitOverviewTabColumn__clinit_ = () => {
         }
         cuuso_UnitOverviewTabColumn_Upgrade = var$1;
         var$1 = new cuuso_UnitOverviewTabColumn$Health;
-        var$2 = $rt_s(12965);
+        var$2 = $rt_s(12999);
         var$3 = 9;
         var$4 = null;
         var$5 = null;
@@ -1823926,14 +1827612,14 @@ let cuuso_UnitOverviewTab$_init_$lambda$_0_0_invoke = (var$0, var$1, var$2, var$
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12954);
+        var$5 = $rt_s(12988);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$2, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(12955);
+        var$5 = $rt_s(12989);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
@@ -1824072,7 +1827758,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         var$9 = $tmp;
-        $penaltyLabel = $rt_s(12966);
+        $penaltyLabel = $rt_s(13000);
         var$10 = null;
         $it = $rt_nullCheck(cuusb_BaseScreen_Companion);
         $ptr = 5;
@@ -1824108,7 +1827794,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         $it = cuuso_UnitSupplyTable_INSTANCE;
-        $penaltyLabel = $rt_s(12967);
+        $penaltyLabel = $rt_s(13001);
         $$stats = $rt_nullCheck($$stats);
         $ptr = 9;
     case 9:
@@ -1824168,7 +1827854,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         $it = cuuso_UnitSupplyTable_INSTANCE;
-        $penaltyLabel = $rt_s(12968);
+        $penaltyLabel = $rt_s(13002);
         $ptr = 16;
     case 16:
         $tmp = culct_CivInfoStatsForNextTurn_getUnitSupply($$stats);
@@ -1824184,7 +1827870,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         $it = cuuso_UnitSupplyTable_INSTANCE;
-        $penaltyLabel = $rt_s(12969);
+        $penaltyLabel = $rt_s(13003);
         var$12 = culcm_UnitManager_getCivUnitsSize($rt_nullCheck(($rt_nullCheck($$viewingPlayer)).$units));
         $$viewingPlayer = $rt_nullCheck($it);
         $ptr = 18;
@@ -1824205,7 +1827891,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         $$viewingPlayer = cuuso_UnitSupplyTable_INSTANCE;
-        $it = $rt_s(12970);
+        $it = $rt_s(13004);
         $$viewingPlayer = $rt_nullCheck($$viewingPlayer);
         $ptr = 20;
     case 20:
@@ -1824214,7 +1827900,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         $it = cuuso_UnitSupplyTable_INSTANCE;
-        $penaltyLabel = $rt_s(12971);
+        $penaltyLabel = $rt_s(13005);
         $$viewingPlayer = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($$viewingPlayer);
         $ptr = 21;
@@ -1824273,7 +1827959,7 @@ cuuso_UnitSupplyTable_create$lambda$2 = ($$stats, $$viewingPlayer, $$deficit, $$
             break main;
         }
         if ($$deficit > 0) {
-            $$stats = $rt_s(12972);
+            $$stats = $rt_s(13006);
             $$viewingPlayer = cbgg_Color_FIREBRICK;
             $it = $rt_s(7338);
             $ptr = 28;
@@ -1826125,16 +1829811,16 @@ cbggg_ParticleEmitter$SpawnShape_$VALUES = null,
 cbggg_ParticleEmitter$SpawnShape__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbggg_ParticleEmitter$SpawnShape;
-    jl_Enum__init_(var$1, $rt_s(12973), 0);
+    jl_Enum__init_(var$1, $rt_s(13007), 0);
     cbggg_ParticleEmitter$SpawnShape_point = var$1;
     var$1 = new cbggg_ParticleEmitter$SpawnShape;
     jl_Enum__init_(var$1, $rt_s(2994), 1);
     cbggg_ParticleEmitter$SpawnShape_line = var$1;
     var$1 = new cbggg_ParticleEmitter$SpawnShape;
-    jl_Enum__init_(var$1, $rt_s(12974), 2);
+    jl_Enum__init_(var$1, $rt_s(13008), 2);
     cbggg_ParticleEmitter$SpawnShape_square = var$1;
     var$1 = new cbggg_ParticleEmitter$SpawnShape;
-    jl_Enum__init_(var$1, $rt_s(12975), 3);
+    jl_Enum__init_(var$1, $rt_s(13009), 3);
     cbggg_ParticleEmitter$SpawnShape_ellipse = var$1;
     var$2 = $rt_createArray(cbggg_ParticleEmitter$SpawnShape, 4);
     var$3 = var$2.data;
@@ -1826152,7 +1829838,7 @@ cbggg_ParticleEmitter$SpawnEllipseSide_$VALUES = null,
 cbggg_ParticleEmitter$SpawnEllipseSide__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbggg_ParticleEmitter$SpawnEllipseSide;
-    jl_Enum__init_(var$1, $rt_s(12976), 0);
+    jl_Enum__init_(var$1, $rt_s(13010), 0);
     cbggg_ParticleEmitter$SpawnEllipseSide_both = var$1;
     var$1 = new cbggg_ParticleEmitter$SpawnEllipseSide;
     jl_Enum__init_(var$1, $rt_s(9874), 1);
@@ -1826193,7 +1829879,7 @@ cumr_Belief$Companion$getCivilopediaBeliefsEntry$lambda$_4_0_invoke = (var$0, va
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(12977);
+        var$3 = $rt_s(13011);
         var$2 = null;
         var$4 = null;
         var$5 = null;
@@ -1826215,7 +1829901,7 @@ cumr_Belief$Companion$getCivilopediaBeliefsEntry$lambda$_4_0_invoke = (var$0, va
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(12978);
+        var$2 = $rt_s(13012);
         var$4 = null;
         var$5 = null;
         var$11 = null;
@@ -1826390,7 +1830076,7 @@ let cuusmt_MapEditorLoadTab$loadHandler$lambda$_1_0_invoke = var$0 => {
         var$2 = var$0.$_1627;
         var$3 = $rt_nullCheck(var$1);
         var$4 = var$3.$editorScreen5;
-        var$1 = $rt_s(12979);
+        var$1 = $rt_s(13013);
         var$5 = 0;
         var$6 = new cuusmt_MapEditorLoadTab$loadHandler$1$1;
         var$7 = null;
@@ -1826568,7 +1830254,7 @@ cuusmt_MapEditorSaveTab$saveHandler$1_invoke = ($this, $p1, $p2) => {
             break main;
         }
         var$3 = cuu_Log_INSTANCE;
-        var$4 = $rt_s(12980);
+        var$4 = $rt_s(13014);
         $p2 = $p2;
         var$3 = $rt_nullCheck(var$3);
         $ptr = 7;
@@ -1828222,7 +1831908,7 @@ cuusv_VictoryScreenCivGroup$DefeatedPlayerStyle__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cuusv_VictoryScreenCivGroup$DefeatedPlayerStyle;
-        var$2 = $rt_s(12981);
+        var$2 = $rt_s(13015);
         var$3 = 0;
         $ptr = 1;
     case 1:
@@ -1828232,7 +1831918,7 @@ cuusv_VictoryScreenCivGroup$DefeatedPlayerStyle__clinit_ = () => {
         }
         cuusv_VictoryScreenCivGroup$DefeatedPlayerStyle_REGULAR = var$1;
         var$1 = new cuusv_VictoryScreenCivGroup$DefeatedPlayerStyle;
-        var$2 = $rt_s(12982);
+        var$2 = $rt_s(13016);
         var$3 = 1;
         $ptr = 2;
     case 2:
@@ -1829064,7 +1832750,7 @@ cuuss_SaveGameScreen$copyToClipboardHandler$1_invoke = ($this, $p1, $p2) => {
             break main;
         }
         var$4 = cuu_Log_INSTANCE;
-        var$5 = $rt_s(12896);
+        var$5 = $rt_s(12930);
         var$4 = $rt_nullCheck(var$4);
         $ptr = 9;
     case 9:
@@ -1829168,7 +1832854,7 @@ let cuusc_DetailedStatsPopup$_init_$lambda$_0_0_invoke = (var$0, var$1) => {
                 if (var$2 !== null)
                     break a;
             }
-            var$2 = $rt_s(12983);
+            var$2 = $rt_s(13017);
         }
         var$1 = $rt_nullCheck(var$1);
         $ptr = 7;
@@ -1829326,7 +1833012,7 @@ cuusc_CivilopediaHistoryMenu_createScrollableContent = $this => {
         jl_AbstractStringBuilder_append0(var$12, 123);
         var$5 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$12, ($rt_nullCheck(var$5.$category)).$label169);
-        jl_AbstractStringBuilder_append(var$12, $rt_s(12984));
+        jl_AbstractStringBuilder_append(var$12, $rt_s(13018));
         jl_AbstractStringBuilder_append(var$12, var$5.$entry);
         jl_AbstractStringBuilder_append0(var$12, 125);
         $ptr = 8;
@@ -1829981,7 +1833667,7 @@ cuusm_MapEditorWesnothImporter$_init_$lambda$_0_1_invoke = var$0 => {
     case 0:
         cuusm_MapEditorWesnothImporter_$callClinit();
         var$1 = new kt_Regex;
-        var$2 = $rt_s(12985);
+        var$2 = $rt_s(13019);
         $ptr = 1;
     case 1:
         kt_RegexOption_$callClinit();
@@ -1830042,7 +1833728,7 @@ cuusm_MapEditorWesnothImporter$_init_$lambda$_0_2_invoke = var$0 => {
             break main;
         }
         var$5 = $tmp;
-        var$4 = $rt_s(12986);
+        var$4 = $rt_s(13020);
         var$5 = $rt_nullCheck(var$5);
         $ptr = 5;
     case 5:
@@ -1830087,7 +1833773,7 @@ let cuusm_MapEditorWesnothImporter$_init_$lambda$_0_3_invoke = var$0 => {
             break main;
         }
         var$2 = $tmp;
-        var$1 = $rt_s(12987);
+        var$1 = $rt_s(13021);
         var$2 = $rt_nullCheck(var$2);
         $ptr = 2;
     case 2:
@@ -1830129,7 +1833815,7 @@ cuusm_MapEditorWesnothImporter$onImportButtonClicked$1_invoke = $this => {
         var$1 = $rt_nullCheck(var$1);
         var$2 = culf_FileChooser_Companion;
         var$3 = ($rt_nullCheck(var$1.$editorScreen8)).$stage;
-        var$4 = $rt_s(12988);
+        var$4 = $rt_s(13022);
         var$5 = cuusm_MapEditorWesnothImporter_lastFileFolder;
         var$6 = new cuusm_MapEditorWesnothImporter$openFileDialog$lambda$_7_0;
         var$6.$_02017 = var$1;
@@ -1830225,7 +1833911,7 @@ cuusm_MapEditorOdImporter$onImportButtonClicked$1_invoke = $this => {
         var$1 = $rt_nullCheck($rt_castToClass($this.$receiver, cuusm_MapEditorOdImporter));
         var$2 = culf_FileChooser_Companion;
         var$3 = ($rt_nullCheck(var$1.$editorScreen7)).$stage;
-        var$4 = $rt_s(12989);
+        var$4 = $rt_s(13023);
         var$5 = cuusm_MapEditorOdImporter_lastFileFolder;
         var$6 = new cuusm_MapEditorOdImporter$openFileDialog$lambda$_6_0;
         var$6.$_01627 = var$1;
@@ -1830320,7 +1834006,7 @@ let cuusm_MapEditorOdImporter$onExportButtonClicked$lambda$_4_0_invoke = (var$0,
             var$1 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$1);
             jl_AbstractStringBuilder_append(var$1, var$5.$name());
-            jl_AbstractStringBuilder_append(var$1, $rt_s(12990));
+            jl_AbstractStringBuilder_append(var$1, $rt_s(13024));
             $ptr = 4;
             continue main;
         }
@@ -1830369,11 +1834055,11 @@ let cuusm_MapEditorOdImporter$onExportButtonClicked$lambda$_4_0_invoke = (var$0,
         }
         var$4 = $tmp;
         if (var$4)
-            var$2 = $rt_s(12991);
+            var$2 = $rt_s(13025);
         var$7 = var$2;
         cuu_Concurrency_$callClinit();
         var$2 = cuu_Concurrency_INSTANCE;
-        var$3 = $rt_s(12992);
+        var$3 = $rt_s(13026);
         var$8 = null;
         var$9 = new cuusm_MapEditorOdImporter$startExport$1;
         var$10 = null;
@@ -1831104,7 +1834790,7 @@ let cuusm_ModManagementScreen$installedButtonAction$lambda$_27_0_invoke = var$0 
         }
         var$6 = new cuup_ConfirmPopup;
         var$7 = var$4;
-        var$1 = $rt_s(12993);
+        var$1 = $rt_s(13027);
         var$5 = 0;
         var$8 = new cuusm_ModManagementScreen$installedButtonAction$lambda$0$lambda$_61_0;
         var$8.$_01195 = var$4;
@@ -1831594,7 +1835280,7 @@ let ikcc_DelegatedCallKt = $rt_classWithoutFields(),
 cuusm_MultiplayerHelpers$showDropboxWarning$lambda$_3_0 = $rt_classWithoutFields(),
 cuusm_MultiplayerHelpers$showDropboxWarning$lambda$_3_0_invoke = var$0 => {
     cuusm_MultiplayerHelpers_$callClinit();
-    cgxgtbw_WebNet_openURI($rt_nullCheck(cbg_Gdx_net), $rt_s(12994));
+    cgxgtbw_WebNet_openURI($rt_nullCheck(cbg_Gdx_net), $rt_s(13028));
     return k_Unit_INSTANCE;
 };
 function cuusm_MultiplayerHelpers$showDropboxWarning$lambda$_3_1() {
@@ -1832073,7 +1835759,7 @@ cuucw_SortableGrid$SortDirection__clinit_ = () => {
         }
         cuucw_SortableGrid$SortDirection_None = var$1;
         var$1 = new cuucw_SortableGrid$SortDirection;
-        var$2 = $rt_s(12995);
+        var$2 = $rt_s(13029);
         var$3 = 1;
         $ptr = 2;
     case 2:
@@ -1832083,7 +1835769,7 @@ cuucw_SortableGrid$SortDirection__clinit_ = () => {
         }
         cuucw_SortableGrid$SortDirection_Ascending = var$1;
         var$1 = new cuucw_SortableGrid$SortDirection;
-        var$2 = $rt_s(12996);
+        var$2 = $rt_s(13030);
         var$3 = 2;
         $ptr = 3;
     case 3:
@@ -1832127,7 +1835813,7 @@ let cuuso_StatsOverviewTab$UnhappinessTable$_init_$lambda$_0_0_invoke = (var$0, 
     case 0:
         var$1 = $rt_castToClass(var$1, cumru_UniqueType);
         var$2 = var$0.$_0865;
-        var$3 = $rt_s(12997);
+        var$3 = $rt_s(13031);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1832521,7 +1836207,7 @@ cuuso_GlobalPoliticsDiagramGroup__init_ = ($this, $undefeatedCivs, $freeSize) =>
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $clickableArea = $rt_s(12998);
+        $clickableArea = $rt_s(13032);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($undefeatedCivs, $clickableArea);
@@ -1832536,7 +1836222,7 @@ cuuso_GlobalPoliticsDiagramGroup__init_ = ($this, $undefeatedCivs, $freeSize) =>
         }
         $entry = new cuuso_GlobalPoliticsDiagramGroup$WidgetIndex;
         $clickableArea = new cuuso_GlobalPoliticsDiagramGroup$index$1;
-        kji_FunctionReference__init_($clickableArea, 1, $this, $rt_cls(cuuso_GlobalPoliticsDiagramGroup), $rt_s(12999), $rt_s(13000), 0);
+        kji_FunctionReference__init_($clickableArea, 1, $this, $rt_cls(cuuso_GlobalPoliticsDiagramGroup), $rt_s(13033), $rt_s(13034), 0);
         $clickableArea = $clickableArea;
         $ptr = 3;
     case 3:
@@ -1832731,14 +1836417,14 @@ cuuso_GlobalPoliticsDiagramGroup_updateVisibility = $this => {
         var$2 = $this.$selectedCivs;
         var$5 = $this.$selectedRelations;
         $entry = $rt_nullCheck($entry);
-        var$6 = $rt_s(13001);
+        var$6 = $rt_s(13035);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$2, var$6);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(13002);
+        var$6 = $rt_s(13036);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter(var$5, var$6);
@@ -1833370,14 +1837056,14 @@ let cuuso_WonderInfo$WonderInfo__init_ = ($this, $name, $category, $groupName, $
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $rt_s(13003);
+        var$9 = $rt_s(13037);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($groupName, var$9);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $rt_s(13004);
+        var$9 = $rt_s(13038);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($groupColor, var$9);
@@ -1833527,9 +1837213,9 @@ cuuso_WonderInfo$WonderStatus__clinit_ = () => {
         }
         cuuso_WonderInfo$WonderStatus_Unknown = var$1;
         var$1 = new cuuso_WonderInfo$WonderStatus;
-        var$2 = $rt_s(13005);
+        var$2 = $rt_s(13039);
         var$3 = 2;
-        var$4 = $rt_s(13006);
+        var$4 = $rt_s(13040);
         $ptr = 3;
     case 3:
         cuuso_WonderInfo$WonderStatus__init_(var$1, var$2, var$3, var$4);
@@ -1833538,9 +1837224,9 @@ cuuso_WonderInfo$WonderStatus__clinit_ = () => {
         }
         cuuso_WonderInfo$WonderStatus_Unbuilt = var$1;
         var$1 = new cuuso_WonderInfo$WonderStatus;
-        var$2 = $rt_s(13007);
+        var$2 = $rt_s(13041);
         var$3 = 3;
-        var$4 = $rt_s(13008);
+        var$4 = $rt_s(13042);
         $ptr = 4;
     case 4:
         cuuso_WonderInfo$WonderStatus__init_(var$1, var$2, var$3, var$4);
@@ -1834210,7 +1837896,7 @@ cuus_UniqueBuilderScreen$updateCurrentUniqueText$lambda$_2_0_invoke = (var$0, va
         }
         var$2 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$2);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(13009));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(13043));
         jl_AbstractStringBuilder_append(var$2, ($rt_nullCheck(($rt_nullCheck(var$1)).$uniqueTextField)).$text);
         jl_AbstractStringBuilder_append0(var$2, 62);
         $ptr = 2;
@@ -1834552,14 +1838238,14 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         if (!$isBuyingWithFaithForForeignReligion) {
             $stat = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($stat);
-            jl_AbstractStringBuilder_append($stat, $rt_s(13010));
+            jl_AbstractStringBuilder_append($stat, $rt_s(13044));
             $construction_0 = $rt_nullCheck($construction);
             $ptr = 14;
             continue main;
         }
         $stat = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($stat);
-        jl_AbstractStringBuilder_append($stat, $rt_s(13011));
+        jl_AbstractStringBuilder_append($stat, $rt_s(13045));
         $ptr = 26;
         continue main;
     case 13:
@@ -1834695,7 +1838381,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         }
         $cityView = $tmp;
         jl_AbstractStringBuilder_append($stat, $cityView);
-        jl_AbstractStringBuilder_append($stat, $rt_s(13012));
+        jl_AbstractStringBuilder_append($stat, $rt_s(13046));
         $ptr = 27;
     case 27:
         $tmp = cuusc_BuyButtonFactory$ConfirmBuyPopup__init_$getName($majorityReligion);
@@ -1834704,7 +1838390,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         }
         $cityView = $tmp;
         jl_AbstractStringBuilder_append($stat, $cityView);
-        jl_AbstractStringBuilder_append($stat, $rt_s(13013));
+        jl_AbstractStringBuilder_append($stat, $rt_s(13047));
         $ptr = 28;
     case 28:
         $tmp = jl_AbstractStringBuilder_toString($stat);
@@ -1834731,7 +1838417,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         if ($rt_suspending()) {
             break main;
         }
-        $stat = $rt_s(13014);
+        $stat = $rt_s(13048);
         $balance = 24;
         var$12 = 0;
         $cityView = null;
@@ -1834763,7 +1838449,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         }
         $stat = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($stat);
-        jl_AbstractStringBuilder_append($stat, $rt_s(13010));
+        jl_AbstractStringBuilder_append($stat, $rt_s(13044));
         $construction_0 = $rt_nullCheck($construction);
         $ptr = 14;
         continue main;
@@ -1835439,3658 +1839125,6 @@ let culg_Github$tryGetGithubReposWithTopic$1_invokeSuspend = ($this, $$result) =
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push($this, $$result, var$2, var$3, var$4, var$5, $ptr);
-},
-culg_GithubAPI = $rt_classWithoutFields(),
-culg_GithubAPI_INSTANCE = null,
-culg_GithubAPI_client = null,
-culg_GithubAPI_githubArchiveUrlRegex = null,
-culg_GithubAPI_parseAttachmentDispositionRegex = null,
-culg_GithubAPI_goodFolders = null,
-culg_GithubAPI_goodFiles = null,
-culg_GithubAPI_$_teavm_clinitCalled_$ = false,
-culg_GithubAPI_$callClinit = () => {
-    let $ptr = 0;
-    if ($rt_resuming()) {
-        $ptr = $rt_nativeThread().pop();
-    } else if (culg_GithubAPI_$_teavm_clinitCalled_$) {
-        return;
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        culg_GithubAPI_$_teavm_clinitCalled_$ = true;
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI__clinit_();
-        if ($rt_suspending()) {
-            break main;
-        }
-        culg_GithubAPI_$callClinit = $rt_eraseClinit(culg_GithubAPI);
-        return;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($ptr);
-},
-culg_GithubAPI_request = ($this, $maxRateLimitedRetries, $block, $$completion) => {
-    let $$continuation, var$5, $$result, $block_0, $resp, $rateLimited, $$this$request$iv, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$$this$request$iv = $thread.pop();$rateLimited = $thread.pop();$resp = $thread.pop();$block_0 = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$block = $thread.pop();$maxRateLimitedRetries = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        if ($$completion instanceof culg_GithubAPI$request$1) {
-            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$request$1));
-            var$5 = $$continuation.$label33;
-            if (var$5 & (-2147483648)) {
-                $$continuation.$label33 = var$5 + (-2147483648) | 0;
-                $$result = $$continuation.$result21;
-                $ptr = 2;
-                continue main;
-            }
-        }
-        $$continuation = new culg_GithubAPI$request$1;
-        $$continuation.$this$0454 = $this;
-        $ptr = 1;
-    case 1:
-        kcji_ContinuationImpl__init_($$continuation, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $$continuation.$result21;
-        $ptr = 2;
-    case 2:
-        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        switch ($$continuation.$label33) {
-            case 0:
-                k_ResultKt_throwOnFailure($$result);
-                $ptr = 3;
-                continue main;
-            case 1:
-                $maxRateLimitedRetries = $$continuation.$I$09;
-                $block_0 = $$continuation.$L$047;
-                k_ResultKt_throwOnFailure($$result);
-                $resp = $rt_castToClass($$result, ikcs_HttpResponse);
-                $$continuation.$L$047 = $block_0;
-                $$continuation.$L$136 = $resp;
-                $$continuation.$L$268 = null;
-                $$continuation.$L$344 = null;
-                $$continuation.$I$09 = $maxRateLimitedRetries;
-                $$continuation.$label33 = 2;
-                $ptr = 9;
-                continue main;
-            case 2:
-                $maxRateLimitedRetries = $$continuation.$I$09;
-                $resp = $$continuation.$L$136;
-                $block_0 = $$continuation.$L$047;
-                k_ResultKt_throwOnFailure($$result);
-                $rateLimited = ($rt_nullCheck($rt_castToClass($$result, jl_Boolean))).$value3;
-                if ($rateLimited) {
-                    if ($maxRateLimitedRetries > 0) {
-                        var$5 = $maxRateLimitedRetries - 1 | 0;
-                        $$continuation.$L$047 = null;
-                        $$continuation.$L$136 = null;
-                        $$continuation.$I$09 = $maxRateLimitedRetries;
-                        $$continuation.$Z$08 = $rateLimited;
-                        $$continuation.$label33 = 3;
-                        $ptr = 10;
-                        continue main;
-                    }
-                    return $resp;
-                }
-                return $resp;
-            case 3:
-                break;
-            default:
-                $block = new jl_IllegalStateException;
-                $$completion = $rt_s(136);
-                $ptr = 8;
-                continue main;
-        }
-        k_ResultKt_throwOnFailure($$result);
-        return $$result;
-    case 3:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$request$iv = culg_GithubAPI_client;
-        $$result = new ikcr_HttpRequestBuilder;
-        $ptr = 4;
-    case 4:
-        ikcr_HttpRequestBuilder__init_($$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $block_0 = $rt_nullCheck($block);
-        $ptr = 5;
-    case 5:
-        $block_0.$invoke0($$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $block = new ikcs_HttpStatement;
-        $ptr = 6;
-    case 6:
-        ikcs_HttpStatement__init_($block, $$result, $$this$request$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$continuation.$L$047 = $block_0;
-        $$continuation.$L$136 = null;
-        $$continuation.$L$268 = null;
-        $$continuation.$L$344 = null;
-        $$continuation.$I$09 = $maxRateLimitedRetries;
-        $$continuation.$label33 = 1;
-        $ptr = 7;
-    case 7:
-        $tmp = ikcs_HttpStatement_fetchResponse($block, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        if ($$result !== $$completion) {
-            $resp = $rt_castToClass($$result, ikcs_HttpResponse);
-            $$continuation.$L$047 = $block_0;
-            $$continuation.$L$136 = $resp;
-            $$continuation.$L$268 = null;
-            $$continuation.$L$344 = null;
-            $$continuation.$I$09 = $maxRateLimitedRetries;
-            $$continuation.$label33 = 2;
-            $ptr = 9;
-            continue main;
-        }
-        return $$completion;
-    case 8:
-        jl_Throwable__init_($block, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($block);
-    case 9:
-        $tmp = culg_GithubAPI_consumeRateLimit($this, $resp, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        if ($$result !== $$completion) {
-            $rateLimited = ($rt_nullCheck($rt_castToClass($$result, jl_Boolean))).$value3;
-            if ($rateLimited) {
-                if ($maxRateLimitedRetries > 0) {
-                    var$5 = $maxRateLimitedRetries - 1 | 0;
-                    $$continuation.$L$047 = null;
-                    $$continuation.$L$136 = null;
-                    $$continuation.$I$09 = $maxRateLimitedRetries;
-                    $$continuation.$Z$08 = $rateLimited;
-                    $$continuation.$label33 = 3;
-                    $ptr = 10;
-                    continue main;
-                }
-                return $resp;
-            }
-            return $resp;
-        }
-        return $$completion;
-    case 10:
-        $tmp = culg_GithubAPI_request($this, var$5, $block_0, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        if ($$result !== $$completion)
-            return $$result;
-        return $$completion;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $maxRateLimitedRetries, $block, $$completion, $$continuation, var$5, $$result, $block_0, $resp, $rateLimited, $$this$request$iv, $ptr);
-},
-culg_GithubAPI_request$default = (var$1, var$2, var$3, var$4, var$5, var$6) => {
-    let $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        if (var$5 & 1)
-            var$2 = 3;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 2;
-    case 2:
-        $tmp = culg_GithubAPI_request(var$1, var$2, var$3, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        return var$1;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
-},
-culg_GithubAPI_getUrlForBranchZip$Unciv_core = ($this, $gitRepoUrl, $branch) => {
-    let $$this$all$iv, $branch_0, var$5, $element$iv, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$element$iv = $thread.pop();var$5 = $thread.pop();$branch_0 = $thread.pop();$$this$all$iv = $thread.pop();$branch = $thread.pop();$gitRepoUrl = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $$this$all$iv = $rt_s(13015);
-        $ptr = 1;
-    case 1:
-        kji_Intrinsics_checkNotNullParameter($gitRepoUrl, $$this$all$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$all$iv = $rt_s(6206);
-        $ptr = 2;
-    case 2:
-        a: {
-            kji_Intrinsics_checkNotNullParameter($branch, $$this$all$iv);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $branch_0 = $rt_nullCheck($branch);
-            if ($branch_0.$nativeString.length == 40) {
-                $$this$all$iv = $branch_0;
-                var$5 = 0;
-                $$this$all$iv = $rt_nullCheck($$this$all$iv);
-                if (var$5 >= $$this$all$iv.$nativeString.length) {
-                    if (!1)
-                        break a;
-                    else {
-                        $branch = new jl_StringBuilder;
-                        jl_AbstractStringBuilder__init_($branch);
-                        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
-                        jl_AbstractStringBuilder_append($branch, $rt_s(13016));
-                        jl_AbstractStringBuilder_append($branch, $branch_0);
-                        jl_AbstractStringBuilder_append($branch, $rt_s(13017));
-                        $ptr = 7;
-                        continue main;
-                    }
-                }
-                $ptr = 4;
-                continue main;
-            }
-        }
-        $branch = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($branch);
-        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
-        jl_AbstractStringBuilder_append($branch, $rt_s(13018));
-        jl_AbstractStringBuilder_append($branch, $branch_0);
-        jl_AbstractStringBuilder_append($branch, $rt_s(13017));
-        $ptr = 3;
-    case 3:
-        $tmp = jl_AbstractStringBuilder_toString($branch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $gitRepoUrl = $tmp;
-        return $gitRepoUrl;
-    case 4:
-        $tmp = jl_String_charAt($$this$all$iv, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $element$iv = $tmp;
-        $ptr = 5;
-    case 5:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $branch = $rt_nullCheck(culg_GithubAPI_INSTANCE);
-        $ptr = 6;
-    case 6:
-        $tmp = culg_GithubAPI_isHex($branch, $element$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $element$iv = $tmp;
-        if (!$element$iv)
-            var$5 = 0;
-        else {
-            var$5 = var$5 + 1 | 0;
-            if (var$5 < $$this$all$iv.$nativeString.length) {
-                $ptr = 4;
-                continue main;
-            }
-            var$5 = 1;
-        }
-        if (var$5) {
-            $branch = new jl_StringBuilder;
-            jl_AbstractStringBuilder__init_($branch);
-            jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
-            jl_AbstractStringBuilder_append($branch, $rt_s(13016));
-            jl_AbstractStringBuilder_append($branch, $branch_0);
-            jl_AbstractStringBuilder_append($branch, $rt_s(13017));
-            $ptr = 7;
-            continue main;
-        }
-        $branch = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($branch);
-        jl_AbstractStringBuilder_append($branch, $gitRepoUrl);
-        jl_AbstractStringBuilder_append($branch, $rt_s(13018));
-        jl_AbstractStringBuilder_append($branch, $branch_0);
-        jl_AbstractStringBuilder_append($branch, $rt_s(13017));
-        $ptr = 3;
-        continue main;
-    case 7:
-        $tmp = jl_AbstractStringBuilder_toString($branch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $gitRepoUrl = $tmp;
-        return $gitRepoUrl;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $gitRepoUrl, $branch, $$this$all$iv, $branch_0, var$5, $element$iv, $ptr);
-},
-culg_GithubAPI_toCodeloadUrl = ($this, $url) => {
-    let $match, $owner, var$4, $repo, $ref, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$ref = $thread.pop();$repo = $thread.pop();var$4 = $thread.pop();$owner = $thread.pop();$match = $thread.pop();$url = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $match = $rt_s(5062);
-        $ptr = 1;
-    case 1:
-        kji_Intrinsics_checkNotNullParameter($url, $match);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 2;
-    case 2:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $match = culg_GithubAPI_githubArchiveUrlRegex;
-        $owner = $url;
-        $match = $rt_nullCheck($match);
-        $ptr = 3;
-    case 3:
-        $tmp = kt_Regex_matchEntire($match, $owner);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $match = $tmp;
-        if ($match !== null) {
-            $url = $rt_nullCheck($match);
-            $ptr = 4;
-            continue main;
-        }
-        return $url;
-    case 4:
-        $tmp = kt_MatcherMatchResult_getDestructured($url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        $match = $rt_nullCheck($url);
-        $url = $rt_nullCheck($match.$match1);
-        $ptr = 5;
-    case 5:
-        $tmp = kt_MatcherMatchResult_getGroupValues($url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        var$4 = 1;
-        $url = $rt_nullCheck($url);
-        $ptr = 6;
-    case 6:
-        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        $owner = $url;
-        $url = $rt_nullCheck($match.$match1);
-        $ptr = 7;
-    case 7:
-        $tmp = kt_MatcherMatchResult_getGroupValues($url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        var$4 = 2;
-        $url = $rt_nullCheck($url);
-        $ptr = 8;
-    case 8:
-        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        $repo = $url;
-        $url = $rt_nullCheck($match.$match1);
-        $ptr = 9;
-    case 9:
-        $tmp = kt_MatcherMatchResult_getGroupValues($url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        var$4 = 3;
-        $url = $rt_nullCheck($url);
-        $ptr = 10;
-    case 10:
-        $tmp = kt_MatcherMatchResult$groupValues$1_get($url, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        $ref = $url;
-        $url = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($url);
-        jl_AbstractStringBuilder_append($url, $rt_s(13019));
-        jl_AbstractStringBuilder_append($url, $owner);
-        jl_AbstractStringBuilder_append0($url, 47);
-        jl_AbstractStringBuilder_append($url, $repo);
-        jl_AbstractStringBuilder_append($url, $rt_s(13020));
-        jl_AbstractStringBuilder_append($url, $ref);
-        $ptr = 11;
-    case 11:
-        $tmp = jl_AbstractStringBuilder_toString($url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $tmp;
-        return $url;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $url, $match, $owner, var$4, $repo, $ref, $ptr);
-},
-culg_GithubAPI_consumeRateLimit = ($this, $resp, $$completion) => {
-    let $$continuation, $remainingRequests, $$result, $resp_0, $resetEpoch, var$8, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$8 = $thread.pop();$resetEpoch = $thread.pop();$resp_0 = $thread.pop();$$result = $thread.pop();$remainingRequests = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$resp = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        if ($$completion instanceof culg_GithubAPI$consumeRateLimit$1) {
-            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$consumeRateLimit$1));
-            $remainingRequests = $$continuation.$label113;
-            if ($remainingRequests & (-2147483648)) {
-                $$continuation.$label113 = $remainingRequests + (-2147483648) | 0;
-                $$result = $$continuation.$result14;
-                $ptr = 2;
-                continue main;
-            }
-        }
-        $$continuation = new culg_GithubAPI$consumeRateLimit$1;
-        $$continuation.$this$0472 = $this;
-        $ptr = 1;
-    case 1:
-        kcji_ContinuationImpl__init_($$continuation, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $$continuation.$result14;
-        $ptr = 2;
-    case 2:
-        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        switch ($$continuation.$label113) {
-            case 0:
-                k_ResultKt_throwOnFailure($$result);
-                $resp_0 = $rt_nullCheck($resp);
-                $resp = $resp_0.$getStatus();
-                $ptr = 3;
-                continue main;
-            case 1:
-                break;
-            default:
-                $resp = new jl_IllegalStateException;
-                $$completion = $rt_s(136);
-                $ptr = 6;
-                continue main;
-        }
-        k_ResultKt_throwOnFailure($$result);
-        return jl_Boolean_valueOf(1);
-    case 3:
-        ikh_HttpStatusCode_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $rt_nullCheck(ikh_HttpStatusCode_Companion);
-        $ptr = 4;
-    case 4:
-        $tmp = ikh_HttpStatusCode$Companion_getForbidden($$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        $ptr = 5;
-    case 5:
-        $tmp = kji_Intrinsics_areEqual($resp, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $remainingRequests = $tmp;
-        if ($remainingRequests) {
-            $resp = $resp_0.$getHeaders();
-            $$result = $rt_s(13021);
-            $resp = $rt_nullCheck($resp);
-            $ptr = 7;
-            continue main;
-        }
-        $resp = $resp_0.$getStatus();
-        $$result = $rt_nullCheck(ikh_HttpStatusCode_Companion);
-        $ptr = 8;
-        continue main;
-    case 6:
-        jl_Throwable__init_($resp, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($resp);
-    case 7:
-        $tmp = iku_StringValuesImpl_get($resp, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        if ($resp === null) {
-            $remainingRequests = 0;
-            if ($remainingRequests >= 1) {
-                $resp = $resp_0.$getHeaders();
-                $$result = $rt_s(13022);
-                $resp = $rt_nullCheck($resp);
-                $ptr = 11;
-                continue main;
-            }
-            return jl_Boolean_valueOf(0);
-        }
-        $ptr = 10;
-        continue main;
-    case 8:
-        $tmp = ikh_HttpStatusCode$Companion_getTooManyRequests($$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        $ptr = 9;
-    case 9:
-        $tmp = kji_Intrinsics_areEqual($resp, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $remainingRequests = $tmp;
-        if ($remainingRequests) {
-            $resp = $resp_0.$getHeaders();
-            $$result = $rt_s(13021);
-            $resp = $rt_nullCheck($resp);
-            $ptr = 7;
-            continue main;
-        }
-        return jl_Boolean_valueOf(0);
-    case 10:
-        $tmp = kt_StringsKt__StringNumberConversionsKt_toIntOrNull($resp);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        $remainingRequests = $resp === null ? 0 : $resp.$value2;
-        if ($remainingRequests >= 1) {
-            $resp = $resp_0.$getHeaders();
-            $$result = $rt_s(13022);
-            $resp = $rt_nullCheck($resp);
-            $ptr = 11;
-            continue main;
-        }
-        return jl_Boolean_valueOf(0);
-    case 11:
-        $tmp = iku_StringValuesImpl_get($resp, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        if ($resp === null) {
-            $resetEpoch = 0n;
-            $ptr = 13;
-            continue main;
-        }
-        $ptr = 12;
-    case 12:
-        $tmp = kt_StringsKt__StringNumberConversionsKt_toLongOrNull($resp);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        $resetEpoch = $resp === null ? 0n : $resp.$value6;
-        $ptr = 13;
-    case 13:
-        kt_Instant_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = kt_Instant_Companion;
-        var$8 = 0n;
-        $resp = $rt_nullCheck($resp);
-        $ptr = 14;
-    case 14:
-        $tmp = kt_Instant$Companion_fromEpochSeconds0($resp, $resetEpoch, var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        $resp = $rt_nullCheck(kt_Clock$System_INSTANCE);
-        $ptr = 15;
-    case 15:
-        $tmp = kt_Clock$System_now($resp);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        $$result = $rt_nullCheck($$result);
-        $ptr = 16;
-    case 16:
-        $tmp = kt_Instant_minus_UwyO8pc($$result, $resp);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = $tmp;
-        $$continuation.$L$0298 = null;
-        $$continuation.$I$069 = $remainingRequests;
-        $$continuation.$J$014 = $resetEpoch;
-        $$continuation.$label113 = 1;
-        $ptr = 17;
-    case 17:
-        $tmp = kc_DelayKt_delay_VtjQ1oo(var$8, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $resp = $tmp;
-        if ($resp !== $$completion)
-            return jl_Boolean_valueOf(1);
-        return $$completion;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $resp, $$completion, $$continuation, $remainingRequests, $$result, $resp_0, $resetEpoch, var$8, $ptr);
-},
-culg_GithubAPI_fetchPreviewImageOrNull = ($this, $modUrl, $branch, $ext, $$completion) => {
-    let var$5, var$6, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$$completion = $thread.pop();$ext = $thread.pop();$branch = $thread.pop();$modUrl = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        cul_UncivKtor_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = cul_UncivKtor_INSTANCE;
-        var$6 = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_(var$6);
-        jl_AbstractStringBuilder_append(var$6, $modUrl);
-        jl_AbstractStringBuilder_append0(var$6, 47);
-        jl_AbstractStringBuilder_append(var$6, $branch);
-        jl_AbstractStringBuilder_append(var$6, $rt_s(13023));
-        jl_AbstractStringBuilder_append(var$6, $ext);
-        $ptr = 2;
-    case 2:
-        $tmp = jl_AbstractStringBuilder_toString(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ext = $tmp;
-        $modUrl = new culg_GithubAPI$fetchPreviewImageOrNull$lambda$_13_0;
-        $branch = $rt_nullCheck(var$5);
-        $ptr = 3;
-    case 3:
-        $tmp = cul_UncivKtor_getOrNull($branch, $ext, $modUrl, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $modUrl = $tmp;
-        return $modUrl;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $modUrl, $branch, $ext, $$completion, var$5, var$6, $ptr);
-},
-culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
-    let $$continuation, var$5, $$result, $$this$parseUrl_0, $repo, var$9, $matchZip, $matchBranch, $matchTagArchive, $matchTagPage, $matchCommit, $matchRepo, $matchAnyZip, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$matchAnyZip = $thread.pop();$matchRepo = $thread.pop();$matchCommit = $thread.pop();$matchTagPage = $thread.pop();$matchTagArchive = $thread.pop();$matchBranch = $thread.pop();$matchZip = $thread.pop();var$9 = $thread.pop();$repo = $thread.pop();$$this$parseUrl_0 = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$$this$parseUrl = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        if ($$completion instanceof culg_GithubAPI$parseUrl$1) {
-            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$parseUrl$1));
-            var$5 = $$continuation.$label103;
-            if (var$5 & (-2147483648)) {
-                $$continuation.$label103 = var$5 + (-2147483648) | 0;
-                $$result = $$continuation.$result22;
-                $ptr = 2;
-                continue main;
-            }
-        }
-        $$continuation = new culg_GithubAPI$parseUrl$1;
-        $$continuation.$this$0441 = $this;
-        $ptr = 1;
-    case 1:
-        kcji_ContinuationImpl__init_($$continuation, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $$continuation.$result22;
-        $ptr = 2;
-    case 2:
-        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        switch ($$continuation.$label103) {
-            case 0:
-                break;
-            case 1:
-                $url = $$continuation.$L$1115;
-                $$this$parseUrl_0 = $$continuation.$L$0223;
-                k_ResultKt_throwOnFailure($$result);
-                $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
-                if ($repo === null) {
-                    $$this$parseUrl = $rt_s(7470);
-                    var$5 = 0;
-                    var$9 = 2;
-                    $$completion = null;
-                    $ptr = 19;
-                    continue main;
-                }
-                return $repo;
-            default:
-                $$this$parseUrl = new jl_IllegalStateException;
-                $url = $rt_s(136);
-                $ptr = 7;
-                continue main;
-        }
-        k_ResultKt_throwOnFailure($$result);
-        $$this$parseUrl_0 = $rt_nullCheck($$this$parseUrl);
-        $ptr = 3;
-    case 3:
-        culg_GithubAPI$Repo_setHtml_url($$this$parseUrl_0, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $rt_s(1637);
-        $ptr = 4;
-    case 4:
-        culg_GithubAPI$Repo_setDefault_branch($$this$parseUrl_0, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $$result = $rt_s(13024);
-        $ptr = 5;
-    case 5:
-        kt_Regex__init_($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $url;
-        $ptr = 6;
-    case 6:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchZip = $tmp;
-        if ($matchZip !== null) {
-            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchZip)).$groups);
-            $ptr = 10;
-            continue main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $matchBranch = $rt_s(13025);
-        $ptr = 8;
-        continue main;
-    case 7:
-        jl_Throwable__init_($$this$parseUrl, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($$this$parseUrl);
-    case 8:
-        kt_Regex__init_($$this$parseUrl, $matchBranch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 9;
-    case 9:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchBranch = $tmp;
-        if ($matchBranch !== null) {
-            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchBranch)).$groups);
-            $ptr = 13;
-            continue main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $matchTagArchive = $rt_s(13026);
-        $ptr = 11;
-        continue main;
-    case 10:
-        $tmp = $$this$parseUrl.$getSize();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 4) {
-            $$this$parseUrl = new kt_Regex;
-            $matchBranch = $rt_s(13025);
-            $ptr = 8;
-            continue main;
-        }
-        $ptr = 14;
-        continue main;
-    case 11:
-        kt_Regex__init_($$this$parseUrl, $matchTagArchive);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 12;
-    case 12:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchTagArchive = $tmp;
-        if ($matchTagArchive !== null) {
-            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchTagArchive)).$groups);
-            $ptr = 17;
-            continue main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $matchTagPage = $rt_s(13027);
-        $ptr = 15;
-        continue main;
-    case 13:
-        $tmp = $$this$parseUrl.$getSize();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 4) {
-            $$this$parseUrl = new kt_Regex;
-            $matchTagArchive = $rt_s(13026);
-            $ptr = 11;
-            continue main;
-        }
-        $ptr = 18;
-        continue main;
-    case 14:
-        $tmp = culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchZip);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        return $$this$parseUrl;
-    case 15:
-        kt_Regex__init_($$this$parseUrl, $matchTagPage);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 16;
-    case 16:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchTagPage = $tmp;
-        if ($matchTagPage !== null) {
-            $$this$parseUrl = $rt_nullCheck(($rt_nullCheck($matchTagPage)).$groups);
-            $ptr = 22;
-            continue main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $matchCommit = $rt_s(13028);
-        $ptr = 20;
-        continue main;
-    case 17:
-        $tmp = $$this$parseUrl.$getSize();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 4) {
-            $$this$parseUrl = new kt_Regex;
-            $matchTagPage = $rt_s(13027);
-            $ptr = 15;
-            continue main;
-        }
-        $ptr = 23;
-        continue main;
-    case 18:
-        $tmp = culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchBranch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        return $$this$parseUrl;
-    case 19:
-        $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($url, $$this$parseUrl, var$5, var$9, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (!var$5) {
-            $$this$parseUrl = $rt_s(7471);
-            var$5 = 0;
-            var$9 = 2;
-            $$completion = null;
-            $ptr = 32;
-            continue main;
-        }
-        $$this$parseUrl = $rt_s(5);
-        $$completion = $rt_nullCheck($$this$parseUrl_0);
-        $ptr = 26;
-        continue main;
-    case 20:
-        kt_Regex__init_($$this$parseUrl, $matchCommit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 21;
-    case 21:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchCommit = $tmp;
-        if ($matchCommit !== null) {
-            $$this$parseUrl = $rt_nullCheck(kt_MatcherMatchResult_getGroups($rt_nullCheck($matchCommit)));
-            $ptr = 35;
-            continue main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $matchRepo = $rt_s(13029);
-        $ptr = 33;
-        continue main;
-    case 22:
-        $tmp = $$this$parseUrl.$getSize();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 4) {
-            $$this$parseUrl = new kt_Regex;
-            $matchCommit = $rt_s(13028);
-            $ptr = 20;
-            continue main;
-        }
-        $ptr = 36;
-        continue main;
-    case 23:
-        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchTagArchive);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $$this$parseUrl_0.$default_branch;
-        $ptr = 24;
-    case 24:
-        culg_GithubAPI$Repo_setRelease_tag($$this$parseUrl_0, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 25;
-    case 25:
-        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return $$this$parseUrl_0;
-    case 26:
-        culg_GithubAPI$Repo_setHtml_url($$completion, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 27;
-    case 27:
-        culg_GithubAPI$Repo_setDirect_zip_url($$completion, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$continuation = $$completion.$owner1;
-        $$this$parseUrl = $rt_s(13030);
-        $$continuation = $rt_nullCheck($$continuation);
-        $ptr = 28;
-    case 28:
-        culg_GithubAPI$RepoOwner_setLogin($$continuation, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $rt_s(1637);
-        $ptr = 29;
-    case 29:
-        culg_GithubAPI$Repo_setDefault_branch($$completion, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = new kt_Regex;
-        $$continuation = $rt_s(13031);
-        $ptr = 30;
-    case 30:
-        kt_Regex__init_($$this$parseUrl, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $url;
-        $ptr = 31;
-    case 31:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchAnyZip = $tmp;
-        if ($matchAnyZip !== null) {
-            $url = $rt_nullCheck($matchAnyZip);
-            $$this$parseUrl = $rt_nullCheck($url.$groups);
-            $ptr = 41;
-            continue main;
-        }
-        $url = $$completion.$name9;
-        $$this$parseUrl = $rt_s(24);
-        $ptr = 40;
-        continue main;
-    case 32:
-        $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($url, $$this$parseUrl, var$5, var$9, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $$this$parseUrl = $rt_s(5);
-            $$completion = $rt_nullCheck($$this$parseUrl_0);
-            $ptr = 26;
-            continue main;
-        }
-        return null;
-    case 33:
-        kt_Regex__init_($$this$parseUrl, $matchRepo);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 34;
-    case 34:
-        $tmp = kt_Regex_matchEntire($$this$parseUrl, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchRepo = $tmp;
-        if ($matchRepo === null) {
-            $$this$parseUrl = $rt_s(7470);
-            var$5 = 0;
-            var$9 = 2;
-            $$completion = null;
-            $ptr = 19;
-            continue main;
-        }
-        $$result = $rt_nullCheck($matchRepo);
-        $$this$parseUrl = $rt_nullCheck(kt_MatcherMatchResult_getGroups($$result));
-        $ptr = 42;
-        continue main;
-    case 35:
-        $tmp = kc_AbstractCollection_size($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 4) {
-            $$this$parseUrl = new kt_Regex;
-            $matchRepo = $rt_s(13029);
-            $ptr = 33;
-            continue main;
-        }
-        $ptr = 43;
-        continue main;
-    case 36:
-        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchTagPage);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $$this$parseUrl_0.$default_branch;
-        $ptr = 37;
-    case 37:
-        culg_GithubAPI$Repo_setRelease_tag($$this$parseUrl_0, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($$this$parseUrl);
-        jl_AbstractStringBuilder_append($$this$parseUrl, $$this$parseUrl_0.$html_url);
-        jl_AbstractStringBuilder_append($$this$parseUrl, $rt_s(13032));
-        $$this$parseUrl = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($$this$parseUrl, culg_GithubAPI$Repo_getRelease_tag($$this$parseUrl_0))), $rt_s(13017)));
-        $ptr = 38;
-    case 38:
-        $tmp = jl_StringBuilder_toString($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        $ptr = 39;
-    case 39:
-        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return $$this$parseUrl_0;
-    case 40:
-        kji_Intrinsics_checkNotNullParameter($url, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion.$full_name = $url;
-        return $$completion;
-    case 41:
-        $tmp = $$this$parseUrl.$getSize();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$9 = $tmp;
-        if (var$9 > 1) {
-            $$this$parseUrl = $url.$groups;
-            var$5 = 1;
-            $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
-            $ptr = 45;
-            continue main;
-        }
-        $url = $$completion.$name9;
-        $$this$parseUrl = $rt_s(24);
-        $ptr = 40;
-        continue main;
-    case 42:
-        $tmp = kc_AbstractCollection_size($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5 <= 2) {
-            $$this$parseUrl = $rt_s(7470);
-            var$5 = 0;
-            var$9 = 2;
-            $$completion = null;
-            $ptr = 19;
-            continue main;
-        }
-        $matchAnyZip = culg_GithubAPI$Repo_Companion;
-        $$this$parseUrl = kt_MatcherMatchResult_getGroups($$result);
-        var$5 = 1;
-        $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
-        $ptr = 48;
-        continue main;
-    case 43:
-        culg_GithubAPI_parseUrl$processMatch($$this$parseUrl_0, $matchCommit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 44;
-    case 44:
-        culg_GithubAPI$Repo_setDirect_zip_url($$this$parseUrl_0, $url);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return $$this$parseUrl_0;
-    case 45:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        $ptr = 46;
-    case 46:
-        kji_Intrinsics_checkNotNull($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = ($rt_nullCheck($$this$parseUrl)).$value21;
-        $ptr = 47;
-    case 47:
-        culg_GithubAPI$Repo_setName($$completion, $$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $url = $$completion.$name9;
-        $$this$parseUrl = $rt_s(24);
-        $ptr = 40;
-        continue main;
-    case 48:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        $ptr = 49;
-    case 49:
-        kji_Intrinsics_checkNotNull($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $repo = kt_MatchGroup_getValue($rt_nullCheck($$this$parseUrl));
-        $$this$parseUrl = kt_MatcherMatchResult_getGroups($$result);
-        var$5 = 2;
-        $$this$parseUrl = $rt_nullCheck($$this$parseUrl);
-        $ptr = 50;
-    case 50:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this$parseUrl, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseUrl = $tmp;
-        $ptr = 51;
-    case 51:
-        kji_Intrinsics_checkNotNull($$this$parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = kt_MatchGroup_getValue($rt_nullCheck($$this$parseUrl));
-        $$continuation.$L$0223 = $$this$parseUrl_0;
-        $$continuation.$L$1115 = $url;
-        $$continuation.$L$2118 = kcji_SpillingKt_nullOutSpilledVariable($matchZip);
-        $$continuation.$L$381 = kcji_SpillingKt_nullOutSpilledVariable($matchBranch);
-        $$continuation.$L$450 = kcji_SpillingKt_nullOutSpilledVariable($matchTagArchive);
-        $$continuation.$L$531 = kcji_SpillingKt_nullOutSpilledVariable($matchTagPage);
-        $$continuation.$L$624 = kcji_SpillingKt_nullOutSpilledVariable($matchCommit);
-        $$continuation.$L$715 = kcji_SpillingKt_nullOutSpilledVariable($matchRepo);
-        $$continuation.$label103 = 1;
-        $$this$parseUrl = $rt_nullCheck($matchAnyZip);
-        $ptr = 52;
-    case 52:
-        $tmp = culg_GithubAPI$Repo$Companion_query($$this$parseUrl, $repo, $$result, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        if ($$result !== $$completion) {
-            $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
-            if ($repo === null) {
-                $$this$parseUrl = $rt_s(7470);
-                var$5 = 0;
-                var$9 = 2;
-                $$completion = null;
-                $ptr = 19;
-                continue main;
-            }
-            return $repo;
-        }
-        return $$completion;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $$this$parseUrl, $url, $$completion, $$continuation, var$5, $$result, $$this$parseUrl_0, $repo, var$9, $matchZip, $matchBranch, $matchTagArchive, $matchTagPage, $matchCommit, $matchRepo, $matchAnyZip, $ptr);
-},
-culg_GithubAPI_downloadAndExtract = ($this, $$this$downloadAndExtract, $updateProgressPercent, $$completion) => {
-    let $$continuation, var$5, $$result, $finalDestination, $unzipDestination, $defaultBranch, $modNameFromFileName, $modsFolder, $$this$downloadAndExtract_0, $gitRepoUrl, $innerFolder, $modName, var$16, $finalDestinationName, $tempBackup, $$this$sortedBy$iv, $fallbackSize, $$this$prepareRequest$iv, $innerFileOrFolder, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$innerFileOrFolder = $thread.pop();$$this$prepareRequest$iv = $thread.pop();$fallbackSize = $thread.pop();$$this$sortedBy$iv = $thread.pop();$tempBackup = $thread.pop();$finalDestinationName = $thread.pop();var$16 = $thread.pop();$modName = $thread.pop();$innerFolder = $thread.pop();$gitRepoUrl = $thread.pop();$$this$downloadAndExtract_0 = $thread.pop();$modsFolder = $thread.pop();$modNameFromFileName = $thread.pop();$defaultBranch = $thread.pop();$unzipDestination = $thread.pop();$finalDestination
-        = $thread.pop();$$result = $thread.pop();var$5 = $thread.pop();$$continuation = $thread.pop();$$completion = $thread.pop();$updateProgressPercent = $thread.pop();$$this$downloadAndExtract = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        if ($$completion instanceof culg_GithubAPI$downloadAndExtract$1) {
-            $$continuation = $rt_nullCheck($rt_castToClass($$completion, culg_GithubAPI$downloadAndExtract$1));
-            var$5 = $$continuation.$label102;
-            if (var$5 & (-2147483648)) {
-                $$continuation.$label102 = var$5 + (-2147483648) | 0;
-                $$result = $$continuation.$result42;
-                $ptr = 2;
-                continue main;
-            }
-        }
-        $$continuation = new culg_GithubAPI$downloadAndExtract$1;
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI$downloadAndExtract$1__init_($$continuation, $this, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $$continuation.$result42;
-        $ptr = 2;
-    case 2:
-        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $finalDestination = $tmp;
-        switch ($$continuation.$label102) {
-            case 0:
-                break;
-            case 1:
-                $unzipDestination = $$continuation.$L$711;
-                $defaultBranch = $$continuation.$L$438;
-                $modNameFromFileName = $$continuation.$L$363;
-                $modsFolder = $$continuation.$L$290;
-                $$this$downloadAndExtract_0 = $$continuation.$L$0237;
-                k_ResultKt_throwOnFailure($$result);
-                $updateProgressPercent = $rt_nullCheck($unzipDestination);
-                $ptr = 8;
-                continue main;
-            default:
-                $$this$downloadAndExtract = new jl_IllegalStateException;
-                $updateProgressPercent = $rt_s(136);
-                $ptr = 7;
-                continue main;
-        }
-        k_ResultKt_throwOnFailure($$result);
-        $ptr = 3;
-    case 3:
-        cu_UncivGame_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $rt_nullCheck(cu_UncivGame_Companion);
-        $ptr = 4;
-    case 4:
-        $tmp = cu_UncivGame$Companion_getCurrent($$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        $$completion = $rt_nullCheck($$completion);
-        $ptr = 5;
-    case 5:
-        $tmp = cu_UncivGame_getFiles($$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        $$completion = $rt_nullCheck($$completion);
-        $ptr = 6;
-    case 6:
-        $tmp = culf_UncivFiles_getModsFolder($$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $modsFolder = $tmp;
-        $modNameFromFileName = kji_Ref$ObjectRef__init_();
-        $$this$downloadAndExtract_0 = $rt_nullCheck($$this$downloadAndExtract);
-        $modNameFromFileName.$element0 = culg_GithubAPI$Repo_getName($$this$downloadAndExtract_0);
-        $defaultBranch = culg_GithubAPI$Repo_getDefault_branch($$this$downloadAndExtract_0);
-        if (!(jl_String_length($rt_nullCheck(culg_GithubAPI$Repo_getDirect_zip_url($$this$downloadAndExtract_0))) ? 0 : 1)) {
-            $$result = culg_GithubAPI$Repo_getDirect_zip_url($$this$downloadAndExtract_0);
-            $$completion = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(991));
-            $ptr = 18;
-            continue main;
-        }
-        $gitRepoUrl = culg_GithubAPI$Repo_getHtml_url($$this$downloadAndExtract_0);
-        $ptr = 24;
-        continue main;
-    case 7:
-        jl_IllegalStateException__init_($$this$downloadAndExtract, $updateProgressPercent);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($$this$downloadAndExtract);
-    case 8:
-        $tmp = cgxgtbw_WebFileHandle_exists($updateProgressPercent);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $ptr = 16;
-            continue main;
-        }
-        $ptr = 9;
-    case 9:
-        kji_Intrinsics_checkNotNull($unzipDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $rt_castToClass(($rt_nullCheck($modNameFromFileName)).$element0, jl_String);
-        $ptr = 10;
-    case 10:
-        $tmp = culg_GithubAPI_resolveZipStructure($this, $unzipDestination, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
-        $innerFolder = $rt_castToClass(k_Pair_component1($$this$downloadAndExtract), cbgf_FileHandle);
-        $modName = $rt_castToClass(k_Pair_component2($$this$downloadAndExtract), jl_String);
-        culg_Github_$callClinit();
-        $$completion = culg_Github_INSTANCE;
-        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 45)), $defaultBranch));
-        $ptr = 11;
-    case 11:
-        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$continuation = $tmp;
-        $gitRepoUrl = $rt_s(5);
-        var$5 = 0;
-        var$16 = 4;
-        $$this$downloadAndExtract = null;
-        $ptr = 12;
-    case 12:
-        $tmp = kt_StringsKt__StringsJVMKt_replace$default($modName, $$continuation, $gitRepoUrl, var$5, var$16, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        var$5 = 0;
-        var$16 = 1;
-        $$continuation = null;
-        $ptr = 13;
-    case 13:
-        $tmp = culg_Github_repoNameToFolderName$default($$completion, $$this$downloadAndExtract, var$5, var$16, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $finalDestinationName = $tmp;
-        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
-        $ptr = 14;
-    case 14:
-        $tmp = cgxgtbw_WebFileHandle_child($$this$downloadAndExtract, $finalDestinationName);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $finalDestination = $tmp;
-        $tempBackup = null;
-        $$continuation = $rt_nullCheck($finalDestination);
-        $ptr = 15;
-    case 15:
-        $tmp = cgxgtbw_WebFileHandle_exists($$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $finalDestinationName)), $rt_s(13033)));
-            $ptr = 30;
-            continue main;
-        }
-        $ptr = 37;
-        continue main;
-    case 16:
-        $tmp = cgxgtbw_WebFileHandle_list($updateProgressPercent);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$sortedBy$iv = $tmp;
-        $$this$downloadAndExtract = $rt_s(989);
-        $ptr = 17;
-    case 17:
-        kji_Intrinsics_checkNotNullExpressionValue($$this$sortedBy$iv, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        if (($rt_nullCheck($$this$sortedBy$iv)).data.length ? 0 : 1) {
-            $ptr = 51;
-            continue main;
-        }
-        $ptr = 9;
-        continue main;
-    case 18:
-        $tmp = culg_GithubAPI$Repo_toString($$this$downloadAndExtract_0);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
-        $ptr = 19;
-    case 19:
-        $tmp = jl_String_hashCode($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        var$16 = 16;
-        $ptr = 20;
-    case 20:
-        $tmp = kt_CharsKt__CharJVMKt_checkRadix(var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$16 = $tmp;
-        $ptr = 21;
-    case 21:
-        $tmp = jl_Integer_toString0(var$5, var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $gitRepoUrl = $tmp;
-        $$this$downloadAndExtract = $rt_s(78);
-        $ptr = 22;
-    case 22:
-        kji_Intrinsics_checkNotNullExpressionValue($gitRepoUrl, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$completion), $gitRepoUrl));
-        $ptr = 23;
-    case 23:
-        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tempBackup = $tmp;
-        $fallbackSize = Long_asIntN(64, Long_asIntN(64, Long_asIntN(64, Long_fromInt(culg_GithubAPI$Repo_getSize($$this$downloadAndExtract_0)) * 1024n) * 4n) / 5n);
-        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
-        $ptr = 35;
-        continue main;
-    case 24:
-        $tmp = culg_GithubAPI_getUrlForBranchZip$Unciv_core($this, $gitRepoUrl, $defaultBranch);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$result = $tmp;
-        $$this$downloadAndExtract = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(991));
-        $gitRepoUrl = $rt_nullCheck($gitRepoUrl);
-        $ptr = 25;
-    case 25:
-        $tmp = jl_String_hashCode($gitRepoUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        var$16 = 16;
-        $ptr = 26;
-    case 26:
-        $tmp = kt_CharsKt__CharJVMKt_checkRadix(var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$16 = $tmp;
-        $ptr = 27;
-    case 27:
-        $tmp = jl_Integer_toString0(var$5, var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        $gitRepoUrl = $rt_s(78);
-        $ptr = 28;
-    case 28:
-        kji_Intrinsics_checkNotNullExpressionValue($$completion, $gitRepoUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$this$downloadAndExtract), $$completion));
-        $ptr = 29;
-    case 29:
-        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tempBackup = $tmp;
-        $fallbackSize = Long_asIntN(64, Long_asIntN(64, Long_asIntN(64, Long_fromInt(culg_GithubAPI$Repo_getSize($$this$downloadAndExtract_0)) * 1024n) * 4n) / 5n);
-        $$this$downloadAndExtract = $rt_nullCheck($modsFolder);
-        $ptr = 35;
-        continue main;
-    case 30:
-        $tmp = jl_StringBuilder_toString($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $ptr = 31;
-    case 31:
-        $tmp = cgxgtbw_WebFileHandle_sibling($$continuation, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tempBackup = $tmp;
-        $ptr = 32;
-    case 32:
-        kji_Intrinsics_checkNotNull($finalDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 33;
-    case 33:
-        kji_Intrinsics_checkNotNull($tempBackup);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 34;
-    case 34:
-        culg_GithubAPI_renameOrMove($this, $finalDestination, $tempBackup);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 37;
-        continue main;
-    case 35:
-        $tmp = cgxgtbw_WebFileHandle_child($$this$downloadAndExtract, $tempBackup);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unzipDestination = $tmp;
-        $$this$downloadAndExtract = $rt_nullCheck($unzipDestination);
-        $ptr = 36;
-    case 36:
-        $tmp = cgxgtbw_WebFileHandle_exists($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $ptr = 49;
-            continue main;
-        }
-        $ptr = 42;
-        continue main;
-    case 37:
-        cgxgtbw_WebFileHandle_mkdirs($$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $innerFolder = $rt_nullCheck($innerFolder);
-        $ptr = 38;
-    case 38:
-        $tmp = $innerFolder.$list0();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$sortedBy$iv = $tmp;
-        $$this$downloadAndExtract = $rt_s(989);
-        $ptr = 39;
-    case 39:
-        kji_Intrinsics_checkNotNullExpressionValue($$this$sortedBy$iv, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$sortedBy$iv = $$this$sortedBy$iv;
-        $$this$downloadAndExtract = culg_GithubAPI$downloadAndExtract$$inlined$sortedBy$1__init_0();
-        $ptr = 40;
-    case 40:
-        $tmp = kc_ArraysKt___ArraysKt_sortedWith($$this$sortedBy$iv, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
-        $ptr = 41;
-    case 41:
-        $tmp = ju_AbstractList_iterator($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $$completion = $rt_nullCheck($$this$downloadAndExtract);
-        $ptr = 50;
-        continue main;
-    case 42:
-        cul_UncivKtor_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $rt_nullCheck(cul_UncivKtor_INSTANCE);
-        $ptr = 43;
-    case 43:
-        $tmp = cul_UncivKtor_getClient($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$prepareRequest$iv = $tmp;
-        $$this$downloadAndExtract = new ikcr_HttpRequestBuilder;
-        $ptr = 44;
-    case 44:
-        ikcr_HttpRequestBuilder__init_($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 45;
-    case 45:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $rt_nullCheck(culg_GithubAPI_INSTANCE);
-        $ptr = 46;
-    case 46:
-        $tmp = culg_GithubAPI_toCodeloadUrl($$completion, $$result);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        $ptr = 47;
-    case 47:
-        ikcr_HttpRequestKt_url($$this$downloadAndExtract, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = culg_GithubAPI$downloadAndExtract$lambda$_15_0__init_();
-        $ptr = 48;
-    case 48:
-        ikcp_HttpTimeoutKt_timeout($$this$downloadAndExtract, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        if ($updateProgressPercent !== null) {
-            $$completion = culg_GithubAPI$downloadAndExtract$2$2__init_0($fallbackSize, $updateProgressPercent);
-            $ptr = 55;
-            continue main;
-        }
-        $$completion = new ikcs_HttpStatement;
-        $ptr = 52;
-        continue main;
-    case 49:
-        $tmp = cgxgtbw_WebFileHandle_isDirectory($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $ptr = 57;
-            continue main;
-        }
-        $ptr = 56;
-        continue main;
-    case 50:
-        $tmp = ju_AbstractList$1_hasNext($$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $ptr = 59;
-            continue main;
-        }
-        $ptr = 58;
-        continue main;
-    case 51:
-        cgxgtbw_WebFileHandle_deleteDirectory($updateProgressPercent);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return null;
-    case 52:
-        ikcs_HttpStatement__init_($$completion, $$this$downloadAndExtract, $$this$prepareRequest$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $gitRepoUrl = new culg_GithubAPI$downloadAndExtract$3;
-        $$this$downloadAndExtract = null;
-        $ptr = 53;
-    case 53:
-        culg_GithubAPI$downloadAndExtract$3__init_($gitRepoUrl, $modNameFromFileName, $unzipDestination, $$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $gitRepoUrl;
-        $$continuation.$L$0237 = $$this$downloadAndExtract_0;
-        $$continuation.$L$1178 = kcji_SpillingKt_nullOutSpilledVariable($updateProgressPercent);
-        $$continuation.$L$290 = $modsFolder;
-        $$continuation.$L$363 = $modNameFromFileName;
-        $$continuation.$L$438 = $defaultBranch;
-        $$continuation.$L$535 = kcji_SpillingKt_nullOutSpilledVariable($$result);
-        $$continuation.$L$626 = kcji_SpillingKt_nullOutSpilledVariable($tempBackup);
-        $$continuation.$L$711 = $unzipDestination;
-        $$continuation.$J$013 = $fallbackSize;
-        $$continuation.$label102 = 1;
-        $ptr = 54;
-    case 54:
-        $tmp = ikcs_HttpStatement_execute($$completion, $$this$downloadAndExtract, $$continuation);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        if ($$this$downloadAndExtract !== $finalDestination) {
-            $updateProgressPercent = $rt_nullCheck($unzipDestination);
-            $ptr = 8;
-            continue main;
-        }
-        return $finalDestination;
-    case 55:
-        ikcp_BodyProgressKt_onDownload($$this$downloadAndExtract, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = new ikcs_HttpStatement;
-        $ptr = 52;
-        continue main;
-    case 56:
-        cgxgtbw_WebFileHandle_delete($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 42;
-        continue main;
-    case 57:
-        cgxgtbw_WebFileHandle_deleteDirectory($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 42;
-        continue main;
-    case 58:
-        cgxgtbw_WebFileHandle_deleteDirectory($updateProgressPercent);
-        if ($rt_suspending()) {
-            break main;
-        }
-        if ($tempBackup !== null) {
-            $$this$downloadAndExtract = $rt_nullCheck($tempBackup);
-            $ptr = 65;
-            continue main;
-        }
-        $$this$downloadAndExtract = culg_Github_INSTANCE;
-        $ptr = 63;
-        continue main;
-    case 59:
-        $tmp = ju_AbstractList$1_next($$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $tmp;
-        $innerFileOrFolder = $rt_castToClass($$this$downloadAndExtract, cbgf_FileHandle);
-        $ptr = 60;
-    case 60:
-        kji_Intrinsics_checkNotNull($innerFileOrFolder);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 61;
-    case 61:
-        kji_Intrinsics_checkNotNull($finalDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 62;
-    case 62:
-        culg_GithubAPI_renameOrMove($this, $innerFileOrFolder, $finalDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 50;
-        continue main;
-    case 63:
-        kji_Intrinsics_checkNotNull($finalDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = $rt_nullCheck($$this$downloadAndExtract);
-        $ptr = 64;
-    case 64:
-        culg_Github_rewriteModOptions($$this$downloadAndExtract, $$this$downloadAndExtract_0, $finalDestination);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return $finalDestination;
-    case 65:
-        $tmp = cgxgtbw_WebFileHandle_isDirectory($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $ptr = 67;
-            continue main;
-        }
-        $ptr = 66;
-    case 66:
-        cgxgtbw_WebFileHandle_delete($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = culg_Github_INSTANCE;
-        $ptr = 63;
-        continue main;
-    case 67:
-        cgxgtbw_WebFileHandle_deleteDirectory($$this$downloadAndExtract);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$downloadAndExtract = culg_Github_INSTANCE;
-        $ptr = 63;
-        continue main;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $$this$downloadAndExtract, $updateProgressPercent, $$completion, $$continuation, var$5, $$result, $finalDestination, $unzipDestination, $defaultBranch, $modNameFromFileName, $modsFolder, $$this$downloadAndExtract_0, $gitRepoUrl, $innerFolder, $modName, var$16, $finalDestinationName, $tempBackup, $$this$sortedBy$iv, $fallbackSize, $$this$prepareRequest$iv, $innerFileOrFolder, $ptr);
-},
-culg_GithubAPI_downloadAndExtract$default = (var$1, var$2, var$3, var$4, var$5, var$6) => {
-    let $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        if (var$5 & 1)
-            var$3 = null;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 2;
-    case 2:
-        $tmp = culg_GithubAPI_downloadAndExtract(var$1, var$2, var$3, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        return var$1;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
-},
-culg_GithubAPI_renameOrMove = ($this, $$this$renameOrMove, $dest) => {
-    let $$this$renameOrMove_0, var$4, var$5, var$6, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$$this$renameOrMove_0 = $thread.pop();$dest = $thread.pop();$$this$renameOrMove = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $$this$renameOrMove_0 = $rt_nullCheck($$this$renameOrMove);
-        if ($$this$renameOrMove_0.$type() === cbg_Files$FileType_Local) {
-            $ptr = 2;
-            continue main;
-        }
-        $ptr = 1;
-    case 1:
-        $$this$renameOrMove_0.$moveTo($dest);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return;
-    case 2:
-        $tmp = $$this$renameOrMove_0.$isDirectory();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (var$4) {
-            $ptr = 3;
-            continue main;
-        }
-        $ptr = 1;
-        continue main;
-    case 3:
-        $tmp = $$this$renameOrMove_0.$file();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$renameOrMove = $tmp;
-        var$5 = $$this$renameOrMove_0.$name();
-        var$6 = $rt_nullCheck($dest);
-        $ptr = 4;
-    case 4:
-        $tmp = cgxgtbw_WebFileHandle_child(var$6, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        var$5 = $rt_nullCheck(var$5);
-        $ptr = 5;
-    case 5:
-        $tmp = cgxgtbw_WebFileHandle_file(var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        $$this$renameOrMove = $rt_nullCheck($$this$renameOrMove);
-        $ptr = 6;
-    case 6:
-        $tmp = ji_File_renameTo($$this$renameOrMove, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (!var$4) {
-            $ptr = 7;
-            continue main;
-        }
-        return;
-    case 7:
-        $tmp = $$this$renameOrMove_0.$file();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$renameOrMove = $tmp;
-        $ptr = 8;
-    case 8:
-        $tmp = cgxgtbw_WebFileHandle_file(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        $$this$renameOrMove = $rt_nullCheck($$this$renameOrMove);
-        $ptr = 9;
-    case 9:
-        $tmp = ji_File_renameTo($$this$renameOrMove, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (!var$4) {
-            $ptr = 1;
-            continue main;
-        }
-        return;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $$this$renameOrMove, $dest, $$this$renameOrMove_0, var$4, var$5, var$6, $ptr);
-},
-culg_GithubAPI_regexListOf = ($this, $pattern) => {
-    let var$2, var$3, $destination$iv$iv, var$5, $item$iv$iv, var$7, var$8, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();$item$iv$iv = $thread.pop();var$5 = $thread.pop();$destination$iv$iv = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$pattern = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$2 = new ju_ArrayList;
-        $pattern = ($rt_nullCheck($pattern)).data;
-        var$3 = $pattern.length;
-        ju_ArrayList__init_0(var$2, var$3);
-        $destination$iv$iv = var$2;
-        if (0 < var$3) {
-            var$5 = $rt_checkLowerBound(0);
-            $item$iv$iv = $pattern[var$5];
-            var$7 = new kt_Regex;
-            $ptr = 1;
-            continue main;
-        }
-        return $destination$iv$iv;
-    case 1:
-        kt_RegexOption_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = kt_RegexOption_IGNORE_CASE;
-        $ptr = 2;
-    case 2:
-        kt_Regex__init_0(var$7, $item$iv$iv, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck($destination$iv$iv);
-        $ptr = 3;
-    case 3:
-        ju_ArrayList_add(var$2, var$7);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = var$5 + 1 | 0;
-        if (var$8 < var$3) {
-            var$5 = $rt_checkLowerBound(var$8);
-            $item$iv$iv = $pattern[var$5];
-            var$7 = new kt_Regex;
-            $ptr = 1;
-            continue main;
-        }
-        return $destination$iv$iv;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $pattern, var$2, var$3, $destination$iv$iv, var$5, $item$iv$iv, var$7, var$8, $ptr);
-},
-culg_GithubAPI_isValidModFolder = ($this, $dir) => {
-    let $good, $bad, var$4, var$5, var$6, $file, var$8, $$this$any$iv, $element$iv, $it, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$it = $thread.pop();$element$iv = $thread.pop();$$this$any$iv = $thread.pop();var$8 = $thread.pop();$file = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$bad = $thread.pop();$good = $thread.pop();$dir = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $good = 0;
-        $bad = 0;
-        $dir = $rt_nullCheck($dir);
-        $ptr = 1;
-    case 1:
-        $tmp = $dir.$list0();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        $dir = $rt_s(989);
-        $ptr = 2;
-    case 2:
-        kji_Intrinsics_checkNotNullExpressionValue(var$4, $dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = ($rt_nullCheck(var$4)).data;
-        var$5 = var$4.length;
-        if (0 < var$5) {
-            var$6 = $rt_checkLowerBound(0);
-            $file = $rt_nullCheck(var$4[var$6]);
-            $ptr = 3;
-            continue main;
-        }
-        return !($good > 0 && $good > $bad) ? 0 : 1;
-    case 3:
-        $tmp = $file.$isDirectory();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = $tmp;
-        if (var$8) {
-            $ptr = 5;
-            continue main;
-        }
-        $ptr = 4;
-    case 4:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$any$iv = culg_GithubAPI_goodFiles;
-        if ($rt_isInstance($$this$any$iv, ju_Collection)) {
-            $dir = $rt_nullCheck($$this$any$iv);
-            $ptr = 7;
-            continue main;
-        }
-        $dir = $rt_nullCheck($$this$any$iv);
-        $ptr = 6;
-        continue main;
-    case 5:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$any$iv = culg_GithubAPI_goodFolders;
-        if ($rt_isInstance($$this$any$iv, ju_Collection)) {
-            $dir = $rt_nullCheck($$this$any$iv);
-            $ptr = 7;
-            continue main;
-        }
-        $dir = $rt_nullCheck($$this$any$iv);
-        $ptr = 6;
-    case 6:
-        $tmp = ju_AbstractList_iterator($dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $dir = $tmp;
-        $$this$any$iv = $rt_nullCheck($dir);
-        $ptr = 8;
-        continue main;
-    case 7:
-        $tmp = ju_AbstractCollection_isEmpty($dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = $tmp;
-        if (var$8) {
-            if (!0)
-                $bad = $bad + 1 | 0;
-            else
-                $good = $good + 1 | 0;
-            var$8 = var$6 + 1 | 0;
-            if (var$8 < var$5) {
-                var$6 = $rt_checkLowerBound(var$8);
-                $file = $rt_nullCheck(var$4[var$6]);
-                $ptr = 3;
-                continue main;
-            }
-            return !($good > 0 && $good > $bad) ? 0 : 1;
-        }
-        $dir = $rt_nullCheck($$this$any$iv);
-        $ptr = 6;
-        continue main;
-    case 8:
-        $tmp = ju_AbstractList$1_hasNext($$this$any$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = $tmp;
-        if (!var$8) {
-            if (!0)
-                $bad = $bad + 1 | 0;
-            else
-                $good = $good + 1 | 0;
-            var$8 = var$6 + 1 | 0;
-            if (var$8 < var$5) {
-                var$6 = $rt_checkLowerBound(var$8);
-                $file = $rt_nullCheck(var$4[var$6]);
-                $ptr = 3;
-                continue main;
-            }
-            return !($good > 0 && $good > $bad) ? 0 : 1;
-        }
-        $ptr = 9;
-    case 9:
-        $tmp = ju_AbstractList$1_next($$this$any$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $element$iv = $tmp;
-        $it = $rt_castToClass($element$iv, kt_Regex);
-        $dir = $file.$name();
-        $element$iv = $rt_s(990);
-        $ptr = 10;
-    case 10:
-        kji_Intrinsics_checkNotNullExpressionValue($dir, $element$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $dir = $dir;
-        $it = $rt_nullCheck($it);
-        $ptr = 11;
-    case 11:
-        $tmp = kt_Regex_matches($it, $dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$8 = $tmp;
-        if (var$8) {
-            if (!1)
-                $bad = $bad + 1 | 0;
-            else
-                $good = $good + 1 | 0;
-            var$8 = var$6 + 1 | 0;
-            if (var$8 < var$5) {
-                var$6 = $rt_checkLowerBound(var$8);
-                $file = $rt_nullCheck(var$4[var$6]);
-                $ptr = 3;
-                continue main;
-            }
-            return !($good > 0 && $good > $bad) ? 0 : 1;
-        }
-        $ptr = 8;
-        continue main;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $dir, $good, $bad, var$4, var$5, var$6, $file, var$8, $$this$any$iv, $element$iv, $it, $ptr);
-},
-culg_GithubAPI_resolveZipStructure = ($this, $dir, $defaultModName) => {
-    let var$3, var$4, $subdirs, var$6, var$7, var$8, var$9, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();$subdirs = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$defaultModName = $thread.pop();$dir = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        $tmp = culg_GithubAPI_isValidModFolder($this, $dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (!var$3) {
-            var$4 = new culg_GithubAPI$resolveZipStructure$lambda$_22_0;
-            $dir = $rt_nullCheck($dir);
-            $ptr = 2;
-            continue main;
-        }
-        return k_TuplesKt_to($dir, $defaultModName);
-    case 2:
-        $tmp = cgxgtbw_WebFileHandle_list0($dir, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $subdirs = $tmp;
-        $subdirs = ($rt_nullCheck($subdirs)).data;
-        if ($subdirs.length != 1) {
-            var$6 = new cul_UncivShowableException;
-            $dir = $rt_s(13034);
-            $defaultModName = null;
-            var$3 = 2;
-            var$4 = null;
-            $ptr = 3;
-            continue main;
-        }
-        $dir = $subdirs[$rt_checkUpperBound(0, $subdirs)];
-        var$4 = $rt_s(2314);
-        $ptr = 4;
-        continue main;
-    case 3:
-        cul_UncivShowableException__init_(var$6, $dir, $defaultModName, var$3, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw(var$6);
-    case 4:
-        kji_Intrinsics_checkNotNullExpressionValue($dir, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 5;
-    case 5:
-        $tmp = culg_GithubAPI_isValidModFolder($this, $dir);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (var$3) {
-            $dir = $subdirs[$rt_checkUpperBound(0, $subdirs)];
-            var$4 = ($rt_nullCheck($subdirs[$rt_checkUpperBound(0, $subdirs)])).$name();
-            var$6 = $rt_s(990);
-            $ptr = 6;
-            continue main;
-        }
-        var$6 = new cul_UncivShowableException;
-        $dir = $rt_s(13034);
-        $defaultModName = null;
-        var$3 = 2;
-        var$4 = null;
-        $ptr = 3;
-        continue main;
-    case 6:
-        kji_Intrinsics_checkNotNullExpressionValue(var$4, var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$7 = $defaultModName;
-        var$3 = 0;
-        var$8 = $rt_nullCheck(var$7);
-        if (var$3 >= var$8.$nativeString.length) {
-            if (1) {
-                var$9 = 0;
-                var$3 = 2;
-                var$6 = null;
-                $ptr = 10;
-                continue main;
-            }
-            var$3 = 1;
-            $ptr = 9;
-            continue main;
-        }
-        $ptr = 7;
-    case 7:
-        $tmp = jl_String_charAt(var$8, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$9 = $tmp;
-        var$6 = $rt_nullCheck(culg_GithubAPI_INSTANCE);
-        $ptr = 8;
-    case 8:
-        $tmp = culg_GithubAPI_isHex(var$6, var$9);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$9 = $tmp;
-        if (!var$9)
-            var$3 = 0;
-        else {
-            var$3 = var$3 + 1 | 0;
-            if (var$3 < var$8.$nativeString.length) {
-                $ptr = 7;
-                continue main;
-            }
-            var$3 = 1;
-        }
-        if (var$3) {
-            var$9 = 0;
-            var$3 = 2;
-            var$6 = null;
-            $ptr = 10;
-            continue main;
-        }
-        var$3 = 1;
-        $ptr = 9;
-    case 9:
-        $tmp = kt_StringsKt__StringsJVMKt_startsWith($defaultModName, var$4, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (var$3) {
-            $ptr = 11;
-            continue main;
-        }
-        return k_TuplesKt_to($dir, var$4);
-    case 10:
-        $tmp = kt_StringsKt__StringsJVMKt_endsWith$default(var$4, $defaultModName, var$9, var$3, var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (!var$3) {
-            var$3 = 1;
-            $ptr = 9;
-            continue main;
-        }
-        $ptr = 12;
-        continue main;
-    case 11:
-        $tmp = culg_GithubAPI_choosePrettierName$isMixedCase($defaultModName);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (var$3) {
-            $ptr = 14;
-            continue main;
-        }
-        return k_TuplesKt_to($dir, var$4);
-    case 12:
-        $tmp = kt_StringsKt__StringsKt_removeSuffix(var$4, var$7);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $defaultModName = $tmp;
-        var$4 = $rt_s(1823);
-        $ptr = 13;
-    case 13:
-        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        return k_TuplesKt_to($dir, var$4);
-    case 14:
-        $tmp = culg_GithubAPI_choosePrettierName$isMixedCase(var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        if (!var$3) {
-            var$4 = $rt_s(13035);
-            $ptr = 15;
-            continue main;
-        }
-        return k_TuplesKt_to($dir, var$4);
-    case 15:
-        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $defaultModName = $tmp;
-        var$4 = $rt_s(13036);
-        $ptr = 16;
-    case 16:
-        $tmp = kt_StringsKt__StringsKt_removeSuffix($defaultModName, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        return k_TuplesKt_to($dir, var$4);
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $dir, $defaultModName, var$3, var$4, $subdirs, var$6, var$7, var$8, var$9, $ptr);
-},
-culg_GithubAPI_isHex = ($this, $$this$isHex) => {
-    let $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$$this$isHex = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        return !((($$this$isHex - 48 | 0) & 65535) >= 10 && (($$this$isHex - 65 | 0) & 65503) >= 6) ? 1 : 0;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $$this$isHex, $ptr);
-},
-culg_GithubAPI_parseUrl$processMatch = ($$this_parseUrl, $matchResult) => {
-    let var$3, var$4, $$this_parseUrl_0, var$6, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();$$this_parseUrl_0 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();$matchResult = $thread.pop();$$this_parseUrl = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $rt_nullCheck($matchResult);
-        $matchResult = var$3.$groups;
-        var$4 = 1;
-        $matchResult = $rt_nullCheck($matchResult);
-        $ptr = 2;
-    case 2:
-        $tmp = kt_MatcherMatchResult$groups$1_get($matchResult, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchResult = $tmp;
-        $ptr = 3;
-    case 3:
-        kji_Intrinsics_checkNotNull($matchResult);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchResult = ($rt_nullCheck($matchResult)).$value21;
-        $$this_parseUrl_0 = $rt_nullCheck($$this_parseUrl);
-        $ptr = 4;
-    case 4:
-        culg_GithubAPI$Repo_setHtml_url($$this_parseUrl_0, $matchResult);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$6 = $$this_parseUrl_0.$owner1;
-        $$this_parseUrl = var$3.$groups;
-        var$4 = 2;
-        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
-        $ptr = 5;
-    case 5:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = $tmp;
-        $ptr = 6;
-    case 6:
-        kji_Intrinsics_checkNotNull($$this_parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $matchResult = ($rt_nullCheck($$this_parseUrl)).$value21;
-        $$this_parseUrl = $rt_nullCheck(var$6);
-        $ptr = 7;
-    case 7:
-        culg_GithubAPI$RepoOwner_setLogin($$this_parseUrl, $matchResult);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = var$3.$groups;
-        var$4 = 3;
-        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
-        $ptr = 8;
-    case 8:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = $tmp;
-        $ptr = 9;
-    case 9:
-        kji_Intrinsics_checkNotNull($$this_parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = ($rt_nullCheck($$this_parseUrl)).$value21;
-        $ptr = 10;
-    case 10:
-        culg_GithubAPI$Repo_setName($$this_parseUrl_0, $$this_parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = var$3.$groups;
-        var$4 = 4;
-        $$this_parseUrl = $rt_nullCheck($$this_parseUrl);
-        $ptr = 11;
-    case 11:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this_parseUrl, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = $tmp;
-        $ptr = 12;
-    case 12:
-        kji_Intrinsics_checkNotNull($$this_parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this_parseUrl = ($rt_nullCheck($$this_parseUrl)).$value21;
-        $ptr = 13;
-    case 13:
-        culg_GithubAPI$Repo_setDefault_branch($$this_parseUrl_0, $$this_parseUrl);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return $$this_parseUrl_0;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this_parseUrl, $matchResult, var$3, var$4, $$this_parseUrl_0, var$6, $ptr);
-},
-culg_GithubAPI_parseNameFromDisposition$removeZipExtension = $$this$parseNameFromDisposition_u24removeZipExtension => {
-    let var$2, var$3, var$4, var$5, var$6, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$$this$parseNameFromDisposition_u24removeZipExtension = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_s(13017);
-        $ptr = 2;
-    case 2:
-        $tmp = kt_StringsKt__StringsKt_removeSuffix($$this$parseNameFromDisposition_u24removeZipExtension, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $tmp;
-        var$3 = 46;
-        var$4 = 32;
-        var$5 = 0;
-        var$6 = 4;
-        $$this$parseNameFromDisposition_u24removeZipExtension = null;
-        $ptr = 3;
-    case 3:
-        $tmp = kt_StringsKt__StringsJVMKt_replace$default0(var$2, var$3, var$4, var$5, var$6, $$this$parseNameFromDisposition_u24removeZipExtension);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$parseNameFromDisposition_u24removeZipExtension = $tmp;
-        return $$this$parseNameFromDisposition_u24removeZipExtension;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this$parseNameFromDisposition_u24removeZipExtension, var$2, var$3, var$4, var$5, var$6, $ptr);
-},
-culg_GithubAPI_choosePrettierName$isMixedCase = $$this$choosePrettierName_u24isMixedCase => {
-    let var$2, $$this$choosePrettierName_u24isMixedCase_0, var$4, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$4 = $thread.pop();$$this$choosePrettierName_u24isMixedCase_0 = $thread.pop();var$2 = $thread.pop();$$this$choosePrettierName_u24isMixedCase = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 2;
-    case 2:
-        ju_Locale_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = ju_Locale_ROOT;
-        $$this$choosePrettierName_u24isMixedCase_0 = $rt_nullCheck($$this$choosePrettierName_u24isMixedCase);
-        $ptr = 3;
-    case 3:
-        $tmp = jl_String_toLowerCase($$this$choosePrettierName_u24isMixedCase_0, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $tmp;
-        $$this$choosePrettierName_u24isMixedCase = $rt_s(396);
-        $ptr = 4;
-    case 4:
-        kji_Intrinsics_checkNotNullExpressionValue(var$2, $$this$choosePrettierName_u24isMixedCase);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 5;
-    case 5:
-        $tmp = kji_Intrinsics_areEqual($$this$choosePrettierName_u24isMixedCase_0, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (!var$4) {
-            $$this$choosePrettierName_u24isMixedCase = ju_Locale_ROOT;
-            $ptr = 6;
-            continue main;
-        }
-        return 0;
-    case 6:
-        $tmp = jl_String_toUpperCase($$this$choosePrettierName_u24isMixedCase_0, $$this$choosePrettierName_u24isMixedCase);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$choosePrettierName_u24isMixedCase = $tmp;
-        var$2 = $rt_s(393);
-        $ptr = 7;
-    case 7:
-        kji_Intrinsics_checkNotNullExpressionValue($$this$choosePrettierName_u24isMixedCase, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 8;
-    case 8:
-        $tmp = kji_Intrinsics_areEqual($$this$choosePrettierName_u24isMixedCase_0, $$this$choosePrettierName_u24isMixedCase);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        return var$4 ? 0 : 1;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this$choosePrettierName_u24isMixedCase, var$2, $$this$choosePrettierName_u24isMixedCase_0, var$4, $ptr);
-},
-culg_GithubAPI_access$parseUrl = ($$this, $$receiver, $url, $$completion) => {
-    let $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$$completion = $thread.pop();$url = $thread.pop();$$receiver = $thread.pop();$$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $rt_nullCheck($$this);
-        $ptr = 2;
-    case 2:
-        $tmp = culg_GithubAPI_parseUrl($$this, $$receiver, $url, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        return $$this;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this, $$receiver, $url, $$completion, $ptr);
-},
-culg_GithubAPI_access$parseNameFromDisposition = ($$this, $disposition, $default) => {
-    let var$4, var$5, var$6, var$7, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$default = $thread.pop();$disposition = $thread.pop();$$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $rt_nullCheck($$this);
-        if ($disposition !== null) {
-            $$this = culg_GithubAPI_parseAttachmentDispositionRegex;
-            $disposition = $disposition;
-            var$4 = 0;
-            $$this = $rt_nullCheck($$this);
-            var$5 = $rt_s(205);
-            $ptr = 2;
-            continue main;
-        }
-        $ptr = 3;
-        continue main;
-    case 2:
-        kji_Intrinsics_checkNotNullParameter($disposition, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $rt_nullCheck(jur_Pattern_matcher($rt_nullCheck($$this.$nativePattern), $disposition));
-        $$this = $rt_nullCheck(var$5.$matchResult);
-        $$this.$anchoringBounds = 0;
-        $$this.$transparentBounds = 1;
-        var$6 = ($rt_nullCheck($disposition)).$nativeString.length;
-        if (var$4 <= var$6 && var$6 >= 0 && var$4 <= ($rt_nullCheck(var$5.$string3)).$length() && var$6 <= ($rt_nullCheck(var$5.$string3)).$length()) {
-            var$5.$leftBound0 = var$4;
-            var$5.$rightBound0 = var$6;
-            jur_MatchResultImpl_reset($rt_nullCheck(var$5.$matchResult), null, var$4, var$6);
-            var$5.$appendPos = 0;
-            var$5.$replacement0 = null;
-            var$7 = var$5.$leftBound0;
-            var$4 = 1;
-            $ptr = 7;
-            continue main;
-        }
-        $$this = new jl_IndexOutOfBoundsException;
-        $disposition = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($disposition);
-        jl_AbstractStringBuilder_append1($disposition, var$4);
-        $default = $rt_s(174);
-        $ptr = 4;
-        continue main;
-    case 3:
-        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($default);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        return $$this;
-    case 4:
-        $tmp = jl_StringBuilder_append0($disposition, $default);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $default = $tmp;
-        jl_AbstractStringBuilder_append1($rt_nullCheck($default), var$6);
-        $ptr = 5;
-    case 5:
-        $tmp = jl_AbstractStringBuilder_toString($disposition);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $disposition = $tmp;
-        $ptr = 6;
-    case 6:
-        jl_Throwable__init_($$this, $disposition);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($$this);
-    case 7:
-        $tmp = jur_Matcher_lookingAt(var$5, var$7, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (!var$4) {
-            $$this = null;
-            $$this = $$this;
-            if ($$this !== null) {
-                $$this = ($rt_nullCheck($$this)).$groups;
-                var$4 = 2;
-                $$this = $rt_nullCheck($$this);
-                $ptr = 10;
-                continue main;
-            }
-            $ptr = 13;
-            continue main;
-        }
-        $$this = new kt_MatcherMatchResult;
-        $ptr = 8;
-    case 8:
-        kji_Intrinsics_checkNotNull(var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 9;
-    case 9:
-        kt_MatcherMatchResult__init_($$this, var$5, $disposition);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $$this;
-        if ($$this !== null) {
-            $$this = ($rt_nullCheck($$this)).$groups;
-            var$4 = 2;
-            $$this = $rt_nullCheck($$this);
-            $ptr = 10;
-            continue main;
-        }
-        $ptr = 13;
-        continue main;
-    case 10:
-        $tmp = kt_MatcherMatchResult$groups$1_get($$this, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        $ptr = 11;
-    case 11:
-        kji_Intrinsics_checkNotNull($$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = ($rt_nullCheck($$this)).$value21;
-        $ptr = 12;
-    case 12:
-        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        return $$this;
-    case 13:
-        $tmp = culg_GithubAPI_parseNameFromDisposition$removeZipExtension($default);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        return $$this;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this, $disposition, $default, var$4, var$5, var$6, var$7, $ptr);
-},
-culg_GithubAPI_access$extractZipStream = ($$this, $stream, $unzipDestination, $$completion) => {
-    let var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $$je, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$$completion = $thread.pop();$unzipDestination = $thread.pop();$stream = $thread.pop();$$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $rt_nullCheck($$this);
-        $$this = $rt_nullCheck($$completion);
-        $ptr = 2;
-    case 2:
-        $tmp = kcji_ContinuationImpl_getContext($$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$completion = $tmp;
-        kc_Job_$callClinit();
-        $$this = kc_Job_Key;
-        $$completion = $rt_nullCheck($$completion);
-        $ptr = 3;
-    case 3:
-        $tmp = $$completion.$get6($$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this = $tmp;
-        $$completion = $rt_castToInterface($$this, kc_Job);
-        $$this = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($$this);
-        var$5 = $rt_nullCheck($unzipDestination);
-        $ptr = 4;
-    case 4:
-        $tmp = cgxgtbw_WebFileHandle_file(var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unzipDestination = $tmp;
-        $unzipDestination = $rt_nullCheck($unzipDestination);
-        $ptr = 5;
-    case 5:
-        $tmp = $unzipDestination.$getCanonicalPath();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unzipDestination = $tmp;
-        jl_AbstractStringBuilder_append($$this, $unzipDestination);
-        jl_AbstractStringBuilder_append($$this, ji_File_separator);
-        $ptr = 6;
-    case 6:
-        $tmp = jl_AbstractStringBuilder_toString($$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$6 = $tmp;
-        a: {
-            try {
-                if ($$completion !== null) {
-                    $ptr = 8;
-                    continue main;
-                }
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-            b: {
-                try {
-                    if (!0)
-                        break b;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    if ($$je instanceof juz_ZipException) {
-                        $$this = $$je;
-                        break a;
-                    } else {
-                        throw $$e;
-                    }
-                }
-                return k_Unit_INSTANCE;
-            }
-            try {
-                $stream = $rt_nullCheck($stream);
-                $ptr = 9;
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-        }
-        $stream = new cul_UncivShowableException;
-        $unzipDestination = $rt_s(13037);
-        $$this = $$this;
-        $ptr = 7;
-    case 7:
-        cul_UncivShowableException__init_0($stream, $unzipDestination, $$this);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $rt_throw($stream);
-    case 8:
-        a: {
-            try {
-                $tmp = $$completion.$isActive();
-                if ($rt_suspending()) {
-                    break main;
-                }
-                var$7 = $tmp;
-                var$7 = var$7 ? 0 : 1;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-            c: {
-                try {
-                    if (!var$7)
-                        break c;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    if ($$je instanceof juz_ZipException) {
-                        $$this = $$je;
-                        break a;
-                    } else {
-                        throw $$e;
-                    }
-                }
-                return k_Unit_INSTANCE;
-            }
-            try {
-                $stream = $rt_nullCheck($stream);
-                $ptr = 9;
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-        }
-        $stream = new cul_UncivShowableException;
-        $unzipDestination = $rt_s(13037);
-        $$this = $$this;
-        $ptr = 7;
-        continue main;
-    case 9:
-        a: {
-            d: {
-                try {
-                    b: {
-                        $tmp = juz_ZipInputStream_getNextEntry($stream);
-                        if ($rt_suspending()) {
-                            break main;
-                        }
-                        $$this = $tmp;
-                        if ($$this !== null) {
-                            if (juz_ZipEntry_isDirectory($$this)) {
-                                if ($$completion === null) {
-                                    if (0)
-                                        break b;
-                                    else
-                                        break d;
-                                }
-                                $ptr = 8;
-                                continue main;
-                            }
-                            $$this = juz_ZipEntry_getName($$this);
-                            $ptr = 10;
-                            continue main;
-                        }
-                    }
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    if ($$je instanceof juz_ZipException) {
-                        $$this = $$je;
-                        break a;
-                    } else {
-                        throw $$e;
-                    }
-                }
-                return k_Unit_INSTANCE;
-            }
-            try {
-                $stream = $rt_nullCheck($stream);
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-        }
-        $stream = new cul_UncivShowableException;
-        $unzipDestination = $rt_s(13037);
-        $$this = $$this;
-        $ptr = 7;
-        continue main;
-    case 10:
-        try {
-            $tmp = cgxgtbw_WebFileHandle_child(var$5, $$this);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $$this = $tmp;
-            $$this = $rt_nullCheck($$this);
-            $ptr = 11;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 11:
-        try {
-            $tmp = cgxgtbw_WebFileHandle_file($$this);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $$this = $tmp;
-            var$8 = $rt_nullCheck(($rt_nullCheck($$this)).$getCanonicalFile());
-            $unzipDestination = var$8.$getPath();
-            $$this = $rt_s(11198);
-            $ptr = 12;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 12:
-        try {
-            kji_Intrinsics_checkNotNullExpressionValue($unzipDestination, $$this);
-            if ($rt_suspending()) {
-                break main;
-            }
-            var$9 = 0;
-            var$7 = 2;
-            $$this = null;
-            $ptr = 13;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 13:
-        try {
-            $tmp = kt_StringsKt__StringsJVMKt_startsWith$default($unzipDestination, var$6, var$9, var$7, $$this);
-            if ($rt_suspending()) {
-                break main;
-            }
-            var$7 = $tmp;
-            if (!var$7) {
-                $$this = new juz_ZipException;
-                $stream = $rt_s(13038);
-                $ptr = 15;
-                continue main;
-            }
-            $ptr = 14;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 14:
-        try {
-            $tmp = var$8.$getParentFile();
-            if ($rt_suspending()) {
-                break main;
-            }
-            $$this = $tmp;
-            if ($$this === null) {
-                $$this = new ji_FileOutputStream;
-                $ptr = 17;
-                continue main;
-            }
-            $ptr = 16;
-            continue main;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 15:
-        try {
-            juz_ZipException__init_($$this, $stream);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $rt_throw($$this);
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 16:
-        try {
-            $tmp = $$this.$mkdirs1();
-            if ($rt_suspending()) {
-                break main;
-            }
-            var$7 = $tmp;
-            kcji_Boxing_boxBoolean(var$7);
-            $$this = new ji_FileOutputStream;
-            $ptr = 17;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 17:
-        try {
-            kji_Intrinsics_checkNotNull(var$8);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $ptr = 18;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 18:
-        try {
-            ji_FileOutputStream__init_0($$this, var$8);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $$this = $$this;
-            $unzipDestination = null;
-            try {
-                try {
-                    var$10 = $unzipDestination;
-                    var$8 = $$this;
-                    var$11 = $stream;
-                    var$8 = var$8;
-                    var$7 = 0;
-                    var$9 = 2;
-                    var$12 = null;
-                    $ptr = 19;
-                    continue main;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    if ($$je instanceof jl_Throwable) {
-                        $stream = $$je;
-                    } else {
-                        throw $$e;
-                    }
-                }
-                var$10 = $stream;
-                var$10 = $unzipDestination;
-                $rt_throw($stream);
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $stream = $$je;
-                $ptr = 20;
-                continue main;
-
-            }
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 19:
-        try {
-            try {
-                b: {
-                    c: {
-                        try {
-                            ki_ByteStreamsKt_copyTo$default(var$11, var$8, var$7, var$9, var$12);
-                            if ($rt_suspending()) {
-                                break main;
-                            }
-                            break b;
-                        } catch ($$e) {
-                            $$je = $rt_wrapException($$e);
-                            if ($$je instanceof jl_Throwable) {
-                                $stream = $$je;
-                                break c;
-                            } else {
-                                throw $$e;
-                            }
-                        }
-                    }
-                    var$10 = $stream;
-                    var$10 = $unzipDestination;
-                    $rt_throw($stream);
-                }
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $stream = $$je;
-                $ptr = 20;
-                continue main;
-
-            }
-            $ptr = 21;
-            continue main;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 20:
-        try {
-            ki_CloseableKt_closeFinally($$this, var$10);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $rt_throw($stream);
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 21:
-        try {
-            ki_CloseableKt_closeFinally($$this, $unzipDestination);
-            if ($rt_suspending()) {
-                break main;
-            }
-            $ptr = 22;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof juz_ZipException) {
-                $$this = $$je;
-                $stream = new cul_UncivShowableException;
-                $unzipDestination = $rt_s(13037);
-                $$this = $$this;
-                $ptr = 7;
-                continue main;
-            } else {
-                throw $$e;
-            }
-        }
-    case 22:
-        a: {
-            try {
-                juz_ZipInputStream_closeEntry($stream);
-                if ($rt_suspending()) {
-                    break main;
-                }
-                if ($$completion !== null) {
-                    $ptr = 8;
-                    continue main;
-                }
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-            b: {
-                try {
-                    if (!0)
-                        break b;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    if ($$je instanceof juz_ZipException) {
-                        $$this = $$je;
-                        break a;
-                    } else {
-                        throw $$e;
-                    }
-                }
-                return k_Unit_INSTANCE;
-            }
-            try {
-                $stream = $rt_nullCheck($stream);
-                $ptr = 9;
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof juz_ZipException) {
-                    $$this = $$je;
-                    break a;
-                } else {
-                    throw $$e;
-                }
-            }
-        }
-        $stream = new cul_UncivShowableException;
-        $unzipDestination = $rt_s(13037);
-        $$this = $$this;
-        $ptr = 7;
-        continue main;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($$this, $stream, $unzipDestination, $$completion, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $ptr);
-},
-culg_GithubAPI__clinit_ = () => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = new culg_GithubAPI;
-        $ptr = 1;
-    case 1:
-        culg_GithubAPI_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        culg_GithubAPI_INSTANCE = var$1;
-        $ptr = 2;
-    case 2:
-        cul_UncivKtor_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $rt_nullCheck(cul_UncivKtor_INSTANCE);
-        $ptr = 3;
-    case 3:
-        $tmp = cul_UncivKtor_getClient(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$2 = new culg_GithubAPI$_clinit_$lambda$_46_0;
-        var$1 = $rt_nullCheck(var$1);
-        var$3 = $rt_s(349);
-        $ptr = 4;
-    case 4:
-        kji_Intrinsics_checkNotNullParameter(var$2, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = var$1.$engine0;
-        var$4 = new ikc_HttpClientConfig;
-        $ptr = 5;
-    case 5:
-        ikc_HttpClientConfig__init_(var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = var$1.$userConfig;
-        $ptr = 6;
-    case 6:
-        ikc_HttpClientConfig_plusAssign(var$4, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(var$2);
-        var$2 = var$4;
-        var$5 = $rt_s(13039);
-        $ptr = 7;
-    case 7:
-        kji_Intrinsics_checkNotNullParameter(var$2, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = new culg_GithubAPI$client$lambda$0$lambda$_30_0;
-        $ptr = 8;
-    case 8:
-        ikcp_DefaultRequestKt_defaultRequest(var$2, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$6 = var$1.$manageEngine;
-        var$1 = new ikc_HttpClient;
-        $ptr = 9;
-    case 9:
-        ikc_HttpClient__init_(var$1, var$3, var$4, var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        culg_GithubAPI_client = var$1;
-        var$2 = new kt_Regex;
-        var$1 = $rt_s(13040);
-        $ptr = 10;
-    case 10:
-        kt_Regex__init_(var$2, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        culg_GithubAPI_githubArchiveUrlRegex = var$2;
-        var$1 = new kt_Regex;
-        var$2 = $rt_s(13041);
-        $ptr = 11;
-    case 11:
-        kt_Regex__init_(var$1, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        culg_GithubAPI_parseAttachmentDispositionRegex = var$1;
-        var$2 = culg_GithubAPI_INSTANCE;
-        var$7 = $rt_wrapArray(jl_String, [$rt_s(10945), $rt_s(1507), $rt_s(10839), $rt_s(1034), $rt_s(953), $rt_s(1044), $rt_s(1046), $rt_s(13042), $rt_s(13043)]);
-        var$1 = $rt_nullCheck(var$2);
-        $ptr = 12;
-    case 12:
-        $tmp = culg_GithubAPI_regexListOf(var$1, var$7);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        culg_GithubAPI_goodFolders = var$1;
-        var$1 = culg_GithubAPI_INSTANCE;
-        var$7 = $rt_wrapArray(jl_String, [$rt_s(13044), $rt_s(13045), $rt_s(7302), $rt_s(13046), $rt_s(1123), $rt_s(13047), $rt_s(13048)]);
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 13;
-    case 13:
-        $tmp = culg_GithubAPI_regexListOf(var$1, var$7);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        culg_GithubAPI_goodFiles = var$1;
-        return;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
 };
 function cuusc_CityConstructionsTable$getConstructionButtonDTOs$lambda$_14_0() {
     let a = this; jl_Object.call(a);
@@ -1842310,7 +1842344,7 @@ cuuso_CityOverviewTabColumn$CityColumn_getEntryActor = ($this, $item, $iconSize,
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1842553,7 +1842587,7 @@ cuuso_CityOverviewTabColumn$Status_getEntryActor = ($this, $item, $iconSize, $ac
         if ($rt_suspending()) {
             break main;
         }
-        $iconPath = $rt_s(12956);
+        $iconPath = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $iconPath);
@@ -1842776,7 +1842810,7 @@ cuuso_CityOverviewTabColumn$ConstructionIcon_getEntryActor = ($this, $item, $ico
         if ($rt_suspending()) {
             break main;
         }
-        $construction = $rt_s(12956);
+        $construction = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $construction);
@@ -1843048,7 +1843082,7 @@ cuuso_CityOverviewTabColumn$Construction_getEntryActor = ($this, $item, $iconSiz
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1843452,7 +1843486,7 @@ cuuso_CityOverviewTabColumn$WLTK_getEntryActor0 = ($this, $item, $iconSize, $act
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1843805,7 +1843839,7 @@ cuuso_CityOverviewTabColumn$Garrison_getEntryActor = ($this, $item, $iconSize, $
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $rt_s(12956);
+        $unit = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $unit);
@@ -1844117,7 +1844151,7 @@ cuuso_CityOverviewTabColumn$CityDefense_getEntryActor = ($this, $item, $iconSize
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1844482,7 +1844516,7 @@ cuuso_CityOverviewTabColumn$Religion_getEntryActor = ($this, $item, $iconSize, $
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1844704,7 +1844738,7 @@ cuuso_UnitOverviewTabColumn$Name_getEntryActor = ($this, $item, $iconSize, $acti
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1844912,7 +1844946,7 @@ cuuso_UnitOverviewTabColumn$EditName_getEntryActor = ($this, $item, $iconSize, $
         if ($rt_suspending()) {
             break main;
         }
-        $editIcon = $rt_s(12956);
+        $editIcon = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $editIcon);
@@ -1845479,7 +1845513,7 @@ cuuso_UnitOverviewTabColumn$ClosestCity_getEntryActor = ($this, $item, $iconSize
         if ($rt_suspending()) {
             break main;
         }
-        $closestCityTile = $rt_s(12956);
+        $closestCityTile = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $closestCityTile);
@@ -1845739,7 +1845773,7 @@ cuuso_UnitOverviewTabColumn$Promotions_getEntryActor = ($this, $item, $iconSize,
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1845760,7 +1845794,7 @@ cuuso_UnitOverviewTabColumn$Promotions_getEntryActor = ($this, $item, $iconSize,
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1846307,7 +1846341,7 @@ cuuso_UnitOverviewTabColumn$Upgrade_getEntryActor = ($this, $item, $iconSize, $a
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12956);
+        var$4 = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, var$4);
@@ -1846900,7 +1846934,7 @@ cuuso_UnitOverviewTabHelpers_getUpgradeTable = ($this, $unitView, $actionContext
         if ($rt_suspending()) {
             break main;
         }
-        $table = $rt_s(12956);
+        $table = $rt_s(12990);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($actionContext, $table);
@@ -1847322,14 +1847356,14 @@ let cuuso_GlobalPoliticsDiagramGroup$WidgetIndex__init_ = ($this, $undefeatedCiv
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$sortBy$iv = $rt_s(12998);
+        $$this$sortBy$iv = $rt_s(13032);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($undefeatedCivs, $$this$sortBy$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$sortBy$iv = $rt_s(12999);
+        $$this$sortBy$iv = $rt_s(13033);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($toggleSelection, $$this$sortBy$iv);
@@ -1850251,14 +1850285,14 @@ let cuucw_SortableGrid$IconHeaderElement__init_ = ($this, $this$0, $column, $hea
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$4 = $rt_s(12944);
+        var$4 = $rt_s(12978);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($column, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(12945);
+        var$4 = $rt_s(12979);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($headerActor, var$4);
@@ -1859886,6 +1859920,268 @@ let cuusv_VictoryScreenReplay$restartTimer$1_run = $this => {
     }}
     $rt_nativeThread().push($this, var$1, var$2, $ptr);
 };
+function cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0() {
+    let a = this; jl_Object.call(a);
+    a.$_01432 = null;
+    a.$_1510 = null;
+}
+let cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_01432;
+        var$2 = var$0.$_1510;
+        var$3 = ($rt_nullCheck(var$1)).$game;
+        var$1 = null;
+        var$4 = new cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$0$lambda$_11_0;
+        var$4.$_01640 = var$2;
+        var$5 = 1;
+        var$2 = null;
+        $ptr = 1;
+    case 1:
+        cu_UncivGame_pushScreen$default(var$3, var$1, var$4, var$5, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, $ptr);
+};
+function cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0() {
+    let a = this; jl_Object.call(a);
+    a.$_02152 = null;
+    a.$_1759 = null;
+}
+let cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_02152;
+        var$2 = $rt_nullCheck(var$0.$_1759);
+        $ptr = 1;
+    case 1:
+        $tmp = culc_City_getCiv(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_nullCheck(var$3);
+        $ptr = 2;
+    case 2:
+        $tmp = culc_Civilization_getGameInfo(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        $ptr = 3;
+    case 3:
+        $tmp = culc_City_getCiv(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        var$6 = var$2.$demandedResource;
+        var$7 = 0;
+        var$3 = null;
+        var$8 = 12;
+        var$2 = null;
+        $ptr = 4;
+    case 4:
+        $tmp = cul_GameInfo_getExploredResourcesNotification$default(var$4, var$5, var$6, var$7, var$3, var$8, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 5;
+    case 5:
+        cuuso_EmpireOverviewScreen_showOneTimeNotification$Unciv_core(var$1, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, $ptr);
+};
+function cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0() {
+    let a = this; jl_Object.call(a);
+    a.$_0449 = null;
+    a.$_1171 = null;
+}
+let cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_0449;
+        var$2 = var$0.$_1171;
+        $ptr = 1;
+    case 1:
+        cuuso_EmpireOverviewCategories_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = cuuso_EmpireOverviewCategories_Units;
+        var$4 = ($rt_nullCheck(var$2)).$id1;
+        $ptr = 2;
+    case 2:
+        $tmp = jl_String_valueOf0(var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 3;
+    case 3:
+        cuuso_EmpireOverviewScreen_select(var$1, var$3, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, $ptr);
+};
+function cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0() {
+    jl_Object.call(this);
+    this.$_0822 = null;
+}
+let cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0_invoke = var$0 => {
+    let var$1, var$2, var$3, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_0822;
+        $ptr = 1;
+    case 1:
+        cuuso_UnitOverviewTabColumn_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(cuuso_UnitOverviewTabColumn_Companion);
+        var$3 = $rt_s(1149);
+        $ptr = 2;
+    case 2:
+        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $rt_nullCheck(var$1);
+        $ptr = 3;
+    case 3:
+        $tmp = cuv_ForeignMapUnitView_getTile(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        var$1 = cuv_TileView_position($rt_nullCheck(var$1));
+        $ptr = 4;
+    case 4:
+        cuuso_UnitOverviewTabHelpers_showWorldScreenAt(var$2, var$1, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
+};
+function cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0() {
+    let a = this; jl_Object.call(a);
+    a.$_02305 = null;
+    a.$_1811 = null;
+    a.$_2308 = null;
+}
+let cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_02305;
+        var$2 = var$0.$_1811;
+        var$3 = var$0.$_2308;
+        var$4 = new cuusp_UnitRenamePopup;
+        var$5 = $rt_nullCheck(var$1);
+        var$1 = var$5.$overviewScreen;
+        var$6 = new cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$1$lambda$_5_0;
+        var$6.$_0792 = var$5;
+        var$6.$_1297 = var$3;
+        $ptr = 1;
+    case 1:
+        cuusp_UnitRenamePopup__init_(var$4, var$1, var$2, var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
+};
+function cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0() {
+    jl_Object.call(this);
+    this.$_0812 = null;
+}
+let cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0_invoke = var$0 => {
+    let var$1, var$2, var$3, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_0812;
+        $ptr = 1;
+    case 1:
+        cuuso_UnitOverviewTabColumn_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(cuuso_UnitOverviewTabColumn_Companion);
+        var$3 = $rt_s(2958);
+        $ptr = 2;
+    case 2:
+        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = cuv_TileView_position($rt_nullCheck(var$1));
+        var$1 = null;
+        $ptr = 3;
+    case 3:
+        cuuso_UnitOverviewTabHelpers_showWorldScreenAt(var$2, var$3, var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
+};
 function ksj_JsonArraySerializer$JsonArrayDescriptor() {
     jl_Object.call(this);
     this.$$$delegate_01 = null;
@@ -1860170,268 +1860466,6 @@ ksj_JsonArraySerializer$JsonArrayDescriptor__clinit_ = () => {
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push(var$1, var$2, $ptr);
-};
-function cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0() {
-    let a = this; jl_Object.call(a);
-    a.$_01432 = null;
-    a.$_1510 = null;
-}
-let cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_01432;
-        var$2 = var$0.$_1510;
-        var$3 = ($rt_nullCheck(var$1)).$game;
-        var$1 = null;
-        var$4 = new cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$0$lambda$_11_0;
-        var$4.$_01640 = var$2;
-        var$5 = 1;
-        var$2 = null;
-        $ptr = 1;
-    case 1:
-        cu_UncivGame_pushScreen$default(var$3, var$1, var$4, var$5, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, $ptr);
-};
-function cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0() {
-    let a = this; jl_Object.call(a);
-    a.$_02152 = null;
-    a.$_1759 = null;
-}
-let cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_02152;
-        var$2 = $rt_nullCheck(var$0.$_1759);
-        $ptr = 1;
-    case 1:
-        $tmp = culc_City_getCiv(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_nullCheck(var$3);
-        $ptr = 2;
-    case 2:
-        $tmp = culc_Civilization_getGameInfo(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        $ptr = 3;
-    case 3:
-        $tmp = culc_City_getCiv(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        var$6 = var$2.$demandedResource;
-        var$7 = 0;
-        var$3 = null;
-        var$8 = 12;
-        var$2 = null;
-        $ptr = 4;
-    case 4:
-        $tmp = cul_GameInfo_getExploredResourcesNotification$default(var$4, var$5, var$6, var$7, var$3, var$8, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 5;
-    case 5:
-        cuuso_EmpireOverviewScreen_showOneTimeNotification$Unciv_core(var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, $ptr);
-};
-function cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0() {
-    let a = this; jl_Object.call(a);
-    a.$_0449 = null;
-    a.$_1171 = null;
-}
-let cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_0449;
-        var$2 = var$0.$_1171;
-        $ptr = 1;
-    case 1:
-        cuuso_EmpireOverviewCategories_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = cuuso_EmpireOverviewCategories_Units;
-        var$4 = ($rt_nullCheck(var$2)).$id1;
-        $ptr = 2;
-    case 2:
-        $tmp = jl_String_valueOf0(var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $tmp;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 3;
-    case 3:
-        cuuso_EmpireOverviewScreen_select(var$1, var$3, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, $ptr);
-};
-function cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0() {
-    jl_Object.call(this);
-    this.$_0822 = null;
-}
-let cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0_invoke = var$0 => {
-    let var$1, var$2, var$3, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_0822;
-        $ptr = 1;
-    case 1:
-        cuuso_UnitOverviewTabColumn_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(cuuso_UnitOverviewTabColumn_Companion);
-        var$3 = $rt_s(1149);
-        $ptr = 2;
-    case 2:
-        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $rt_nullCheck(var$1);
-        $ptr = 3;
-    case 3:
-        $tmp = cuv_ForeignMapUnitView_getTile(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$1 = cuv_TileView_position($rt_nullCheck(var$1));
-        $ptr = 4;
-    case 4:
-        cuuso_UnitOverviewTabHelpers_showWorldScreenAt(var$2, var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
-};
-function cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0() {
-    let a = this; jl_Object.call(a);
-    a.$_02305 = null;
-    a.$_1811 = null;
-    a.$_2308 = null;
-}
-let cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_02305;
-        var$2 = var$0.$_1811;
-        var$3 = var$0.$_2308;
-        var$4 = new cuusp_UnitRenamePopup;
-        var$5 = $rt_nullCheck(var$1);
-        var$1 = var$5.$overviewScreen;
-        var$6 = new cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$1$lambda$_5_0;
-        var$6.$_0792 = var$5;
-        var$6.$_1297 = var$3;
-        $ptr = 1;
-    case 1:
-        cuusp_UnitRenamePopup__init_(var$4, var$1, var$2, var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
-};
-function cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0() {
-    jl_Object.call(this);
-    this.$_0812 = null;
-}
-let cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0_invoke = var$0 => {
-    let var$1, var$2, var$3, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_0812;
-        $ptr = 1;
-    case 1:
-        cuuso_UnitOverviewTabColumn_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(cuuso_UnitOverviewTabColumn_Companion);
-        var$3 = $rt_s(2958);
-        $ptr = 2;
-    case 2:
-        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = cuv_TileView_position($rt_nullCheck(var$1));
-        var$1 = null;
-        $ptr = 3;
-    case 3:
-        cuuso_UnitOverviewTabHelpers_showWorldScreenAt(var$2, var$3, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
 };
 function ikuijj_BlockingKt$toInputStream$1$blockingWait$1() {
     let a = this; kcji_SuspendLambda.call(a);
@@ -1860765,7 +1860799,7 @@ ksi_MapEntrySerializer$MapEntry_equals = ($this, $other) => {
 function ksji_JsonTreeListDecoder() {
     let a = this; ksji_AbstractJsonTreeDecoder.call(a);
     a.$value53 = null;
-    a.$size49 = 0;
+    a.$size50 = 0;
     a.$currentIndex9 = 0;
 }
 let ksji_JsonTreeListDecoder__init_ = ($this, $json, $value) => {
@@ -1860809,7 +1860843,7 @@ let ksji_JsonTreeListDecoder__init_ = ($this, $json, $value) => {
             break main;
         }
         var$6 = $tmp;
-        $this.$size49 = var$6;
+        $this.$size50 = var$6;
         $this.$currentIndex9 = (-1);
         return;
     default: $rt_invalidPointer();
@@ -1860895,7 +1860929,7 @@ ksji_JsonTreeListDecoder_decodeElementIndex = ($this, $descriptor) => {
             break main;
         }
         var$3 = $this.$currentIndex9;
-        if (var$3 < ($this.$size49 - 1 | 0)) {
+        if (var$3 < ($this.$size50 - 1 | 0)) {
             var$4 = var$3 + 1 | 0;
             $this.$currentIndex9 = var$4;
             return var$4;
@@ -1860912,7 +1860946,7 @@ function ksji_JsonTreeMapDecoder() {
     let a = this; ksji_JsonTreeDecoder.call(a);
     a.$value47 = null;
     a.$keys18 = null;
-    a.$size47 = 0;
+    a.$size48 = 0;
     a.$position25 = 0;
 }
 let ksji_JsonTreeMapDecoder__init_ = ($this, $json, $value) => {
@@ -1860974,7 +1861008,7 @@ let ksji_JsonTreeMapDecoder__init_ = ($this, $json, $value) => {
             break main;
         }
         var$5 = $tmp;
-        $this.$size47 = var$5 * 2 | 0;
+        $this.$size48 = var$5 * 2 | 0;
         $this.$position25 = (-1);
         return;
     default: $rt_invalidPointer();
@@ -1861036,7 +1861070,7 @@ ksji_JsonTreeMapDecoder_decodeElementIndex = ($this, $descriptor) => {
             break main;
         }
         var$3 = $this.$position25;
-        if (var$3 < ($this.$size47 - 1 | 0)) {
+        if (var$3 < ($this.$size48 - 1 | 0)) {
             var$4 = var$3 + 1 | 0;
             $this.$position25 = var$4;
             return var$4;
@@ -1865981,7 +1866015,7 @@ cuuss_SaveGameScreen$copyToClipboardHandler$1$2_invoke = ($this, $p1, $p2) => {
             case 0:
                 k_ResultKt_throwOnFailure($p2);
                 var$3 = new cuup_ToastPopup;
-                $p2 = $rt_s(12896);
+                $p2 = $rt_s(12930);
                 var$4 = $p1.$this$0273;
                 var$5 = 0n;
                 var$6 = 4;
@@ -1867939,65 +1867973,6 @@ let cuusv_VictoryScreenIllustrations$getImages$lambda$_6_3_invoke = var$0 => {
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, $ptr);
 };
-function cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0() {
-    let a = this; jl_Object.call(a);
-    a.$_0755 = null;
-    a.$_1282 = 0;
-}
-let cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_0755;
-        var$2 = var$0.$_1282;
-        var$3 = new cuusc_CityScreen;
-        var$4 = $rt_nullCheck(var$1);
-        var$1 = $rt_nullCheck(var$4.$viewableCities);
-        $ptr = 1;
-    case 1:
-        $tmp = ju_ArrayList_get(var$1, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$5 = $rt_castToClass(var$1, cuv_CityView);
-        var$6 = null;
-        var$1 = null;
-        var$7 = var$4.$cityAmbiencePlayer;
-        var$4.$cityAmbiencePlayer = null;
-        var$2 = 6;
-        var$8 = null;
-        $ptr = 2;
-    case 2:
-        cuusc_CityScreen__init_(var$3, var$5, var$6, var$1, var$7, var$2, var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = cuusc_CityScreen_access$getMapScrollPane$p(var$3);
-        var$9 = ($rt_nullCheck(cuusc_CityScreen_access$getMapScrollPane$p(var$4))).$scaleX;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 3;
-    case 3:
-        cuucw_ZoomableScrollPane_zoom(var$1, var$9);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 4;
-    case 4:
-        cuusc_CityScreen_updateAsync$Unciv_core(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return var$3;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, $ptr);
-};
 function cuuso_UnitOverviewTabHelpers$getPromotionsTable$1() {
     let a = this; kji_FunctionReferenceImpl.call(a);
     a.$$canEnable = 0;
@@ -1868133,30 +1868108,6 @@ let cuuso_UnitOverviewTabHelpers$getUpgradeTable$lambda$_6_0_invoke = var$0 => {
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, $ptr);
-},
-cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1 = $rt_classWithoutFields(),
-cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1_compare = ($this, $a, $b) => {
-    let var$3, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$3 = $thread.pop();$b = $thread.pop();$a = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        $a = ($rt_nullCheck($rt_castToClass($a, cbgf_FileHandle))).$name();
-        $b = ($rt_nullCheck($rt_castToClass($b, cbgf_FileHandle))).$name();
-        $ptr = 1;
-    case 1:
-        $tmp = kc_ComparisonsKt__ComparisonsKt_compareValues($a, $b);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        return var$3;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, $a, $b, var$3, $ptr);
 };
 function cuupo_DebugTab$lateInitialize$17$1() {
     let a = this; kcji_SuspendLambda.call(a);
@@ -1869664,7 +1869615,7 @@ let cuusm_ModManagementScreen$installedButtonAction$lambda$0$lambda$_61_1_invoke
         var$2 = var$0.$_1232;
         cuusm_ModManagementScreen_$callClinit();
         var$2 = $rt_nullCheck(var$2);
-        var$3 = var$2.$ruleset11;
+        var$3 = var$2.$ruleset10;
         var$4 = $rt_nullCheck(var$1);
         var$3 = $rt_nullCheck(var$3);
         var$1 = var$3.$folderLocation;
@@ -1870585,6 +1870536,89 @@ let cuuso_GlobalPoliticsOverviewTable$getCivMiniTable$lambda$0$lambda$_24_0_invo
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
+};
+function cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0() {
+    let a = this; jl_Object.call(a);
+    a.$_0755 = null;
+    a.$_1282 = 0;
+}
+let cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_0755;
+        var$2 = var$0.$_1282;
+        var$3 = new cuusc_CityScreen;
+        var$4 = $rt_nullCheck(var$1);
+        var$1 = $rt_nullCheck(var$4.$viewableCities);
+        $ptr = 1;
+    case 1:
+        $tmp = ju_ArrayList_get(var$1, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        var$5 = $rt_castToClass(var$1, cuv_CityView);
+        var$6 = null;
+        var$1 = null;
+        var$7 = var$4.$cityAmbiencePlayer;
+        var$4.$cityAmbiencePlayer = null;
+        var$2 = 6;
+        var$8 = null;
+        $ptr = 2;
+    case 2:
+        cuusc_CityScreen__init_(var$3, var$5, var$6, var$1, var$7, var$2, var$8);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = cuusc_CityScreen_access$getMapScrollPane$p(var$3);
+        var$9 = ($rt_nullCheck(cuusc_CityScreen_access$getMapScrollPane$p(var$4))).$scaleX;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 3;
+    case 3:
+        cuucw_ZoomableScrollPane_zoom(var$1, var$9);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 4;
+    case 4:
+        cuusc_CityScreen_updateAsync$Unciv_core(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return var$3;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, $ptr);
+},
+cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1 = $rt_classWithoutFields(),
+cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1_compare = ($this, $a, $b) => {
+    let var$3, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$3 = $thread.pop();$b = $thread.pop();$a = $thread.pop();$this = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        $a = ($rt_nullCheck($rt_castToClass($a, cbgf_FileHandle))).$name();
+        $b = ($rt_nullCheck($rt_castToClass($b, cbgf_FileHandle))).$name();
+        $ptr = 1;
+    case 1:
+        $tmp = kc_ComparisonsKt__ComparisonsKt_compareValues($a, $b);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        return var$3;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push($this, $a, $b, var$3, $ptr);
 },
 cuusd_DevConsolePopup$lambda$2$0$0$lambda$_37_0 = $rt_classWithoutFields(),
 cuusd_DevConsolePopup$lambda$2$0$0$lambda$_37_0_invoke = (var$0, var$1) => {
@@ -1875110,10 +1875144,26 @@ function culg_GithubAPI$Tree() {
     a.$tree1 = null;
     a.$truncated = 0;
 }
+let culg_GithubAPI$Tree__init_ = $this => {
+    $this.$tree1 = ju_ArrayList__init_();
+},
+culg_GithubAPI$Tree__init_0 = () => {
+    let var_0 = new culg_GithubAPI$Tree();
+    culg_GithubAPI$Tree__init_(var_0);
+    return var_0;
+};
 function culg_GithubAPI$Tree$TreeFile() {
     jl_Object.call(this);
-    this.$size50 = 0n;
+    this.$size47 = 0n;
 }
+let culg_GithubAPI$Tree$TreeFile__init_ = $this => {
+    return;
+},
+culg_GithubAPI$Tree$TreeFile__init_0 = () => {
+    let var_0 = new culg_GithubAPI$Tree$TreeFile();
+    culg_GithubAPI$Tree$TreeFile__init_(var_0);
+    return var_0;
+};
 function culmm_MapGenerator$generateSingleStep$lambda$_10_0() {
     let a = this; jl_Object.call(a);
     a.$_02248 = null;
@@ -1883127,7 +1883177,7 @@ cuuss_LoadGameScreen$copySaveToClipboard$2_invoke = ($this, $p1, $p2) => {
             case 0:
                 k_ResultKt_throwOnFailure($p2);
                 var$3 = new cuup_ToastPopup;
-                $p2 = $rt_s(12896);
+                $p2 = $rt_s(12930);
                 var$4 = $p1.$this$0278;
                 var$5 = 0n;
                 var$6 = 4;
@@ -1902641,7 +1902691,7 @@ cuusm_ModManagementScreen$downloadMod$2$1_invokeSuspend = ($this, $$result) => {
         var$4 = new cuusm_ModUIData;
         $ptr = 16;
     case 16:
-        cuusm_ModUIData__init_(var$4, $toast, var$7);
+        cuusm_ModUIData__init_0(var$4, $toast, var$7);
         if ($rt_suspending()) {
             break main;
         }
@@ -1904074,7 +1904124,7 @@ cumrv_UniqueAutoUpdater_getDeprecatedReplaceableUniques = ($this, $mod, $ruleset
         $rulesetForValidation = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($rulesetForValidation);
         jl_AbstractStringBuilder_append($rulesetForValidation, $uniqueReplacementText);
-        jl_AbstractStringBuilder_append($rulesetForValidation, $rt_s(13009));
+        jl_AbstractStringBuilder_append($rulesetForValidation, $rt_s(13043));
         jl_AbstractStringBuilder_append($rulesetForValidation, ($rt_nullCheck($conditional)).$text0);
         jl_AbstractStringBuilder_append0($rulesetForValidation, 62);
         $ptr = 23;
@@ -1909573,7 +1909623,7 @@ cuusc_CivilopediaSearchPopup$startSearch$6$1_invoke = ($this, $p1, $p2) => {
             }
             return k_Unit_INSTANCE;
         }
-        $p2 = $rt_s(12872);
+        $p2 = $rt_s(12906);
         $ptr = 5;
         continue main;
     case 4:
@@ -1909632,7 +1909682,7 @@ cuusc_CivilopediaSearchPopup$startSearch$6$1_invoke = ($this, $p1, $p2) => {
             $ptr = 9;
             continue main;
         }
-        $p1 = $rt_s(12872);
+        $p1 = $rt_s(12906);
         $ptr = 8;
     case 8:
         kji_Intrinsics_throwUninitializedPropertyAccessException($p1);
@@ -1911851,6 +1911901,317 @@ let cuuso_UnitOverviewTabHelpers$getPromotionsTable$onPromotionsTableClick$lambd
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
 };
+function cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0() {
+    jl_Object.call(this);
+    this.$_01353 = null;
+}
+let cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0_invoke = var$0 => {
+    let var$1, var$2, var$3, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = $rt_nullCheck(var$0.$_01353);
+        var$2 = $rt_nullCheck(var$1.$nextTurnButton2);
+        $ptr = 1;
+    case 1:
+        cuusws_NextTurnButton_update(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = new culcm_TurnManager;
+        var$3 = ($rt_nullCheck(($rt_nullCheck(($rt_nullCheck(var$1.$worldScreen4)).$selectedGameView)).$civView)).$civ1;
+        $ptr = 2;
+    case 2:
+        culcm_TurnManager__init_(var$2, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 3;
+    case 3:
+        culcm_TurnManager_automateTurn(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(($rt_nullCheck(var$1.$worldScreen4)).$autoPlay);
+        $ptr = 4;
+    case 4:
+        cuuswu_AutoPlay_stopAutoPlay(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(var$1.$worldScreen4);
+        $ptr = 5;
+    case 5:
+        cuusw_WorldScreen_nextTurn(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return k_Unit_INSTANCE;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
+};
+function cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0() {
+    let a = this; jl_Object.call(a);
+    a.$_02325 = null;
+    a.$_1818 = null;
+}
+let cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_02325;
+        var$2 = var$0.$_1818;
+        var$3 = $rt_nullCheck(var$1);
+        $ptr = 1;
+    case 1:
+        $tmp = culc_Civilization_isAtWar(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        var$1 = culac_AutomationCache__init_();
+        var$3 = $rt_nullCheck(var$3.$units);
+        $ptr = 2;
+    case 2:
+        $tmp = culcm_UnitManager_getCivUnits(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = new cuusws_AutoPlayMenu$autoPlayMilitary$lambda$0$lambda$_10_0;
+        $ptr = 3;
+    case 3:
+        $tmp = ks_SequencesKt___SequencesKt_filter(var$3, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = new cuusws_AutoPlayMenu$autoPlayMilitary$lambda$0$$inlined$sortedBy$1;
+        var$5.$this$0350 = var$2;
+        var$5.$$isAtWar$inlined = var$4;
+        var$5.$$cache$inlined2 = var$1;
+        var$5 = var$5;
+        $ptr = 4;
+    case 4:
+        $tmp = ks_SequencesKt___SequencesKt_sortedWith(var$3, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_nullCheck(var$3);
+        $ptr = 5;
+    case 5:
+        $tmp = ks_SequencesKt___SequencesKt$sortedWith$1_iterator(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$6 = $rt_nullCheck(var$3);
+        $ptr = 6;
+    case 6:
+        $tmp = ju_AbstractList$1_hasNext(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (!var$4) {
+            var$2 = $rt_nullCheck(var$2);
+            var$1 = $rt_nullCheck(($rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView)).$civView);
+            $ptr = 7;
+            continue main;
+        }
+        $ptr = 9;
+        continue main;
+    case 7:
+        $tmp = cuv_CivView_cities(var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 8;
+    case 8:
+        $tmp = ju_AbstractList_iterator(var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$1 = $tmp;
+        var$1 = $rt_nullCheck(var$1);
+        $ptr = 12;
+        continue main;
+    case 9:
+        $tmp = ju_AbstractList$1_next(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_castToClass(var$3, culmm_MapUnit);
+        var$5 = culau_UnitAutomation_INSTANCE;
+        var$2 = $rt_nullCheck(var$2);
+        var$7 = $rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView);
+        $ptr = 10;
+    case 10:
+        $tmp = cuv_GameView_getMapUnitView(var$7, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = $rt_nullCheck(var$5);
+        $ptr = 11;
+    case 11:
+        culau_UnitAutomation_automateUnitMoves(var$5, var$3, var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 6;
+        continue main;
+    case 12:
+        $tmp = ju_AbstractList$1_hasNext(var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (var$4) {
+            $ptr = 13;
+            continue main;
+        }
+        ($rt_nullCheck(var$2.$worldScreen4)).$shouldUpdate = 1;
+        return k_Unit_INSTANCE;
+    case 13:
+        $tmp = ju_AbstractList$1_next(var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_castToClass(var$3, cuv_CityView);
+        var$5 = $rt_nullCheck(culau_UnitAutomation_INSTANCE);
+        $ptr = 14;
+    case 14:
+        culau_UnitAutomation_tryBombardEnemy(var$5, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 12;
+        continue main;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
+};
+function cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0() {
+    let a = this; jl_Object.call(a);
+    a.$_01906 = null;
+    a.$_1680 = null;
+}
+let cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0_invoke = var$0 => {
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = var$0.$_01906;
+        var$2 = var$0.$_1680;
+        var$3 = $rt_nullCheck(var$1);
+        $ptr = 1;
+    case 1:
+        $tmp = culc_Civilization_isAtWar(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        var$1 = culac_AutomationCache__init_();
+        var$3 = $rt_nullCheck(var$3.$units);
+        $ptr = 2;
+    case 2:
+        $tmp = culcm_UnitManager_getCivUnits(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = new cuusws_AutoPlayMenu$autoPlayCivilian$lambda$0$lambda$_12_0;
+        $ptr = 3;
+    case 3:
+        $tmp = ks_SequencesKt___SequencesKt_filter(var$3, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = new cuusws_AutoPlayMenu$autoPlayCivilian$lambda$0$$inlined$sortedBy$1;
+        var$5.$this$0332 = var$2;
+        var$5.$$isAtWar$inlined1 = var$4;
+        var$5.$$cache$inlined1 = var$1;
+        var$5 = var$5;
+        $ptr = 4;
+    case 4:
+        $tmp = ks_SequencesKt___SequencesKt_sortedWith(var$3, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_nullCheck(var$3);
+        $ptr = 5;
+    case 5:
+        $tmp = ks_SequencesKt___SequencesKt$sortedWith$1_iterator(var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$6 = $rt_nullCheck(var$3);
+        $ptr = 6;
+    case 6:
+        $tmp = ju_AbstractList$1_hasNext(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        if (var$4) {
+            $ptr = 7;
+            continue main;
+        }
+        ($rt_nullCheck(($rt_nullCheck(var$2)).$worldScreen4)).$shouldUpdate = 1;
+        return k_Unit_INSTANCE;
+    case 7:
+        $tmp = ju_AbstractList$1_next(var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$3 = $rt_castToClass(var$3, culmm_MapUnit);
+        var$5 = culau_UnitAutomation_INSTANCE;
+        var$2 = $rt_nullCheck(var$2);
+        var$7 = $rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView);
+        $ptr = 8;
+    case 8:
+        $tmp = cuv_GameView_getMapUnitView(var$7, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$3 = $tmp;
+        var$5 = $rt_nullCheck(var$5);
+        $ptr = 9;
+    case 9:
+        culau_UnitAutomation_automateUnitMoves(var$5, var$3, var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 6;
+        continue main;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
+};
 function cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3() {
     let a = this; kcji_RestrictedSuspendLambda.call(a);
     a.$L$169 = null;
@@ -1912303,317 +1912664,6 @@ cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_invoke = ($this, $p1, 
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push($this, $p1, $p2, $ptr);
-};
-function cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0() {
-    jl_Object.call(this);
-    this.$_01353 = null;
-}
-let cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0_invoke = var$0 => {
-    let var$1, var$2, var$3, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = $rt_nullCheck(var$0.$_01353);
-        var$2 = $rt_nullCheck(var$1.$nextTurnButton2);
-        $ptr = 1;
-    case 1:
-        cuusws_NextTurnButton_update(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = new culcm_TurnManager;
-        var$3 = ($rt_nullCheck(($rt_nullCheck(($rt_nullCheck(var$1.$worldScreen4)).$selectedGameView)).$civView)).$civ1;
-        $ptr = 2;
-    case 2:
-        culcm_TurnManager__init_(var$2, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 3;
-    case 3:
-        culcm_TurnManager_automateTurn(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(($rt_nullCheck(var$1.$worldScreen4)).$autoPlay);
-        $ptr = 4;
-    case 4:
-        cuuswu_AutoPlay_stopAutoPlay(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(var$1.$worldScreen4);
-        $ptr = 5;
-    case 5:
-        cuusw_WorldScreen_nextTurn(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return k_Unit_INSTANCE;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
-};
-function cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0() {
-    let a = this; jl_Object.call(a);
-    a.$_02325 = null;
-    a.$_1818 = null;
-}
-let cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_02325;
-        var$2 = var$0.$_1818;
-        var$3 = $rt_nullCheck(var$1);
-        $ptr = 1;
-    case 1:
-        $tmp = culc_Civilization_isAtWar(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        var$1 = culac_AutomationCache__init_();
-        var$3 = $rt_nullCheck(var$3.$units);
-        $ptr = 2;
-    case 2:
-        $tmp = culcm_UnitManager_getCivUnits(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = new cuusws_AutoPlayMenu$autoPlayMilitary$lambda$0$lambda$_10_0;
-        $ptr = 3;
-    case 3:
-        $tmp = ks_SequencesKt___SequencesKt_filter(var$3, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = new cuusws_AutoPlayMenu$autoPlayMilitary$lambda$0$$inlined$sortedBy$1;
-        var$5.$this$0350 = var$2;
-        var$5.$$isAtWar$inlined = var$4;
-        var$5.$$cache$inlined2 = var$1;
-        var$5 = var$5;
-        $ptr = 4;
-    case 4:
-        $tmp = ks_SequencesKt___SequencesKt_sortedWith(var$3, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_nullCheck(var$3);
-        $ptr = 5;
-    case 5:
-        $tmp = ks_SequencesKt___SequencesKt$sortedWith$1_iterator(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$6 = $rt_nullCheck(var$3);
-        $ptr = 6;
-    case 6:
-        $tmp = ju_AbstractList$1_hasNext(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (!var$4) {
-            var$2 = $rt_nullCheck(var$2);
-            var$1 = $rt_nullCheck(($rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView)).$civView);
-            $ptr = 7;
-            continue main;
-        }
-        $ptr = 9;
-        continue main;
-    case 7:
-        $tmp = cuv_CivView_cities(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 8;
-    case 8:
-        $tmp = ju_AbstractList_iterator(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 12;
-        continue main;
-    case 9:
-        $tmp = ju_AbstractList$1_next(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_castToClass(var$3, culmm_MapUnit);
-        var$5 = culau_UnitAutomation_INSTANCE;
-        var$2 = $rt_nullCheck(var$2);
-        var$7 = $rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView);
-        $ptr = 10;
-    case 10:
-        $tmp = cuv_GameView_getMapUnitView(var$7, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = $rt_nullCheck(var$5);
-        $ptr = 11;
-    case 11:
-        culau_UnitAutomation_automateUnitMoves(var$5, var$3, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 6;
-        continue main;
-    case 12:
-        $tmp = ju_AbstractList$1_hasNext(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (var$4) {
-            $ptr = 13;
-            continue main;
-        }
-        ($rt_nullCheck(var$2.$worldScreen4)).$shouldUpdate = 1;
-        return k_Unit_INSTANCE;
-    case 13:
-        $tmp = ju_AbstractList$1_next(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_castToClass(var$3, cuv_CityView);
-        var$5 = $rt_nullCheck(culau_UnitAutomation_INSTANCE);
-        $ptr = 14;
-    case 14:
-        culau_UnitAutomation_tryBombardEnemy(var$5, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 12;
-        continue main;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
-};
-function cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0() {
-    let a = this; jl_Object.call(a);
-    a.$_01906 = null;
-    a.$_1680 = null;
-}
-let cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = var$0.$_01906;
-        var$2 = var$0.$_1680;
-        var$3 = $rt_nullCheck(var$1);
-        $ptr = 1;
-    case 1:
-        $tmp = culc_Civilization_isAtWar(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        var$1 = culac_AutomationCache__init_();
-        var$3 = $rt_nullCheck(var$3.$units);
-        $ptr = 2;
-    case 2:
-        $tmp = culcm_UnitManager_getCivUnits(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = new cuusws_AutoPlayMenu$autoPlayCivilian$lambda$0$lambda$_12_0;
-        $ptr = 3;
-    case 3:
-        $tmp = ks_SequencesKt___SequencesKt_filter(var$3, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = new cuusws_AutoPlayMenu$autoPlayCivilian$lambda$0$$inlined$sortedBy$1;
-        var$5.$this$0332 = var$2;
-        var$5.$$isAtWar$inlined1 = var$4;
-        var$5.$$cache$inlined1 = var$1;
-        var$5 = var$5;
-        $ptr = 4;
-    case 4:
-        $tmp = ks_SequencesKt___SequencesKt_sortedWith(var$3, var$5);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_nullCheck(var$3);
-        $ptr = 5;
-    case 5:
-        $tmp = ks_SequencesKt___SequencesKt$sortedWith$1_iterator(var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$6 = $rt_nullCheck(var$3);
-        $ptr = 6;
-    case 6:
-        $tmp = ju_AbstractList$1_hasNext(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        if (var$4) {
-            $ptr = 7;
-            continue main;
-        }
-        ($rt_nullCheck(($rt_nullCheck(var$2)).$worldScreen4)).$shouldUpdate = 1;
-        return k_Unit_INSTANCE;
-    case 7:
-        $tmp = ju_AbstractList$1_next(var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$3 = $rt_castToClass(var$3, culmm_MapUnit);
-        var$5 = culau_UnitAutomation_INSTANCE;
-        var$2 = $rt_nullCheck(var$2);
-        var$7 = $rt_nullCheck(($rt_nullCheck(var$2.$worldScreen4)).$selectedGameView);
-        $ptr = 8;
-    case 8:
-        $tmp = cuv_GameView_getMapUnitView(var$7, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$5 = $rt_nullCheck(var$5);
-        $ptr = 9;
-    case 9:
-        culau_UnitAutomation_automateUnitMoves(var$5, var$3, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 6;
-        continue main;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, $ptr);
 };
 function cuusm_MapEditorOdImporter$startExport$1() {
     let a = this; kcji_SuspendLambda.call(a);
@@ -1919125,7 +1919175,7 @@ cuusc_CivilopediaSearchPopup$addResult$1_invoke = ($this, $p1, $p2) => {
             $ptr = 8;
             continue main;
         }
-        var$4 = $rt_s(12872);
+        var$4 = $rt_s(12906);
         $ptr = 7;
         continue main;
     case 6:
@@ -1927202,7 +1927252,7 @@ culm_OdMapExport_write$default = (var$1, var$2, var$3, var$4, var$5, var$6, var$
     main: while (true) { switch ($ptr) {
     case 0:
         if (var$6 & 4)
-            var$4 = $rt_s(12991);
+            var$4 = $rt_s(13025);
         if (var$6 & 8)
             var$5 = 16;
         var$1 = $rt_nullCheck(var$1);
@@ -1928351,6 +1928401,29 @@ cuuss_LoadGameScreen$redownloadUnupdatedMods$1$1_invoke = ($this, $p1, $p2) => {
     }}
     $rt_nativeThread().push($this, $p1, $p2, var$3, var$4, var$5, var$6, var$7, $ptr);
 },
+cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0 = $rt_classWithoutFields(),
+cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0_invoke = (var$0, var$1) => {
+    let var$2, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = $rt_castToClass(var$1, cumrv_RulesetError);
+        var$2 = $rt_s(2994);
+        $ptr = 1;
+    case 1:
+        kji_Intrinsics_checkNotNullParameter(var$1, var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return ($rt_nullCheck(var$1)).$text4;
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, $ptr);
+},
 cumr_Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0 = $rt_classWithoutFields(),
 cumr_Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0__init_ = var$0 => {
     return;
@@ -1928583,29 +1928656,6 @@ let cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3$invokeSuspend$lamb
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
-},
-cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0 = $rt_classWithoutFields(),
-cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0_invoke = (var$0, var$1) => {
-    let var$2, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = $rt_castToClass(var$1, cumrv_RulesetError);
-        var$2 = $rt_s(2994);
-        $ptr = 1;
-    case 1:
-        kji_Intrinsics_checkNotNullParameter(var$1, var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return ($rt_nullCheck(var$1)).$text4;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, $ptr);
 };
 function jt_DateFormatElement$TrieNodeBuilder() {
     let a = this; jl_Object.call(a);
@@ -1930931,13 +1930981,13 @@ cbgg_PixmapIO$PNG_write = ($this, $output, $pixmap) => {
         if ($pixmap === null) {
             $pixmap = cbgu_ByteArray__init_($lineLen);
             $this.$lineOutBytes = $pixmap;
-            $lineOut = $pixmap.$items7;
+            $lineOut = $pixmap.$items8;
             $pixmap = cbgu_ByteArray__init_($lineLen);
             $this.$curLineBytes = $pixmap;
-            $curLine = $pixmap.$items7;
+            $curLine = $pixmap.$items8;
             $pixmap = cbgu_ByteArray__init_($lineLen);
             $this.$prevLineBytes = $pixmap;
-            $prevLine = $pixmap.$items7;
+            $prevLine = $pixmap.$items8;
             $this.$lastLineLen = $lineLen;
             $pixels = $rt_nullCheck(cbgg_Pixmap_getPixels($pixmap_0));
             $oldPosition = $pixels.$position3;
@@ -1935131,13 +1935181,13 @@ let kcf_FlowKt__TransformKt$onEach$$inlined$unsafeTransform$1$2$1_invokeSuspend 
 };
 function cbgu_ByteArray() {
     let a = this; jl_Object.call(a);
-    a.$items7 = null;
+    a.$items8 = null;
     a.$size46 = 0;
     a.$ordered5 = 0;
 }
 let cbgu_ByteArray__init_0 = ($this, $capacity) => {
     $this.$ordered5 = 1;
-    $this.$items7 = $rt_createByteArray($capacity);
+    $this.$items8 = $rt_createByteArray($capacity);
 },
 cbgu_ByteArray__init_ = var_0 => {
     let var_1 = new cbgu_ByteArray();
@@ -1935163,13 +1935213,13 @@ cbgu_ByteArray_ensureCapacity = ($this, $additionalCapacity) => {
             continue main;
         }
         $sizeNeeded = $this.$size46 + $additionalCapacity | 0;
-        if ($sizeNeeded > ($rt_nullCheck($this.$items7)).data.length) {
+        if ($sizeNeeded > ($rt_nullCheck($this.$items8)).data.length) {
             var$5 = $rt_createByteArray(jl_Math_max0(jl_Math_max0(8, $sizeNeeded), $rt_doubleToInt($this.$size46 * 1.75)));
             var$6 = var$5.data;
-            jl_System_fastArraycopy($this.$items7, 0, var$5, 0, jl_Math_min($this.$size46, var$6.length));
-            $this.$items7 = var$5;
+            jl_System_fastArraycopy($this.$items8, 0, var$5, 0, jl_Math_min($this.$size46, var$6.length));
+            $this.$items8 = var$5;
         }
-        return $this.$items7;
+        return $this.$items8;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$3);
         if ($rt_suspending()) {
@@ -1941101,7 +1941151,7 @@ cbgssu_Button$ButtonStyle, "Button$ButtonStyle", 24, jl_Object, [], 1, [cbgssu_B
 cbgssu_TextButton$TextButtonStyle, "TextButton$TextButtonStyle", 24, cbgssu_Button$ButtonStyle, [], 1, [cbgssu_TextButton,cbgssu_TextButton,"TextButtonStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_TextButton$TextButtonStyle__init_1), "$_init_288", $rt_wrapFunction4(cbgssu_TextButton$TextButtonStyle__init_0), "$_init_154", $rt_wrapFunction1(cbgssu_TextButton$TextButtonStyle__init_)],
 cbgssu_CheckBox$CheckBoxStyle, "CheckBox$CheckBoxStyle", 24, cbgssu_TextButton$TextButtonStyle, [], 1, [cbgssu_CheckBox,cbgssu_CheckBox,"CheckBoxStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_CheckBox$CheckBoxStyle__init_), "$_init_1408", $rt_wrapFunction4(cbgssu_CheckBox$CheckBoxStyle__init_0), "$_init_1409", $rt_wrapFunction1(cbgssu_CheckBox$CheckBoxStyle__init_1)],
 cbgssu_ImageButton$ImageButtonStyle, "ImageButton$ImageButtonStyle", 24, cbgssu_Button$ButtonStyle, [], 1, [cbgssu_ImageButton,cbgssu_ImageButton,"ImageButtonStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_ImageButton$ImageButtonStyle__init_2), "$_init_540", function(var_1, var_2, var_3, var_4, var_5, var_6) { cbgssu_ImageButton$ImageButtonStyle__init_3(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$_init_539", $rt_wrapFunction1(cbgssu_ImageButton$ImageButtonStyle__init_), "$_init_287", $rt_wrapFunction1(cbgssu_ImageButton$ImageButtonStyle__init_1)],
-cbgssu_ImageTextButton$ImageTextButtonStyle, "ImageTextButton$ImageTextButtonStyle", 24, cbgssu_TextButton$TextButtonStyle, [], 1, [cbgssu_ImageTextButton,cbgssu_ImageTextButton,"ImageTextButtonStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_ImageTextButton$ImageTextButtonStyle__init_0), "$_init_288", $rt_wrapFunction4(cbgssu_ImageTextButton$ImageTextButtonStyle__init_), "$_init_1288", $rt_wrapFunction1(cbgssu_ImageTextButton$ImageTextButtonStyle__init_2), "$_init_154", $rt_wrapFunction1(cbgssu_ImageTextButton$ImageTextButtonStyle__init_1)],
+cbgssu_ImageTextButton$ImageTextButtonStyle, "ImageTextButton$ImageTextButtonStyle", 24, cbgssu_TextButton$TextButtonStyle, [], 1, [cbgssu_ImageTextButton,cbgssu_ImageTextButton,"ImageTextButtonStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_ImageTextButton$ImageTextButtonStyle__init_0), "$_init_288", $rt_wrapFunction4(cbgssu_ImageTextButton$ImageTextButtonStyle__init_), "$_init_1291", $rt_wrapFunction1(cbgssu_ImageTextButton$ImageTextButtonStyle__init_2), "$_init_154", $rt_wrapFunction1(cbgssu_ImageTextButton$ImageTextButtonStyle__init_1)],
 cbgssu_List$ListStyle, "List$ListStyle", 24, jl_Object, [], 1, [cbgssu_List,cbgssu_List,"ListStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_List$ListStyle__init_0), "$_init_1410", $rt_wrapFunction4(cbgssu_List$ListStyle__init_1), "$_init_290", $rt_wrapFunction1(cbgssu_List$ListStyle__init_)],
 cbgssu_ProgressBar$ProgressBarStyle, "ProgressBar$ProgressBarStyle", 24, jl_Object, [], 1, [cbgssu_ProgressBar,cbgssu_ProgressBar,"ProgressBarStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_ProgressBar$ProgressBarStyle__init_1), "$_init_291", $rt_wrapFunction2(cbgssu_ProgressBar$ProgressBarStyle__init_), "$_init_292", $rt_wrapFunction1(cbgssu_ProgressBar$ProgressBarStyle__init_0)],
 cbgssu_ScrollPane$ScrollPaneStyle, "ScrollPane$ScrollPaneStyle", 24, jl_Object, [], 1, [cbgssu_ScrollPane,cbgssu_ScrollPane,"ScrollPaneStyle"], 0, ["$_init_0", $rt_wrapFunction0(cbgssu_ScrollPane$ScrollPaneStyle__init_0), "$_init_1411", function(var_1, var_2, var_3, var_4, var_5) { cbgssu_ScrollPane$ScrollPaneStyle__init_1(this, var_1, var_2, var_3, var_4, var_5); }, "$_init_289", $rt_wrapFunction1(cbgssu_ScrollPane$ScrollPaneStyle__init_)],
@@ -1947816,7 +1947866,7 @@ cuusm_ModManagementScreen$ModsScrollPane, "ModManagementScreen$ModsScrollPane", 
 cuusm_ModInfoAndActionPane, "ModInfoAndActionPane", 65, cbgssu_Table, [], 17, [0,0,0], 0, 0,
 cuusm_ModManagementOptions, 0, jl_Object, [], 17, 0, () => cuusm_ModManagementOptions_$callClinit(), 0,
 cuusm_ModManagementScreen$_init_$lambda$_0_0, "ModManagementScreen$<init>$lambda$_0_0", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$_init_$lambda$_0_0_invoke)],
-cuusm_ModUIData, "ModUIData", 65, jl_Object, [], 17, [0,0,0], 0, ["$equals", $rt_wrapFunction1(cuusm_ModUIData_equals), "$hashCode", $rt_wrapFunction0(cuusm_ModUIData_hashCode)],
+cuusm_ModUIData, "ModUIData", 65, jl_Object, [], 17, [0,0,0], 0, ["$_init_0", $rt_wrapFunction0(cuusm_ModUIData__init_1), "$equals", $rt_wrapFunction1(cuusm_ModUIData_equals), "$hashCode", $rt_wrapFunction0(cuusm_ModUIData_hashCode)],
 cuuss_SaveGameScreen$initRightSideTable$1, "SaveGameScreen$initRightSideTable$1", 78, kji_FunctionReferenceImpl, [kjf_Function0], 32784, [cuuss_SaveGameScreen,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuss_SaveGameScreen$initRightSideTable$1_invoke)],
 cuuss_SaveGameScreen$Companion, "SaveGameScreen$Companion", 78, jl_Object, [cuuss_LoadOrSaveScreen$Helpers], 17, [cuuss_SaveGameScreen,cuuss_SaveGameScreen,"Companion"], 0, 0,
 ku_UuidKt__UuidKt, 0, ku_UuidKt__UuidJVMKt, [], 0, 0, 0, 0,
@@ -1948169,8 +1948219,8 @@ cuusm_ModManagementScreen$replaceLoadingWithOptions$lambda$_6_0, 0, jl_Object, [
 cuusm_ModManagementOptions$Filter, 0, jl_Object, [], 17, 0, 0, 0,
 cuusm_ModDecoratedButton, "ModDecoratedButton", 65, cbgssu_Table, [], 17, [0,0,0], 0, ["$setColor", $rt_wrapFunction1(cuusm_ModDecoratedButton_setColor), "$getColor0", $rt_wrapFunction0(cuusm_ModDecoratedButton_getColor)],
 cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$_14_0, "ModManagementScreen$getDownloadFromUrlButton$lambda$_14_0", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$_14_0_invoke)],
-culg_GithubAPI$Repo, "GithubAPI$Repo", 99, jl_Object, [], 17, [culg_GithubAPI,culg_GithubAPI,"Repo"], () => culg_GithubAPI$Repo_$callClinit(), ["$toString", $rt_wrapFunction0(culg_GithubAPI$Repo_toString)],
-culg_GithubAPI$RepoOwner, 0, jl_Object, [], 17, 0, () => culg_GithubAPI$RepoOwner_$callClinit(), 0,
+culg_GithubAPI$Repo, "GithubAPI$Repo", 99, jl_Object, [], 17, [culg_GithubAPI,culg_GithubAPI,"Repo"], () => culg_GithubAPI$Repo_$callClinit(), ["$_init_0", $rt_wrapFunction0(culg_GithubAPI$Repo__init_), "$toString", $rt_wrapFunction0(culg_GithubAPI$Repo_toString)],
+culg_GithubAPI$RepoOwner, "GithubAPI$RepoOwner", 99, jl_Object, [], 17, [culg_GithubAPI,culg_GithubAPI,"RepoOwner"], () => culg_GithubAPI$RepoOwner_$callClinit(), ["$_init_0", $rt_wrapFunction0(culg_GithubAPI$RepoOwner__init_)],
 cuusm_ModManagementScreen$tryDownloadPage$1, "ModManagementScreen$tryDownloadPage$1", 65, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuusm_ModManagementScreen$tryDownloadPage$1_invokeSuspend), "$invoke2", $rt_wrapFunction2(cuusm_ModManagementScreen$tryDownloadPage$1_invoke)],
 culac_DeclareWarTargetAutomation, 0, jl_Object, [], 17, 0, 0, 0,
 culac_DiplomacyAutomation$offerPeaceTreaty$Unciv_core$lambda$_11_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culac_DiplomacyAutomation$offerPeaceTreaty$Unciv_core$lambda$_11_0_invoke)],
@@ -1948396,7 +1948446,7 @@ cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_4, 0, jl_Object, [kjf
 cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_5, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_5_invoke)],
 cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_6, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusmt_MapEditorEditTab$AllEditSubTabs$_clinit_$lambda$_16_6_invoke)],
 culg_GithubAPI$Repo$Companion, "GithubAPI$Repo$Companion", 99, jl_Object, [], 17, [culg_GithubAPI$Repo,culg_GithubAPI$Repo,"Companion"], 0, 0,
-culg_GithubAPI$RepoOwner$Companion, 0, jl_Object, [], 17, 0, 0, 0,
+culg_GithubAPI$RepoOwner$Companion, "GithubAPI$RepoOwner$Companion", 99, jl_Object, [], 17, [culg_GithubAPI$RepoOwner,culg_GithubAPI$RepoOwner,"Companion"], 0, 0,
 culac_BarbarianAutomation$automateCapturedCivilian$$inlined$sortedBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(culac_BarbarianAutomation$automateCapturedCivilian$$inlined$sortedBy$1_compare)],
 culcd_DiplomacyManager$activateDenounceEffects$1, "DiplomacyManager$activateDenounceEffects$1", 106, kji_FunctionReferenceImpl, [kjf_Function0], 32784, [culcd_DiplomacyManager,0,0], 0, ["$invoke", $rt_wrapFunction0(culcd_DiplomacyManager$activateDenounceEffects$1_invoke)],
 culcd_DiplomacyManager$activateDenounceEffects$2, "DiplomacyManager$activateDenounceEffects$2", 106, kji_FunctionReferenceImpl, [kjf_Function0], 32784, [culcd_DiplomacyManager,0,0], 0, ["$invoke", $rt_wrapFunction0(culcd_DiplomacyManager$activateDenounceEffects$2_invoke)],
@@ -1948503,6 +1948553,7 @@ culac_ReligionAutomation$WhenMappings, 0, jl_Object, [], 32785, 0, () => culac_R
 cuuo_BuildingDescriptions$missingCityText$lambda$_5_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuo_BuildingDescriptions$missingCityText$lambda$_5_0_invoke)],
 ksj_JsonObjectSerializer, 0, jl_Object, [ks_KSerializer], 17, 0, () => ksj_JsonObjectSerializer_$callClinit(), ["$getDescriptor", $rt_wrapFunction0(ksj_JsonObjectSerializer_getDescriptor), "$serialize", $rt_wrapFunction2(ksj_JsonObjectSerializer_serialize)]]);
 $rt_metadata([ksj_JsonElementSerializer, 0, jl_Object, [ks_KSerializer], 17, 0, () => ksj_JsonElementSerializer_$callClinit(), ["$getDescriptor", $rt_wrapFunction0(ksj_JsonElementSerializer_getDescriptor), "$serialize", $rt_wrapFunction2(ksj_JsonElementSerializer_serialize), "$deserialize0", $rt_wrapFunction1(ksj_JsonElementSerializer_deserialize)],
+culg_GithubAPI, 0, jl_Object, [], 17, 0, () => culg_GithubAPI_$callClinit(), 0,
 jnfs_FileSystemProvider, 0, jl_Object, [], 1025, 0, 0, 0,
 jnfi_DefaultFileSystemProvider, 0, jnfs_FileSystemProvider, [], 1, 0, 0, 0,
 ju_UnmodifiableEntrySet$1, 0, jl_Object, [ju_Iterator], 0, 0, 0, ["$hasNext", $rt_wrapFunction0(ju_UnmodifiableEntrySet$1_hasNext), "$next", $rt_wrapFunction0(ju_UnmodifiableEntrySet$1_next)],
@@ -1948551,9 +1948602,9 @@ cuupo_GameplayTab$lateInitialize$4, 0, kji_MutablePropertyReference0Impl, [], 32
 cuupo_GameplayTab$lateInitialize$5, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$5_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$5_set)],
 cuupo_GameplayTab$lateInitialize$6, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$6_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$6_set)],
 cuupo_GameplayTab$lateInitialize$7, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$7_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$7_set)],
-cuupo_GameplayTab$lateInitialize$8, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$8_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$8_set)],
-cuupo_GameplayTab$lateInitialize$9, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$9_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$9_set)]]);
-$rt_metadata([cuupo_GameplayTab$lateInitialize$lambda$_1_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_GameplayTab$lateInitialize$lambda$_1_0_invoke)],
+cuupo_GameplayTab$lateInitialize$8, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$8_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$8_set)]]);
+$rt_metadata([cuupo_GameplayTab$lateInitialize$9, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_GameplayTab$lateInitialize$9_get), "$set17", $rt_wrapFunction1(cuupo_GameplayTab$lateInitialize$9_set)],
+cuupo_GameplayTab$lateInitialize$lambda$_1_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_GameplayTab$lateInitialize$lambda$_1_0_invoke)],
 cuupo_AutomationTab$lateInitialize$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AutomationTab$lateInitialize$1_get), "$set17", $rt_wrapFunction1(cuupo_AutomationTab$lateInitialize$1_set)],
 cuupo_AutomationTab$lateInitialize$lambda$_5_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AutomationTab$lateInitialize$lambda$_5_0_invoke)],
 cuupo_AutomationTab$lateInitialize$3, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AutomationTab$lateInitialize$3_get), "$set17", $rt_wrapFunction1(cuupo_AutomationTab$lateInitialize$3_set)],
@@ -1948601,9 +1948652,9 @@ cuupo_DebugTab$lateInitialize$4, 0, kji_MutablePropertyReference0Impl, [], 32784
 cuupo_DebugTab$lateInitialize$5, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$5_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$5_set)],
 cuupo_DebugTab$lateInitialize$6, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$6_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$6_set)],
 cuupo_DebugTab$lateInitialize$8, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$8_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$8_set)],
-cuupo_DebugTab$lateInitialize$9, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$9_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$9_set)],
-cuupo_DebugTab$lateInitialize$10, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$10_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$10_set)]]);
-$rt_metadata([cuupo_DebugTab$lateInitialize$lambda$_1_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_DebugTab$lateInitialize$lambda$_1_0_invoke)],
+cuupo_DebugTab$lateInitialize$9, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$9_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$9_set)]]);
+$rt_metadata([cuupo_DebugTab$lateInitialize$10, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$10_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$10_set)],
+cuupo_DebugTab$lateInitialize$lambda$_1_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_DebugTab$lateInitialize$lambda$_1_0_invoke)],
 cuupo_DebugTab$lateInitialize$12, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$12_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$12_set)],
 cuupo_DebugTab$lateInitialize$lambda$_1_1, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_DebugTab$lateInitialize$lambda$_1_1_invoke)],
 cuupo_DebugTab$lateInitialize$7, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DebugTab$lateInitialize$7_get), "$set17", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$7_set)],
@@ -1948653,9 +1948704,9 @@ $rt_wrapFunction0(ksj_JsonObjectSerializer$JsonObjectDescriptor_isInline), "$get
 ksj_JsonElementSerializer$_clinit_$lambda$_12_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(ksj_JsonElementSerializer$_clinit_$lambda$_12_0_invoke)],
 cuuss_LoadGameScreen$onLoadGame$1, "LoadGameScreen$onLoadGame$1", 78, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuuss_LoadGameScreen$onLoadGame$1_invokeSuspend), "$invoke2", $rt_wrapFunction2(cuuss_LoadGameScreen$onLoadGame$1_invoke)],
 cuusv_VictoryScreenOurVictory, "VictoryScreenOurVictory", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenOurVictory_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenOurVictory_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenOurVictory_getFixedContent)],
-cuusv_VictoryScreenGlobalVictory, "VictoryScreenGlobalVictory", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenGlobalVictory_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenGlobalVictory_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenGlobalVictory_getFixedContent)],
-cuusv_VictoryScreenDemographics, "VictoryScreenDemographics", 87, cbgssu_Table, [], 17, [0,0,0], 0, 0]);
-$rt_metadata([cuusv_VictoryScreenCivRankings, "VictoryScreenCivRankings", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenCivRankings_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenCivRankings_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenCivRankings_getFixedContent)],
+cuusv_VictoryScreenGlobalVictory, "VictoryScreenGlobalVictory", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenGlobalVictory_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenGlobalVictory_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenGlobalVictory_getFixedContent)]]);
+$rt_metadata([cuusv_VictoryScreenDemographics, "VictoryScreenDemographics", 87, cbgssu_Table, [], 17, [0,0,0], 0, 0,
+cuusv_VictoryScreenCivRankings, "VictoryScreenCivRankings", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenCivRankings_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenCivRankings_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenCivRankings_getFixedContent)],
 cuusv_VictoryScreenCharts, "VictoryScreenCharts", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenCharts_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenCharts_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenCharts_getFixedContent)],
 cuusv_VictoryScreenReplay, "VictoryScreenReplay", 87, cbgssu_Table, [cuucw_TabbedPager$IPageExtensions], 17, [0,0,0], 0, ["$activated", $rt_wrapFunction3(cuusv_VictoryScreenReplay_activated), "$deactivated", $rt_wrapFunction3(cuusv_VictoryScreenReplay_deactivated), "$getFixedContent", $rt_wrapFunction0(cuusv_VictoryScreenReplay_getFixedContent)],
 cuupo_DisplayTab$addScreenSizeSelectBox$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_DisplayTab$addScreenSizeSelectBox$1_get), "$set17", $rt_wrapFunction1(cuupo_DisplayTab$addScreenSizeSelectBox$1_set)],
@@ -1948703,9 +1948754,9 @@ cuupo_AdvancedTab$addCutoutCheckbox$lambda$_2_0, 0, jl_Object, [kjf_Function1], 
 cuupo_AdvancedTab$addFontFamilySelect$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addFontFamilySelect$1_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addFontFamilySelect$1_set)],
 cuupo_AdvancedTab$addFontFamilySelect$2, 0, kji_AdaptedFunctionReference, [kjf_Function1, kcji_SuspendFunction], 32784, 0, () => cuupo_AdvancedTab$addFontFamilySelect$2_$callClinit(), ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addFontFamilySelect$2_invoke)],
 cuupo_AdvancedTab$addFontFamilySelect$lambda$_7_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addFontFamilySelect$lambda$_7_0_invoke)],
-cuupo_AdvancedTab$addFontSizeMultiplier$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addFontSizeMultiplier$1_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addFontSizeMultiplier$1_set)],
-cuupo_AdvancedTab$addFontSizeMultiplier$lambda$_8_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addFontSizeMultiplier$lambda$_8_0_invoke)]]);
-$rt_metadata([cuupo_AdvancedTab$addGestureControls$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addGestureControls$1_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addGestureControls$1_set)],
+cuupo_AdvancedTab$addFontSizeMultiplier$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addFontSizeMultiplier$1_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addFontSizeMultiplier$1_set)]]);
+$rt_metadata([cuupo_AdvancedTab$addFontSizeMultiplier$lambda$_8_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addFontSizeMultiplier$lambda$_8_0_invoke)],
+cuupo_AdvancedTab$addGestureControls$1, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addGestureControls$1_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addGestureControls$1_set)],
 cuupo_AdvancedTab$addGestureControls$lambda$_9_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addGestureControls$lambda$_9_0_invoke)],
 cuupo_AdvancedTab$addGestureControls$3, 0, kji_MutablePropertyReference0Impl, [], 32784, 0, 0, ["$get22", $rt_wrapFunction0(cuupo_AdvancedTab$addGestureControls$3_get), "$set17", $rt_wrapFunction1(cuupo_AdvancedTab$addGestureControls$3_set)],
 cuupo_AdvancedTab$addGestureControls$lambda$_9_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_AdvancedTab$addGestureControls$lambda$_9_1_invoke)],
@@ -1948753,9 +1948804,9 @@ cuuo_BaseUnitDescriptions$getBaseUnitCivilopediaTextLines$1$seeAlso$1, 0, kji_Fu
 cuusm_MapEditorFilesScroll$getModMaps$1, "MapEditorFilesScroll$getModMaps$1", 82, kcji_RestrictedSuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuusm_MapEditorFilesScroll$getModMaps$1_invokeSuspend), "$create0", $rt_wrapFunction2(cuusm_MapEditorFilesScroll$getModMaps$1_create), "$invoke2", $rt_wrapFunction2(cuusm_MapEditorFilesScroll$getModMaps$1_invoke)],
 cuusmt_MapEditorModsTab$updateControlsFrom$lambda$_5_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusmt_MapEditorModsTab$updateControlsFrom$lambda$_5_0_invoke)],
 cuusmt_MapEditorViewTab$update$lambda$9$lambda$_16_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusmt_MapEditorViewTab$update$lambda$9$lambda$_16_0_invoke)],
-cuusmt_MapEditorViewTab$update$lambda$11$lambda$_19_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusmt_MapEditorViewTab$update$lambda$11$lambda$_19_0_invoke)],
-cuusc_CityConstructionsTable$getQueueEntry$lambda$1$lambda$_45_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityConstructionsTable$getQueueEntry$lambda$1$lambda$_45_0_invoke)]]);
-$rt_metadata([cuusp_PromotionPickerScreen, "PromotionPickerScreen", 84, cuusp_PickerScreen, [cuusb_RecreateOnResize], 17, [0,0,0], 0, ["$getCivilopediaRuleset", $rt_wrapFunction0(cuusp_PromotionPickerScreen_getCivilopediaRuleset), "$recreate", $rt_wrapFunction0(cuusp_PromotionPickerScreen_recreate0)],
+cuusmt_MapEditorViewTab$update$lambda$11$lambda$_19_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusmt_MapEditorViewTab$update$lambda$11$lambda$_19_0_invoke)]]);
+$rt_metadata([cuusc_CityConstructionsTable$getQueueEntry$lambda$1$lambda$_45_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityConstructionsTable$getQueueEntry$lambda$1$lambda$_45_0_invoke)],
+cuusp_PromotionPickerScreen, "PromotionPickerScreen", 84, cuusp_PickerScreen, [cuusb_RecreateOnResize], 17, [0,0,0], 0, ["$getCivilopediaRuleset", $rt_wrapFunction0(cuusp_PromotionPickerScreen_getCivilopediaRuleset), "$recreate", $rt_wrapFunction0(cuusp_PromotionPickerScreen_recreate0)],
 culac_NextTurnAutomation$automateUnits$lambda$3$lambda$_46_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culac_NextTurnAutomation$automateUnits$lambda$3$lambda$_46_0_invoke)],
 ksji_StringOpsKt, 0, jl_Object, [], 17, 0, () => ksji_StringOpsKt_$callClinit(), 0,
 cuucw_TabbedPager$askForPassword$PassPopup$_init_$lambda$_0_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuucw_TabbedPager$askForPassword$PassPopup$_init_$lambda$_0_0_invoke)],
@@ -1948778,7 +1948829,7 @@ cuup_AuthPopup, "AuthPopup", 91, cuup_Popup, [], 17, [0,0,0], 0, 0,
 cuusw_WorldScreen$nextTurn$1$2$1, 0, kji_AdaptedFunctionReference, [kjf_Function1], 32784, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusw_WorldScreen$nextTurn$1$2$1_invoke)],
 cuusm_MultiplayerHelpers$loadMultiplayerGame$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusm_MultiplayerHelpers$loadMultiplayerGame$1$1_invoke)],
 cuusm_ModManagementScreen$tryDownloadPage$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusm_ModManagementScreen$tryDownloadPage$1$1_invoke)],
-culg_GithubAPI$RepoSearch, "GithubAPI$RepoSearch", 99, jl_Object, [], 17, [0,culg_GithubAPI,0], 0, 0,
+culg_GithubAPI$RepoSearch, "GithubAPI$RepoSearch", 99, jl_Object, [], 17, [culg_GithubAPI,culg_GithubAPI,"RepoSearch"], 0, ["$_init_0", $rt_wrapFunction0(culg_GithubAPI$RepoSearch__init_)],
 cuusc_CityConstructionsTable$updateAvailableConstructions$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusc_CityConstructionsTable$updateAvailableConstructions$1$1_invoke)],
 cuusw_WorldScreenKt$startNewScreenJob$1$newWorldScreen$1$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusw_WorldScreenKt$startNewScreenJob$1$newWorldScreen$1$invokeSuspend$lambda$_1_0_invoke)],
 cuusw_WorldScreenKt$startNewScreenJob$1$newWorldScreen$3$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusw_WorldScreenKt$startNewScreenJob$1$newWorldScreen$3$invokeSuspend$lambda$_1_0_invoke)],
@@ -1948803,9 +1948854,9 @@ cuusv_VictoryScreenCivGroup, "VictoryScreenCivGroup", 87, cbgssu_Table, [], 17, 
 cuusv_LineChart, "LineChart", 87, cbgssu_WidgetGroup, [], 17, [0,0,0], 0, ["$getMinWidth", $rt_wrapFunction0(cuusv_LineChart_getMinWidth), "$getMinHeight", $rt_wrapFunction0(cuusv_LineChart_getMinHeight), "$getPrefWidth", $rt_wrapFunction0(cuusv_LineChart_getPrefWidth), "$getPrefHeight", $rt_wrapFunction0(cuusv_LineChart_getPrefHeight), "$validate", $rt_wrapFunction0(cuusv_LineChart_validate)],
 cuuci_OnClickListener, "OnClickListener", 55, cbgssu_ClickListener, [], 17, [0,0,0], 0, ["$clicked", $rt_wrapFunction3(cuuci_OnClickListener_clicked)],
 cuusv_VictoryScreenCharts$_init_$lambda$_0_0, 0, jl_Object, [kjf_Function3], 1, 0, 0, 0,
-cuusv_VictoryScreenCharts$_init_$lambda$_0_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusv_VictoryScreenCharts$_init_$lambda$_0_1_invoke)],
-cuusv_VictoryScreenReplay$1, 0, kji_FunctionReferenceImpl, [kjf_Function1], 32784, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusv_VictoryScreenReplay$1_invoke)]]);
-$rt_metadata([cuusv_ReplayMap, "ReplayMap", 87, cuusv_IndependentMiniMap, [], 17, [0,0,0], 0, ["$calcTileSize", $rt_wrapFunction2(cuusv_ReplayMap_calcTileSize), "$includeTileFilter", $rt_wrapFunction1(cuusv_ReplayMap_includeTileFilter)],
+cuusv_VictoryScreenCharts$_init_$lambda$_0_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusv_VictoryScreenCharts$_init_$lambda$_0_1_invoke)]]);
+$rt_metadata([cuusv_VictoryScreenReplay$1, 0, kji_FunctionReferenceImpl, [kjf_Function1], 32784, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusv_VictoryScreenReplay$1_invoke)],
+cuusv_ReplayMap, "ReplayMap", 87, cuusv_IndependentMiniMap, [], 17, [0,0,0], 0, ["$calcTileSize", $rt_wrapFunction2(cuusv_ReplayMap_calcTileSize), "$includeTileFilter", $rt_wrapFunction1(cuusv_ReplayMap_includeTileFilter)],
 cuusv_VictoryScreenReplay$2$1, "VictoryScreenReplay$2$1", 87, kji_FunctionReferenceImpl, [kjf_Function0], 32784, [cuusv_VictoryScreenReplay,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusv_VictoryScreenReplay$2$1_invoke)],
 cuusv_VictoryScreenReplay$_init_$lambda$_0_0, "VictoryScreenReplay$<init>$lambda$_0_0", 87, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusv_VictoryScreenReplay$_init_$lambda$_0_0_invoke)],
 culmma_UnitActionsFromUniques$getImprovementConstructionActionsFromGeneralUnique$1$invokeSuspend$lambda$_1_0, "UnitActionsFromUniques$getImprovementConstructionActionsFromGeneralUnique$1$invokeSuspend$lambda$_1_0", 120, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(culmma_UnitActionsFromUniques$getImprovementConstructionActionsFromGeneralUnique$1$invokeSuspend$lambda$_1_0_invoke)],
@@ -1948853,9 +1948904,9 @@ cuusm_MapEditorOdImporter, "MapEditorOdImporter", 82, jl_Object, [kc_DisposableH
 culf_FileChooser, "FileChooser", 112, cuup_Popup, [], 1, [0,0,0], 0, ["$getMaxHeight", $rt_wrapFunction0(culf_FileChooser_getMaxHeight)],
 cuusmt_MapEditorOptionsTab$_init_$lambda$9$lambda$_18_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusmt_MapEditorOptionsTab$_init_$lambda$9$lambda$_18_0_invoke)],
 culf_FileChooser$Companion, "FileChooser$Companion", 112, jl_Object, [], 17, [culf_FileChooser,culf_FileChooser,"Companion"], 0, 0,
-cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0, "ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0_invoke)],
-cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1, "ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1_invoke)]]);
-$rt_metadata([cuusc_CityScreenCityPickerTable$update$lambda$3$lambda$_5_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityScreenCityPickerTable$update$lambda$3$lambda$_5_0_invoke)],
+cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0, "ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_0_invoke)]]);
+$rt_metadata([cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1, "ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1", 65, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusm_ModManagementScreen$getDownloadFromUrlButton$lambda$0$lambda$_46_1_invoke)],
+cuusc_CityScreenCityPickerTable$update$lambda$3$lambda$_5_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityScreenCityPickerTable$update$lambda$3$lambda$_5_0_invoke)],
 cuusp_PolicyPickerScreen$getTopButton$lambda$2$lambda$_17_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusp_PolicyPickerScreen$getTopButton$lambda$2$lambda$_17_0_invoke)],
 cuusd_MajorCivDiplomacyTable$getDenounceButton$lambda$0$lambda$_13_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusd_MajorCivDiplomacyTable$getDenounceButton$lambda$0$lambda$_13_0_invoke)],
 cuusd_DiplomacyScreen$getDeclareWarButton$lambda$0$lambda$_29_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusd_DiplomacyScreen$getDeclareWarButton$lambda$0$lambda$_29_0_invoke)],
@@ -1948904,9 +1948955,9 @@ cuusd_ConsoleCivCommands$subcommands$lambda$8$lambda$_16_1, 0, jl_Object, [kjf_F
 cuusd_ConsoleCivCommands$subcommands$10$1, 0, kji_FunctionReferenceImpl, [kjf_Function0], 32784, 0, 0, ["$invoke", $rt_wrapFunction0(cuusd_ConsoleCivCommands$subcommands$10$1_invoke)],
 cuusd_ConsoleCivCommands$subcommands$lambda$10$$inlined$find$1, 0, jl_Object, [kjf_Function1], 17, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusd_ConsoleCivCommands$subcommands$lambda$10$$inlined$find$1_invoke)],
 cuusd_ConsoleCivCommands$subcommands$lambda$11$$inlined$find$1, 0, jl_Object, [kjf_Function1], 17, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusd_ConsoleCivCommands$subcommands$lambda$11$$inlined$find$1_invoke)],
-cuusd_ConsoleGameCommands$subcommands$lambda$3$lambda$_10_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusd_ConsoleGameCommands$subcommands$lambda$3$lambda$_10_0_invoke)],
-ikcc_ObservableContent, "ObservableContent", 200, ikhc_OutgoingContent$ReadChannelContent, [], 17, [0,0,0], 0, ["$getContentType", $rt_wrapFunction0(ikcc_ObservableContent_getContentType), "$getContentLength", $rt_wrapFunction0(ikcc_ObservableContent_getContentLength), "$getHeaders", $rt_wrapFunction0(ikcc_ObservableContent_getHeaders), "$readFrom", $rt_wrapFunction0(ikcc_ObservableContent_readFrom)]]);
-$rt_metadata([ikcp_HttpRetryEventData, 0, jl_Object, [], 17, 0, 0, 0,
+cuusd_ConsoleGameCommands$subcommands$lambda$3$lambda$_10_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusd_ConsoleGameCommands$subcommands$lambda$3$lambda$_10_0_invoke)]]);
+$rt_metadata([ikcc_ObservableContent, "ObservableContent", 200, ikhc_OutgoingContent$ReadChannelContent, [], 17, [0,0,0], 0, ["$getContentType", $rt_wrapFunction0(ikcc_ObservableContent_getContentType), "$getContentLength", $rt_wrapFunction0(ikcc_ObservableContent_getContentLength), "$getHeaders", $rt_wrapFunction0(ikcc_ObservableContent_getHeaders), "$readFrom", $rt_wrapFunction0(ikcc_ObservableContent_readFrom)],
+ikcp_HttpRetryEventData, 0, jl_Object, [], 17, 0, 0, 0,
 ikcp_HttpCallValidatorKt$HttpCallValidator$2$1$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(ikcp_HttpCallValidatorKt$HttpCallValidator$2$1$invokeSuspend$lambda$_1_0_invoke)],
 cuusn_GameOptionsTable$addRandomPlayersCheckbox$lambda$0$lambda$_70_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusn_GameOptionsTable$addRandomPlayersCheckbox$lambda$0$lambda$_70_0_invoke)],
 cuucw_SortableGrid, "SortableGrid", 61, cbgssu_Table, [], 17, [0,0,0], 0, 0,
@@ -1948958,9 +1949009,9 @@ cuusc_SpecialistAllocationTable$update$lambda$_1_1, "SpecialistAllocationTable$u
 culm_Multiplayer$downloadGame$1, "Multiplayer$downloadGame$1", 122, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culm_Multiplayer$downloadGame$1_invokeSuspend)],
 cuusc_CivilopediaSearchPopup$ModSelectBox, "CivilopediaSearchPopup$ModSelectBox", 88, cbgssu_SelectBox, [], 16, [cuusc_CivilopediaSearchPopup,cuusc_CivilopediaSearchPopup,"ModSelectBox"], 0, 0,
 cuusc_CivilopediaSearchPopup$_init_$lambda$_0_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_0_invoke)],
-cuusc_CivilopediaSearchPopup$_init_$lambda$_0_1, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_1_invoke)],
-cuusc_CivilopediaSearchPopup$_init_$lambda$_0_2, "CivilopediaSearchPopup$<init>$lambda$_0_2", 88, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_2_invoke)]]);
-$rt_metadata([cuusc_CivilopediaSearchPopup$_init_$lambda$_0_3, "CivilopediaSearchPopup$<init>$lambda$_0_3", 88, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_3_invoke)],
+cuusc_CivilopediaSearchPopup$_init_$lambda$_0_1, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_1_invoke)]]);
+$rt_metadata([cuusc_CivilopediaSearchPopup$_init_$lambda$_0_2, "CivilopediaSearchPopup$<init>$lambda$_0_2", 88, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_2_invoke)],
+cuusc_CivilopediaSearchPopup$_init_$lambda$_0_3, "CivilopediaSearchPopup$<init>$lambda$_0_3", 88, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusc_CivilopediaSearchPopup$_init_$lambda$_0_3_invoke)],
 cuusv_VictoryScreenGlobalVictory$getColumn$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusv_VictoryScreenGlobalVictory$getColumn$lambda$_1_0_invoke)],
 cuusv_VictoryScreenGlobalVictory$getColumn$lambda$0$$inlined$compareBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, 0,
 cuusv_VictoryScreenGlobalVictory$getColumn$lambda$0$$inlined$thenBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuusv_VictoryScreenGlobalVictory$getColumn$lambda$0$$inlined$thenBy$1_compare)],
@@ -1949008,9 +1949059,9 @@ cuusm_MapEditorOdImporter$_init_$lambda$_0_0, 0, jl_Object, [kjf_Function0], 1, 
 cuusm_MapEditorOdImporter$onImportButtonClicked$1, 0, kji_FunctionReferenceImpl, [kjf_Function0], 32784, 0, 0, ["$invoke", $rt_wrapFunction0(cuusm_MapEditorOdImporter$onImportButtonClicked$1_invoke)],
 cuusm_MapEditorOdImporter$onExportButtonClicked$lambda$_4_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusm_MapEditorOdImporter$onExportButtonClicked$lambda$_4_0_invoke)],
 ji_FileFilter, "FileFilter", 139, jl_Object, [], 1537, [0,0,0], 0, 0,
-culf_FileChooser$Companion$createExtensionFilter$lambda$_5_0, 0, jl_Object, [ji_FileFilter], 1, 0, 0, ["$accept", $rt_wrapFunction1(culf_FileChooser$Companion$createExtensionFilter$lambda$_5_0_accept)],
-cuusc_CityScreen$page$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusc_CityScreen$page$1_invoke)]]);
-$rt_metadata([cuusd_DiplomacyScreen$getDeclareWarButtonText$lambda$_17_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusd_DiplomacyScreen$getDeclareWarButtonText$lambda$_17_0_invoke)],
+culf_FileChooser$Companion$createExtensionFilter$lambda$_5_0, 0, jl_Object, [ji_FileFilter], 1, 0, 0, ["$accept", $rt_wrapFunction1(culf_FileChooser$Companion$createExtensionFilter$lambda$_5_0_accept)]]);
+$rt_metadata([cuusc_CityScreen$page$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusc_CityScreen$page$1_invoke)],
+cuusd_DiplomacyScreen$getDeclareWarButtonText$lambda$_17_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusd_DiplomacyScreen$getDeclareWarButtonText$lambda$_17_0_invoke)],
 cuusd_CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_0, "CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_0", 89, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusd_CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_0_invoke)],
 cuusd_CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_1, "CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_1", 89, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusd_CityStateDiplomacyTable$getImprovementGiftTable$lambda$_11_1_invoke)],
 culcmq_AssignedQuest$WhenMappings, "AssignedQuest$WhenMappings", 109, jl_Object, [], 32785, [culcmq_AssignedQuest,culcmq_AssignedQuest,"WhenMappings"], () => culcmq_AssignedQuest$WhenMappings_$callClinit(), 0,
@@ -1949060,9 +1949111,9 @@ cuuso_ReligionOverviewTab$loadReligionButtons$$inlined$sortedBy$1, 0, jl_Object,
 cuuso_ReligionOverviewTab$loadReligionButtons$lambda$_5_0, "ReligionOverviewTab$loadReligionButtons$lambda$_5_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_ReligionOverviewTab$loadReligionButtons$lambda$_5_0_invoke)],
 cuuso_WonderInfo$collectInfo$lambda$_3_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuso_WonderInfo$collectInfo$lambda$_3_0_invoke)],
 cuuso_WonderInfo$collectInfo$lambda$_3_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuso_WonderInfo$collectInfo$lambda$_3_1_invoke)],
-cuuso_WonderInfo$collectInfo$$inlined$compareBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, 0,
-cuuso_WonderInfo$collectInfo$$inlined$thenBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuuso_WonderInfo$collectInfo$$inlined$thenBy$1_compare)]]);
-$rt_metadata([cuuso_WonderInfo$collectInfo$lambda$_3_2, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuso_WonderInfo$collectInfo$lambda$_3_2_invoke)],
+cuuso_WonderInfo$collectInfo$$inlined$compareBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, 0]);
+$rt_metadata([cuuso_WonderInfo$collectInfo$$inlined$thenBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuuso_WonderInfo$collectInfo$$inlined$thenBy$1_compare)],
+cuuso_WonderInfo$collectInfo$lambda$_3_2, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuso_WonderInfo$collectInfo$lambda$_3_2_invoke)],
 cuuso_WonderInfo$collectInfo$$inlined$compareBy$2, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuuso_WonderInfo$collectInfo$$inlined$compareBy$2_compare)],
 cuuso_WonderInfo$WonderInfo, 0, jl_Object, [], 17, 0, 0, 0,
 cuuso_WonderInfo$WonderStatus, "WonderInfo$WonderStatus", 80, jl_Enum, [], 65553, [cuuso_WonderInfo,cuuso_WonderInfo,"WonderStatus"], () => cuuso_WonderInfo$WonderStatus_$callClinit(), 0,
@@ -1949093,7 +1949144,6 @@ cuusc_SpecialistAllocationTable$getSpecialistStatsTable$$inlined$sortedBy$1, 0, 
 cuusc_SpecialistAllocationTable$getAssignButton$lambda$_3_0, "SpecialistAllocationTable$getAssignButton$lambda$_3_0", 79, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuusc_SpecialistAllocationTable$getAssignButton$lambda$_3_0_invoke)],
 cuup_AuthPopup$_init_$lambda$_0_0, "AuthPopup$<init>$lambda$_0_0", 91, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuup_AuthPopup$_init_$lambda$_0_0_invoke)],
 culg_Github$tryGetGithubReposWithTopic$1, "Github$tryGetGithubReposWithTopic$1", 99, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culg_Github$tryGetGithubReposWithTopic$1_invokeSuspend)],
-culg_GithubAPI, 0, jl_Object, [], 17, 0, () => culg_GithubAPI_$callClinit(), 0,
 cuusc_CityConstructionsTable$getConstructionButtonDTOs$lambda$_14_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusc_CityConstructionsTable$getConstructionButtonDTOs$lambda$_14_0_invoke)],
 cuusc_CityConstructionsTable$getConstructionButtonDTOs$lambda$_14_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusc_CityConstructionsTable$getConstructionButtonDTOs$lambda$_14_1_invoke)],
 cuusc_ConstructionButtonDTO, "ConstructionButtonDTO", 79, jl_Object, [], 16, [0,0,0], 0, 0,
@@ -1949344,15 +1949394,15 @@ ikcu_ByteChannelUtilsKt$observable$1, "ByteChannelUtilsKt$observable$1", 195, kc
 cuusv_VictoryScreenIllustrations$FadeTo, "VictoryScreenIllustrations$FadeTo", 87, cbgssa_TemporalAction, [cbgu_Disposable], 16, [cuusv_VictoryScreenIllustrations,cuusv_VictoryScreenIllustrations,"FadeTo"], 0, ["$dispose", $rt_wrapFunction0(cuusv_VictoryScreenIllustrations$FadeTo_dispose), "$update10", $rt_wrapFunction1(cuusv_VictoryScreenIllustrations$FadeTo_update), "$end1", $rt_wrapFunction0(cuusv_VictoryScreenIllustrations$FadeTo_end)],
 cuusv_VictoryScreenIllustrations$select$lambda$_1_0, 0, jl_Object, [kjf_Function3], 1, 0, 0, 0,
 cuusv_VictoryScreenReplay$restartTimer$1, "VictoryScreenReplay$restartTimer$1", 87, cbgu_Timer$Task, [], 17, [cuusv_VictoryScreenReplay,0,0], 0, ["$run", $rt_wrapFunction0(cuusv_VictoryScreenReplay$restartTimer$1_run)],
-ksj_JsonArraySerializer$JsonArrayDescriptor, "JsonArraySerializer$JsonArrayDescriptor", 228, jl_Object, [ksd_SerialDescriptor], 16, [ksj_JsonArraySerializer,ksj_JsonArraySerializer,"JsonArrayDescriptor"], () => ksj_JsonArraySerializer$JsonArrayDescriptor_$callClinit(), ["$getSerialName", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getSerialName), "$getElementName", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementName), "$getElementIndex", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementIndex),
-"$getElementAnnotations", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementAnnotations), "$getElementDescriptor", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementDescriptor), "$isElementOptional", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_isElementOptional), "$getKind", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getKind), "$isNullable", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_isNullable), "$isInline",
-$rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_isInline), "$getElementsCount", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementsCount), "$getAnnotations", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getAnnotations)],
 cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0, "CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0_invoke)],
 cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0, "CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_CityOverviewTabColumn$WLTK$getEntryActor$lambda$_6_0_invoke)],
 cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0, "CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_CityOverviewTabColumn$Garrison$getEntryActor$lambda$_6_0_invoke)],
 cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0, "UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabColumn$Name$getEntryActor$lambda$_3_0_invoke)],
 cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0, "UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabColumn$EditName$getEntryActor$lambda$_3_0_invoke)],
 cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0, "UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0_invoke)],
+ksj_JsonArraySerializer$JsonArrayDescriptor, "JsonArraySerializer$JsonArrayDescriptor", 228, jl_Object, [ksd_SerialDescriptor], 16, [ksj_JsonArraySerializer,ksj_JsonArraySerializer,"JsonArrayDescriptor"], () => ksj_JsonArraySerializer$JsonArrayDescriptor_$callClinit(), ["$getSerialName", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getSerialName), "$getElementName", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementName), "$getElementIndex", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementIndex),
+"$getElementAnnotations", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementAnnotations), "$getElementDescriptor", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementDescriptor), "$isElementOptional", $rt_wrapFunction1(ksj_JsonArraySerializer$JsonArrayDescriptor_isElementOptional), "$getKind", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getKind), "$isNullable", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_isNullable), "$isInline",
+$rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_isInline), "$getElementsCount", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getElementsCount), "$getAnnotations", $rt_wrapFunction0(ksj_JsonArraySerializer$JsonArrayDescriptor_getAnnotations)],
 ikuijj_BlockingKt$toInputStream$1$blockingWait$1, "BlockingKt$toInputStream$1$blockingWait$1", 183, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(ikuijj_BlockingKt$toInputStream$1$blockingWait$1_invokeSuspend), "$create0", $rt_wrapFunction2(ikuijj_BlockingKt$toInputStream$1$blockingWait$1_create), "$invoke2", $rt_wrapFunction2(ikuijj_BlockingKt$toInputStream$1$blockingWait$1_invoke)],
 cuupo_OptionsPopupHelpers$addCheckbox$lambda$_3_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_OptionsPopupHelpers$addCheckbox$lambda$_3_0_invoke)],
 ksi_MapEntrySerializer$MapEntry, "MapEntrySerializer$MapEntry", 227, jl_Object, [ju_Map$Entry, kjim_KMappedMarker], 16, [ksi_MapEntrySerializer,ksi_MapEntrySerializer,"MapEntry"], 0, ["$getKey", $rt_wrapFunction0(ksi_MapEntrySerializer$MapEntry_getKey), "$getValue", $rt_wrapFunction0(ksi_MapEntrySerializer$MapEntry_getValue), "$toString", $rt_wrapFunction0(ksi_MapEntrySerializer$MapEntry_toString), "$hashCode", $rt_wrapFunction0(ksi_MapEntrySerializer$MapEntry_hashCode), "$equals", $rt_wrapFunction1(ksi_MapEntrySerializer$MapEntry_equals)],
@@ -1949426,19 +1949476,17 @@ cuusv_VictoryScreenIllustrations$getImages$lambda$_6_0, 0, jl_Object, [kjf_Funct
 cuusv_VictoryScreenIllustrations$getImages$lambda$_6_1, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusv_VictoryScreenIllustrations$getImages$lambda$_6_1_invoke)],
 cuusv_VictoryScreenIllustrations$getImages$lambda$_6_2, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusv_VictoryScreenIllustrations$getImages$lambda$_6_2_invoke)],
 cuusv_VictoryScreenIllustrations$getImages$lambda$_6_3, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusv_VictoryScreenIllustrations$getImages$lambda$_6_3_invoke)],
-cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0_invoke)],
 cuuso_UnitOverviewTabHelpers$getPromotionsTable$1, "UnitOverviewTabHelpers$getPromotionsTable$1", 80, kji_FunctionReferenceImpl, [kjf_Function0], 32784, [cuuso_UnitOverviewTabHelpers,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabHelpers$getPromotionsTable$1_invoke)],
 cuuso_UnitOverviewTabHelpers$getUpgradeTable$lambda$_6_0, "UnitOverviewTabHelpers$getUpgradeTable$lambda$_6_0", 80, jl_Object, [kjf_Function0], 1, [0,0,0], 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabHelpers$getUpgradeTable$lambda$_6_0_invoke)],
-cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1_compare)],
 cuupo_DebugTab$lateInitialize$17$1, "DebugTab$lateInitialize$17$1", 92, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuupo_DebugTab$lateInitialize$17$1_invokeSuspend), "$invoke2", $rt_wrapFunction2(cuupo_DebugTab$lateInitialize$17$1_invoke)],
 cuupo_DisplayTab$addResetTutorials$lambda$0$lambda$_31_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuupo_DisplayTab$addResetTutorials$lambda$0$lambda$_31_0_invoke)],
 cuupo_SoundTab$addDownloadMusic$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_SoundTab$addDownloadMusic$1$1_invoke)],
 cuupo_MultiplayerTab$addMultiplayerServerOptions$lambda$3$lambda$_21_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, 0,
 cuupo_AdvancedTab$addSetUserId$lambda$0$lambda$_34_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuupo_AdvancedTab$addSetUserId$lambda$0$lambda$_34_0_invoke)],
-cuupo_AdvancedTab$addTranslationGeneration$3$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_AdvancedTab$addTranslationGeneration$3$1_invoke)]]);
-$rt_metadata([cuupo_AdvancedTab$addScreenhotGeneration$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_AdvancedTab$addScreenhotGeneration$1$1_invoke)],
-cuusm_MultiplayerScreen$createRenameButton$lambda$1$0$0$lambda$_36_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusm_MultiplayerScreen$createRenameButton$lambda$1$0$0$lambda$_36_0_invoke)],
-cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1, "ModManagementScreen$getDownloadFromUrlButton$1$2$1", 65, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1_invokeSuspend), "$invoke2", $rt_wrapFunction2(cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1_invoke)],
+cuupo_AdvancedTab$addTranslationGeneration$3$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_AdvancedTab$addTranslationGeneration$3$1_invoke)],
+cuupo_AdvancedTab$addScreenhotGeneration$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuupo_AdvancedTab$addScreenhotGeneration$1$1_invoke)],
+cuusm_MultiplayerScreen$createRenameButton$lambda$1$0$0$lambda$_36_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusm_MultiplayerScreen$createRenameButton$lambda$1$0$0$lambda$_36_0_invoke)]]);
+$rt_metadata([cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1, "ModManagementScreen$getDownloadFromUrlButton$1$2$1", 65, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1_invokeSuspend), "$invoke2", $rt_wrapFunction2(cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1_invoke)],
 cuupo_AdvancedTab$addGestureControls$onActivation$lambda$2$0$lambda$_36_0, "AdvancedTab$addGestureControls$onActivation$lambda$2$0$lambda$_36_0", 92, jl_Object, [jl_Runnable], 1, [0,0,0], 0, ["$run", $rt_wrapFunction0(cuupo_AdvancedTab$addGestureControls$onActivation$lambda$2$0$lambda$_36_0_run)],
 cuusp_ImprovementPickerScreen$_init_$lambda$2$lambda$_16_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusp_ImprovementPickerScreen$_init_$lambda$2$lambda$_16_0_invoke)],
 cuusm_ModManagementScreen$onlineButtonAction$lambda$0$lambda$_49_0, 0, jl_Object, [kjf_Function2], 1, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusm_ModManagementScreen$onlineButtonAction$lambda$0$lambda$_49_0_invoke)],
@@ -1949452,6 +1949500,8 @@ cuuso_GlobalPoliticsDiagramGroup$DiagramLegendPopup, "GlobalPoliticsDiagramGroup
 cuusp_PromotionPickerScreen$_init_$lambda$2$lambda$_24_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusp_PromotionPickerScreen$_init_$lambda$2$lambda$_24_0_invoke)],
 cuuso_ResourcesOverviewTab$getLabel$1$1, 0, kji_FunctionReferenceImpl, [kjf_Function1], 32784, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuso_ResourcesOverviewTab$getLabel$1$1_invoke)],
 cuuso_GlobalPoliticsOverviewTable$getCivMiniTable$lambda$0$lambda$_24_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuuso_GlobalPoliticsOverviewTable$getCivMiniTable$lambda$0$lambda$_24_0_invoke)],
+cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityScreen$page$1$invokeSuspend$lambda$_1_0_invoke)],
+cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1, 0, jl_Object, [ju_Comparator], 17, 0, 0, ["$compare", $rt_wrapFunction2(cuusm_MapEditorFilesScroll$getModMaps$1$invokeSuspend$$inlined$sortedBy$1_compare)],
 cuusd_DevConsolePopup$lambda$2$0$0$lambda$_37_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuusd_DevConsolePopup$lambda$2$0$0$lambda$_37_0_invoke)],
 cuup_CityScreenConstructionMenu, "CityScreenConstructionMenu", 91, cuup_AnimatedMenuPopup, [], 17, [0,0,0], 0, ["$createContentTable", $rt_wrapFunction0(cuup_CityScreenConstructionMenu_createContentTable)],
 cuusc_CityConstructionsTable$getQueueEntry$lambda$1$0$lambda$_44_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusc_CityConstructionsTable$getQueueEntry$lambda$1$0$lambda$_44_0_invoke)],
@@ -1949490,8 +1949540,8 @@ $rt_metadata([culf_UncivFiles$saveGameToCustomLocation$lambda$_29_0, 0, jl_Objec
 culf_UncivFiles$saveGameToCustomLocation$3, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(culf_UncivFiles$saveGameToCustomLocation$3_invoke)],
 culf_UncivFiles$saveGameToCustomLocation$lambda$_29_1, 0, jl_Object, [kjf_Function1], 1, 0, 0, 0,
 culg_Github$getRepoSize$1, "Github$getRepoSize$1", 99, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culg_Github$getRepoSize$1_invokeSuspend)],
-culg_GithubAPI$Tree, "GithubAPI$Tree", 99, jl_Object, [], 17, [0,culg_GithubAPI,0], 0, 0,
-culg_GithubAPI$Tree$TreeFile, 0, jl_Object, [], 17, 0, 0, 0,
+culg_GithubAPI$Tree, "GithubAPI$Tree", 99, jl_Object, [], 17, [culg_GithubAPI,culg_GithubAPI,"Tree"], 0, ["$_init_0", $rt_wrapFunction0(culg_GithubAPI$Tree__init_)],
+culg_GithubAPI$Tree$TreeFile, "GithubAPI$Tree$TreeFile", 99, jl_Object, [], 17, [culg_GithubAPI$Tree,culg_GithubAPI$Tree,"TreeFile"], 0, ["$_init_0", $rt_wrapFunction0(culg_GithubAPI$Tree$TreeFile__init_)],
 culmm_MapGenerator$generateSingleStep$lambda$_10_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(culmm_MapGenerator$generateSingleStep$lambda$_10_0_invoke)],
 culg_Github$getPreviewImageOrNull$1, "Github$getPreviewImageOrNull$1", 99, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culg_Github$getPreviewImageOrNull$1_invokeSuspend)],
 culg_Github$getPreviewImageOrNull$resp$1, "Github$getPreviewImageOrNull$resp$1", 99, kcji_SuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culg_Github$getPreviewImageOrNull$resp$1_invokeSuspend), "$create0", $rt_wrapFunction2(culg_Github$getPreviewImageOrNull$resp$1_create), "$invoke2", $rt_wrapFunction2(culg_Github$getPreviewImageOrNull$resp$1_invoke)],
@@ -1949792,10 +1949842,10 @@ kc_AwaitAll, 0, jl_Object, [], 16, 0, () => kc_AwaitAll_$callClinit(), 0]);
 $rt_metadata([culm_Multiplayer$resignPlayer$1, "Multiplayer$resignPlayer$1", 122, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culm_Multiplayer$resignPlayer$1_invokeSuspend)],
 culm_Multiplayer$skipCurrentPlayerTurn$1, "Multiplayer$skipCurrentPlayerTurn$1", 122, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(culm_Multiplayer$skipCurrentPlayerTurn$1_invokeSuspend)],
 cuuso_UnitOverviewTabHelpers$getPromotionsTable$onPromotionsTableClick$lambda$_11_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuuso_UnitOverviewTabHelpers$getPromotionsTable$onPromotionsTableClick$lambda$_11_0_invoke)],
-cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3, "DescriptionHelpersKt$uniquesToCivilopediaTextLines$3", 93, kcji_RestrictedSuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_invokeSuspend), "$create0", $rt_wrapFunction2(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_create), "$invoke2", $rt_wrapFunction2(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_invoke)],
 cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusws_AutoPlayMenu$autoPlayEndTurn$lambda$_2_0_invoke)],
 cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusws_AutoPlayMenu$autoPlayMilitary$lambda$_4_0_invoke)],
 cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuusws_AutoPlayMenu$autoPlayCivilian$lambda$_5_0_invoke)],
+cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3, "DescriptionHelpersKt$uniquesToCivilopediaTextLines$3", 93, kcji_RestrictedSuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_invokeSuspend), "$create0", $rt_wrapFunction2(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_create), "$invoke2", $rt_wrapFunction2(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3_invoke)],
 cuusm_MapEditorOdImporter$startExport$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuusm_MapEditorOdImporter$startExport$1_invoke)],
 ikcs_HttpResponseKt$bodyAsChannel$1, "HttpResponseKt$bodyAsChannel$1", 199, kcji_ContinuationImpl, [], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(ikcs_HttpResponseKt$bodyAsChannel$1_invokeSuspend)],
 ji_PushbackInputStream, 0, ji_FilterInputStream, [], 1, 0, 0, ["$available", $rt_wrapFunction0(ji_PushbackInputStream_available), "$close", $rt_wrapFunction0(ji_PushbackInputStream_close), "$read8", $rt_wrapFunction0(ji_PushbackInputStream_read), "$read7", $rt_wrapFunction3(ji_PushbackInputStream_read0)],
@@ -1949910,6 +1949960,7 @@ cuuss_LoadGameScreen$loadMissingModsAsync$1$4, 0, kcji_SuspendLambda, [kjf_Funct
 cuuss_LoadGameScreen$loadMissingModsAsync$1$invokeSuspend$lambda$_1_1, 0, jl_Object, [kjf_Function0], 1, 0, 0, ["$invoke", $rt_wrapFunction0(cuuss_LoadGameScreen$loadMissingModsAsync$1$invokeSuspend$lambda$_1_1_invoke)],
 cuuss_LoadGameScreen$redownloadUnupdatedMods$1$2, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuuss_LoadGameScreen$redownloadUnupdatedMods$1$2_invoke)],
 cuuss_LoadGameScreen$redownloadUnupdatedMods$1$1, 0, kcji_SuspendLambda, [kjf_Function2], 16, 0, 0, ["$invoke2", $rt_wrapFunction2(cuuss_LoadGameScreen$redownloadUnupdatedMods$1$1_invoke)],
+cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0_invoke)],
 cumr_Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0, "Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0", 43, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$_init_0", $rt_wrapFunction0(cumr_Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0__init_), "$invoke0", $rt_wrapFunction1(cumr_Belief$Companion$getCivilopediaTextMatching$1$invokeSuspend$lambda$_1_0_invoke)],
 cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_0, "TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_0", 49, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$_init_0", $rt_wrapFunction0(cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_0__init_), "$invoke0", $rt_wrapFunction1(cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_0_invoke)],
 cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_1, "TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_1", 49, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$invoke0", $rt_wrapFunction1(cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeSuspend$lambda$_1_1_invoke)],
@@ -1949917,7 +1949968,6 @@ cumrt_TileImprovement$getConstructorUnits$expandedTerrainsCanBeBuiltOn$1$invokeS
 cumrt_TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_0, "TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_0", 49, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$invoke0", $rt_wrapFunction1(cumrt_TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_0_invoke)],
 cumrt_TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_1, "TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_1", 49, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$invoke0", $rt_wrapFunction1(cumrt_TileImprovement$getConstructorUnits$terrainsCanBeBuiltOnTypes$1$invokeSuspend$lambda$_1_1_invoke)],
 cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3$invokeSuspend$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuo_DescriptionHelpersKt$uniquesToCivilopediaTextLines$3$invokeSuspend$lambda$_1_0_invoke)],
-cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuupo_ModCheckTab$addModResult$lambda$1$3$lambda$_24_0_invoke)],
 jt_DateFormatElement$TrieNodeBuilder, "DateFormatElement$TrieNodeBuilder", 141, jl_Object, [], 0, [jt_DateFormatElement,jt_DateFormatElement,0], 0, 0,
 culf_PlatformSaverLoader$Cancelled, 0, jl_Exception, [], 17, 0, 0, 0,
 cumru_UniqueParameterType$Companion$scanExistingValues$lambda$_1_0, "UniqueParameterType$Companion$scanExistingValues$lambda$_1_0", 47, jl_Object, [kjf_Function1], 1, [0,0,0], 0, ["$_init_0", $rt_wrapFunction0(cumru_UniqueParameterType$Companion$scanExistingValues$lambda$_1_0__init_), "$invoke0", $rt_wrapFunction1(cumru_UniqueParameterType$Companion$scanExistingValues$lambda$_1_0_invoke)],
@@ -1953236,7 +1953286,7 @@ $rt_reflection([
             ["author", 2, jl_String, o => o.$author0, (o, v) => o.$author0 = v],
             ["lastUpdated", 2, jl_String, o => o.$lastUpdated0, (o, v) => o.$lastUpdated0 = v],
             ["modSize", 2, $rt_intcls, o => o.$modSize, (o, v) => o.$modSize = v],
-            ["topics", 2, ju_List, o => o.$topics, (o, v) => o.$topics = v, {t: [0, ju_List, [[6, jl_String]]]}],
+            ["topics", 2, ju_List, o => o.$topics0, (o, v) => o.$topics0 = v, {t: [0, ju_List, [[6, jl_String]]]}],
             ["name", 2, jl_String, o => o.$name52, (o, v) => o.$name52 = v],
             ["uniques", 2, ju_ArrayList, o => o.$uniques2, (o, v) => o.$uniques2 = v, {t: [0, ju_ArrayList, [[6, jl_String]]]}]
         ],
@@ -1959267,7 +1959317,7 @@ $rt_reflection([
         f: [
             ["symbol", 18, jl_String, o => o.$symbol1, (o, v) => o.$symbol1 = v],
             ["implementation", 18, kjf_Function1, o => o.$implementation1, (o, v) => o.$implementation1 = v, {t: [0, kjf_Function1, [[6, jl_Double], [6, jl_Double]]]}],
-            ["description", 18, jl_String, o => o.$description3, (o, v) => o.$description3 = v]
+            ["description", 18, jl_String, o => o.$description4, (o, v) => o.$description4 = v]
         ]
     }, 
     cumrue_Operator$Unary, {
@@ -1959426,7 +1959476,7 @@ $rt_reflection([
     cumr_PerpetualConstruction, {
         f: [
             ["name", 2, jl_String, o => o.$name18, (o, v) => o.$name18 = v],
-            ["description", 18, jl_String, o => o.$description1, (o, v) => o.$description1 = v]
+            ["description", 18, jl_String, o => o.$description2, (o, v) => o.$description2 = v]
         ],
         c: [cumr_PerpetualConstruction$Companion, cumr_PerpetualConstruction$Culture, cumr_PerpetualConstruction$Faith, cumr_PerpetualConstruction$Food, cumr_PerpetualConstruction$Gold, cumr_PerpetualConstruction$Idle, cumr_PerpetualConstruction$Mapper, cumr_PerpetualConstruction$Science, cumr_PerpetualConstruction$StatConversion, ]
     }, 
@@ -1964079,7 +1964129,7 @@ $rt_reflection([
         f: [
             ["name", 2, jl_String, o => o.$name23, (o, v) => o.$name23 = v],
             ["questNameInstance$delegate", 18, k_Lazy, o => o.$questNameInstance$delegate, (o, v) => o.$questNameInstance$delegate = v],
-            ["description", 2, jl_String, o => o.$description2, (o, v) => o.$description2 = v],
+            ["description", 2, jl_String, o => o.$description3, (o, v) => o.$description3 = v],
             ["type", 2, cumr_QuestType, o => o.$type21, (o, v) => o.$type21 = v],
             ["influence", 2, $rt_floatcls, o => o.$influence0, (o, v) => o.$influence0 = v],
             ["duration", 2, $rt_intcls, o => o.$duration3, (o, v) => o.$duration3 = v],
@@ -1971824,7 +1971874,17 @@ $rt_reflection([
 
     }, 
     cuusm_ModUIData, {
-
+        f: [
+            ["name", 18, jl_String, o => o.$name10, (o, v) => o.$name10 = v],
+            ["description", 18, jl_String, o => o.$description1, (o, v) => o.$description1 = v],
+            ["ruleset", 18, cumr_Ruleset, o => o.$ruleset10, (o, v) => o.$ruleset10 = v],
+            ["repo", 18, culg_GithubAPI$Repo, o => o.$repo, (o, v) => o.$repo = v],
+            ["isVisual", 2, $rt_booleancls, o => o.$isVisual, (o, v) => o.$isVisual = v],
+            ["hasUpdate", 2, $rt_booleancls, o => o.$hasUpdate, (o, v) => o.$hasUpdate = v]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, cuusm_ModUIData__init_1]
+        ]
     }, 
     cuuss_SaveGameScreen$initRightSideTable$1, {
 
@@ -1972221,7 +1972281,35 @@ $rt_reflection([
 
     }, 
     culg_GithubAPI$Repo, {
+        f: [
+            ["hasUpdatedSize", 2, $rt_booleancls, o => o.$hasUpdatedSize, (o, v) => o.$hasUpdatedSize = v],
+            ["direct_zip_url", 2, jl_String, o => o.$direct_zip_url, (o, v) => o.$direct_zip_url = v],
+            ["release_tag", 2, jl_String, o => o.$release_tag, (o, v) => o.$release_tag = v],
+            ["name", 2, jl_String, o => o.$name9, (o, v) => o.$name9 = v],
+            ["full_name", 2, jl_String, o => o.$full_name, (o, v) => o.$full_name = v],
+            ["description", 2, jl_String, o => o.$description5, (o, v) => o.$description5 = v],
+            ["owner", 2, culg_GithubAPI$RepoOwner, o => o.$owner1, (o, v) => o.$owner1 = v],
+            ["stargazers_count", 2, $rt_intcls, o => o.$stargazers_count, (o, v) => o.$stargazers_count = v],
+            ["default_branch", 2, jl_String, o => o.$default_branch, (o, v) => o.$default_branch = v],
+            ["html_url", 2, jl_String, o => o.$html_url, (o, v) => o.$html_url = v],
+            ["pushed_at", 2, jl_String, o => o.$pushed_at, (o, v) => o.$pushed_at = v],
+            ["size", 2, $rt_intcls, o => o.$size37, (o, v) => o.$size37 = v],
+            ["topics", 2, ju_List, o => o.$topics, (o, v) => o.$topics = v, {t: [0, ju_List, [[6, jl_String]]]}]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, culg_GithubAPI$Repo__init_]
+        ],
         c: [culg_GithubAPI$Repo$Companion, ]
+    }, 
+    culg_GithubAPI$RepoOwner, {
+        f: [
+            ["login", 2, jl_String, o => o.$login, (o, v) => o.$login = v],
+            ["avatar_url", 2, jl_String, o => o.$avatar_url, (o, v) => o.$avatar_url = v]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, culg_GithubAPI$RepoOwner__init_]
+        ],
+        c: [culg_GithubAPI$RepoOwner$Companion, ]
     }, 
     cuusm_ModManagementScreen$tryDownloadPage$1, {
 
@@ -1972436,6 +1972524,9 @@ $rt_reflection([
 
     }, 
     culg_GithubAPI$Repo$Companion, {
+
+    }, 
+    culg_GithubAPI$RepoOwner$Companion, {
 
     }, 
     culcd_DiplomacyManager$activateDenounceEffects$1, {
@@ -1972772,7 +1972863,14 @@ $rt_reflection([
 
     }, 
     culg_GithubAPI$RepoSearch, {
-
+        f: [
+            ["total_count", 2, $rt_intcls, o => o.$total_count, (o, v) => o.$total_count = v],
+            ["incomplete_results", 2, $rt_booleancls, o => o.$incomplete_results, (o, v) => o.$incomplete_results = v],
+            ["items", 2, ju_ArrayList, o => o.$items7, (o, v) => o.$items7 = v, {t: [0, ju_ArrayList, [[6, culg_GithubAPI$Repo]]]}]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, culg_GithubAPI$RepoSearch__init_]
+        ]
     }, 
     cuusc_CivilopediaSearchPopup, {
         c: [cuusc_CivilopediaSearchPopup$ModSelectBox, cuusc_CivilopediaSearchPopup$ModSelectEntry, ]
@@ -1973621,9 +1973719,6 @@ $rt_reflection([
     cuusv_VictoryScreenReplay$restartTimer$1, {
 
     }, 
-    ksj_JsonArraySerializer$JsonArrayDescriptor, {
-
-    }, 
     cuuso_CityOverviewTabColumn$CityColumn$getEntryActor$lambda$_8_0, {
 
     }, 
@@ -1973640,6 +1973735,9 @@ $rt_reflection([
 
     }, 
     cuuso_UnitOverviewTabColumn$ClosestCity$getEntryActor$lambda$_2_0, {
+
+    }, 
+    ksj_JsonArraySerializer$JsonArrayDescriptor, {
 
     }, 
     ikuijj_BlockingKt$toInputStream$1$blockingWait$1, {
@@ -1973782,7 +1973880,22 @@ $rt_reflection([
 
     }, 
     culg_GithubAPI$Tree, {
-
+        f: [
+            ["tree", 2, ju_ArrayList, o => o.$tree1, (o, v) => o.$tree1 = v, {t: [0, ju_ArrayList, [[6, culg_GithubAPI$Tree$TreeFile]]]}],
+            ["truncated", 2, $rt_booleancls, o => o.$truncated, (o, v) => o.$truncated = v]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, culg_GithubAPI$Tree__init_]
+        ],
+        c: [culg_GithubAPI$Tree$TreeFile, ]
+    }, 
+    culg_GithubAPI$Tree$TreeFile, {
+        f: [
+            ["size", 2, $rt_longcls, o => o.$size47, (o, v) => o.$size47 = v]
+        ],
+        m: [
+            ["<init>", 1, $rt_voidcls, 0, culg_GithubAPI$Tree$TreeFile__init_]
+        ]
     }, 
     culg_Github$getPreviewImageOrNull$1, {
 
@@ -1977706,10 +1977819,10 @@ ksi_ByteArraySerializer, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["
 "<init>", "(Lkotlinx/serialization/json/Json;Lkotlinx/serialization/json/internal/WriteMode;Lkotlinx/serialization/json/internal/AbstractJsonLexer;Lkotlinx/serialization/descriptors/SerialDescriptor;Lkotlinx/serialization/json/internal/StreamingJsonDecoder$DiscriminatorHolder;)V", "getJson", "()Lkotlinx/serialization/json/Json;", "trySkip", "", "unknownKey", "", "serializersModule", "Lkotlinx/serialization/modules/SerializersModule;", "getSerializersModule", "()Lkotlinx/serialization/modules/SerializersModule;",
 "currentIndex", "", "configuration", "Lkotlinx/serialization/json/JsonConfiguration;", "elementMarker", "Lkotlinx/serialization/json/internal/JsonElementMarker;", "decodeJsonElement", "Lkotlinx/serialization/json/JsonElement;", "decodeSerializableValue", "T", "deserializer", "Lkotlinx/serialization/DeserializationStrategy;", "(Lkotlinx/serialization/DeserializationStrategy;)Ljava/lang/Object;", "beginStructure", "Lkotlinx/serialization/encoding/CompositeDecoder;", "endStructure", "", "skipLeftoverElements",
 "decodeNotNullMark", "decodeNull", "", "checkLeadingComma", "decodeSerializableElement", "index", "previousValue", "(Lkotlinx/serialization/descriptors/SerialDescriptor;ILkotlinx/serialization/DeserializationStrategy;Ljava/lang/Object;)Ljava/lang/Object;", "decodeElementIndex", "decodeMapIndex", "coerceInputValue", "decodeObjectIndex", "handleUnknown", "key", "decodeListIndex", "decodeBoolean", "decodeByte", "", "decodeShort", "", "decodeInt", "decodeLong", "", "decodeFloat", "", "decodeDouble", "", "decodeChar",
-"", "decodeStringKey", "decodeString", "decodeStringChunked", "consumeChunk", "Lkotlin/Function1;", "Lkotlin/ParameterName;", "name", "chunk", "decodeInline", "Lkotlinx/serialization/encoding/Decoder;", "decodeEnum", "enumDescriptor", "DiscriminatorHolder", "kotlinx-serialization-json"], "", "", 48]], cuaw_FetchHttpClientEngine$execute$1, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [64, 73, 82], ["data", "data", "callContext", "timeout", "requestHeaders", "headerNames", "headerValues",
-"data", "callContext", "timeout", "requestHeaders", "headerNames", "headerValues", "requestBody", "abortController"], ["L$0", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$6", "L$7"], [0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], "execute", "com.unciv.app.web.FetchHttpClientEngine", [65, 74, 83]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuaw_FetchResponseBody, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000>\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0003\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0007\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\u0008\u0002\u0018\u00002\u00020\u0001B\u001d\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u000c\u0010\u0004\u001a\u0008\u0012\u0004\u0012\u00020\u00060\u0005¢\u0006\u0004\u0008\u0007\u0010\u0008J\u0012\u0010\t\u001a\u00020\u00062\u0008\u0010\n\u001a\u0004\u0018\u00010\u000bH\u0016J\u0016\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000e\u001a\u00020\u000fHA¢\u0006\u0002\u0010\u0010R\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0004\u001a\u0008\u0012\u0004\u0012\u00020\u00060\u0005X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0011\u001a\u0004\u0018\u00010\u000bX\u0005¢\u0006\u0006\u001a\u0004\u0008\u0012\u0010\u0013R\u0012\u0010\u0014\u001a\u00020\rX\u0005¢\u0006\u0006\u001a\u0004\u0008\u0014\u0010\u0015R\u0018\u0010\u0016\u001a\u00020\u00178\u0016X\u0005r\u0002\u0008\u001a¢\u0006\u0006\u001a\u0004\u0008\u0018\u0010\u0019¨\u0006\u001b"],
+"", "decodeStringKey", "decodeString", "decodeStringChunked", "consumeChunk", "Lkotlin/Function1;", "Lkotlin/ParameterName;", "name", "chunk", "decodeInline", "Lkotlinx/serialization/encoding/Decoder;", "decodeEnum", "enumDescriptor", "DiscriminatorHolder", "kotlinx-serialization-json"], "", "", 48]], cuaw_FetchHttpClientEngine$execute$1, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [65, 79, 88], ["data", "data", "callContext", "timeout", "requestHeaders", "headerNames", "headerValues",
+"data", "callContext", "timeout", "requestHeaders", "headerNames", "headerValues", "requestBody", "abortController"], ["L$0", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$6", "L$7"], [0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], "execute", "com.unciv.app.web.FetchHttpClientEngine", [66, 80, 89]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuaw_FetchResponseBody, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000>\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0003\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0007\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\u0008\u0002\u0018\u00002\u00020\u0001B\u001d\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u000c\u0010\u0004\u001a\u0008\u0012\u0004\u0012\u00020\u00060\u0005¢\u0006\u0004\u0008\u0007\u0010\u0008J\u0012\u0010\t\u001a\u00020\u00062\u0008\u0010\n\u001a\u0004\u0018\u00010\u000bH\u0016J\u0016\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000e\u001a\u00020\u000fHA¢\u0006\u0002\u0010\u0010R\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0004\u001a\u0008\u0012\u0004\u0012\u00020\u00060\u0005X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0011\u001a\u0004\u0018\u00010\u000bX\u0005¢\u0006\u0006\u001a\u0004\u0008\u0012\u0010\u0013R\u0012\u0010\u0014\u001a\u00020\rX\u0005¢\u0006\u0006\u001a\u0004\u0008\u0014\u0010\u0015R\u0018\u0010\u0016\u001a\u00020\u00178\u0016X\u0005r\u0002\u0008\u001a¢\u0006\u0006\u001a\u0004\u0008\u0018\u0010\u0019¨\u0006\u001b"],
 ["Lcom/unciv/app/web/FetchResponseBody;", "Lio/ktor/utils/io/ByteReadChannel;", "channel", "Lio/ktor/utils/io/ByteChannel;", "onCancel", "Lkotlin/Function0;", "", "<init>", "(Lio/ktor/utils/io/ByteChannel;Lkotlin/jvm/functions/Function0;)V", "cancel", "cause", "", "awaitContent", "", "min", "", "(ILkotlin/coroutines/Continuation;)Ljava/lang/Object;", "closedCause", "getClosedCause", "()Ljava/lang/Throwable;", "isClosedForRead", "()Z", "readBuffer", "Lkotlinx/io/Source;", "getReadBuffer", "()Lkotlinx/io/Source;",
-"Lio/ktor/utils/io/InternalAPI;", "Unciv:web"], "", "", 48]], cuaw_FetchHttpClientEngine$execute$7, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [118], [], [], [], "invokeSuspend", "com.unciv.app.web.FetchHttpClientEngine$execute$7", [124]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuaw_FetchRequestException,
+"Lio/ktor/utils/io/InternalAPI;", "Unciv:web"], "", "", 48]], cuaw_FetchHttpClientEngine$execute$7, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [124], [], [], [], "invokeSuspend", "com.unciv.app.web.FetchHttpClientEngine$execute$7", [130]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuaw_FetchRequestException,
 [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u001c\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0003\n\u0002\u0008\u0003\u0008\u0002\u0018\u00002\u00060\u0001j\u0002`\u0002B\u0017\u0012\u0006\u0010\u0003\u001a\u00020\u0004\u0012\u0006\u0010\u0005\u001a\u00020\u0006¢\u0006\u0004\u0008\u0007\u0010\u0008¨\u0006\t"], ["Lcom/unciv/app/web/FetchRequestException;", "Ljava/lang/RuntimeException;", "Lkotlin/RuntimeException;", "message",
 "", "cause", "", "<init>", "(Ljava/lang/String;Ljava/lang/Throwable;)V", "Unciv:web"], "", "", 48]], ikcp_HttpSend$DefaultSender$execute$1, [[kcji_DebugMetadata$$_impl_create, 1, "HttpSend.kt", [141], ["requestBuilder"], ["L$0"], [0], "execute", "io.ktor.client.plugins.HttpSend$DefaultSender", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], ikcp_SendCountExceedException, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000\u0014\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\u0008\u0004\u0018\u00002\u00060\u0001j\u0002`\u0002B\u000f\u0012\u0006\u0010\u0004\u001a\u00020\u0003¢\u0006\u0004\u0008\u0005\u0010\u0006¨\u0006\u0007"],
 ["Lio/ktor/client/plugins/SendCountExceedException;", "Ljava/lang/IllegalStateException;", "Lkotlin/IllegalStateException;", "", "message", "<init>", "(Ljava/lang/String;)V", "ktor-client-core"], "", "", 48]], iku_StringValuesImpl$StringValuesEntry, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000*\n\u0002\u0018\u0002\n\u0002\u0010&\n\u0002\u0010\u000e\n\u0002\u0010 \n\u0002\u0008\u0004\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u000b\n\u0002\u0008\u0002\n\u0002\u0010\u0008\n\u0002\u0008\n\u0008\u0002\u0018\u00002\u0014\u0012\u0004\u0012\u00020\u0002\u0012\n\u0012\u0008\u0012\u0004\u0012\u00020\u00020\u00030\u0001B\u001d\u0012\u0006\u0010\u0004\u001a\u00020\u0002\u0012\u000c\u0010\u0005\u001a\u0008\u0012\u0004\u0012\u00020\u00020\u0003¢\u0006\u0004\u0008\u0006\u0010\u0007J\u001b\u0010\u000b\u001a\u00020\n2\u0008\u0010\t\u001a\u0004\u0018\u00010\u0008H\u0004¢\u0006\u0004\u0008\u000b\u0010\u000cJ\u0011\u0010\u000e\u001a\u00020\rH\u0004¢\u0006\u0004\u0008\u000e\u0010\u000fJ\u0011\u0010\u0010\u001a\u00020\u0002H\u0004¢\u0006\u0004\u0008\u0010\u0010\u0011R\u001b\u0010\u0004\u001a\u00020\u00028\u0016X\u0008¢\u0006\u000c\n\u0004\u0008\u0004\u0010\u0012\u001a\u0004\u0008\u0013\u0010\u0011R!\u0010\u0005\u001a\u0008\u0012\u0004\u0012\u00020\u00020\u00038\u0016X\u0008¢\u0006\u000c\n\u0004\u0008\u0005\u0010\u0014\u001a\u0004\u0008\u0015\u0010\u0016¨\u0006\u0017"],
@@ -1977830,7 +1977943,7 @@ cuusw_WorldScreen$nextTurn$1, [[kcji_DebugMetadata$$_impl_create, 2, "WorldScree
 "encodeInline", "descriptor", "beginStructure", "Lkotlinx/serialization/encoding/CompositeEncoder;", "beginCollection", "collectionSize", "encodeSerializableValue", "T", "serializer", "Lkotlinx/serialization/SerializationStrategy;", "(Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;)V", "encodeNullableSerializableValue", "kotlinx-serialization-core"], "", "", 48]], kse_CompositeEncoder, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000h\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0003\n\u0002\u0010\u0005\n\u0000\n\u0002\u0010\n\n\u0000\n\u0002\u0010\u000c\n\u0002\u0008\u0002\n\u0002\u0010\t\n\u0000\n\u0002\u0010\u0007\n\u0000\n\u0002\u0010\u0006\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0008f\u0018\u00002\u00020\u0001J\u0012\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\tH¦\u0004J\u001a\u0010\n\u001a\u00020\u000b2\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\rH\u0004J\"\u0010\u000e\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u000bH¦\u0004J\"\u0010\u0010\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u0011H¦\u0004J\"\u0010\u0012\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u0013H¦\u0004J\"\u0010\u0014\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u0015H¦\u0004J\"\u0010\u0016\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\rH¦\u0004J\"\u0010\u0017\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u0018H¦\u0004J\"\u0010\u0019\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u001aH¦\u0004J\"\u0010\u001b\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u001cH¦\u0004J\"\u0010\u001d\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u0006\u0010\u000f\u001a\u00020\u001eH¦\u0004J\u001a\u0010\u001f\u001a\u00020 2\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\rH¦\u0004JA\u0010!\u001a\u00020\u0007\"\n\u0008\u0000\u0010\"*\u0004\u0018\u00010\u00012\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u000c\u0010#\u001a\u0008\u0012\u0004\u0012\u0002H\"0$2\u0006\u0010\u000f\u001a\u0002H\"H¦\u0004¢\u0006\u0002\u0010%JA\u0010&\u001a\u00020\u0007\"\u0008\u0008\u0000\u0010\"*\u00020\u00012\u0006\u0010\u0008\u001a\u00020\t2\u0006\u0010\u000c\u001a\u00020\r2\u000c\u0010#\u001a\u0008\u0012\u0004\u0012\u0002H\"0$2\u0008\u0010\u000f\u001a\u0004\u0018\u0001H\"H§\u0004¢\u0006\u0002\u0010%R\u0013\u0010\u0002\u001a\u00020\u0003X¦\u0008¢\u0006\u0006\u001a\u0004\u0008\u0004\u0010\u0005¨\u0006\'À\u0006\u0003"],
 ["Lkotlinx/serialization/encoding/CompositeEncoder;", "", "serializersModule", "Lkotlinx/serialization/modules/SerializersModule;", "getSerializersModule", "()Lkotlinx/serialization/modules/SerializersModule;", "endStructure", "", "descriptor", "Lkotlinx/serialization/descriptors/SerialDescriptor;", "shouldEncodeElementDefault", "", "index", "", "encodeBooleanElement", "value", "encodeByteElement", "", "encodeShortElement", "", "encodeCharElement", "", "encodeIntElement", "encodeLongElement", "", "encodeFloatElement",
 "", "encodeDoubleElement", "", "encodeStringElement", "", "encodeInlineElement", "Lkotlinx/serialization/encoding/Encoder;", "encodeSerializableElement", "T", "serializer", "Lkotlinx/serialization/SerializationStrategy;", "(Lkotlinx/serialization/descriptors/SerialDescriptor;ILkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;)V", "encodeNullableSerializableElement", "kotlinx-serialization-core"], "", "", 48]], cuaw_FetchHttpClientEngine$readAllBytes$1, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt",
-[150], ["$this$readAllBytes", "output", "buffer"], ["L$0", "L$1", "L$2"], [0, 0, 0], "readAllBytes", "com.unciv.app.web.FetchHttpClientEngine", [151]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuusws_NextTurnMenu, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\u0018\u00002\u00020\u0001B\u001f\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007¢\u0006\u0004\u0008\u0008\u0010\tJ\u0008\u0010\n\u001a\u00020\u000bH\u0016R\u000e\u0010\u0006\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000¨\u0006\u000c"],
+[156], ["$this$readAllBytes", "output", "buffer"], ["L$0", "L$1", "L$2"], [0, 0, 0], "readAllBytes", "com.unciv.app.web.FetchHttpClientEngine", [157]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuusws_NextTurnMenu, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\u0018\u00002\u00020\u0001B\u001f\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007¢\u0006\u0004\u0008\u0008\u0010\tJ\u0008\u0010\n\u001a\u00020\u000bH\u0016R\u000e\u0010\u0006\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000¨\u0006\u000c"],
 ["Lcom/unciv/ui/screens/worldscreen/status/NextTurnMenu;", "Lcom/unciv/ui/popups/AnimatedMenuPopup;", "stage", "Lcom/badlogic/gdx/scenes/scene2d/Stage;", "nextTurnButton", "Lcom/unciv/ui/screens/worldscreen/status/NextTurnButton;", "worldScreen", "Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "<init>", "(Lcom/badlogic/gdx/scenes/scene2d/Stage;Lcom/unciv/ui/screens/worldscreen/status/NextTurnButton;Lcom/unciv/ui/screens/worldscreen/WorldScreen;)V", "createContentTable", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;",
 "Unciv:core"], "", "", 48]], cuup_ScrollableAnimatedMenuPopup, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000.\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0007\n\u0002\u0008\u0002\u0008&\u0018\u00002\u00020\u0001B!\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007¢\u0006\u0004\u0008\u0008\u0010\tJ\u0008\u0010\n\u001a\u0004\u0018\u00010\u000bJ\u0008\u0010\u000c\u001a\u00020\u000bH\u0016J\n\u0010\r\u001a\u0004\u0018\u00010\u000bH&J\n\u0010\u000e\u001a\u0004\u0018\u00010\u000bH&J\u0008\u0010\u000f\u001a\u00020\u0010H\u0016J\u0008\u0010\u0011\u001a\u00020\u0010H\u0016¨\u0006\u0012"],
 ["Lcom/unciv/ui/popups/ScrollableAnimatedMenuPopup;", "Lcom/unciv/ui/popups/AnimatedMenuPopup;", "stage", "Lcom/badlogic/gdx/scenes/scene2d/Stage;", "actor", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "align", "", "<init>", "(Lcom/badlogic/gdx/scenes/scene2d/Stage;Lcom/badlogic/gdx/scenes/scene2d/Actor;I)V", "createContentTable", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "createWrapperTable", "createScrollableContent", "createFixedContent", "maxPopupWidth", "", "maxPopupHeight", "Unciv:core"], "", "", 48]],
@@ -1978037,7 +1978150,7 @@ cuusc_CityScreenTileTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], 
 ["com/unciv/ui/objectdescriptions/FormattedLineListBuilder.SeparatorType.Space", "Lcom/unciv/ui/objectdescriptions/FormattedLineListBuilder$SeparatorType;", "addTo", "", "to", "Lcom/unciv/ui/objectdescriptions/FormattedLineListBuilder;", "size", "", "color", "", "addTo$Unciv_core", "Unciv:core"], "", "", 48]], cuuo_FormattedLineListBuilder$SeparatorType$Line, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000%\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0008\n\u0000\n\u0002\u0010\u000e\n\u0002\u0008\u0002*\u0001\u0000\u0008Ê\u0001\u0018\u00002\u00020\u0001J%\u0010\u0002\u001a\u00020\u00032\u0006\u0010\u0004\u001a\u00020\u00052\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\tH\u0010¢\u0006\u0002\u0008\n¨\u0006\u000b"],
 ["com/unciv/ui/objectdescriptions/FormattedLineListBuilder.SeparatorType.Line", "Lcom/unciv/ui/objectdescriptions/FormattedLineListBuilder$SeparatorType;", "addTo", "", "to", "Lcom/unciv/ui/objectdescriptions/FormattedLineListBuilder;", "size", "", "color", "", "addTo$Unciv_core", "Unciv:core"], "", "", 48]], cuuo_ImprovementDescriptions$getDifferences$1, [[kcji_DebugMetadata$$_impl_create, 2, "ImprovementDescriptions.kt", [27, 31, 34, 37, 41, 46], ["$this$sequence", "stat", "$this$sequence", "terrain", "$this$sequence",
 "terrain", "$this$sequence", "$this$sequence", "newAbilityPredicate", "unique", "$this$sequence", "newAbilityPredicate", "lostAbilityPredicate", "unique"], ["L$0", "L$2", "L$0", "L$2", "L$0", "L$2", "L$0", "L$0", "L$1", "L$3", "L$0", "L$1", "L$2", "L$4"], [0, 0, 1, 1, 2, 2, 3, 4, 4, 4, 5, 5, 5, 5], "invokeSuspend", "com.unciv.ui.objectdescriptions.ImprovementDescriptions$getDifferences$1", [29, 32, 36, 39, 43, 48]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
-["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/ui/screens/civilopediascreen/FormattedLine;"], "", "", 1328]], cuaw_FetchHttpClientEngine$copyResponseBody$1, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [160, 163], ["reader", "output", "reader", "output", "result", "bytes"], ["L$0", "L$1", "L$0", "L$1", "L$2", "L$3"], [0, 0, 1, 1, 1, 1], "copyResponseBody", "com.unciv.app.web.FetchHttpClientEngine", [161, 165]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [],
+["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/ui/screens/civilopediascreen/FormattedLine;"], "", "", 1328]], cuaw_FetchHttpClientEngine$copyResponseBody$1, [[kcji_DebugMetadata$$_impl_create, 2, "FetchHttpClientEngine.kt", [166, 169], ["reader", "output", "reader", "output", "result", "bytes"], ["L$0", "L$1", "L$0", "L$1", "L$2", "L$3"], [0, 0, 1, 1, 1, 1], "copyResponseBody", "com.unciv.app.web.FetchHttpClientEngine", [167, 171]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [],
 [], "", "", 560]], ikw_DefaultWebSocketSessionImpl$checkMaxFrameSize$1, [[kcji_DebugMetadata$$_impl_create, 1, "DefaultWebSocketSession.kt", [413], ["packet", "frame", "size"], ["L$0", "L$1", "I$0"], [0, 0, 0], "checkMaxFrameSize", "io.ktor.websocket.DefaultWebSocketSessionImpl", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], ikw_FrameTooBigException, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000&\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\t\n\u0000\n\u0002\u0010\u0003\n\u0002\u0008\t\n\u0002\u0010\u000e\n\u0002\u0008\u0004\u0018\u00002\u00060\u0001j\u0002`\u00022\u0008\u0012\u0004\u0012\u00020\u00000\u0003B\u001b\u0012\u0006\u0010\u0005\u001a\u00020\u0004\u0012\n\u0008\u0002\u0010\u0007\u001a\u0004\u0018\u00010\u0006¢\u0006\u0004\u0008\u0008\u0010\tB\u0011\u0008\u0017\u0012\u0006\u0010\u0005\u001a\u00020\u0004¢\u0006\u0004\u0008\u0008\u0010\nJ\u000f\u0010\u000b\u001a\u00020\u0000H\u0016¢\u0006\u0004\u0008\u000b\u0010\u000cR\u0017\u0010\u0005\u001a\u00020\u00048\u0006¢\u0006\u000c\n\u0004\u0008\u0005\u0010\r\u001a\u0004\u0008\u000e\u0010\u000fR\u0015\u0010\u0013\u001a\u00020\u00108VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0011\u0010\u0012¨\u0006\u0014"],
 ["Lio/ktor/websocket/FrameTooBigException;", "Ljava/lang/Exception;", "Lkotlin/Exception;", "Lkotlinx/coroutines/CopyableThrowable;", "", "frameSize", "", "cause", "<init>", "(JLjava/lang/Throwable;)V", "(J)V", "createCopy", "()Lio/ktor/websocket/FrameTooBigException;", "J", "getFrameSize", "()J", "", "getMessage", "()Ljava/lang/String;", "message", "ktor-websockets"], "", "", 48]], ikw_DefaultWebSocketSessionImpl$outgoingProcessorLoop$1, [[kcji_DebugMetadata$$_impl_create, 1, "DefaultWebSocketSession.kt", [337,
 341, 351], ["frame", "frame", "processedFrame"], ["L$0", "L$1", "L$2"], [1, 2, 2], "outgoingProcessorLoop", "io.ktor.websocket.DefaultWebSocketSessionImpl", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], ikw_DefaultWebSocketSessionImpl$sendCloseSequence$1, [[kcji_DebugMetadata$$_impl_create, 1, "DefaultWebSocketSession.kt", [366], ["reason", "exception", "reasonToSend"], ["L$0", "L$1", "L$2"], [0, 0, 0], "sendCloseSequence", "io.ktor.websocket.DefaultWebSocketSessionImpl", []],
@@ -1978130,8 +1978243,9 @@ cuusc_CivilopediaScreen$6, [[k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], 
 ["Lcom/unciv/ui/screens/modmanager/ModManagementOptions$SortType$Companion;", "", "<init>", "()V", "fromSelectBox", "Lcom/unciv/ui/screens/modmanager/ModManagementOptions$SortType;", "selectBox", "Lcom/unciv/ui/components/widgets/TranslatedSelectBox;", "Unciv:core"], "", "", 48]], cuusm_ModDecoratedButton$ModStateImages, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000&\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0000\u0008\u0002\u0018\u00002\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003J\u000e\u0010\u0007\u001a\u00020\u00082\u0006\u0010\t\u001a\u00020\nJ\u0008\u0010\u000b\u001a\u00020\u000cH\u0016R\u000e\u0010\u0004\u001a\u00020\u0005X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0005X\u0004¢\u0006\u0002\n\u0000¨\u0006\r"],
 ["Lcom/unciv/ui/screens/modmanager/ModDecoratedButton$ModStateImages;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "<init>", "()V", "visualImage", "Lcom/badlogic/gdx/scenes/scene2d/ui/Image;", "hasUpdateImage", "update", "", "modInfo", "Lcom/unciv/ui/screens/modmanager/ModUIData;", "getMinWidth", "", "Unciv:core"], "", "", 48]], culg_GithubAPI$Repo, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u00004\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0002\u0008\u0005\n\u0002\u0010\u000e\n\u0002\u0008\u0011\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0010\u0008\n\u0002\u0008\u0011\n\u0002\u0010!\n\u0002\u0008\u0007\u0018\u0000 ;2\u00020\u0001:\u0001;B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003J\n\u0010:\u001a\u00020\u000bH\u0004R\u001a\u0010\u0004\u001a\u00020\u0005X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007\"\u0004\u0008\u0008\u0010\tR\u001a\u0010\n\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u000c\u0010\r\"\u0004\u0008\u000e\u0010\u000fR\u001a\u0010\u0010\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0011\u0010\r\"\u0004\u0008\u0012\u0010\u000fR\u001a\u0010\u0013\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0014\u0010\r\"\u0004\u0008\u0015\u0010\u000fR\u001a\u0010\u0016\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0017\u0010\r\"\u0004\u0008\u0018\u0010\u000fR\u001c\u0010\u0019\u001a\u0004\u0018\u00010\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001a\u0010\r\"\u0004\u0008\u001b\u0010\u000fR\u001a\u0010\u001c\u001a\u00020\u001dX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001e\u0010\u001f\"\u0004\u0008 \u0010!R\u001a\u0010\"\u001a\u00020#X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008$\u0010%\"\u0004\u0008&\u0010\'R\u001a\u0010(\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008)\u0010\r\"\u0004\u0008*\u0010\u000fR\u001a\u0010+\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008,\u0010\r\"\u0004\u0008-\u0010\u000fR\u001a\u0010.\u001a\u00020\u000bX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008/\u0010\r\"\u0004\u00080\u0010\u000fR\u001a\u00101\u001a\u00020#X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u00082\u0010%\"\u0004\u00083\u0010\'R \u00104\u001a\u0008\u0012\u0004\u0012\u00020\u000b05X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u00086\u00107\"\u0004\u00088\u00109¨\u0006<"],
 ["Lcom/unciv/logic/github/GithubAPI$Repo;", "", "<init>", "()V", "hasUpdatedSize", "", "getHasUpdatedSize", "()Z", "setHasUpdatedSize", "(Z)V", "direct_zip_url", "", "getDirect_zip_url", "()Ljava/lang/String;", "setDirect_zip_url", "(Ljava/lang/String;)V", "release_tag", "getRelease_tag", "setRelease_tag", "name", "getName", "setName", "full_name", "getFull_name", "setFull_name", "description", "getDescription", "setDescription", "owner", "Lcom/unciv/logic/github/GithubAPI$RepoOwner;", "getOwner", "()Lcom/unciv/logic/github/GithubAPI$RepoOwner;",
-"setOwner", "(Lcom/unciv/logic/github/GithubAPI$RepoOwner;)V", "stargazers_count", "", "getStargazers_count", "()I", "setStargazers_count", "(I)V", "default_branch", "getDefault_branch", "setDefault_branch", "html_url", "getHtml_url", "setHtml_url", "pushed_at", "getPushed_at", "setPushed_at", "size", "getSize", "setSize", "topics", "", "getTopics", "()Ljava/util/List;", "setTopics", "(Ljava/util/List;)V", "toString", "Companion", "Unciv:core"], "", "", 48]], cuuc_ParticleEffectAnimation$ParticleEffectData,
-[[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000D\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u0008\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0019\n\u0002\u0010\u0002\n\u0002\u0008\u000c\n\u0002\u0010\u000b\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0000\u0008\u0008\u0018\u00002\u00020\u0001BG\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\t\u001a\u00020\n\u0012\u0006\u0010\u000b\u001a\u00020\n\u0012\u0008\u0008\u0002\u0010\u000c\u001a\u00020\r¢\u0006\u0004\u0008\u000e\u0010\u000fJ\u000e\u0010&\u001a\u00020\'2\u0006\u0010(\u001a\u00020\nJ\u0006\u0010)\u001a\u00020\nJ\u0006\u0010*\u001a\u00020\nJ\t\u0010+\u001a\u00020\u0003HÆ\u0003J\t\u0010,\u001a\u00020\u0005HÆ\u0003J\t\u0010-\u001a\u00020\u0007HÆ\u0003J\t\u0010.\u001a\u00020\u0007HÆ\u0003J\t\u0010/\u001a\u00020\nHÆ\u0003J\t\u00100\u001a\u00020\nHÆ\u0003J\t\u00101\u001a\u00020\rHÆ\u0003JO\u00102\u001a\u00020\u00002\u0008\u0008\u0002\u0010\u0002\u001a\u00020\u00032\u0008\u0008\u0002\u0010\u0004\u001a\u00020\u00052\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u00072\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u00072\u0008\u0008\u0002\u0010\t\u001a\u00020\n2\u0008\u0008\u0002\u0010\u000b\u001a\u00020\n2\u0008\u0008\u0002\u0010\u000c\u001a\u00020\rHÆ\u0001J\u0014\u00103\u001a\u0002042\u0008\u00105\u001a\u0004\u0018\u00010\u0001HÖ\u0004J\n\u00106\u001a\u00020\u0003HÖ\u0004J\n\u00107\u001a\u000208HÖ\u0004R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0010\u0010\u0011R\u0011\u0010\u0004\u001a\u00020\u0005¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0012\u0010\u0013R\u001a\u0010\u0006\u001a\u00020\u0007X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0014\u0010\u0015\"\u0004\u0008\u0016\u0010\u0017R\u001a\u0010\u0008\u001a\u00020\u0007X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0018\u0010\u0015\"\u0004\u0008\u0019\u0010\u0017R\u001a\u0010\t\u001a\u00020\nX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001a\u0010\u001b\"\u0004\u0008\u001c\u0010\u001dR\u001a\u0010\u000b\u001a\u00020\nX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001e\u0010\u001b\"\u0004\u0008\u001f\u0010\u001dR\u001a\u0010\u000c\u001a\u00020\rX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008 \u0010!\"\u0004\u0008\"\u0010#R\u000e\u0010$\u001a\u00020\nX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010%\u001a\u00020\nX\u000e¢\u0006\u0002\n\u0000¨\u00069"],
+"setOwner", "(Lcom/unciv/logic/github/GithubAPI$RepoOwner;)V", "stargazers_count", "", "getStargazers_count", "()I", "setStargazers_count", "(I)V", "default_branch", "getDefault_branch", "setDefault_branch", "html_url", "getHtml_url", "setHtml_url", "pushed_at", "getPushed_at", "setPushed_at", "size", "getSize", "setSize", "topics", "", "getTopics", "()Ljava/util/List;", "setTopics", "(Ljava/util/List;)V", "toString", "Companion", "Unciv:core"], "", "", 48]], culg_GithubAPI$RepoOwner, [[k_Metadata$$_impl_create,
+1, [2, 4, 0], [1, 0, 3], ["\u0000\u0014\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0002\u0008\t\u0018\u0000 \r2\u00020\u0001:\u0001\rB\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003R\u001a\u0010\u0004\u001a\u00020\u0005X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007\"\u0004\u0008\u0008\u0010\tR\u001c\u0010\n\u001a\u0004\u0018\u00010\u0005X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u000b\u0010\u0007\"\u0004\u0008\u000c\u0010\t¨\u0006\u000e"], ["Lcom/unciv/logic/github/GithubAPI$RepoOwner;",
+"", "<init>", "()V", "login", "", "getLogin", "()Ljava/lang/String;", "setLogin", "(Ljava/lang/String;)V", "avatar_url", "getAvatar_url", "setAvatar_url", "Companion", "Unciv:core"], "", "", 48]], cuuc_ParticleEffectAnimation$ParticleEffectData, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000D\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u0008\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0019\n\u0002\u0010\u0002\n\u0002\u0008\u000c\n\u0002\u0010\u000b\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0000\u0008\u0008\u0018\u00002\u00020\u0001BG\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\t\u001a\u00020\n\u0012\u0006\u0010\u000b\u001a\u00020\n\u0012\u0008\u0008\u0002\u0010\u000c\u001a\u00020\r¢\u0006\u0004\u0008\u000e\u0010\u000fJ\u000e\u0010&\u001a\u00020\'2\u0006\u0010(\u001a\u00020\nJ\u0006\u0010)\u001a\u00020\nJ\u0006\u0010*\u001a\u00020\nJ\t\u0010+\u001a\u00020\u0003HÆ\u0003J\t\u0010,\u001a\u00020\u0005HÆ\u0003J\t\u0010-\u001a\u00020\u0007HÆ\u0003J\t\u0010.\u001a\u00020\u0007HÆ\u0003J\t\u0010/\u001a\u00020\nHÆ\u0003J\t\u00100\u001a\u00020\nHÆ\u0003J\t\u00101\u001a\u00020\rHÆ\u0003JO\u00102\u001a\u00020\u00002\u0008\u0008\u0002\u0010\u0002\u001a\u00020\u00032\u0008\u0008\u0002\u0010\u0004\u001a\u00020\u00052\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u00072\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u00072\u0008\u0008\u0002\u0010\t\u001a\u00020\n2\u0008\u0008\u0002\u0010\u000b\u001a\u00020\n2\u0008\u0008\u0002\u0010\u000c\u001a\u00020\rHÆ\u0001J\u0014\u00103\u001a\u0002042\u0008\u00105\u001a\u0004\u0018\u00010\u0001HÖ\u0004J\n\u00106\u001a\u00020\u0003HÖ\u0004J\n\u00107\u001a\u000208HÖ\u0004R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0010\u0010\u0011R\u0011\u0010\u0004\u001a\u00020\u0005¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0012\u0010\u0013R\u001a\u0010\u0006\u001a\u00020\u0007X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0014\u0010\u0015\"\u0004\u0008\u0016\u0010\u0017R\u001a\u0010\u0008\u001a\u00020\u0007X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0018\u0010\u0015\"\u0004\u0008\u0019\u0010\u0017R\u001a\u0010\t\u001a\u00020\nX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001a\u0010\u001b\"\u0004\u0008\u001c\u0010\u001dR\u001a\u0010\u000b\u001a\u00020\nX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u001e\u0010\u001b\"\u0004\u0008\u001f\u0010\u001dR\u001a\u0010\u000c\u001a\u00020\rX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008 \u0010!\"\u0004\u0008\"\u0010#R\u000e\u0010$\u001a\u00020\nX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010%\u001a\u00020\nX\u000e¢\u0006\u0002\n\u0000¨\u00069"],
 ["Lcom/unciv/ui/components/ParticleEffectAnimation$ParticleEffectData;", "", "index", "", "effect", "Lcom/badlogic/gdx/graphics/g2d/ParticleEffect;", "startPoint", "Lcom/badlogic/gdx/math/Vector2;", "endPoint", "delay", "", "travelTime", "interpolation", "Lcom/badlogic/gdx/math/Interpolation;", "<init>", "(ILcom/badlogic/gdx/graphics/g2d/ParticleEffect;Lcom/badlogic/gdx/math/Vector2;Lcom/badlogic/gdx/math/Vector2;FFLcom/badlogic/gdx/math/Interpolation;)V", "getIndex", "()I", "getEffect", "()Lcom/badlogic/gdx/graphics/g2d/ParticleEffect;",
 "getStartPoint", "()Lcom/badlogic/gdx/math/Vector2;", "setStartPoint", "(Lcom/badlogic/gdx/math/Vector2;)V", "getEndPoint", "setEndPoint", "getDelay", "()F", "setDelay", "(F)V", "getTravelTime", "setTravelTime", "getInterpolation", "()Lcom/badlogic/gdx/math/Interpolation;", "setInterpolation", "(Lcom/badlogic/gdx/math/Interpolation;)V", "accumulatedTime", "percent", "update", "", "delta", "currentX", "currentY", "component1", "component2", "component3", "component4", "component5", "component6", "component7",
 "copy", "equals", "", "other", "hashCode", "toString", "", "Unciv:core"], "", "", 48]], cuuse_EspionageScreen$SpyLocationActionButton$1, [[k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 1328]], cuusd_MajorCivDiplomacyTable$ModifierColor, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\r\u0008\u0002\u0018\u0000 \u00112\u0008\u0012\u0004\u0012\u00020\u00000\u0001:\u0001\u0011B\u0019\u0008\u0002\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0008\u0010\tR\u0011\u0010\u0004\u001a\u00020\u0005¢\u0006\u0008\n\u0000\u001a\u0004\u0008\n\u0010\u000bj\u0002\u0008\u000cj\u0002\u0008\rj\u0002\u0008\u000ej\u0002\u0008\u000fj\u0002\u0008\u0010¨\u0006\u0012"],
@@ -1978268,8 +1978382,10 @@ ksj_JsonLiteral, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000,\
 ["Lcom/unciv/ui/screens/overviewscreen/NotificationsOverviewTable$NotificationsTabPersistableData;", "Lcom/unciv/ui/screens/overviewscreen/EmpireOverviewTab$EmpireOverviewTabPersistableData;", "scrollY", "", "lastCount", "", "lastTurn", "closedTurns", "", "<init>", "(Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Set;)V", "getScrollY", "()Ljava/lang/Float;", "setScrollY", "(Ljava/lang/Float;)V", "Ljava/lang/Float;", "getLastCount", "()Ljava/lang/Integer;", "setLastCount", "(Ljava/lang/Integer;)V",
 "Ljava/lang/Integer;", "getLastTurn", "setLastTurn", "getClosedTurns", "()Ljava/util/Set;", "Unciv:core"], "", "", 48]], culmm_RiverGenerator$RiverDirections, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u001a\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\t\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0008\u0002\u0018\u0000 \u000f2\u0008\u0012\u0004\u0012\u00020\u00000\u0001:\u0001\u000fB\u0011\u0008\u0002\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J\u0010\u0010\u000c\u001a\u0004\u0018\u00010\r2\u0006\u0010\u000e\u001a\u00020\rR\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000j\u0002\u0008\u0006j\u0002\u0008\u0007j\u0002\u0008\u0008j\u0002\u0008\tj\u0002\u0008\nj\u0002\u0008\u000b¨\u0006\u0010"],
 ["Lcom/unciv/logic/map/mapgenerator/RiverGenerator$RiverDirections;", "", "clockPosition", "", "<init>", "(Ljava/lang/String;II)V", "North", "NorthEast", "SouthEast", "South", "SouthWest", "NorthWest", "getNeighborTile", "Lcom/unciv/logic/map/tile/Tile;", "selectedTile", "Companion", "Unciv:core"], "", "", 48]], culmm_RiverGenerator$RiverDirections$Companion, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\u0008\u0003\u0008\u0003\u0018\u00002\u00020\u0001B\t\u0008\u0002¢\u0006\u0004\u0008\u0002\u0010\u0003R\u0017\u0010\u0004\u001a\u0008\u0012\u0004\u0012\u00020\u00060\u00058F¢\u0006\u0006\u001a\u0004\u0008\u0007\u0010\u0008¨\u0006\t"],
-["Lcom/unciv/logic/map/mapgenerator/RiverGenerator$RiverDirections$Companion;", "", "<init>", "()V", "names", "", "", "getNames", "()Ljava/util/List;", "Unciv:core"], "", "", 48]], culm_Multiplayer$downloadGame$1, [[kcji_DebugMetadata$$_impl_create, 2, "Multiplayer.kt", [244], ["game", "preview"], ["L$0", "L$1"], [0, 0], "downloadGame", "com.unciv.logic.multiplayer.Multiplayer", [245]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuusc_CivilopediaSearchPopup$ModSelectBox, [[k_Metadata$$_impl_create,
-1, [2, 4, 0], [1, 0, 3], ["\u0000\u0016\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\u0008\u0004\u0018\u00002\u0008\u0012\u0004\u0012\u00020\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0003\u0010\u0004J\u0006\u0010\u0005\u001a\u00020\u0006¨\u0006\u0007"], ["Lcom/unciv/ui/screens/civilopediascreen/CivilopediaSearchPopup$ModSelectBox;", "Lcom/badlogic/gdx/scenes/scene2d/ui/SelectBox;", "Lcom/unciv/ui/screens/civilopediascreen/CivilopediaSearchPopup$ModSelectEntry;",
+["Lcom/unciv/logic/map/mapgenerator/RiverGenerator$RiverDirections$Companion;", "", "<init>", "()V", "names", "", "", "getNames", "()Ljava/util/List;", "Unciv:core"], "", "", 48]], culm_Multiplayer$downloadGame$1, [[kcji_DebugMetadata$$_impl_create, 2, "Multiplayer.kt", [244], ["game", "preview"], ["L$0", "L$1"], [0, 0], "downloadGame", "com.unciv.logic.multiplayer.Multiplayer", [245]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_GithubAPI$RepoSearch, [[k_Metadata$$_impl_create,
+1, [2, 4, 0], [1, 0, 3], ["\u0000,\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010\u0008\n\u0002\u0008\u0006\n\u0002\u0010\u000b\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0005\u0018\u00002\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003R \u0010\u0004\u001a\u00020\u0005X\u000e¢\u0006\u0014\n\u0000\u0012\u0004\u0008\u0006\u0010\u0003\u001a\u0004\u0008\u0007\u0010\u0008\"\u0004\u0008\t\u0010\nR\u001a\u0010\u000b\u001a\u00020\u000cX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\r\u0010\u000e\"\u0004\u0008\u000f\u0010\u0010R*\u0010\u0011\u001a\u0012\u0012\u0004\u0012\u00020\u00130\u0012j\u0008\u0012\u0004\u0012\u00020\u0013`\u0014X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0015\u0010\u0016\"\u0004\u0008\u0017\u0010\u0018¨\u0006\u0019"],
+["Lcom/unciv/logic/github/GithubAPI$RepoSearch;", "", "<init>", "()V", "total_count", "", "getTotal_count$annotations", "getTotal_count", "()I", "setTotal_count", "(I)V", "incomplete_results", "", "getIncomplete_results", "()Z", "setIncomplete_results", "(Z)V", "items", "Ljava/util/ArrayList;", "Lcom/unciv/logic/github/GithubAPI$Repo;", "Lkotlin/collections/ArrayList;", "getItems", "()Ljava/util/ArrayList;", "setItems", "(Ljava/util/ArrayList;)V", "Unciv:core"], "", "", 48]], cuusc_CivilopediaSearchPopup$ModSelectBox,
+[[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0016\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\u0008\u0004\u0018\u00002\u0008\u0012\u0004\u0012\u00020\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0003\u0010\u0004J\u0006\u0010\u0005\u001a\u00020\u0006¨\u0006\u0007"], ["Lcom/unciv/ui/screens/civilopediascreen/CivilopediaSearchPopup$ModSelectBox;", "Lcom/badlogic/gdx/scenes/scene2d/ui/SelectBox;", "Lcom/unciv/ui/screens/civilopediascreen/CivilopediaSearchPopup$ModSelectEntry;",
 "<init>", "(Lcom/unciv/ui/screens/civilopediascreen/CivilopediaSearchPopup;)V", "selectedRuleset", "Lcom/unciv/models/ruleset/Ruleset;", "Unciv:core"], "", "", 48]], cuusv_VictoryScreenDemographics$RankLabels, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u000c\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0002\u0008\u0008\u0008\u0002\u0018\u00002\u0008\u0012\u0004\u0012\u00020\u00000\u0001B\t\u0008\u0002¢\u0006\u0004\u0008\u0002\u0010\u0003j\u0002\u0008\u0004j\u0002\u0008\u0005j\u0002\u0008\u0006j\u0002\u0008\u0007j\u0002\u0008\u0008¨\u0006\t"],
 ["Lcom/unciv/ui/screens/victoryscreen/VictoryScreenDemographics$RankLabels;", "", "<init>", "(Ljava/lang/String;I)V", "Rank", "Value", "Best", "Average", "Worst", "Unciv:core"], "", "", 48]], cuusc_CivilopediaHistoryMenu, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u00004\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0002\u0018\u00002\u00020\u0001BA\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0014\u0008\u0002\u0010\u0006\u001a\u000e\u0012\u0004\u0012\u00020\u0008\u0012\u0004\u0012\u00020\t0\u0007\u0012\u0012\u0010\n\u001a\u000e\u0012\u0004\u0012\u00020\u0008\u0012\u0004\u0012\u00020\u000b0\u0007¢\u0006\u0004\u0008\u000c\u0010\rJ\n\u0010\u000e\u001a\u0004\u0018\u00010\u000fH\u0016J\u0008\u0010\u0010\u001a\u00020\u000fH\u0016R\u001a\u0010\u0006\u001a\u000e\u0012\u0004\u0012\u00020\u0008\u0012\u0004\u0012\u00020\t0\u0007X\u0004¢\u0006\u0002\n\u0000R\u001a\u0010\n\u001a\u000e\u0012\u0004\u0012\u00020\u0008\u0012\u0004\u0012\u00020\u000b0\u0007X\u0004¢\u0006\u0002\n\u0000¨\u0006\u0011"],
 ["Lcom/unciv/ui/screens/civilopediascreen/CivilopediaHistoryMenu;", "Lcom/unciv/ui/popups/ScrollableAnimatedMenuPopup;", "stage", "Lcom/badlogic/gdx/scenes/scene2d/Stage;", "button", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "isValid", "Lkotlin/Function1;", "Lcom/unciv/ui/screens/civilopediascreen/CivilopediaHistory$Entry;", "", "action", "", "<init>", "(Lcom/badlogic/gdx/scenes/scene2d/Stage;Lcom/badlogic/gdx/scenes/scene2d/Actor;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V", "createFixedContent",
@@ -1978433,11 +1978549,11 @@ ksj_JsonLiteral, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000,\
 ["<anonymous>", "Lcom/badlogic/gdx/graphics/g2d/Batch;", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuusm_AddMultiplayerGameScreen, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0018\u00002\u00020\u0001B\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005¨\u0006\u0006"], ["Lcom/unciv/ui/screens/multiplayerscreens/AddMultiplayerGameScreen;", "Lcom/unciv/ui/screens/pickerscreens/PickerScreen;",
 "multiplayerScreen", "Lcom/unciv/ui/screens/multiplayerscreens/MultiplayerScreen;", "<init>", "(Lcom/unciv/ui/screens/multiplayerscreens/MultiplayerScreen;)V", "Unciv:core"], "", "", 48]], cuusm_ViewFriendsListScreen, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u00008\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010!\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0002\n\u0000\u0018\u00002\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003J\u0006\u0010\u0012\u001a\u00020\u0013R\u000e\u0010\u0004\u001a\u00020\u0005X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0005X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0007\u001a\u00020\u0005X\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\u0008\u0012\u0004\u0012\u00020\r0\u000cX\u0004¢\u0006\u0002\n\u0000R\u001e\u0010\u000e\u001a\u0012\u0012\u0004\u0012\u00020\t0\u000fj\u0008\u0012\u0004\u0012\u00020\t`\u0010X\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\u0011\u001a\u00020\rX.¢\u0006\u0002\n\u0000¨\u0006\u0014"],
 ["Lcom/unciv/ui/screens/multiplayerscreens/ViewFriendsListScreen;", "Lcom/unciv/ui/screens/pickerscreens/PickerScreen;", "<init>", "()V", "rightSideTable", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "leftSideTable", "friendsTable", "addFriendButton", "Lcom/badlogic/gdx/scenes/scene2d/ui/TextButton;", "editFriendButton", "friendsList", "", "Lcom/unciv/logic/multiplayer/FriendList$Friend;", "listOfFriendsButtons", "Ljava/util/ArrayList;", "Lkotlin/collections/ArrayList;", "selectedFriend", "refreshFriendsList",
-"", "Unciv:core"], "", "", 48]], ksj_JsonArraySerializer$JsonArrayDescriptor, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u00006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0010\u001b\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0005\n\u0002\u0010\u000b\n\u0002\u0008\n\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0008Â\u0002\u0018\u00002\u00020\u0001B\t\u0008B¢\u0006\u0004\u0008\u0002\u0010\u0003J\u0018\u0010\u0008\u001a\u0008\u0012\u0004\u0012\u00020\n0\t2\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\r\u001a\u00020\u00012\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\u000e\u001a\u00020\u000c2\u0006\u0010\u000f\u001a\u00020\u0005H\u0004J\u0012\u0010\u0010\u001a\u00020\u00052\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\u0011\u001a\u00020\u00122\u0006\u0010\u000b\u001a\u00020\u000cH\u0004R\u0015\u0010\u0004\u001a\u00020\u0005XÄ\u0008¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007R\u001b\u0010\u0013\u001a\u0008\u0012\u0004\u0012\u00020\n0\t8VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0014\u0010\u0015R\u0013\u0010\u0016\u001a\u00020\u000cX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0017\u0010\u0018R\u0015\u0010\u0019\u001a\u00020\u00128VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0019\u0010\u001aR\u0015\u0010\u001b\u001a\u00020\u00128VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u001b\u0010\u001aR\u0013\u0010\u001c\u001a\u00020\u001dX\u0008¢\u0006\u0006\u001a\u0004\u0008\u001e\u0010\u001f¨\u0006 "],
+"", "Unciv:core"], "", "", 48]], cuuso_UnitOverviewTabHelpers$getPromotionsTable$1, [[k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 1328]], ksj_JsonArraySerializer$JsonArrayDescriptor, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u00006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0010\u001b\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0005\n\u0002\u0010\u000b\n\u0002\u0008\n\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0008Â\u0002\u0018\u00002\u00020\u0001B\t\u0008B¢\u0006\u0004\u0008\u0002\u0010\u0003J\u0018\u0010\u0008\u001a\u0008\u0012\u0004\u0012\u00020\n0\t2\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\r\u001a\u00020\u00012\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\u000e\u001a\u00020\u000c2\u0006\u0010\u000f\u001a\u00020\u0005H\u0004J\u0012\u0010\u0010\u001a\u00020\u00052\u0006\u0010\u000b\u001a\u00020\u000cH\u0004J\u0012\u0010\u0011\u001a\u00020\u00122\u0006\u0010\u000b\u001a\u00020\u000cH\u0004R\u0015\u0010\u0004\u001a\u00020\u0005XÄ\u0008¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007R\u001b\u0010\u0013\u001a\u0008\u0012\u0004\u0012\u00020\n0\t8VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0014\u0010\u0015R\u0013\u0010\u0016\u001a\u00020\u000cX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0017\u0010\u0018R\u0015\u0010\u0019\u001a\u00020\u00128VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u0019\u0010\u001aR\u0015\u0010\u001b\u001a\u00020\u00128VX\u0008¢\u0006\u0006\u001a\u0004\u0008\u001b\u0010\u001aR\u0013\u0010\u001c\u001a\u00020\u001dX\u0008¢\u0006\u0006\u001a\u0004\u0008\u001e\u0010\u001f¨\u0006 "],
 ["Lkotlinx/serialization/json/JsonArraySerializer$JsonArrayDescriptor;", "Lkotlinx/serialization/descriptors/SerialDescriptor;", "<init>", "()V", "serialName", "", "getSerialName", "()Ljava/lang/String;", "getElementAnnotations", "", "", "index", "", "getElementDescriptor", "getElementIndex", "name", "getElementName", "isElementOptional", "", "annotations", "getAnnotations", "()Ljava/util/List;", "elementsCount", "getElementsCount", "()I", "isInline", "()Z", "isNullable", "kind", "Lkotlinx/serialization/descriptors/SerialKind;",
-"getKind", "()Lkotlinx/serialization/descriptors/SerialKind;", "kotlinx-serialization-json"], "", "", 48]], cuuso_UnitOverviewTabHelpers$getPromotionsTable$1, [[k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 1328]], cuupo_DebugTab$lateInitialize$17$1, [[kcji_DebugMetadata$$_impl_create, 2, "DebugTab.kt", [80], ["$this$run"], ["L$0"], [0], "invokeSuspend", "com.unciv.ui.popups.options.DebugTab$lateInitialize$17$1", [81]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"],
-["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1, [[kcji_DebugMetadata$$_impl_create, 2, "ModManagementScreen.kt", [429], [], [], [], "invokeSuspend", "com.unciv.ui.screens.modmanager.ModManagementScreen$getDownloadFromUrlButton$1$2$1", [430]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"],
-"", "", 1328]], cuup_CityScreenConstructionMenu, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000b\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0015\u0018\u00002\u00020\u0001B5\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\u0006\u0010\u0008\u001a\u00020\t\u0012\u000c\u0010\n\u001a\u0008\u0012\u0004\u0012\u00020\u000c0\u000b¢\u0006\u0004\u0008\r\u0010\u000eJ\u0012\u0010\u0016\u001a\u0008\u0012\u0004\u0012\u00020\u00070\u0017H\u0003b\u0002\u0008\u0018J \u0010\u0019\u001a\u00020\u001a2\u0012\u0010\u001b\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u001a0\u001cH\u0003b\u0002\u0008\u0018J\u001c\u0010\u001d\u001a\u00020\u000c2\u0012\u0010\u001e\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u000c0\u001cH\u0002J\n\u0010\u001f\u001a\u0004\u0018\u00010 H\u0016J\u000c\u0010!\u001a\u00020\u001aH\u0003b\u0002\u0008\"J\u0008\u0010#\u001a\u00020\u001aH\u0002J\u000c\u0010$\u001a\u00020\u001aH\u0003b\u0002\u0008\"J\u0008\u0010%\u001a\u00020\u001aH\u0002J\u000c\u0010&\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u0010\'\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010(\u001a\u00020\u001aH\u0002J\u000c\u0010)\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010*\u001a\u00020\u000cH\u0002J\u000c\u0010+\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010,\u001a\u00020\u000cH\u0002J\u000c\u0010-\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010.\u001a\u00020\u000cH\u0002J\u000c\u0010/\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u00100\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u00101\u001a\u00020\u001aH\u0002J\u0008\u00102\u001a\u00020\u001aH\u0002J\u000c\u00103\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u00104\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u00105\u001a\u00020\u001aH\u0002J\u0008\u00106\u001a\u00020\u001aH\u0002R\u000e\u0010\u0006\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\n\u001a\u0008\u0012\u0004\u0012\u00020\u000c0\u000bX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u000f\u001a\u00020\u0010X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0011\u001a\u00020\u00128BX\u0004¢\u0006\u0006\u001a\u0004\u0008\u0013\u0010\u0014R\u000e\u0010\u0015\u001a\u00020\u0012X\u0004¢\u0006\u0002\n\u0000¨\u00067"],
+"getKind", "()Lkotlinx/serialization/descriptors/SerialKind;", "kotlinx-serialization-json"], "", "", 48]], cuupo_DebugTab$lateInitialize$17$1, [[kcji_DebugMetadata$$_impl_create, 2, "DebugTab.kt", [80], ["$this$run"], ["L$0"], [0], "invokeSuspend", "com.unciv.ui.popups.options.DebugTab$lateInitialize$17$1", [81]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"],
+"", "", 1328]], cuusm_ModManagementScreen$getDownloadFromUrlButton$1$2$1, [[kcji_DebugMetadata$$_impl_create, 2, "ModManagementScreen.kt", [429], [], [], [], "invokeSuspend", "com.unciv.ui.screens.modmanager.ModManagementScreen$getDownloadFromUrlButton$1$2$1", [430]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuup_CityScreenConstructionMenu,
+[[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000b\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0008\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0015\u0018\u00002\u00020\u0001B5\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\u0006\u0010\u0008\u001a\u00020\t\u0012\u000c\u0010\n\u001a\u0008\u0012\u0004\u0012\u00020\u000c0\u000b¢\u0006\u0004\u0008\r\u0010\u000eJ\u0012\u0010\u0016\u001a\u0008\u0012\u0004\u0012\u00020\u00070\u0017H\u0003b\u0002\u0008\u0018J \u0010\u0019\u001a\u00020\u001a2\u0012\u0010\u001b\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u001a0\u001cH\u0003b\u0002\u0008\u0018J\u001c\u0010\u001d\u001a\u00020\u000c2\u0012\u0010\u001e\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u000c0\u001cH\u0002J\n\u0010\u001f\u001a\u0004\u0018\u00010 H\u0016J\u000c\u0010!\u001a\u00020\u001aH\u0003b\u0002\u0008\"J\u0008\u0010#\u001a\u00020\u001aH\u0002J\u000c\u0010$\u001a\u00020\u001aH\u0003b\u0002\u0008\"J\u0008\u0010%\u001a\u00020\u001aH\u0002J\u000c\u0010&\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u0010\'\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010(\u001a\u00020\u001aH\u0002J\u000c\u0010)\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010*\u001a\u00020\u000cH\u0002J\u000c\u0010+\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010,\u001a\u00020\u000cH\u0002J\u000c\u0010-\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u0010.\u001a\u00020\u000cH\u0002J\u000c\u0010/\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u00100\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u00101\u001a\u00020\u001aH\u0002J\u0008\u00102\u001a\u00020\u001aH\u0002J\u000c\u00103\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u000c\u00104\u001a\u00020\u001aH\u0003b\u0002\u0008\u0018J\u0008\u00105\u001a\u00020\u001aH\u0002J\u0008\u00106\u001a\u00020\u001aH\u0002R\u000e\u0010\u0006\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\n\u001a\u0008\u0012\u0004\u0012\u00020\u000c0\u000bX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u000f\u001a\u00020\u0010X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0011\u001a\u00020\u00128BX\u0004¢\u0006\u0006\u001a\u0004\u0008\u0013\u0010\u0014R\u000e\u0010\u0015\u001a\u00020\u0012X\u0004¢\u0006\u0002\n\u0000¨\u00067"],
 ["Lcom/unciv/ui/popups/CityScreenConstructionMenu;", "Lcom/unciv/ui/popups/AnimatedMenuPopup;", "stage", "Lcom/badlogic/gdx/scenes/scene2d/Stage;", "positionNextTo", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "cityView", "Lcom/unciv/view/CityView;", "construction", "Lcom/unciv/models/ruleset/IConstruction;", "onButtonClicked", "Lkotlin/Function0;", "", "<init>", "(Lcom/badlogic/gdx/scenes/scene2d/Stage;Lcom/badlogic/gdx/scenes/scene2d/Actor;Lcom/unciv/view/CityView;Lcom/unciv/models/ruleset/IConstruction;Lkotlin/jvm/functions/Function0;)V",
 "constructionName", "", "queueSizeWithoutPerpetual", "", "getQueueSizeWithoutPerpetual", "()I", "myIndex", "candidateCities", "Lkotlin/sequences/Sequence;", "Lyairm210/purity/annotations/Readonly;", "allCitiesEntryValid", "", "predicate", "Lkotlin/Function1;", "forAllCities", "action", "createContentTable", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "canMoveQueueTop", "Lyairm210/purity/annotations/Pure;", "moveQueueTop", "canMoveQueueEnd", "moveQueueEnd", "isConstructionImprovementCreationBuilding", "canAddQueueTop",
 "addQueueTop", "canAddAllQueues", "addAllQueues", "canAddAllQueuesTop", "addAllQueuesTop", "canRemoveAllQueues", "removeAllQueues", "canDisable", "canDisableAll", "disableEntry", "disableEntryInAllCities", "canEnable", "canEnableAll", "enableEntry", "enableEntryInAllCities", "Unciv:core"], "", "", 48]], cuusm_MultiplayerScreen$resignPlayer$1, [[kcji_DebugMetadata$$_impl_create, 2, "MultiplayerScreen.kt", [210], ["$this$runOnNonDaemonThreadPool"], ["L$0"], [0], "invokeSuspend", "com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen$resignPlayer$1",
@@ -1978447,7 +1978563,8 @@ ksj_JsonLiteral, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000,\
 "I$2", "I$3", "I$4", "L$0", "L$1", "L$2", "F$0", "I$0", "I$1", "Z$0", "I$2", "L$0", "L$1", "L$2", "F$0", "I$0", "I$1", "Z$0", "L$0", "L$1", "L$2", "F$0", "I$0", "I$1", "Z$0", "L$0", "L$1", "L$2", "F$0", "I$0", "I$1", "Z$0"], [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5], "invokeSuspend", "com.unciv.logic.civilization.managers.ReligionManager$remainingFoundableReligionsBreakdown$1", [260, 273, 277, 278, 279, 280]], [k_Metadata$$_impl_create,
 3, [2, 4, 0], [1, 0, 3], ["\u0000\u0016\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\u0010\u0008\u0010\u0000\u001a\u00020\u0001*\u0014\u0012\u0010\u0012\u000e\u0012\u0004\u0012\u00020\u0004\u0012\u0004\u0012\u00020\u00050\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lkotlin/Pair;", "", ""], "", "", 1328]], cuusd_ConsoleGameCommands$doRemoveSpectator$1, [[kcji_DebugMetadata$$_impl_create, 2, "ConsoleGameCommands.kt", [62], [], [],
 [], "invokeSuspend", "com.unciv.ui.screens.devconsole.ConsoleGameCommands$doRemoveSpectator$1", [63]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"], ["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cu_UncivGame$reloadWorldscreen$1, [[kcji_DebugMetadata$$_impl_create, 2, "UncivGame.kt", [272], ["curWorldScreen", "curGameInfo"], ["L$0", "L$1"], [0, 0], "reloadWorldscreen",
-"com.unciv.UncivGame", [273]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_Github$getRepoSize$1, [[kcji_DebugMetadata$$_impl_create, 2, "Github.kt", [160, 163], ["repo", "repo", "resp"], ["L$0", "L$0", "L$1"], [0, 1, 1], "getRepoSize", "com.unciv.logic.github.Github", [162, 164]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_Github$getPreviewImageOrNull$1, [[kcji_DebugMetadata$$_impl_create, 2, "Github.kt", [148], ["modUrl", "defaultBranch",
+"com.unciv.UncivGame", [273]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_Github$getRepoSize$1, [[kcji_DebugMetadata$$_impl_create, 2, "Github.kt", [160, 163], ["repo", "repo", "resp"], ["L$0", "L$0", "L$1"], [0, 1, 1], "getRepoSize", "com.unciv.logic.github.Github", [162, 164]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_GithubAPI$Tree, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000$\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0006\n\u0002\u0010\u000b\n\u0002\u0008\u0006\u0008\u0000\u0018\u00002\u00020\u0001:\u0001\u0013B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003R0\u0010\u0004\u001a\u0012\u0012\u0004\u0012\u00020\u00060\u0005j\u0008\u0012\u0004\u0012\u00020\u0006`\u0007X\u000e¢\u0006\u0014\n\u0000\u0012\u0004\u0008\u0008\u0010\u0003\u001a\u0004\u0008\t\u0010\n\"\u0004\u0008\u000b\u0010\u000cR\u001a\u0010\r\u001a\u00020\u000eX\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u000f\u0010\u0010\"\u0004\u0008\u0011\u0010\u0012¨\u0006\u0014"],
+["Lcom/unciv/logic/github/GithubAPI$Tree;", "", "<init>", "()V", "tree", "Ljava/util/ArrayList;", "Lcom/unciv/logic/github/GithubAPI$Tree$TreeFile;", "Lkotlin/collections/ArrayList;", "getTree$annotations", "getTree", "()Ljava/util/ArrayList;", "setTree", "(Ljava/util/ArrayList;)V", "truncated", "", "getTruncated", "()Z", "setTruncated", "(Z)V", "TreeFile", "Unciv:core"], "", "", 48]], culg_Github$getPreviewImageOrNull$1, [[kcji_DebugMetadata$$_impl_create, 2, "Github.kt", [148], ["modUrl", "defaultBranch",
 "avatarUrl", "resp"], ["L$0", "L$1", "L$2", "L$3"], [0, 0, 0, 0], "getPreviewImageOrNull", "com.unciv.logic.github.Github", [149]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culg_Github$getPreviewImageOrNull$resp$1, [[kcji_DebugMetadata$$_impl_create, 2, "Github.kt", [143], ["$this$runBlocking"], ["L$0"], [0], "invokeSuspend", "com.unciv.logic.github.Github$getPreviewImageOrNull$resp$1", [145]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"],
 ["<anonymous>", "Lio/ktor/client/statement/HttpResponse;", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], cuucw_KeyCapturingButton$KeyCapturingButtonStyle, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u001e\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0008\u0018\u00002\u00020\u0001BC\u0012\u0008\u0008\u0002\u0010\u0002\u001a\u00020\u0003\u0012\u0008\u0008\u0002\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\t\u001a\u00020\u0003\u0012\u0008\u0008\u0002\u0010\n\u001a\u00020\u0003¢\u0006\u0004\u0008\u000b\u0010\u000cR\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\r\u0010\u000e¨\u0006\u000f"],
 ["Lcom/unciv/ui/components/widgets/KeyCapturingButton$KeyCapturingButtonStyle;", "Lcom/badlogic/gdx/scenes/scene2d/ui/ImageTextButton$ImageTextButtonStyle;", "imageSize", "", "imageName", "", "imageUpTint", "Lcom/badlogic/gdx/graphics/Color;", "imageOverTint", "minWidth", "minHeight", "<init>", "(FLjava/lang/String;Lcom/badlogic/gdx/graphics/Color;Lcom/badlogic/gdx/graphics/Color;FF)V", "getImageSize", "()F", "Unciv:core"], "", "", 48]], cuupo_DebugTab$loadAsHotseatFromClipboard$1, [[kcji_DebugMetadata$$_impl_create,
@@ -1978458,7 +1978575,9 @@ ksj_JsonLiteral, [[k_Metadata$$_impl_create, 1, [2, 3, 0], [1, 0, 3], ["\u0000,\
 ["kotlinx/serialization/json/JsonElementSerializersKt$defer$1", "Lkotlinx/serialization/descriptors/SerialDescriptor;", "original", "getOriginal", "()Lkotlinx/serialization/descriptors/SerialDescriptor;", "original$delegate", "Lkotlin/Lazy;", "serialName", "", "getSerialName", "()Ljava/lang/String;", "kind", "Lkotlinx/serialization/descriptors/SerialKind;", "getKind", "()Lkotlinx/serialization/descriptors/SerialKind;", "elementsCount", "", "getElementsCount", "()I", "getElementName", "index", "getElementIndex",
 "name", "getElementAnnotations", "", "", "getElementDescriptor", "isElementOptional", "", "kotlinx-serialization-json"], "", "", 48]], ksji_JsonTreeReader$readObject$2, [[kcji_DebugMetadata$$_impl_create, 2, "JsonTreeReader.kt", [22], ["$this$readObject", "this_$iv", "result$iv", "key$iv", "$i$f$readObjectImpl", "lastToken$iv", "$i$a$-readObjectImpl-JsonTreeReader$readObject$3"], ["L$0", "L$1", "L$2", "L$3", "I$0", "B$0", "I$1"], [0, 0, 0, 0, 0, 0, 0], "readObject", "kotlinx.serialization.json.internal.JsonTreeReader",
 [127]], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], cuusn_NewGameScreen$startNewGame$2, [[kcji_DebugMetadata$$_impl_create, 2, "NewGameScreen.kt", [375, 397], ["$this$coroutineScope", "popup", "newGame", "$this$coroutineScope", "popup", "newGame"], ["L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0, 0, 1, 1, 1], "invokeSuspend", "com.unciv.ui.screens.newgamescreen.NewGameScreen$startNewGame$2", [376, 399]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\n"],
-["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], ikcs_HttpResponseKt$bodyAsBytes$1, [[kcji_DebugMetadata$$_impl_create, 1, "HttpResponse.kt", [147], ["$this$bodyAsBytes", "$this$body$iv", "$i$f$body"], ["L$0", "L$1", "I$0"], [0, 0, 0], "bodyAsBytes", "io.ktor.client.statement.HttpResponseKt", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], cuucw_KeyCapturingButton$ButtonListener, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000<\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0010\u0008\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0002\u0008\u0004\u0008\u0002\u0018\u00002\u00020\u0001B\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J4\u0010\u0006\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000b2\u0006\u0010\r\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0016J4\u0010\u0011\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000b2\u0006\u0010\r\u001a\u00020\u000e2\u0008\u0010\u0012\u001a\u0004\u0018\u00010\u0010H\u0016J\u001a\u0010\u0013\u001a\u00020\u00142\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\u0015\u001a\u00020\u000eH\u0016J\u0010\u0010\u0016\u001a\u00020\u000e2\u0006\u0010\u0015\u001a\u00020\u000eH\u0002J\"\u0010\u0017\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000bH\u0016R\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000¨\u0006\u0018"],
+["<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"], "", "", 1328]], culg_GithubAPI$Tree$TreeFile, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0014\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010\t\n\u0002\u0008\u0005\u0018\u00002\u00020\u0001B\u0007¢\u0006\u0004\u0008\u0002\u0010\u0003R\u001a\u0010\u0004\u001a\u00020\u0005X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007\"\u0004\u0008\u0008\u0010\t¨\u0006\n"], ["Lcom/unciv/logic/github/GithubAPI$Tree$TreeFile;",
+"", "<init>", "()V", "size", "", "getSize", "()J", "setSize", "(J)V", "Unciv:core"], "", "", 48]], ikcs_HttpResponseKt$bodyAsBytes$1, [[kcji_DebugMetadata$$_impl_create, 1, "HttpResponse.kt", [147], ["$this$bodyAsBytes", "$this$body$iv", "$i$f$body"], ["L$0", "L$1", "I$0"], [0, 0, 0], "bodyAsBytes", "io.ktor.client.statement.HttpResponseKt", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], cuucw_KeyCapturingButton$ButtonListener, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0,
+3], ["\u0000<\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0010\u0008\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0002\u0008\u0004\u0008\u0002\u0018\u00002\u00020\u0001B\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J4\u0010\u0006\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000b2\u0006\u0010\r\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0016J4\u0010\u0011\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000b2\u0006\u0010\r\u001a\u00020\u000e2\u0008\u0010\u0012\u001a\u0004\u0018\u00010\u0010H\u0016J\u001a\u0010\u0013\u001a\u00020\u00142\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\u0015\u001a\u00020\u000eH\u0016J\u0010\u0010\u0016\u001a\u00020\u000e2\u0006\u0010\u0015\u001a\u00020\u000eH\u0002J\"\u0010\u0017\u001a\u00020\u00072\u0008\u0010\u0008\u001a\u0004\u0018\u00010\t2\u0006\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\u000bH\u0016R\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000¨\u0006\u0018"],
 ["Lcom/unciv/ui/components/widgets/KeyCapturingButton$ButtonListener;", "Lcom/badlogic/gdx/scenes/scene2d/utils/ClickListener;", "myButton", "Lcom/unciv/ui/components/widgets/KeyCapturingButton;", "<init>", "(Lcom/unciv/ui/components/widgets/KeyCapturingButton;)V", "enter", "", "event", "Lcom/badlogic/gdx/scenes/scene2d/InputEvent;", "x", "", "y", "pointer", "", "fromActor", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "exit", "toActor", "keyDown", "", "keycode", "mapEscToBack", "clicked", "Unciv:core"], "", "",
 48]], cuusmt_MapEditorEditResourcesTab$getResources$1, [[kcji_DebugMetadata$$_impl_create, 2, "MapEditorEditSubTabs.kt", [190, 192], ["$this$sequence", "lastGroup", "resource", "name", "$this$sequence", "lastGroup", "resource", "name"], ["L$0", "L$1", "L$3", "L$4", "L$0", "L$1", "L$3", "L$4"], [0, 0, 0, 0, 1, 1, 1, 1], "invokeSuspend", "com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditResourcesTab$getResources$1", [192, 194]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
 ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/ui/screens/civilopediascreen/FormattedLine;"], "", "", 1328]], cuusmt_MapEditorEditImprovementsTab$getImprovements$1, [[kcji_DebugMetadata$$_impl_create, 2, "MapEditorEditSubTabs.kt", [246, 248], ["$this$sequence", "improvement", "name", "lastGroup", "group", "$this$sequence", "improvement", "name", "lastGroup", "group"], ["L$0", "L$2", "L$3", "I$0", "I$1", "L$0", "L$2", "L$3", "I$0", "I$1"], [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "invokeSuspend",
@@ -1978717,28 +1978836,29 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "StartingTech", "Starting tech", "StartsWithTech", "Starts with [tech]", "StartsWithPolicy", "Starts with [policy] adopted", "StartBias", "Start bias [terrainFilter]", "Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.",
 "TriggersVictory", "Triggers victory", "TriggersCulturalVictory", "Triggers a Cultural Victory upon completion", "MayBuyConstructionsInPuppets", "May buy items in puppet cities", "MayNotAnnexCities", "May not annex cities", "BorrowsCityNames", "\"Borrows\" city names from other civilizations in the game", "CitiesAreRazedXTimesFaster", "Cities are razed [amount] times as fast", "TechBoostWhenScientificBuildingsBuiltInCapital", "Receive a tech boost when scientific buildings/wonders are built in capital", "ResearchableMultipleTimes",
 "Can be continually researched", "GoldenAgeLength", "[relativeAmount]% Golden Age length", "PopulationLossFromNukes", "Population loss from nuclear attacks [relativeAmount]% [cityFilter]", "GarrisonDamageFromNukes", "Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]", "SpawnRebels", "Rebel units may spawn", "OnlyFirstAvailableChoiceIsChosen", "Only the first available choice is offered", "When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement.",
-"Unbuildable", "Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith", "CannotBePurchased", "Cannot be purchased", "CanBePurchasedWithStat", "Can be purchased with [stat] [cityFilter]", "CanBePurchasedForAmountStat", "Can be purchased for [amount] [stat] [cityFilter]", "MaxNumberBuildable", "Limited to [amount] per Civilization", "OnlyAvailable", "Only available", "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen",
-"Unavailable", "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\".", "CannotBuildBuildings", "Cannot build [buildingFilter] buildings", "ConvertFoodToProductionWhenConstructed", "Excess Food converted to Production when under construction", "RequiresPopulation", "Requires at least [amount] population", "TriggersAlertOnStart", "Triggers a global alert upon build start", "TriggersAlertOnCompletion", "Triggers a global alert upon completion", "CostIncreasesPerCity",
-"Cost increases by [amount] per owned city", "CostIncreasesWhenBuilt", "Cost increases by [amount] when built", "CostPercentageChange", "[amount]% production cost", "Intended to be used with conditionals to dynamically alter construction costs. Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%", "CanOnlyBeBuiltWhen", "Can only be built", "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.",
-"MustHaveOwnedWithinTiles", "Must have an owned [tileFilter] within [amount] tiles", "EnablesNuclearWeapons", "Enables nuclear weapon", "MustBeOn", "Must be on [tileFilter]", "MustNotBeOn", "Must not be on [tileFilter]", "MustBeNextTo", "Must be next to [tileFilter]", "MustNotBeNextTo", "Must not be next to [tileFilter]", "Unsellable", "ObsoleteWith", "Obsolete with [tech]", "IndicatesCapital", "Indicates the capital city", "MovesToNewCapital", "Moves to new capital when capital changes", "ProvidesExtraLuxuryFromCityResources",
-"Provides 1 extra copy of each improved luxury resource near this City", "DestroyedWhenCityCaptured", "Destroyed when the city is captured", "NotDestroyedWhenCityCaptured", "Never destroyed when the city is captured", "GoldFromCapturingCity", "[relativeAmount]% Gold given to enemy if city is captured", "RemovesAnnexUnhappiness", "Removes extra unhappiness from annexed cities", "ConnectTradeRoutes", "Connects trade routes over water", "GainBuildingWhereBuildable", "Automatically built in all cities where it is buildable",
-"CreatesOneImprovement", "Creates a [improvementName] improvement on a specific tile", "When choosing to construct this building, the player must select a tile where the improvement can be built. Upon building completion, the tile will gain this improvement. Limited to one per building.", "FoundCity", "Founds a new city", "FoundPuppetCity", "Founds a new puppet city", "ConstructImprovementInstantly", "Can instantly construct a [improvementFilter] improvement", "CreateWaterImprovements", "May create improvements on water resources",
-"BuildImprovements", "Can build [improvementFilter/terrainFilter] improvements on tiles", "CanSpreadReligion", "Can Spread Religion", "CanRemoveHeresy", "Can remove other religions from cities", "MayFoundReligion", "May found a religion", "MayEnhanceReligion", "May enhance a religion", "AddInCapital", "Can be added to [comment] in the Capital", "PreventSpreadingReligion", "Prevents spreading of religion to the city it is next to", "RemoveOtherReligions", "Removes other religions when spreading religion", "MayParadrop",
-"May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", "CanAirsweep", "Can perform Air Sweep", "CanSpeedupConstruction", "Can speed up construction of a building", "CanSpeedupWonderConstruction", "Can speed up the construction of a wonder", "CanHurryResearch", "Can hurry technology research", "CanHurryPolicy", "Can generate a large amount of culture", "CanTradeWithCityStateForGoldAndInfluence", "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence",
-"CanTransform", "Can transform to [unit]", "By default consumes all movement", "AutomationPrimaryAction", "Automation is a primary action", "Strength", "[relativeAmount]% Strength", "StrengthAmount", "[relativeAmount] Strength", "StrengthNearCapital", "[relativeAmount]% Strength decreasing with distance from the capital", "FlankAttackBonus", "[relativeAmount]% to Flank Attack bonuses", "StrengthForAdjacentEnemies", "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles", "StrengthBonusInRadius",
-"[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", "AdditionalAttacks", "[amount] additional attacks per turn", "Movement", "[amount] Movement", "Sight", "[amount] Sight", "Range", "[amount] Range", "AirInterceptionRange", "[relativeAmount] Air Interception Range", "Heal", "[amount] HP when healing", "ExtraRangedAttack", "Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength", "SpreadReligionStrength", "[relativeAmount]% Spread Religion Strength",
-"StatsWhenSpreading", "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", "CanOnlyAttackUnits", "Can only attack [combatantFilter] units", "CanOnlyAttackTiles", "Can only attack [tileFilter] tiles", "CannotAttack", "Cannot attack", "MustSetUp", "Must set up to ranged attack", "SelfDestructs", "Self-destructs when attacking", "AttackAcrossCoast", "Eliminates combat penalty for attacking across a coast", "AttackOnSea", "May attack when embarked", "AttackAcrossRiver",
-"Eliminates combat penalty for attacking over a river", "BlastRadius", "Blast radius [amount]", "IndirectFire", "Ranged attacks may be performed over obstacles", "NuclearWeapon", "Nuclear weapon of Strength [amount]", "NoDefensiveTerrainBonus", "No defensive terrain bonus", "NoDefensiveTerrainPenalty", "No defensive terrain penalty", "NoDamagePenaltyWoundedUnits", "No damage penalty for wounded units", "Uncapturable", "WithdrawsBeforeMeleeCombat", "Withdraws before melee combat", "CannotCaptureCities", "Unable to capture cities",
-"CannotPillage", "Unable to pillage tiles", "CanDestroyCities", "Destroys [cityFilter] cities instead of capturing", "The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.", "NoMovementToPillage", "No movement cost to pillage", "CanMoveAfterAttacking", "Can move after attacking", "TransferMovement", "Transfer Movement to [mapUnitFilter]", "CanMoveImmediatelyOnceBought", "Can move immediately once bought",
-"HealsOutsideFriendlyTerritory", "May heal outside of friendly territory", "HealingEffectsDoubled", "All healing effects doubled", "Does not stack", "HealsAfterKilling", "Heals [amount] damage if it kills a unit", "HealOnlyByPillaging", "Can only heal by pillaging", "HealsEvenAfterAction", "Unit will heal every turn, even if it performs an action", "HealAdjacentUnits", "All adjacent units heal [amount] HP when healing", "NoSight", "No Sight", "CanSeeOverObstacles", "Can see over obstacles", "CarryAirUnits",
-"Can carry [amount] [mapUnitFilter] units", "Using several of these uniques with complex overlapping filters is supported.", "CarryExtraAirUnits", "Can carry [amount] extra [mapUnitFilter] units", "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity.", "CannotBeCarriedBy", "Cannot be carried by [mapUnitFilter] units", "ChanceInterceptAirAttacks", "[relativeAmount]% chance to intercept air attacks", "DamageFromInterceptionReduced", "Damage taken from interception reduced by [relativeAmount]%",
-"DamageWhenIntercepting", "[relativeAmount]% Damage when intercepting", "ExtraInterceptionsPerTurn", "[amount] extra interceptions may be made per turn", "CannotBeIntercepted", "Cannot be intercepted", "CannotInterceptUnits", "Cannot intercept [mapUnitFilter] units", "StrengthWhenAirsweep", "[relativeAmount]% Strength when performing Air Sweep", "UnitMaintenanceDiscount", "[relativeAmount]% maintenance costs", "UnitUpgradeCost", "[relativeAmount]% Gold cost of upgrading", "DamageUnitsPlunder", "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]",
-"CaptureCityPlunder", "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately", "KillUnitPlunder", "Earn [amount]% of killed [mapUnitFilter] unit\'s [costOrStrength] as [stockpile]", "Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.", "KillUnitPlunderNearCity", "Earn [amount]% of [mapUnitFilter] unit\'s [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion", "KillUnitCapture", "May capture killed [mapUnitFilter] units",
-"FlatXPGain", "[amount] XP gained from combat", "PercentageXPGain", "[relativeAmount]% XP gained from combat", "GreatPersonFromCombat", "Can be earned through combat", "GreatPersonEarnedFaster", "[greatPerson] is earned [relativeAmount]% faster", "Invisible", "Invisible to others", "InvisibleToNonAdjacent", "Invisible to non-adjacent units", "CanSeeInvisibleUnits", "Can see invisible [mapUnitFilter] units", "RuinsUpgrade", "May upgrade to [unit] through ruins-like effects", "CanUpgrade", "Can upgrade to [unit]",
-"DestroysImprovementUponAttack", "Destroys tile improvements when attacking", "CannotMove", "Cannot move", "DoubleMovementOnTerrain", "Double movement in [terrainFilter]", "AllTilesCost1Move", "All tiles cost 1 movement", "CanMoveOnWater", "May travel on Water tiles without embarking", "CanPassImpassable", "Can pass through impassable tiles", "IgnoresTerrainCost", "Ignores terrain cost", "IgnoresZOC", "Ignores Zone of Control", "RoughTerrainPenalty", "Rough terrain penalty", "CanEnterIceTiles", "Can enter ice tiles",
-"CannotEmbark", "Cannot embark", "CannotEnterOcean", "Cannot enter ocean tiles", "CanEnterForeignTiles", "May enter foreign tiles without open borders", "CanEnterForeignTilesButLosesReligiousStrength", "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", "ReducedDisembarkCost", "[nonNegativeAmount] Movement point cost to disembark", "ReducedEmbarkCost", "[nonNegativeAmount] Movement point cost to embark", "ForestsAndJunglesAreRoads", "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.",
-"IgnoreHillMovementCost", "Units ignore terrain costs when moving into any tile with Hills", "CannotBeBarbarian", "Never appears as a Barbarian unit", "ReligiousUnit", "Religious Unit", "SpaceshipPart", "Spaceship part", "TakeReligionOverBirthCity", "Takes your religion over the one in their birth city", "CannotBeHurried", "Cannot be hurried", "GreatPerson", "Great Person - [comment]", "GPPointPool", "Is part of Great Person group [comment]", "Great people in the same group increase teach other\'s costs when gained. Gaining one will make all others in the same group cost more GPP.",
-"UnitActionConsumeUnit", "by consuming this unit", "UnitActionMovementCost", "for [amount] movement", "Will consume up to [amount] of Movement to execute", "UnitActionMovementCostAll", "for all movement", "Will consume all Movement to execute", "UnitActionMovementCostRequired", "requires [nonNegativeAmount] movement", "Requires [nonNegativeAmount] of Movement to execute. Unit\'s Movement is rounded up", "UnitActionStatsCost", "costs [stats] stats", "A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City\'s current stock",
+"Unbuildable", "Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as \"Can be purchased with [stat] [cityFilter]\" on the object or a civ\'s \"May buy [buildingFilter] buildings with [stat] [cityFilter]\"; in that case it is shown and can be bought", "CannotBePurchased", "Cannot be purchased", "CanBePurchasedWithStat", "Can be purchased with [stat] [cityFilter]", "CanBePurchasedForAmountStat", "Can be purchased for [amount] [stat] [cityFilter]",
+"MaxNumberBuildable", "Limited to [amount] per Civilization", "OnlyAvailable", "Only available", "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen", "Unavailable", "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\".", "CannotBuildBuildings", "Cannot build [buildingFilter] buildings",
+"ConvertFoodToProductionWhenConstructed", "Excess Food converted to Production when under construction", "RequiresPopulation", "Requires at least [amount] population", "TriggersAlertOnStart", "Triggers a global alert upon build start", "TriggersAlertOnCompletion", "Triggers a global alert upon completion", "CostIncreasesPerCity", "Cost increases by [amount] per owned city", "CostIncreasesWhenBuilt", "Cost increases by [amount] when built", "CostPercentageChange", "[amount]% production cost", "Intended to be used with conditionals to dynamically alter construction costs. Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%",
+"CanOnlyBeBuiltWhen", "Can only be built", "Meant to be used together with conditionals, like \"Can only be built <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also NOT block Upgrade and Transform actions. See also OnlyAvailable.", "MustHaveOwnedWithinTiles", "Must have an owned [tileFilter] within [amount] tiles", "EnablesNuclearWeapons", "Enables nuclear weapon", "MustBeOn", "Must be on [tileFilter]", "MustNotBeOn", "Must not be on [tileFilter]",
+"MustBeNextTo", "Must be next to [tileFilter]", "MustNotBeNextTo", "Must not be next to [tileFilter]", "Unsellable", "ObsoleteWith", "Obsolete with [tech]", "IndicatesCapital", "Indicates the capital city", "MovesToNewCapital", "Moves to new capital when capital changes", "ProvidesExtraLuxuryFromCityResources", "Provides 1 extra copy of each improved luxury resource near this City", "DestroyedWhenCityCaptured", "Destroyed when the city is captured", "NotDestroyedWhenCityCaptured", "Never destroyed when the city is captured",
+"GoldFromCapturingCity", "[relativeAmount]% Gold given to enemy if city is captured", "RemovesAnnexUnhappiness", "Removes extra unhappiness from annexed cities", "ConnectTradeRoutes", "Connects trade routes over water", "GainBuildingWhereBuildable", "Automatically built in all cities where it is buildable", "CreatesOneImprovement", "Creates a [improvementName] improvement on a specific tile", "When choosing to construct this building, the player must select a tile where the improvement can be built. Upon building completion, the tile will gain this improvement. Limited to one per building.",
+"FoundCity", "Founds a new city", "FoundPuppetCity", "Founds a new puppet city", "ConstructImprovementInstantly", "Can instantly construct a [improvementFilter] improvement", "CreateWaterImprovements", "May create improvements on water resources", "BuildImprovements", "Can build [improvementFilter/terrainFilter] improvements on tiles", "CanSpreadReligion", "Can Spread Religion", "CanRemoveHeresy", "Can remove other religions from cities", "MayFoundReligion", "May found a religion", "MayEnhanceReligion", "May enhance a religion",
+"AddInCapital", "Can be added to [comment] in the Capital", "PreventSpreadingReligion", "Prevents spreading of religion to the city it is next to", "RemoveOtherReligions", "Removes other religions when spreading religion", "MayParadrop", "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", "CanAirsweep", "Can perform Air Sweep", "CanSpeedupConstruction", "Can speed up construction of a building", "CanSpeedupWonderConstruction", "Can speed up the construction of a wonder", "CanHurryResearch",
+"Can hurry technology research", "CanHurryPolicy", "Can generate a large amount of culture", "CanTradeWithCityStateForGoldAndInfluence", "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", "CanTransform", "Can transform to [unit]", "By default consumes all movement", "AutomationPrimaryAction", "Automation is a primary action", "Strength", "[relativeAmount]% Strength", "StrengthAmount", "[relativeAmount] Strength", "StrengthNearCapital", "[relativeAmount]% Strength decreasing with distance from the capital",
+"FlankAttackBonus", "[relativeAmount]% to Flank Attack bonuses", "StrengthForAdjacentEnemies", "[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles", "StrengthBonusInRadius", "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", "AdditionalAttacks", "[amount] additional attacks per turn", "Movement", "[amount] Movement", "Sight", "[amount] Sight", "Range", "[amount] Range", "AirInterceptionRange", "[relativeAmount] Air Interception Range", "Heal",
+"[amount] HP when healing", "ExtraRangedAttack", "Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength", "SpreadReligionStrength", "[relativeAmount]% Spread Religion Strength", "StatsWhenSpreading", "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", "CanOnlyAttackUnits", "Can only attack [combatantFilter] units", "CanOnlyAttackTiles", "Can only attack [tileFilter] tiles", "CannotAttack", "Cannot attack",
+"MustSetUp", "Must set up to ranged attack", "SelfDestructs", "Self-destructs when attacking", "AttackAcrossCoast", "Eliminates combat penalty for attacking across a coast", "AttackOnSea", "May attack when embarked", "AttackAcrossRiver", "Eliminates combat penalty for attacking over a river", "BlastRadius", "Blast radius [amount]", "IndirectFire", "Ranged attacks may be performed over obstacles", "NuclearWeapon", "Nuclear weapon of Strength [amount]", "NoDefensiveTerrainBonus", "No defensive terrain bonus",
+"NoDefensiveTerrainPenalty", "No defensive terrain penalty", "NoDamagePenaltyWoundedUnits", "No damage penalty for wounded units", "Uncapturable", "WithdrawsBeforeMeleeCombat", "Withdraws before melee combat", "CannotCaptureCities", "Unable to capture cities", "CannotPillage", "Unable to pillage tiles", "CanDestroyCities", "Destroys [cityFilter] cities instead of capturing", "The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.",
+"NoMovementToPillage", "No movement cost to pillage", "CanMoveAfterAttacking", "Can move after attacking", "TransferMovement", "Transfer Movement to [mapUnitFilter]", "CanMoveImmediatelyOnceBought", "Can move immediately once bought", "HealsOutsideFriendlyTerritory", "May heal outside of friendly territory", "HealingEffectsDoubled", "All healing effects doubled", "Does not stack", "HealsAfterKilling", "Heals [amount] damage if it kills a unit", "HealOnlyByPillaging", "Can only heal by pillaging", "HealsEvenAfterAction",
+"Unit will heal every turn, even if it performs an action", "HealAdjacentUnits", "All adjacent units heal [amount] HP when healing", "NoSight", "No Sight", "CanSeeOverObstacles", "Can see over obstacles", "CarryAirUnits", "Can carry [amount] [mapUnitFilter] units", "Using several of these uniques with complex overlapping filters is supported.", "CarryExtraAirUnits", "Can carry [amount] extra [mapUnitFilter] units", "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity.",
+"CannotBeCarriedBy", "Cannot be carried by [mapUnitFilter] units", "ChanceInterceptAirAttacks", "[relativeAmount]% chance to intercept air attacks", "DamageFromInterceptionReduced", "Damage taken from interception reduced by [relativeAmount]%", "DamageWhenIntercepting", "[relativeAmount]% Damage when intercepting", "ExtraInterceptionsPerTurn", "[amount] extra interceptions may be made per turn", "CannotBeIntercepted", "Cannot be intercepted", "CannotInterceptUnits", "Cannot intercept [mapUnitFilter] units",
+"StrengthWhenAirsweep", "[relativeAmount]% Strength when performing Air Sweep", "UnitMaintenanceDiscount", "[relativeAmount]% maintenance costs", "UnitUpgradeCost", "[relativeAmount]% Gold cost of upgrading", "DamageUnitsPlunder", "Earn [amount]% of the damage done to [combatantFilter] units as [stockpile]", "CaptureCityPlunder", "Upon capturing a city, receive [amount] times its [stat] production as [stockpile] immediately", "KillUnitPlunder", "Earn [amount]% of killed [mapUnitFilter] unit\'s [costOrStrength] as [stockpile]",
+"Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.", "KillUnitPlunderNearCity", "Earn [amount]% of [mapUnitFilter] unit\'s [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion", "KillUnitCapture", "May capture killed [mapUnitFilter] units", "FlatXPGain", "[amount] XP gained from combat", "PercentageXPGain", "[relativeAmount]% XP gained from combat", "GreatPersonFromCombat", "Can be earned through combat", "GreatPersonEarnedFaster",
+"[greatPerson] is earned [relativeAmount]% faster", "Invisible", "Invisible to others", "InvisibleToNonAdjacent", "Invisible to non-adjacent units", "CanSeeInvisibleUnits", "Can see invisible [mapUnitFilter] units", "RuinsUpgrade", "May upgrade to [unit] through ruins-like effects", "CanUpgrade", "Can upgrade to [unit]", "DestroysImprovementUponAttack", "Destroys tile improvements when attacking", "CannotMove", "Cannot move", "DoubleMovementOnTerrain", "Double movement in [terrainFilter]", "AllTilesCost1Move",
+"All tiles cost 1 movement", "CanMoveOnWater", "May travel on Water tiles without embarking", "CanPassImpassable", "Can pass through impassable tiles", "IgnoresTerrainCost", "Ignores terrain cost", "IgnoresZOC", "Ignores Zone of Control", "RoughTerrainPenalty", "Rough terrain penalty", "CanEnterIceTiles", "Can enter ice tiles", "CannotEmbark", "Cannot embark", "CannotEnterOcean", "Cannot enter ocean tiles", "CanEnterForeignTiles", "May enter foreign tiles without open borders", "CanEnterForeignTilesButLosesReligiousStrength",
+"May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", "ReducedDisembarkCost", "[nonNegativeAmount] Movement point cost to disembark", "ReducedEmbarkCost", "[nonNegativeAmount] Movement point cost to embark", "ForestsAndJunglesAreRoads", "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.", "IgnoreHillMovementCost", "Units ignore terrain costs when moving into any tile with Hills",
+"CannotBeBarbarian", "Never appears as a Barbarian unit", "ReligiousUnit", "Religious Unit", "SpaceshipPart", "Spaceship part", "TakeReligionOverBirthCity", "Takes your religion over the one in their birth city", "CannotBeHurried", "Cannot be hurried", "GreatPerson", "Great Person - [comment]", "GPPointPool", "Is part of Great Person group [comment]", "Great people in the same group increase teach other\'s costs when gained. Gaining one will make all others in the same group cost more GPP.", "UnitActionConsumeUnit",
+"by consuming this unit", "UnitActionMovementCost", "for [amount] movement", "Will consume up to [amount] of Movement to execute", "UnitActionMovementCostAll", "for all movement", "Will consume all Movement to execute", "UnitActionMovementCostRequired", "requires [nonNegativeAmount] movement", "Requires [nonNegativeAmount] of Movement to execute. Unit\'s Movement is rounded up", "UnitActionStatsCost", "costs [stats] stats", "A positive Integer value will be subtracted from your stock. Food and Production will be removed from Closest City\'s current stock",
 "UnitActionStockpileCost", "costs [amount] [stockpiledResource]", "A positive Integer value will be subtracted from your stock. Do not confuse with \"Costs [amount] [stockpiledResource]\" (uppercase \'C\') for Improvements, Buildings, and Units.", "UnitActionRemovingPromotion", "removing the [promotion] promotion/status", "Removes the promotion/status from the unit - this is not a cost, units will be able to activate the action even without the promotion/status. To limit, use <with the [promotion] promotion> conditional",
 "UnitActionOnce", "once", "UnitActionLimitedTimes", "[positiveAmount] times", "UnitActionExtraLimitedTimes", "[nonNegativeAmount] additional time(s)", "UnitActionAfterWhichConsumed", "after which this unit is consumed", "NaturalWonderNeighborCount", "Must be adjacent to [amount] [simpleTerrain] tiles", "NaturalWonderNeighborsRange", "Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", "NaturalWonderSmallerLandmass", "Must not be on [amount] largest landmasses", "NaturalWonderLargerLandmass", "Must be on [amount] largest landmasses",
 "NaturalWonderLatitude", "Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", "NaturalWonderGroups", "Occurs in groups of [amount] to [amount] tiles", "NaturalWonderConvertNeighbors", "Neighboring tiles will convert to [baseTerrain/terrainFeature]", "Supports conditionals that need only a Tile as context and nothing else, like `<with [n]% chance>`, and applies them per neighbor.\nIf your mod renames Coast or Lakes, do not use this with one of these as parameter, as the code preventing artifacts won\'t work.",
@@ -1979202,63 +1979322,63 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 ", bestImprovement=", ", repairImprovment=", "fromCity", "toCity", "Buffer is empty", "Buffer contains less bytes then required (byteCount: ", ") is not within the range [0..2147483647)", "Returned too many bytes", "Returned negative read bytes count", "page", "subCategory", "Could not load map generation settings", "Landmass", "Generate landmass", "HumidityAndTemperature", "Humidity and temperature", "Elevation", "Raise mountains and hills", "LakesAndCoast", "Lakes and coastline", "Sprout vegetation", "RareFeatures",
 "Spawn rare features", "Ice", "Distribute ice", "Continents", "Assign continent IDs", "Place Natural Wonders", "Let the rivers flow", "Spread Resources", "AncientRuins", "Create ancient ruins", "-> %s: %.1f (%.1f), %.1f / %.1f", "active", "lowMin", "lowMax", "ParticleEffectData(index=", ", effect=", ", startPoint=", ", endPoint=", ", delay=", ", travelTime=", ", interpolation=", "⚙ ", "counter", "editTab", "Remove features", "Remove resource", "Remove improvement", "Remove starting locations", "Use for new game \"Select players\" button:",
 "] cities need a [", "] to allow construction of [", "Are you sure you want to sell this [", "Tutorial/We Love The King Day", "Reset Citizens", "CityScreen/CitizenManagementTable/ResetCell", "Avoid Growth", "CityScreen/CitizenManagementTable/AvoidCell", "Citizen Focus", "CityScreen/CitizenManagementTable/FocusCell", "Manual Specialists", "Auto Specialists", "roadPlans", "Allowed", "Invalid", "Unpurchasable", "UniqueAllowed", "OtherAllowed", "NotAllowed", "$this$uniquesToDescription", "This serializer can be used only with Json format.Expected Decoder to be JsonDecoder, got ",
-"kotlinx.serialization.json.JsonElement", "tryLockTile", "tryLockTile(Lcom/unciv/view/TileView;)Z", "tryUnlockTile", "tryUnlockTile(Lcom/unciv/view/TileView;)Z", "holder", "newActors", "Background", "Lost", "Won", "Can\'t create file ", " since parent path denotes regular file", "showMinimap", "getShowMinimap()Z", "showZoomButtons", "getShowZoomButtons()Z", "forbidPopupClickBehindToClose", "getForbidPopupClickBehindToClose()Z", "useCirclesToIndicateMovableTiles", "getUseCirclesToIndicateMovableTiles()Z", "showUnitMovements",
-"getShowUnitMovements()Z", "showSettlersSuggestedCityLocations", "getShowSettlersSuggestedCityLocations()Z", "showTileYields", "getShowTileYields()Z", "showWorkedTiles", "getShowWorkedTiles()Z", "showResourcesAndImprovements", "getShowResourcesAndImprovements()Z", "showPixelImprovements", "getShowPixelImprovements()Z", "continuousRendering", "getContinuousRendering()Z", "unitMovementButtonAnimation", "getUnitMovementButtonAnimation()Z", "unitActionsTableAnimation", "getUnitActionsTableAnimation()Z", "mapAutoScroll",
-"getMapAutoScroll()Z", "$this$addWrapped", "Multi-turn AutoPlay amount", "extraCustomServerOptions", "dropboxOptions", "] Attack Sound", " {}", ": {[", "] Attack Sound}", "Notification [1]", "Notification [2]", "Adopt policy", "otherGameTurnNotificationSound", "getOtherGameTurnNotificationSound()Lcom/unciv/models/UncivSound;", "getValue()Lcom/unciv/ui/popups/options/MultiplayerSelectBoxHelpers$UncivSoundLabeled;", "soundsProvider", "lateInitialize$soundsProvider(Lcom/unciv/logic/files/IMediaFinder$LabeledSounds;)Lkotlinx/coroutines/flow/Flow;",
-"useAStarPathfinding", "getUseAStarPathfinding()Z", "VISIBLE_MAP", "getVISIBLE_MAP()Z", "SHOW_TILE_COORDS", "getSHOW_TILE_COORDS()Z", "SHOW_SETTLER_SCORES", "getSHOW_SETTLER_SCORES()Z", "SHOW_TILE_IMAGE_LOCATIONS", "getSHOW_TILE_IMAGE_LOCATIONS()Z", "SHOW_FPS", "getSHOW_FPS()Z", "saveZipped", "getSaveZipped()Z", "enableSceneDebug", "getEnableSceneDebug()Lcom/unciv/ui/screens/basescreen/SceneDebugMode;", "showLongPressIndicators", "getShowLongPressIndicators()Lcom/unciv/models/metadata/GameSettings$LongPressIndicatorSetting;",
-"godMode", "getGodMode()Z", "loadAsHotseatFromClipboard", "loadAsHotseatFromClipboard()V", "sequence1", "sequence2", "Intentional crash", "GithubTopicQuery", "Expected end of the object or comma", "Cannot read Json element because of unexpected ", "desc", "AutoPlayEndTurn", "AutoPlayMilitary", "AutoPlayCivilian", "shower", "dazzler", "wagon", "buyTileButton", "kotlinx.serialization.json.JsonObject", "JsonNull", "JsonLiteral", "JsonObject", "JsonArray", "Demographic", "newData", "newSelectedCiv", "sliderChanged",
-"sliderChanged(F)V", "togglePause", "togglePause()V", "orientation", "Do you want to reset completed tutorials?", "Reset", "MusicDownload", " \r\n\t\\", "(?<!:)/{2,}", "URL must start with http:// or https://", "TestIsAlive", "Your current password was rejected from the server", "You userId is unregistered! Set password to secure your userId", "Your current password has been succesfully verified", "Your authentication status could not be determined", "1234567890", "Autosave turns must be larger than 0!", "Autosave turns over 200 may take a lot of space on your device.",
-"Flow context cannot contain job in it. Had ", "loadFonts", "addFontFamilySelect$loadFonts()Lkotlinx/coroutines/flow/Flow;", "Invalid ID!", "Doing this will reset your current user ID to the clipboard contents - are you sure?", "WriteTranslations", "GenerateScreenshot", "An unknown field for index ", "See your stats breakdown", "Convert gold to science", "Great person points", "Current points", "Points per turn", "Pending trades", "Current trades", "OverviewScreen/TradesOverviewTab/OffersTable", "Click an icon to see the stats of this religion",
-"Religions to be founded: [?]", "Religions to be founded: [", "Minimal Faith required for\nthe next [great prophet equivalent]:", "Religious status:", "Religion Name:", "Pantheon Name:", "OverviewScreen/ReligionOverviewTab/BeliefDescription", "Founding Civ:", "Cities following this religion:", "Followers of this religion:", "Holy City:", "Far away", "Somewhere around [", "Near [", "closedTurns", "OverviewScreen/NotificationLog/HighlightColor1", "#f0ead6", "OverviewScreen/NotificationLog/HighlightColor2", "#f5c993",
-"{Current turn} | ", "⏳ {", "} | ", "Current turn", "Mod: [", "#daa520", "Wrong number of repetitions of X pattern at ", "highMin", "highMax", "relative", "scalingCount", "scaling", "timelineCount", "timeline", "independent", "The loaded particle effect descriptor file uses an old invalid format. Please download the latest version of the Particle Editor tool and recreate the file by loading and saving it again.", "ParticleEmitter", "Missing value: independent", "colorsCount", "shape", "edges", "side", "single",
-"animated", "North", "NorthEast", "SouthEast", "South", "SouthWest", "NorthWest", "filterOtherUnit", "getBaseUnitCivilopediaTextLines$lambda$0$filterOtherUnit(Lcom/unciv/models/ruleset/unit/BaseUnit;Lcom/unciv/models/ruleset/unit/BaseUnit;)Z", "Pick promotion", "Default promotions for [", "null cannot be cast to non-null type com.badlogic.gdx.scenes.scene2d.ui.Cell<com.badlogic.gdx.scenes.scene2d.Actor?>", "node", "adoptedLabelStyle", "PromotionScreen/PromotionButton", "⏳\n", " - {Path to [", "] is ambiguous}",
-"\\f", "\\u", "General/DisabledBox", "Requirements could not be determined.\nChoose a base to check this Mod.", "Load latest multiplayer state after error", "Authenticate", "Please enter your server password", "complete", "complete(Ljava/lang/Object;)Z", "National Wonders", "pediaScreen", "linkAction", "-Combined-", "Search text:", "Mod filter:", "growX(...)", "Search!", ".*", "Invalid regular expression", "Results", "resultExpander", "imageUpTint", "imageOverTint", "General/KeyCapturingButton", "initialStyle",
-"null cannot be cast to non-null type com.unciv.ui.components.widgets.KeyCapturingButton.KeyCapturingButtonStyle", "getImage(...)", "Hit the desired key now", "myButton", "modCheckResult", "Are you really sure you want to play with the following known problems?", "Error:", "«RED»Error«»:", "Warning:", "«GOLD»Warning«»:", "OK:", "«GREEN»OK«»:", "Rank", "Value", "Best", "Average", "Worst", "VictoryScreen/CivGroup", "civEntry", "Could not save game to clipboard!", "Could not delete game!", "newName", "onException",
-"Changing name of game %s to", "Base values", "Bonuses", "Final", "- ", "onLoaded", "Initiating UI to save GameInfo %s to custom location %s", "getValue(...)", "That map is invalid!", "{That map is invalid!}\n{(\"[", "]\" does not conform to TerrainCodesWML)}", "base", "Please enter a file name", "File name:", "/\\/\\/", "Do you want to overwrite ", "absoluteLocalPath", "absoluteExternalPath", "external(...)", "Ⓔ", "Ⓛ", "  ..", "parent(...)", "extensions", "We will remember this.", ".denounced", ".attacked",
-"gppBreakdown", "«GOLD»{", "}«» ({", "missingFields", "Field \'", "Fields ", " are required for type with serial name \'", "\', but they were missing", "\' is required for type with serial name \'", "\', but it was missing", "Can\'t begin reading element, unexpected token", "Failed to write body: ", "columns", "SortableGrid currently does not support separateHeader combined with expanding columns", "SortableGrid initialized with all columns hidden", "You can\'t call SortableGrid.getHeader unless you set separateHeader to true",
-"reversed(...)", "column", "headerActor", "CityColumn", "Status\n(puppet, resistance or being razed)", "ConstructionIcon", "Garrison", "Garrisoned by unit", "CityDefense", "City defense", "Majority Religion", "details", "totals", "actionContext", "EditName", "†", "RangedStrength", "‡", "Ranged strength", "➡", "ClosestCity", "Closest city", "Health", "OverviewScreen/UnitOverviewTab/UnitSupplyTable", "Base Supply", "Total Supply", "In Use", "Supply Deficit", "Production Penalty", "Increase your supply or reduce the amount of units to remove the production penalty",
-"point", "square", "ellipse", "both", "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.", "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.", "MapLoader", "Failed to save map", "REGULAR", "GREYED_OUT", "0%", "} - {", "^\n                (((?<start>\\d+)|[A-Za-z\\d_]+)\\ )*         # Space-separated prefixes allowed, if numeric it\'s a starting location, others are scenario-specific (we ignore)\n                (?<base>[A-Z_][a-z\\\\|/]{1,3})             # mandatory layer\n                (\\^(?<layer>[A-Z_][a-z\\\\|/]{1,3}))?       # optional layer separated by `^`\n            $",
-"jsons/WesnothImportMappings.json", "fallback", "Choose a Wesnoth map file", "Choose an Open Doctrines map", ".odmap", "Unciv map", "Open Doctrines map export", "Are you SURE you want to delete this mod?", "https://yairm210.github.io/Unciv/Other/Multiplayer/#hosting-a-multiplayer-server", "Ascending", "Descending", "conditionalType", "undefeatedCivs", "toggleSelection", "toggleSelection(Lcom/unciv/logic/civilization/Civilization;)V", "selectedCivs", "selectedRelations", "groupName", "groupColor", "Unbuilt",
-"Not built", "NotFound", "Not found", " <", "Would you like to purchase [", "You are buying a religious unit in a city that doesn\'t follow the religion you founded ([", "]). This means that the unit is tied to that foreign religion ([", "]) and will be less useful.", "Are you really sure you want to purchase this unit?", "gitRepoUrl", "/archive/", ".zip", "/archive/refs/heads/", "https://codeload.github.com/", "/zip/", "x-ratelimit-remaining", "x-ratelimit-reset", "/preview.", "^(.*/(.*)/(.*))/archive/(?:.*/)?heads/([^.]+).zip$",
-"^(.*/(.*)/(.*))/tree/(.+?)/?$", "^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$", "^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$", "^(.*/(.*)/(.*))/archive/([0-9a-z]{40})\\.zip$", "^.*//.*/(.+)/(.+?)/?$", "-unknown-", "^.*//(?:.*/)*([^/]+\\.zip)$", "/archive/refs/tags/", ".updating", "Invalid Mod archive structure", "-main", "-master", "That is not a valid ZIP file", "ZIP entry points outside the destination", "$this$config", "^https://github\\.com/([^/]+)/([^/]+)/archive/(.+)\\.zip$", "attachment;\\s*filename\\s*=\\s*([\"\'])?(.*?)\\1(;|$)",
-"Images\\..*", "\\.github", ".*\\.atlas", ".*\\.png", ".*\\.md", "\\.nomedia", "license", "absolute(...)", "Exception while generating map", "The parsed date is outside the range representable by Instant (Unix epoch second ", "Cancelling request because engine Job failed with error: ", "Cancelling request because engine Job completed", "Engine failed", "UnitIcons/Settler", "{Total} ", "OtherIcons/CityStatus", "BuildingIcons/Walls", "ReligionIcons/Holy", "] ⛏", "Both size ", " and step ", " must be greater than zero.",
-"size ", "onPromotionsTableClick", "getPromotionsTable$onPromotionsTableClick(ZLcom/unciv/view/MapUnitView;Lcom/unciv/ui/screens/overviewscreen/UnitOverviewTab;Ljava/lang/String;)V", "}/{", "civWidget", "otherCivWidget", "civ1", "civ2", "diagram", "Number of tiles with this resource\nin your territory, without an\nappropriate improvement to use it", "WLTK+", "Number of your cities celebrating\n\'We Love The King Day\' thanks\nto access to this resource", "WLTK demand", "WLTK-", "Number of your cities\ndemanding this resource for\n\'We Love The King Day\'",
-"Trade offer", "Resources we\'re offering in trades", "The currently accumulated stockpile amount", "turnTable", "OverviewScreen/NotificationOverviewTable/Notification", "pathToSelection", "prerequisites", "Link copied to clipboard", "newSort", "sortSymbol", "isAlliedAndUnimproved", "getLabel$isAlliedAndUnimproved(Lcom/unciv/ui/screens/overviewscreen/ResourcesOverviewTab;Lcom/unciv/logic/map/tile/Tile;)Z", "$this$request", "per_page", "$this$paginatedRequest", "/search/repositories", "sort", "stars", " topic:unciv-mod fork:true",
-"$this$replaceResponse", "IGNORE_CASE", "MULTILINE", "LITERAL", "UNIX_LINES", "COMMENTS", "DOT_MATCHES_ALL", "CANON_EQ", "sortBy", "kotlinx.serialization.json.JsonNull", "kotlinx.serialization.json.JsonPrimitive", "This input can only handle primitives with \'primitive\' tag", "mapPreview", "UInt", "ULong", "UByte", "UShort", "kotlinx.serialization.json.JsonArray", "MapEntry(key=", "#FDA", "DataPoint(x=", ", civ=", "Terrain/River", "Remove rivers", "Bottom left river", "Bottom river", "Bottom right river", "Spawn river from/to",
-"Any Civ", "Buy [", "] tiles in ring [", "][", "This serializer can be used only with Json format.Expected Encoder to be JsonEncoder, got ", "Could not load game from clipboard!", "Current game copied to clipboard!", "It looks like we can\'t make a map with the parameters you requested!", "multiplayerScreen", "GameID", "Paste gameID from clipboard", "Add friend", "Edit friend", "Failed!", "Success!", "Auth rejected for unknown reasons, please try again.", "ID successfully set!", "../../extraImages", "/itch.io image.png",
-"/GithubPreviewImage.png", "/Feature graphic - Google Play.png", "../../fastlane/metadata/android/en-US/images/featureGraphic.png", "Downloaded!", "] was deleted.", "OtherIcons/Politics-diagram-bg", "Diagram line colors", "Move to the end of the queue", "Move to the top of the queue", "moveQueueTop", "moveQueueTop()Z", "moveQueueEnd", "moveQueueEnd()Z", "addQueueTop", "addQueueTop()Z", "addAllQueues", "addAllQueues()V", "Disable in this city", "Disable in all cities", "Enable in this city", "Enable in all cities",
-"https://api.github.com", "X-GitHub-Api-Version", "2022-11-28", "application/vnd.github+json", "Github", "token", "Bearer ", "Map import", "Open Doctrines map import", "Available founder beliefs", "Available follower beliefs", "Religions already founded", "Available religion symbols", "Number of civilizations * [", "] + [", "Estimated number of civilizations * [", "Could not save game to custom location!", "MapGeneratorSteps.All cannot be used in generateSingleStep", "No element of the collection was transformed to a non-null value.",
-"Invalid game ID!", "AddMultiplayerGame", "To add a friend, ask him to send you his player ID.\nClick the \'Add friend\' button.\nInsert his player ID and a name for him.\nThen click the \'Add friend\' button again.\n\nAfter that you will see him in your friends list.\n\nA new button will appear when creating a new\nmultiplayer game, which allows you to select your friend.", "Failed to set password!", "Password set successfully for server [", "Exception during GitHub download", "Could not download ", "Remove",
-"UNAUTHORIZED", "UNREGISTERED", "VERIFIED", "UNKNOWN", "modDataList", "Error saving mod cache", "Error while creating game", "\'[", "]\' copied to clipboard!", "Map saved successfully!", "It looks like your map can\'t be saved!", "/repos/", "/git/trees/", "recursive", "Request timeout has expired [url=", ", request_timeout=", "unknown", " ms]", "#888", "] starting location", "image/png", "preview.", "image/jpeg", "CityScreen/CityConstructionTable/PickConstructionButton", "$this$timeout", "io.ktor.client.plugins.HttpTimeout",
-"HttpTimeout", "Mod archive not found", "CF-RAY", "Servers requiring authentication are not supported", "cf-mitigated", "challenge", "Blocked by Cloudflare", "Unexpected response: [", "Server failure: [", "Unknown Issue!\nStatus: ", "Content-Disposition", "\nBody:[", "reportProgress", "downloadAndExtract$reportProgress(JLkotlin/jvm/functions/Function2;JLjava/lang/Long;)V", "<init>(Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)V", "\ud83d\ude00zzz", "addAllQueuesTop", "addAllQueuesTop()V", "removeAllQueues",
-"removeAllQueues()V", "disableEntry", "disableEntry()Z", "disableEntryInAllCities", "disableEntryInAllCities()Z", "enableEntry", "enableEntry()Z", "enableEntryInAllCities", "enableEntryInAllCities()Z", "Revealed by:", "{Can be found on}:", "{Can be found on} {", "Improved by [", "{Bonus stats for improvement}: ", "{Improvements that provide this resource}:", "{Buildings that provide this resource}:", "{Technologies that provide this resource}:", "{Buildings that consume this resource}:", "{Units that consume this resource}: ",
-"{Buildings that require this resource improved near the city}: ", "ring buffer is full", "{Unit types}:", " .-*_", "] Downloaded!", "request-timeout", "Could not download music!", "modSelection", "Translation files are generated successfully.", "Failed to generate translation files", "getSimpleName(...)", "defaultFileFilter", "defaultFileFilter(Ljava/io/File;)Z", "jsons/translations/template.properties", "Global Tutorials", "access$jsonFolder(...)", "\n\n#################### Lines from Unique Types #######################\n",
-"\n######### ", " ###########\n", "\n\n#################### Lines from Countables #######################\n", "\n\n#################### Lines from spy actions #######################\n", "\n\n#################### Lines from diplomatic modifiers #######################\n", "\n\n#################### Lines from demands #######################\n", "\n\n#################### Lines from personality biases #######################\n", "\n### ", " \n", "\n\n#################### Lines from key bindings #######################\n",
-"\n#################### Lines from ", " ####################\n", "jsons/translations/%s.properties", "# This is an empty line ", " # Requires translation!", "\n\n\n", "jsons/translations/%s.properties.bak", "#################### Possibly unused ####################", "# These were found in the original translation file, but not as required translation from the json scan.", "# Automatically generated - ", "for your info only", "do not edit manually", "short_description.txt", "Fastlane_short_description", "full_description.txt",
-"Fastlane_full_description", "Fastlane files are generated successfully.", "Failed to generate fastlane files", "../../fastlane/metadata/android/", "getLanguage(...)", "../../changelog.md", "## \\S*([^#]*)", "../../buildSrc/src/main/kotlin/BuildConfig.kt", "appCodeNumber = (\\d*)", "../../fastlane/metadata/android//en-US/changelogs/", ".txt", "\n{4,}", "fileLocation", "ScreenshotConfig(width=", ", screenSize=", ", fileLocation=", ", centerTile=", ", attackCity=", "«RED»{Invalid link!}«»", "newModUIData", "Could not download [",
-"replaceableUniques", "rulesetForValidation", "ModError: %s - %s", "Replace \"%s\" with \"%s\"", "Uniques updated!", "Maybe you put too many players into too small a map?", "Could not upload game!", "kotlinx.serialization.json.JsonLiteral", "\n                The name of serial descriptor should uniquely identify associated serializer.\n                For serial name ", " there already exists ", ".\n                Please refer to SerialDescriptor documentation for additional information.\n            ", "selectedFriend",
-"iRulesetObject", "Nothing found!", "#f53", "Length out of bounds: ", "Offset out of bounds: ", "Pushback buffer full", "Could not export map", "handle", "DisposeHandlersOnCancel[", "Error displaying map \"", "Error loading map!", "{This map has errors:}\n\n", "\n\n{The incompatible elements have been removed.}", "Error loading map \"", "{Error loading map!}", "\n{", "jsonsFolder", "fileFilter", "Translation writer took %sms for %s", "filePath", "resultStrings", "getFields(...)", "# This is an empty line  ",
-"aiFreeTechs", "aiFreeUnits", "attackSound", "cannotBeBuiltWith", "cultureBuildings", "excludedDifficulties", "improvingTech", "obsoleteTech", "occursOn", "promotions", "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities", "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires", "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo", "RuinReward.uniques", "TerrainType.name", "CityStateType.friendBonusUniques",
-"CityStateType.allyBonusUniques", "Era.citySound", "keyShortcut", "BeliefType", "Promotion.name", "milestones", "FormattedLine.text", "/search/topics", "order", "asc", "unciv-mod repositories:>1", "translationKey", "hashMapKey", "ParsedLine(raw=", ", isTranslatable=", ", translationKey=", ", hashMapKey=", ", defaultValue=", "UnitNameGroups", "getType(...)", "getSuperclass(...)", "i:b:/Icons.atlas:27878:1", "i:b:/EasterEggs.png:175142:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/UnitPromotionIcons.atlas:6074:1",
-"i:b:/NationIcons.png:205494:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/Tutorials.json:67128:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1", "i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1",
-"i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1", "i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1",
-"i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1", "i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1",
-"i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/translations/Ukrainian.properties:687338:1", "i:b:/jsons/translations/Rusyn.properties:450657:1", "i:b:/jsons/translations/German.properties:555195:1", "i:b:/jsons/translations/Toki_Pona.properties:472385:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67631:1",
-"i:b:/jsons/translations/Norwegian.properties:415200:1", "i:b:/jsons/translations/Navajo.properties:407157:1", "i:b:/jsons/translations/Bosnian.properties:407469:1", "i:b:/jsons/translations/Bulgarian.properties:475190:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506080:1", "i:b:/jsons/translations/Belarusian.properties:426545:1", "i:b:/jsons/translations/Japanese.properties:536506:1", "i:b:/jsons/translations/Filipino.properties:467243:1", "i:b:/jsons/translations/Hungarian.properties:561877:1",
-"i:b:/jsons/translations/Czech.properties:456759:1", "i:b:/jsons/translations/Lithuanian.properties:454560:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503261:1", "i:b:/jsons/translations/Maltese.properties:534763:1", "i:b:/jsons/translations/Spanish.properties:537733:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1", "i:b:/jsons/translations/Thai.properties:425819:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:411698:1", "i:b:/jsons/translations/Vietnamese.properties:615252:1",
-"i:b:/jsons/translations/Zulu.properties:408407:1", "i:b:/jsons/translations/Afrikaans.properties:407892:1", "i:b:/jsons/translations/Hindi.properties:426189:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:538780:1", "i:b:/jsons/translations/Esperanto.properties:516721:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410203:1", "i:b:/jsons/translations/Dutch.properties:531018:1", "i:b:/jsons/translations/Turkish.properties:535301:1", "i:b:/jsons/translations/Portuguese.properties:530376:1",
-"i:b:/jsons/translations/Italian.properties:543832:1", "i:b:/jsons/translations/Bangla.properties:456668:1", "i:b:/jsons/translations/French.properties:556183:1", "i:b:/jsons/translations/Korean.properties:494701:1", "i:b:/jsons/translations/Swedish.properties:521851:1", "i:b:/jsons/translations/Indonesian.properties:539101:1", "i:b:/jsons/translations/Romanian.properties:442634:1", "i:b:/jsons/translations/Russian.properties:709949:1", "i:b:/jsons/translations/English.properties:405374:1", "i:b:/jsons/translations/Croatian.properties:518192:1",
-"i:b:/jsons/translations/Latin.properties:461020:1", "i:b:/jsons/translations/completionPercentages.properties:828:1", "i:b:/jsons/translations/Galician.properties:530339:1", "i:b:/jsons/translations/Catalan.properties:543046:1", "i:b:/jsons/translations/Malay.properties:404461:1", "i:b:/jsons/translations/Greek.properties:416362:1", "i:b:/jsons/translations/Polish.properties:536126:1", "i:b:/jsons/translations/Finnish.properties:410857:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1",
-"i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1", "i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1", "i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1",
-"i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1", "i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1",
-"i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1", "i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1",
-"i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1", "i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/Tech.atlas:9607:1", "i:b:/Flags.atlas:5544:1",
-"i:b:/ConstructionIcons.atlas:39142:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/Flags.png:314468:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/nonmetalhit.mp3:3168:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/arrow.mp3:8976:1", "i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/construction.mp3:7083:1",
-"i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/fire.mp3:149277:1", "i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/wagon.mp3:30093:1",
-"i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityRenaissance.ogg:176251:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/click.mp3:2763:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/cityInformation.ogg:138114:1", "i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/slider.mp3:2996:1",
-"i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/cityIndustrial.ogg:162433:1", "i:b:/Atlases.json:132:1", "i:b:/PolicyIcons.atlas:6929:1", "i:b:/Skin.atlas:1753:1",
-"i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.png:976061:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Skin.png:5795:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1",
-"c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
+"kotlinx.serialization.json.JsonElement", "gitRepoUrl", "/archive/", ".zip", "/archive/refs/heads/", "https://codeload.github.com/", "/zip/", "x-ratelimit-remaining", "x-ratelimit-reset", "/preview.", "^(.*/(.*)/(.*))/archive/(?:.*/)?heads/([^.]+).zip$", "^(.*/(.*)/(.*))/tree/(.+?)/?$", "^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$", "^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$", "^(.*/(.*)/(.*))/archive/([0-9a-z]{40})\\.zip$", "^.*//.*/(.+)/(.+?)/?$", "-unknown-", "^.*//(?:.*/)*([^/]+\\.zip)$", "/archive/refs/tags/",
+".updating", "Invalid Mod archive structure", "-main", "-master", "That is not a valid ZIP file", "ZIP entry points outside the destination", "$this$config", "^https://github\\.com/([^/]+)/([^/]+)/archive/(.+)\\.zip$", "attachment;\\s*filename\\s*=\\s*([\"\'])?(.*?)\\1(;|$)", "Images\\..*", "\\.github", ".*\\.atlas", ".*\\.png", ".*\\.md", "\\.nomedia", "license", "tryLockTile", "tryLockTile(Lcom/unciv/view/TileView;)Z", "tryUnlockTile", "tryUnlockTile(Lcom/unciv/view/TileView;)Z", "holder", "newActors", "Background",
+"Lost", "Won", "Can\'t create file ", " since parent path denotes regular file", "showMinimap", "getShowMinimap()Z", "showZoomButtons", "getShowZoomButtons()Z", "forbidPopupClickBehindToClose", "getForbidPopupClickBehindToClose()Z", "useCirclesToIndicateMovableTiles", "getUseCirclesToIndicateMovableTiles()Z", "showUnitMovements", "getShowUnitMovements()Z", "showSettlersSuggestedCityLocations", "getShowSettlersSuggestedCityLocations()Z", "showTileYields", "getShowTileYields()Z", "showWorkedTiles", "getShowWorkedTiles()Z",
+"showResourcesAndImprovements", "getShowResourcesAndImprovements()Z", "showPixelImprovements", "getShowPixelImprovements()Z", "continuousRendering", "getContinuousRendering()Z", "unitMovementButtonAnimation", "getUnitMovementButtonAnimation()Z", "unitActionsTableAnimation", "getUnitActionsTableAnimation()Z", "mapAutoScroll", "getMapAutoScroll()Z", "$this$addWrapped", "Multi-turn AutoPlay amount", "extraCustomServerOptions", "dropboxOptions", "] Attack Sound", " {}", ": {[", "] Attack Sound}", "Notification [1]",
+"Notification [2]", "Adopt policy", "otherGameTurnNotificationSound", "getOtherGameTurnNotificationSound()Lcom/unciv/models/UncivSound;", "getValue()Lcom/unciv/ui/popups/options/MultiplayerSelectBoxHelpers$UncivSoundLabeled;", "soundsProvider", "lateInitialize$soundsProvider(Lcom/unciv/logic/files/IMediaFinder$LabeledSounds;)Lkotlinx/coroutines/flow/Flow;", "useAStarPathfinding", "getUseAStarPathfinding()Z", "VISIBLE_MAP", "getVISIBLE_MAP()Z", "SHOW_TILE_COORDS", "getSHOW_TILE_COORDS()Z", "SHOW_SETTLER_SCORES",
+"getSHOW_SETTLER_SCORES()Z", "SHOW_TILE_IMAGE_LOCATIONS", "getSHOW_TILE_IMAGE_LOCATIONS()Z", "SHOW_FPS", "getSHOW_FPS()Z", "saveZipped", "getSaveZipped()Z", "enableSceneDebug", "getEnableSceneDebug()Lcom/unciv/ui/screens/basescreen/SceneDebugMode;", "showLongPressIndicators", "getShowLongPressIndicators()Lcom/unciv/models/metadata/GameSettings$LongPressIndicatorSetting;", "godMode", "getGodMode()Z", "loadAsHotseatFromClipboard", "loadAsHotseatFromClipboard()V", "sequence1", "sequence2", "Intentional crash",
+"GithubTopicQuery", "Expected end of the object or comma", "Cannot read Json element because of unexpected ", "desc", "AutoPlayEndTurn", "AutoPlayMilitary", "AutoPlayCivilian", "shower", "dazzler", "wagon", "buyTileButton", "kotlinx.serialization.json.JsonObject", "JsonNull", "JsonLiteral", "JsonObject", "JsonArray", "Demographic", "newData", "newSelectedCiv", "sliderChanged", "sliderChanged(F)V", "togglePause", "togglePause()V", "orientation", "Do you want to reset completed tutorials?", "Reset", "MusicDownload",
+" \r\n\t\\", "(?<!:)/{2,}", "URL must start with http:// or https://", "TestIsAlive", "Your current password was rejected from the server", "You userId is unregistered! Set password to secure your userId", "Your current password has been succesfully verified", "Your authentication status could not be determined", "1234567890", "Autosave turns must be larger than 0!", "Autosave turns over 200 may take a lot of space on your device.", "Flow context cannot contain job in it. Had ", "loadFonts", "addFontFamilySelect$loadFonts()Lkotlinx/coroutines/flow/Flow;",
+"Invalid ID!", "Doing this will reset your current user ID to the clipboard contents - are you sure?", "WriteTranslations", "GenerateScreenshot", "An unknown field for index ", "See your stats breakdown", "Convert gold to science", "Great person points", "Current points", "Points per turn", "Pending trades", "Current trades", "OverviewScreen/TradesOverviewTab/OffersTable", "Click an icon to see the stats of this religion", "Religions to be founded: [?]", "Religions to be founded: [", "Minimal Faith required for\nthe next [great prophet equivalent]:",
+"Religious status:", "Religion Name:", "Pantheon Name:", "OverviewScreen/ReligionOverviewTab/BeliefDescription", "Founding Civ:", "Cities following this religion:", "Followers of this religion:", "Holy City:", "Far away", "Somewhere around [", "Near [", "closedTurns", "OverviewScreen/NotificationLog/HighlightColor1", "#f0ead6", "OverviewScreen/NotificationLog/HighlightColor2", "#f5c993", "{Current turn} | ", "⏳ {", "} | ", "Current turn", "Mod: [", "#daa520", "Wrong number of repetitions of X pattern at ", "highMin",
+"highMax", "relative", "scalingCount", "scaling", "timelineCount", "timeline", "independent", "The loaded particle effect descriptor file uses an old invalid format. Please download the latest version of the Particle Editor tool and recreate the file by loading and saving it again.", "ParticleEmitter", "Missing value: independent", "colorsCount", "shape", "edges", "side", "single", "animated", "North", "NorthEast", "SouthEast", "South", "SouthWest", "NorthWest", "filterOtherUnit", "getBaseUnitCivilopediaTextLines$lambda$0$filterOtherUnit(Lcom/unciv/models/ruleset/unit/BaseUnit;Lcom/unciv/models/ruleset/unit/BaseUnit;)Z",
+"Pick promotion", "Default promotions for [", "null cannot be cast to non-null type com.badlogic.gdx.scenes.scene2d.ui.Cell<com.badlogic.gdx.scenes.scene2d.Actor?>", "node", "adoptedLabelStyle", "PromotionScreen/PromotionButton", "⏳\n", " - {Path to [", "] is ambiguous}", "\\f", "\\u", "General/DisabledBox", "Requirements could not be determined.\nChoose a base to check this Mod.", "Load latest multiplayer state after error", "Authenticate", "Please enter your server password", "complete", "complete(Ljava/lang/Object;)Z",
+"National Wonders", "pediaScreen", "linkAction", "-Combined-", "Search text:", "Mod filter:", "growX(...)", "Search!", ".*", "Invalid regular expression", "Results", "resultExpander", "imageUpTint", "imageOverTint", "General/KeyCapturingButton", "initialStyle", "null cannot be cast to non-null type com.unciv.ui.components.widgets.KeyCapturingButton.KeyCapturingButtonStyle", "getImage(...)", "Hit the desired key now", "myButton", "modCheckResult", "Are you really sure you want to play with the following known problems?",
+"Error:", "«RED»Error«»:", "Warning:", "«GOLD»Warning«»:", "OK:", "«GREEN»OK«»:", "Rank", "Value", "Best", "Average", "Worst", "VictoryScreen/CivGroup", "civEntry", "Could not save game to clipboard!", "Could not delete game!", "newName", "onException", "Changing name of game %s to", "Base values", "Bonuses", "Final", "- ", "onLoaded", "Initiating UI to save GameInfo %s to custom location %s", "getValue(...)", "That map is invalid!", "{That map is invalid!}\n{(\"[", "]\" does not conform to TerrainCodesWML)}",
+"base", "Please enter a file name", "File name:", "/\\/\\/", "Do you want to overwrite ", "absoluteLocalPath", "absoluteExternalPath", "external(...)", "Ⓔ", "Ⓛ", "  ..", "parent(...)", "extensions", "We will remember this.", ".denounced", ".attacked", "gppBreakdown", "«GOLD»{", "}«» ({", "missingFields", "Field \'", "Fields ", " are required for type with serial name \'", "\', but they were missing", "\' is required for type with serial name \'", "\', but it was missing", "Can\'t begin reading element, unexpected token",
+"Failed to write body: ", "columns", "SortableGrid currently does not support separateHeader combined with expanding columns", "SortableGrid initialized with all columns hidden", "You can\'t call SortableGrid.getHeader unless you set separateHeader to true", "reversed(...)", "column", "headerActor", "CityColumn", "Status\n(puppet, resistance or being razed)", "ConstructionIcon", "Garrison", "Garrisoned by unit", "CityDefense", "City defense", "Majority Religion", "details", "totals", "actionContext", "EditName",
+"†", "RangedStrength", "‡", "Ranged strength", "➡", "ClosestCity", "Closest city", "Health", "OverviewScreen/UnitOverviewTab/UnitSupplyTable", "Base Supply", "Total Supply", "In Use", "Supply Deficit", "Production Penalty", "Increase your supply or reduce the amount of units to remove the production penalty", "point", "square", "ellipse", "both", "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.", "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.",
+"MapLoader", "Failed to save map", "REGULAR", "GREYED_OUT", "0%", "} - {", "^\n                (((?<start>\\d+)|[A-Za-z\\d_]+)\\ )*         # Space-separated prefixes allowed, if numeric it\'s a starting location, others are scenario-specific (we ignore)\n                (?<base>[A-Z_][a-z\\\\|/]{1,3})             # mandatory layer\n                (\\^(?<layer>[A-Z_][a-z\\\\|/]{1,3}))?       # optional layer separated by `^`\n            $", "jsons/WesnothImportMappings.json", "fallback", "Choose a Wesnoth map file",
+"Choose an Open Doctrines map", ".odmap", "Unciv map", "Open Doctrines map export", "Are you SURE you want to delete this mod?", "https://yairm210.github.io/Unciv/Other/Multiplayer/#hosting-a-multiplayer-server", "Ascending", "Descending", "conditionalType", "undefeatedCivs", "toggleSelection", "toggleSelection(Lcom/unciv/logic/civilization/Civilization;)V", "selectedCivs", "selectedRelations", "groupName", "groupColor", "Unbuilt", "Not built", "NotFound", "Not found", " <", "Would you like to purchase [", "You are buying a religious unit in a city that doesn\'t follow the religion you founded ([",
+"]). This means that the unit is tied to that foreign religion ([", "]) and will be less useful.", "Are you really sure you want to purchase this unit?", "absolute(...)", "Exception while generating map", "The parsed date is outside the range representable by Instant (Unix epoch second ", "Cancelling request because engine Job failed with error: ", "Cancelling request because engine Job completed", "Engine failed", "UnitIcons/Settler", "{Total} ", "OtherIcons/CityStatus", "BuildingIcons/Walls", "ReligionIcons/Holy",
+"] ⛏", "Both size ", " and step ", " must be greater than zero.", "size ", "onPromotionsTableClick", "getPromotionsTable$onPromotionsTableClick(ZLcom/unciv/view/MapUnitView;Lcom/unciv/ui/screens/overviewscreen/UnitOverviewTab;Ljava/lang/String;)V", "}/{", "civWidget", "otherCivWidget", "civ1", "civ2", "diagram", "Number of tiles with this resource\nin your territory, without an\nappropriate improvement to use it", "WLTK+", "Number of your cities celebrating\n\'We Love The King Day\' thanks\nto access to this resource",
+"WLTK demand", "WLTK-", "Number of your cities\ndemanding this resource for\n\'We Love The King Day\'", "Trade offer", "Resources we\'re offering in trades", "The currently accumulated stockpile amount", "turnTable", "OverviewScreen/NotificationOverviewTable/Notification", "pathToSelection", "prerequisites", "Link copied to clipboard", "newSort", "sortSymbol", "isAlliedAndUnimproved", "getLabel$isAlliedAndUnimproved(Lcom/unciv/ui/screens/overviewscreen/ResourcesOverviewTab;Lcom/unciv/logic/map/tile/Tile;)Z",
+"$this$request", "per_page", "$this$paginatedRequest", "/search/repositories", "sort", "stars", " topic:unciv-mod fork:true", "$this$replaceResponse", "IGNORE_CASE", "MULTILINE", "LITERAL", "UNIX_LINES", "COMMENTS", "DOT_MATCHES_ALL", "CANON_EQ", "sortBy", "kotlinx.serialization.json.JsonNull", "kotlinx.serialization.json.JsonPrimitive", "This input can only handle primitives with \'primitive\' tag", "mapPreview", "UInt", "ULong", "UByte", "UShort", "kotlinx.serialization.json.JsonArray", "MapEntry(key=", "#FDA",
+"DataPoint(x=", ", civ=", "Terrain/River", "Remove rivers", "Bottom left river", "Bottom river", "Bottom right river", "Spawn river from/to", "Any Civ", "Buy [", "] tiles in ring [", "][", "This serializer can be used only with Json format.Expected Encoder to be JsonEncoder, got ", "Could not load game from clipboard!", "Current game copied to clipboard!", "It looks like we can\'t make a map with the parameters you requested!", "multiplayerScreen", "GameID", "Paste gameID from clipboard", "Add friend", "Edit friend",
+"Failed!", "Success!", "Auth rejected for unknown reasons, please try again.", "ID successfully set!", "../../extraImages", "/itch.io image.png", "/GithubPreviewImage.png", "/Feature graphic - Google Play.png", "../../fastlane/metadata/android/en-US/images/featureGraphic.png", "Downloaded!", "] was deleted.", "OtherIcons/Politics-diagram-bg", "Diagram line colors", "Move to the end of the queue", "Move to the top of the queue", "moveQueueTop", "moveQueueTop()Z", "moveQueueEnd", "moveQueueEnd()Z", "addQueueTop",
+"addQueueTop()Z", "addAllQueues", "addAllQueues()V", "Disable in this city", "Disable in all cities", "Enable in this city", "Enable in all cities", "https://api.github.com", "X-GitHub-Api-Version", "2022-11-28", "application/vnd.github+json", "Github", "token", "Bearer ", "Map import", "Open Doctrines map import", "Available founder beliefs", "Available follower beliefs", "Religions already founded", "Available religion symbols", "Number of civilizations * [", "] + [", "Estimated number of civilizations * [",
+"Could not save game to custom location!", "MapGeneratorSteps.All cannot be used in generateSingleStep", "No element of the collection was transformed to a non-null value.", "Invalid game ID!", "AddMultiplayerGame", "To add a friend, ask him to send you his player ID.\nClick the \'Add friend\' button.\nInsert his player ID and a name for him.\nThen click the \'Add friend\' button again.\n\nAfter that you will see him in your friends list.\n\nA new button will appear when creating a new\nmultiplayer game, which allows you to select your friend.",
+"Failed to set password!", "Password set successfully for server [", "Exception during GitHub download", "Could not download ", "Remove", "UNAUTHORIZED", "UNREGISTERED", "VERIFIED", "UNKNOWN", "modDataList", "Error saving mod cache", "Error while creating game", "\'[", "]\' copied to clipboard!", "Map saved successfully!", "It looks like your map can\'t be saved!", "/repos/", "/git/trees/", "recursive", "Request timeout has expired [url=", ", request_timeout=", "unknown", " ms]", "#888", "] starting location",
+"image/png", "preview.", "image/jpeg", "CityScreen/CityConstructionTable/PickConstructionButton", "$this$timeout", "io.ktor.client.plugins.HttpTimeout", "HttpTimeout", "Mod archive not found", "CF-RAY", "Servers requiring authentication are not supported", "cf-mitigated", "challenge", "Blocked by Cloudflare", "Unexpected response: [", "Server failure: [", "Unknown Issue!\nStatus: ", "Content-Disposition", "\nBody:[", "reportProgress", "downloadAndExtract$reportProgress(JLkotlin/jvm/functions/Function2;JLjava/lang/Long;)V",
+"<init>(Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)V", "\ud83d\ude00zzz", "addAllQueuesTop", "addAllQueuesTop()V", "removeAllQueues", "removeAllQueues()V", "disableEntry", "disableEntry()Z", "disableEntryInAllCities", "disableEntryInAllCities()Z", "enableEntry", "enableEntry()Z", "enableEntryInAllCities", "enableEntryInAllCities()Z", "Revealed by:", "{Can be found on}:", "{Can be found on} {", "Improved by [", "{Bonus stats for improvement}: ", "{Improvements that provide this resource}:", "{Buildings that provide this resource}:",
+"{Technologies that provide this resource}:", "{Buildings that consume this resource}:", "{Units that consume this resource}: ", "{Buildings that require this resource improved near the city}: ", "ring buffer is full", "{Unit types}:", " .-*_", "] Downloaded!", "request-timeout", "Could not download music!", "modSelection", "Translation files are generated successfully.", "Failed to generate translation files", "getSimpleName(...)", "defaultFileFilter", "defaultFileFilter(Ljava/io/File;)Z", "jsons/translations/template.properties",
+"Global Tutorials", "access$jsonFolder(...)", "\n\n#################### Lines from Unique Types #######################\n", "\n######### ", " ###########\n", "\n\n#################### Lines from Countables #######################\n", "\n\n#################### Lines from spy actions #######################\n", "\n\n#################### Lines from diplomatic modifiers #######################\n", "\n\n#################### Lines from demands #######################\n", "\n\n#################### Lines from personality biases #######################\n",
+"\n### ", " \n", "\n\n#################### Lines from key bindings #######################\n", "\n#################### Lines from ", " ####################\n", "jsons/translations/%s.properties", "# This is an empty line ", " # Requires translation!", "\n\n\n", "jsons/translations/%s.properties.bak", "#################### Possibly unused ####################", "# These were found in the original translation file, but not as required translation from the json scan.", "# Automatically generated - ", "for your info only",
+"do not edit manually", "short_description.txt", "Fastlane_short_description", "full_description.txt", "Fastlane_full_description", "Fastlane files are generated successfully.", "Failed to generate fastlane files", "../../fastlane/metadata/android/", "getLanguage(...)", "../../changelog.md", "## \\S*([^#]*)", "../../buildSrc/src/main/kotlin/BuildConfig.kt", "appCodeNumber = (\\d*)", "../../fastlane/metadata/android//en-US/changelogs/", ".txt", "\n{4,}", "fileLocation", "ScreenshotConfig(width=", ", screenSize=",
+", fileLocation=", ", centerTile=", ", attackCity=", "«RED»{Invalid link!}«»", "newModUIData", "Could not download [", "replaceableUniques", "rulesetForValidation", "ModError: %s - %s", "Replace \"%s\" with \"%s\"", "Uniques updated!", "Maybe you put too many players into too small a map?", "Could not upload game!", "kotlinx.serialization.json.JsonLiteral", "\n                The name of serial descriptor should uniquely identify associated serializer.\n                For serial name ", " there already exists ",
+".\n                Please refer to SerialDescriptor documentation for additional information.\n            ", "selectedFriend", "iRulesetObject", "Nothing found!", "#f53", "Length out of bounds: ", "Offset out of bounds: ", "Pushback buffer full", "Could not export map", "handle", "DisposeHandlersOnCancel[", "Error displaying map \"", "Error loading map!", "{This map has errors:}\n\n", "\n\n{The incompatible elements have been removed.}", "Error loading map \"", "{Error loading map!}", "\n{", "jsonsFolder",
+"fileFilter", "Translation writer took %sms for %s", "filePath", "resultStrings", "getFields(...)", "# This is an empty line  ", "aiFreeTechs", "aiFreeUnits", "attackSound", "cannotBeBuiltWith", "cultureBuildings", "excludedDifficulties", "improvingTech", "obsoleteTech", "occursOn", "promotions", "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities", "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires", "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
+"terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo", "RuinReward.uniques", "TerrainType.name", "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques", "Era.citySound", "keyShortcut", "BeliefType", "Promotion.name", "milestones", "FormattedLine.text", "/search/topics", "order", "asc", "unciv-mod repositories:>1", "translationKey", "hashMapKey", "ParsedLine(raw=", ", isTranslatable=", ", translationKey=", ", hashMapKey=", ", defaultValue=", "UnitNameGroups", "getType(...)", "getSuperclass(...)",
+"i:b:/Icons.atlas:27878:1", "i:b:/EasterEggs.png:175142:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/UnitPromotionIcons.atlas:6074:1", "i:b:/NationIcons.png:205494:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/Tutorials.json:67128:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1",
+"i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1",
+"i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1",
+"i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/translations/Ukrainian.properties:687338:1", "i:b:/jsons/translations/Rusyn.properties:450657:1", "i:b:/jsons/translations/German.properties:555195:1",
+"i:b:/jsons/translations/Toki_Pona.properties:472385:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67631:1", "i:b:/jsons/translations/Norwegian.properties:415200:1", "i:b:/jsons/translations/Navajo.properties:407157:1", "i:b:/jsons/translations/Bosnian.properties:407469:1", "i:b:/jsons/translations/Bulgarian.properties:475190:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506080:1", "i:b:/jsons/translations/Belarusian.properties:426545:1",
+"i:b:/jsons/translations/Japanese.properties:536506:1", "i:b:/jsons/translations/Filipino.properties:467243:1", "i:b:/jsons/translations/Hungarian.properties:561877:1", "i:b:/jsons/translations/Czech.properties:456759:1", "i:b:/jsons/translations/Lithuanian.properties:454560:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503261:1", "i:b:/jsons/translations/Maltese.properties:534763:1", "i:b:/jsons/translations/Spanish.properties:537733:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
+"i:b:/jsons/translations/Thai.properties:425819:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:411698:1", "i:b:/jsons/translations/Vietnamese.properties:615252:1", "i:b:/jsons/translations/Zulu.properties:408407:1", "i:b:/jsons/translations/Afrikaans.properties:407892:1", "i:b:/jsons/translations/Hindi.properties:426189:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:538780:1", "i:b:/jsons/translations/Esperanto.properties:516721:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410203:1",
+"i:b:/jsons/translations/Dutch.properties:531018:1", "i:b:/jsons/translations/Turkish.properties:535301:1", "i:b:/jsons/translations/Portuguese.properties:530376:1", "i:b:/jsons/translations/Italian.properties:543832:1", "i:b:/jsons/translations/Bangla.properties:456668:1", "i:b:/jsons/translations/French.properties:556183:1", "i:b:/jsons/translations/Korean.properties:494701:1", "i:b:/jsons/translations/Swedish.properties:521851:1", "i:b:/jsons/translations/Indonesian.properties:539101:1", "i:b:/jsons/translations/Romanian.properties:442634:1",
+"i:b:/jsons/translations/Russian.properties:709949:1", "i:b:/jsons/translations/English.properties:405374:1", "i:b:/jsons/translations/Croatian.properties:518192:1", "i:b:/jsons/translations/Latin.properties:461020:1", "i:b:/jsons/translations/completionPercentages.properties:828:1", "i:b:/jsons/translations/Galician.properties:530339:1", "i:b:/jsons/translations/Catalan.properties:543046:1", "i:b:/jsons/translations/Malay.properties:404461:1", "i:b:/jsons/translations/Greek.properties:416362:1", "i:b:/jsons/translations/Polish.properties:536126:1",
+"i:b:/jsons/translations/Finnish.properties:410857:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1", "i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1",
+"i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1",
+"i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1",
+"i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1", "i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1",
+"i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/Tech.atlas:9607:1", "i:b:/Flags.atlas:5544:1", "i:b:/ConstructionIcons.atlas:39142:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/Flags.png:314468:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/nonmetalhit.mp3:3168:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/arrow.mp3:8976:1",
+"i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/construction.mp3:7083:1", "i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/fire.mp3:149277:1",
+"i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/wagon.mp3:30093:1", "i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityRenaissance.ogg:176251:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/click.mp3:2763:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/cityInformation.ogg:138114:1",
+"i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/slider.mp3:2996:1", "i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/cityIndustrial.ogg:162433:1",
+"i:b:/Atlases.json:132:1", "i:b:/PolicyIcons.atlas:6929:1", "i:b:/Skin.atlas:1753:1", "i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.png:976061:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Skin.png:5795:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1",
+"c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
 "Downloading", "Finishing", "initialName", "initialID", "Please input a name for your friend!", "Paste player ID from clipboard", "Please input a player ID for your friend!", "Friend name", "Player ID", "Player ID is incorrect", "friendName", "Friend name is already in your friends list!", "Player ID is already in your friends list!", "You have to write a name for your friend!", "You have to write an ID for your friend!", "You cannot add your own player ID in your friend list!", "Player name already used!",
 "Player ID already used!", "ring buffer filled size: ", " cannot be larger than the buffer size: ", "ring buffer filled size should not be negative but it is ", "n shouldn\'t be negative but it is ", "n shouldn\'t be greater than the buffer size: n = ", ", size = ", "provinces.png", "That is not an Open Doctrines map - it has no provinces.png", "provinces.json", "That map\'s provinces.png is empty", "is_sea", "a TileMap with no tiles", "That map\'s declared size [", "] does not match its [", "] tiles - [", "] were found on the grid",
 "That map is all water - there is nothing to export", "{\"name\":", ",\"description\":\"Exported from Unciv\",\"author\":\"Unciv\",\"map_date\":\"January 2000 AD\",\"license\":\"\",\"has_scripts\":false}", "land_sea.png", "countries.json", "metadata.json", "#%02X%02X%02X", "Map exported as [", "Could not save map!", "Could not load the missing mods!", "Downloaded ", "Downloading unupdated mods - ", "Updating mods: ", "Downloading unupdated mods - 0/", "$this$getOrNull", "raw.githubusercontent.com", "Are you sure you want to delete this friend?",
