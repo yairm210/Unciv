@@ -16,7 +16,7 @@ jobs:
       pull-requests: write # adds or removes the Conflicts label and comments
     steps:
       - name: check conflicting PRs
-        uses: eps1lon/actions-label-merge-conflict@releases/2.x
+        uses: eps1lon/actions-label-merge-conflict@v2.1.0
         with:
           dirtyLabel: "Conflicts"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
