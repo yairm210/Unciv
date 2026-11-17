@@ -716,9 +716,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun signDeclarationOfFriendship() {
         setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
-        // before adjusting with game speed - consider side effects
-        setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
+        // Lasts as long as other diplomatic deals, so it scales with game speed like them
+        val duration = civInfo.gameInfo.speed.dealDuration
+        setFlag(DiplomacyFlags.DeclarationOfFriendship, duration)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, duration)
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",

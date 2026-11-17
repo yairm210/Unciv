@@ -261,7 +261,7 @@ class AlertPopup(
         addGoodSizedLabel(
                 if (otherciv.nation.declaringFriendship.isNotEmpty()) otherciv.nation.declaringFriendship else "My friend, shall we declare our friendship to the world?"
         ).row()
-        addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
+        addCloseButton("Declare Friendship ([${viewingCiv.gameInfo.speed.dealDuration}] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }.row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
