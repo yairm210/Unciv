@@ -34,6 +34,7 @@ import com.unciv.models.translations.getPartsInsideCurlies
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
+import com.unciv.models.translations.trWithIconFreePlaceholders
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.GitInfo
 import com.unciv.testing.RedirectOutput
@@ -475,6 +476,45 @@ class TranslationTests {
             Assert.assertEquals(rulesetObjectIcon + rulesetObjectName, rulesetObjectName.tr(hideStats = true))
         } finally {
             FontRulesetIcons.rulesetObjectNameToChar.remove(rulesetObjectName)
+        }
+    }
+
+    @Test
+    fun selectivePlaceholderIconsFollowRolesWithAndWithoutTranslation() {
+        setupUncivGame()
+        val sameName = "Test city and nation"
+        val unitName = "Test gifted unit"
+        val nationIcon = '\uE000'
+        val unitIcon = '\uE001'
+        val icons = FontRulesetIcons.rulesetObjectNameToChar
+        icons[sameName] = nationIcon
+        icons[unitName] = unitIcon
+        val gift = "[$sameName] gave us a [$unitName] as gift near [$sameName]!"
+        fun String.renderNotification() = trWithIconFreePlaceholders { name, value ->
+            name == "cityName" && value == sameName
+        }
+
+        try {
+            Assert.assertEquals("$nationIcon$sameName gave us a $unitIcon$unitName as gift near $sameName!",
+                gift.renderNotification())
+            Assert.assertEquals("$nationIcon$sameName gave us a $unitIcon$unitName as gift near $nationIcon$sameName!",
+                gift.tr())
+            Assert.assertEquals("$sameName has expanded its borders!",
+                "[$sameName] has expanded its borders!".renderNotification())
+            Assert.assertEquals("Your territory has been stolen by $nationIcon$sameName!",
+                "Your territory has been stolen by [$sameName]!".renderNotification())
+            val unknown = "An untyped mod notice with [$sameName] and [$sameName]."
+            Assert.assertEquals(unknown.tr(), unknown.renderNotification())
+
+            val language = "Simplified_Chinese"
+            val languageFile = Gdx.files.internal("jsons/translations/$language.properties")
+            UncivGame.Current.translations.createTranslations(language, TranslationFileReader.read(languageFile))
+            UncivGame.Current.settings.language = language
+            Assert.assertEquals("${nationIcon}${sameName}将${sameName}附近的${unitIcon}${unitName}赠予我们！",
+                gift.renderNotification())
+        } finally {
+            icons.remove(sameName)
+            icons.remove(unitName)
         }
     }
 

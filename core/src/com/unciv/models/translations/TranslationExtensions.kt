@@ -74,31 +74,50 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false) =
     tr(TranslationCache.language, hideIcons, hideStats)
 
 @Readonly
-fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
+fun String.tr(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String =
+    translate(language, hideIcons, hideStats)
+
+/** Translate normally, omitting automatic ruleset icons from selected named placeholders. */
+@Readonly
+fun String.trWithIconFreePlaceholders(hideIcon: (name: String, value: String) -> Boolean): String =
+    translate(TranslationCache.language, hideIcon = hideIcon)
+
+@Readonly
+private fun String.translate(
+    language: String,
+    hideIcons: Boolean = false,
+    hideStats: Boolean = false,
+    hideIcon: ((name: String, value: String) -> Boolean)? = null,
+): String {
     // '<' and '>' checks for quick 'no' answer.
     if (supportNestingPointy) {
         val ltIndex = findNextTopLevel(this, 0, '<')
         if (ltIndex >= 0)
-            return translateConditionals(language, hideIcons, ltIndex)
+            return translateConditionals(language, hideIcons, ltIndex, hideIcon)
     } else {
         val ltIndex = indexOf('<')
         if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
-            return translateConditionals(language, hideIcons, ltIndex)
+            return translateConditionals(language, hideIcons, ltIndex, hideIcon)
     }
-    return trNoConditionals(language, hideIcons, hideStats)
+    return trNoConditionals(language, hideIcons, hideStats, hideIcon)
 }
 
 @Readonly
-private fun String.trNoConditionals(language: String, hideIcons: Boolean = false, hideStats: Boolean = false): String {
+private fun String.trNoConditionals(
+    language: String,
+    hideIcons: Boolean = false,
+    hideStats: Boolean = false,
+    hideIcon: ((name: String, value: String) -> Boolean)? = null,
+): String {
     // '<' and '>' checks for quick 'no' answer.
     if (supportNestingPointy) {
         val ltIndex = findNextTopLevel(this, 0, '<')
         if (ltIndex >= 0 && findMatchingAnyKind(this, ltIndex) >= 0)
-            return translateConditionals(language, hideIcons, ltIndex)
+            return translateConditionals(language, hideIcons, ltIndex, hideIcon)
     } else {
         val ltIndex = indexOf('<')
         if (ltIndex >= 0 && indexOf('>', ltIndex + 1) >= 0)
-            return translateConditionals(language, hideIcons, ltIndex)
+            return translateConditionals(language, hideIcons, ltIndex, hideIcon)
     }
 
     // curly and square brackets can be nested inside of each other so find the leftmost curly/square
@@ -109,10 +128,10 @@ private fun String.trNoConditionals(language: String, hideIcons: Boolean = false
 
     if (get(splitIndex) == '[')
         // Translate placeholders and placeholder-container separately then reassemble
-        return translatePlaceholders(language, hideIcons, splitIndex)
+        return translatePlaceholders(language, hideIcons, splitIndex, hideIcon)
 
     // Translating partial sentences inside {}
-    return translatePartial(language, hideIcons, splitIndex)
+    return translatePartial(language, hideIcons, splitIndex, hideIcon)
 }
 
 /** Scans for [open]/[close] pairs
@@ -224,18 +243,28 @@ private fun StringBuilder.trimEnd() {
 }
 
 @Readonly
-private fun String.translatePartial(language: String, hideIcons: Boolean, firstPos: Int): String {
+private fun String.translatePartial(
+    language: String,
+    hideIcons: Boolean,
+    firstPos: Int,
+    hideIcon: ((name: String, value: String) -> Boolean)?,
+): String {
     @LocalState
     val sb = StringBuilder(length + 16)
     parsePairs('{', '}', firstPos, supportNestingCurly,
-        emitInside = { start, end -> sb.append( substring(start, end).tr(language, hideIcons) ) },
+        emitInside = { start, end -> sb.append(substring(start, end).translate(language, hideIcons, hideIcon = hideIcon)) },
         emitOutside = { start, end -> sb.append(this, start, end) }
     )
     return sb.toString()
 }
 
 @Readonly
-private fun String.translatePlaceholders(language: String, hideIcons: Boolean, firstPos: Int): String {
+private fun String.translatePlaceholders(
+    language: String,
+    hideIcons: Boolean,
+    firstPos: Int,
+    hideIcon: ((name: String, value: String) -> Boolean)?,
+): String {
     /**
      * So what's all this then?
      * Well, not all languages are like English. So say I want to say "work on Library has completed in Akkad",
@@ -261,12 +290,35 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
     // For input "work on [building] has completed in [city]", `key` would now contain "work on [] has completed in []"
 
     // That is now the key into the translation HashMap!
+    val templateKey = key.toString()
     val translationEntry = UncivGame.Current.translations
-        .get(key.toString(), language, TranslationCache.activeMods)
+        .get(templateKey, language, TranslationCache.activeMods)
+    val languageEntry = translationEntry?.get(language)
 
+    fun translateTerm(index: Int, name: String?): String {
+        val term = termsInMessage[index]
+        val hideTermIcons = hideIcons || (name != null && hideIcon?.invoke(name, term) == true)
+        return term.translate(language, hideTermIcons, hideIcon = hideIcon)
+    }
+
+    if (languageEntry == null && hideIcon != null) {
+        val names = (translationEntry?.entry?.getPlaceholderParameters()
+            ?: TranslationFileReader.getTemplatePlaceholders(templateKey))
+            ?.takeIf { it.size == termsInMessage.size }
+        @LocalState val sb = StringBuilder(length + 16)
+        var index = 0
+        // Source occurrences can have equal values but different roles (e.g. a city and a nation).
+        parsePairs('[', ']', firstPos, supportNestingSquare,
+            emitInside = { _, _ ->
+                sb.append(translateTerm(index, names?.get(index)))
+                index++
+            },
+            emitOutside = { start, end -> sb.append(this, start, end) }
+        )
+        return sb.toString()
+    }
     val translatedWithPlaceholders: String
     val originalWithPlaceholders: String
-    val languageEntry = translationEntry?.get(language)
     if (languageEntry != null) {
         translatedWithPlaceholders = languageEntry
         originalWithPlaceholders = translationEntry.entry
@@ -290,7 +342,7 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
     if (supportNestingSquareReplacement) {
         val substitutions = HashMap<String, String>()
         for (i in termsInMessage.indices) {
-            val translated = termsInMessage[i].tr(language, hideIcons)
+            val translated = translateTerm(i, termsInTranslationPlaceholder[i])
             substitutions.putIfAbsent(termsInTranslationPlaceholder[i], translated)
         }
 
@@ -313,7 +365,8 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
         for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
                 "[${termsInTranslationPlaceholder[i]}]", // re-add square brackets to placeholder terms
-                termsInMessage[i].tr(hideIcons)
+                if (hideIcon == null) termsInMessage[i].tr(hideIcons)
+                else translateTerm(i, termsInTranslationPlaceholder[i])
             )
         }
         return languageSpecificPlaceholder
@@ -321,7 +374,12 @@ private fun String.translatePlaceholders(language: String, hideIcons: Boolean, f
 }
 
 @Readonly
-private fun String.translateConditionals(language: String, hideIcons: Boolean, firstPos: Int): String {
+private fun String.translateConditionals(
+    language: String,
+    hideIcons: Boolean,
+    firstPos: Int,
+    hideIcon: ((name: String, value: String) -> Boolean)?,
+): String {
     /**
      * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
      * can contain multiple filters, such as <vs [{Military} {Water}] units>.
@@ -358,10 +416,10 @@ private fun String.translateConditionals(language: String, hideIcons: Boolean, f
     @Suppress("purity") // mapTo into our own local state
     val translatedConditionals = conditionalContents
         .sortedBy(::sortPriority)
-        .mapTo(ArrayList(conditionalContents.size)) { it.tr(language, hideIcons) }
+        .mapTo(ArrayList(conditionalContents.size)) { it.translate(language, hideIcons, hideIcon = hideIcon) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    val translatedBaseUnique = base.toString().trNoConditionals(language, hideIcons)
+    val translatedBaseUnique = base.toString().trNoConditionals(language, hideIcons, hideIcon = hideIcon)
     @LocalState val sb = StringBuilder(length + 16) // Would be more readable with `buildString`, but: @Purity
     fun appendChangingFirstChar(text: String, transform: Char.(Locale) -> String) {
         if (text.isEmpty()) return

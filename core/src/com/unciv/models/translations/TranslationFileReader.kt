@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.models.ruleset.unique.UniqueType
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 
 @Suppress("ConstPropertyName")
@@ -16,6 +17,19 @@ object TranslationFileReader {
 
     @VisibleForTesting
     const val keyValueSeparator = " = "
+
+    private val templatePlaceholders by lazy {
+        readTemplates { lines ->
+            lines.filterNot { it.isCommentLine() }
+                .map { it.substringBefore(keyValueSeparator).replace("\\n", "\n") }
+                .filter { '[' in it && '<' !in it }
+                .associate { it.getPlaceholderText() to it.getPlaceholderParameters() }
+        }.orEmpty()
+    }
+
+    /** The bundled source names, even when the current language has no translation. */
+    @Readonly
+    internal fun getTemplatePlaceholders(key: String): List<String>? = templatePlaceholders[key]
 
     @VisibleForTesting
     fun String.isCommentLine(): Boolean =

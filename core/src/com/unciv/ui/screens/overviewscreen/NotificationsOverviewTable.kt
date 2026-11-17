@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.models.translations.tr
+import com.unciv.models.translations.trWithIconFreePlaceholders
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
@@ -43,6 +45,12 @@ class NotificationsOverviewTable(
     override val persistableData = (persistedData as? NotificationsTabPersistableData) ?: NotificationsTabPersistableData()
 
     private val notificationLog = viewingPlayer.getCiv().notificationsLog
+    private val formerCityStateNames = viewingPlayer.getCiv().cities.mapNotNull { city ->
+        val founder = city.foundingCivObject
+        if (founder?.isCityState == true && founder !== city.civ && founder.civName == city.name)
+            city.name
+        else null
+    }.toSet()
     private val stageWidth = overviewScreen.stage.width
     private val notificationWidth = stageWidth / 2
     /** Color for notifications that are new this turn but which we have already seen.
@@ -186,7 +194,12 @@ class NotificationsOverviewTable(
     }
 
     private fun getNotificationTable(index: Int, notification: Notification, doHighlight: Boolean) = Table(BaseScreen.skin).apply {
-        val label = ColorMarkupLabel(notification.text, ImageGetter.CHARCOAL, fontSize = 20)
+        val message = if (formerCityStateNames.isEmpty()) notification.text.tr()
+        else notification.text.trWithIconFreePlaceholders { name, value ->
+            // A city and a nation can share a name within the same message.
+            value in formerCityStateNames && (name == "city" || name.equals("cityName", ignoreCase = true))
+        }
+        val label = ColorMarkupLabel.fromTranslatedText(message, ImageGetter.CHARCOAL, fontSize = 20)
             .apply { wrap = true }
         add(label).width(notificationWidth - iconSize * notification.icons.size)
 
