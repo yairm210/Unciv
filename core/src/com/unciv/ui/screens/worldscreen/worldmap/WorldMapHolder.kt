@@ -262,7 +262,7 @@ class WorldMapHolder(
             // (a land unit and a civilian at sea) can only be attacked
             val defender = attackableTile?.getCombatant()
             val capturesByMoving = defender is MapUnitCombatantView && defender.getUnitView().isCivilian()
-                && unitView.getBaseUnit().isRanged() && tileView.isLand == unitView.getBaseUnit().isLandUnit && unitView.canReach(tileView)
+                && unitView.getBaseUnit().isRanged() && tileView.isLand == unitView.getBaseUnit().isLandUnit && unitView.canReachInCurrentTurn(tileView)
             if (capturesByMoving) {
                 /** ****** Right-click Move to capture ****** */
                 moveUnitToTargetTile(listOf(unitView), tileView)
