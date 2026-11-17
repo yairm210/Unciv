@@ -77,15 +77,12 @@ class NativeBitmapFontData(
     override fun getGlyph(ch: Char): BitmapFont.Glyph = super.getGlyph(ch) ?: createAndCacheGlyph(ch)
 
     private fun createAndCacheGlyph(ch: Char): BitmapFont.Glyph {
-        val glyphPixmap = getGlyphPixmap(ch)
-        val charPixmap = glyphPixmap.pixmap
-
         val glyph = BitmapFont.Glyph()
         glyph.id = ch.code
+        val charPixmap = getPixmapFromChar(ch, glyph)
         glyph.width = charPixmap.width
         glyph.height = charPixmap.height
         glyph.xadvance = glyph.width
-        glyph.yoffset = glyphPixmap.yOffset
 
         // Check alpha to guess whether this is a round icon
         // Needs to be done before disposing charPixmap, and we want to do that soon
@@ -146,23 +143,21 @@ class NativeBitmapFontData(
     private fun getPixmapForTextureName(regionName: String) =
         Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(regionName).region)
 
-    private fun getGlyphPixmap(ch: Char): FontImplementation.GlyphPixmap {
+    private fun getPixmapFromChar(ch: Char, glyph: BitmapFont.Glyph): Pixmap {
         val textureName = Fonts.allSymbols[ch]
         if (textureName != null && ImageGetter.imageExists(textureName))
-            return FontImplementation.GlyphPixmap(getPixmapForTextureName(textureName))
+            return getPixmapForTextureName(textureName)
         val actor = FontRulesetIcons.charToRulesetImageActor[ch]
-        if (actor != null) {
-            val pixmap = try {
-                // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
-                FontRulesetIcons.getPixmapFromActor(actor)
-            } catch (_: Exception) {
-                Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
-            }
-            return FontImplementation.GlyphPixmap(pixmap)
-        }
+        if (actor != null)
+            return try {
+                    // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
+                    FontRulesetIcons.getPixmapFromActor(actor)
+                } catch (_: Exception) {
+                    Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
+                }
         if (DiacriticSupport.isEmpty())
-            return fontImplementation.getGlyphPixmap(ch)
-        return fontImplementation.getGlyphPixmap(DiacriticSupport.getStringFor(ch))
+            return fontImplementation.getGlyphPixmap(ch, glyph)
+        return fontImplementation.getGlyphPixmap(DiacriticSupport.getStringFor(ch), glyph)
     }
 
     private fun updateTextureRegions() {

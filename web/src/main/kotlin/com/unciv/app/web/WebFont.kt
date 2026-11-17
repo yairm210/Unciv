@@ -3,10 +3,10 @@ package com.unciv.app.web
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
-import com.unciv.ui.components.fonts.FontImplementation.GlyphPixmap
 import com.unciv.ui.components.fonts.FontMetricsCommon
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.Log
@@ -73,11 +73,13 @@ class WebFont : FontImplementation {
 
     override fun getFontSize(): Int = fontSize
 
-    override fun getCharPixmap(symbolString: String) = getGlyphPixmap(symbolString).pixmap
+    override fun getCharPixmap(symbolString: String) = rasterizeGlyphPixmap(symbolString, null)
 
-    override fun getGlyphPixmap(char: Char) = getGlyphPixmap(char.toString())
+    override fun getGlyphPixmap(char: Char, glyph: BitmapFont.Glyph) = getGlyphPixmap(char.toString(), glyph)
 
-    override fun getGlyphPixmap(symbolString: String): GlyphPixmap {
+    override fun getGlyphPixmap(symbolString: String, glyph: BitmapFont.Glyph) = rasterizeGlyphPixmap(symbolString, glyph)
+
+    private fun rasterizeGlyphPixmap(symbolString: String, glyph: BitmapFont.Glyph?): Pixmap {
         val rasterized = WebFontRasterizer.rasterizeGlyphAligned(
             symbolString,
             fontSize,
@@ -89,7 +91,6 @@ class WebFont : FontImplementation {
         check(rasterized.size >= 3) { "Canvas glyph rasterizer returned no geometry for '$symbolString'" }
         val width = rasterized[0]
         val height = rasterized[1]
-        val yOffset = rasterized[2]
         check(width > 0 && height > 0) { "Canvas glyph rasterizer returned invalid dimensions ${width}x$height for '$symbolString'" }
         val expectedLength = 3L + width.toLong() * height.toLong() * 4L
         check(expectedLength == rasterized.size.toLong()) {
@@ -111,7 +112,8 @@ class WebFont : FontImplementation {
             pixmap.dispose()
             throw ex
         }
-        return GlyphPixmap(pixmap, yOffset)
+        glyph?.yoffset = rasterized[2]
+        return pixmap
     }
 
     override fun getSystemFonts(): Sequence<FontFamilyData> = sequenceOf(FontFamilyData.default)
