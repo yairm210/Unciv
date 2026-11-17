@@ -1,0 +1,28 @@
+
+
+Resolve  - Move mod category button to debug tab, and make visible only on Desktop to avoid problems
+
+Avoid ANRs for mouse button conversions - it looks silly but it's happened more than twice recently
+
+Avoid ANR when opening empire overview screen from top bar
+
+Do not wait for autosave thread on UncivGame.dispose()
+
+Make interrupted autosave not leave us with the default autosave corrupted
+
+Add counterintelligence modifier uniques - By SeventhM
+
+Naval AI: path to water attack stations instead of city centers - By DavidZal
+
+By SomeTroglodyte:
+- Language UI shows native names, fix off-by-two in completion percentages 
+- Web version: Fix broken quoted parameters in dev console 
+- Web version: Suppress double handling of Ctrl-keys by game and browser 
+- Prettify web port a bit 
+
+By ibrahim-iqbal:
+- Add the battle notification templates where only the city lost HP 
+- Charge "Costs [amount] [stat] per turn" for improvements that are not roads 
+- Fix divide by zero in the trades overview when the viewer is the first civ 
+
+Seed the browser font fixture on the game origin - By YosefLm
