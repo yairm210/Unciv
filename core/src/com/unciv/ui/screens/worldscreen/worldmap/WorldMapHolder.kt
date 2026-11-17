@@ -22,6 +22,7 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.models.UncivSound
 import com.unciv.view.ForeignCityView
 import com.unciv.view.GameView
+import com.unciv.view.MapUnitCombatantView
 import com.unciv.view.MapUnitView
 import com.unciv.view.SpyView
 import com.unciv.view.TileView
@@ -257,7 +258,16 @@ class WorldMapHolder(
             val attackableTile = unitView
                     .getAttackableEnemies()
                     .firstOrNull { it.getTileToAttack() == tileView }
-            if (unitView.canAttack() && attackableTile != null) {
+            // As in Civ V, a ranged unit captures a lone enemy civilian by moving onto it; one on the other domain
+            // (a land unit and a civilian at sea) can only be attacked
+            val defender = attackableTile?.getCombatant()
+            val capturesByMoving = defender is MapUnitCombatantView && defender.getUnitView().isCivilian()
+                && unitView.getBaseUnit().isRanged() && tileView.isLand == unitView.getBaseUnit().isLandUnit && unitView.canReach(tileView)
+            if (capturesByMoving) {
+                /** ****** Right-click Move to capture ****** */
+                moveUnitToTargetTile(listOf(unitView), tileView)
+                localShouldUpdate = true
+            } else if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
                 val attackerCombatant = unitView.asCombatant()
                 if (!unitView.tryMovePreparingAttack(attackableTile)) return
