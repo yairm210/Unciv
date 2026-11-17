@@ -219,12 +219,12 @@ object Battle {
                 if (isSelf) {
                     damage = (damage * selfDamageFactor).roundToInt().coerceAtLeast(1)
                 }
-
                 if (aoeDefender.isCivilian() && attacker.isMelee()) {
-                    BattleUnitCapture.captureCivilianUnit(attacker, aoeDefender)
-                    continue
+                    if (attacker.getCivInfo().isAtWarWith(aoeDefender.getCivInfo())) {
+                        BattleUnitCapture.captureCivilianUnit(attacker, aoeDefender)
+                        continue
+                    }
                 }
-
                 triggerCombatUniques(attacker, aoeDefender, tile)
                 aoeDefender.takeDamage(damage)
                 triggerDamageUniquesForUnit(attacker, aoeDefender, tile, CombatAction.Attack)
