@@ -12,13 +12,13 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.min
 
-@Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
+@Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToSingleFunctions and actionTypeToMultiFunctions
 object UnitActionsGreatPerson {
 
     // The hurried amount doesn't depend on the unique, so the first matching one is enough
-    internal fun getHurryResearchActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val unique = unit.getMatchingUniques(UniqueType.CanHurryResearch).firstOrNull() ?: return emptySequence()
-        return sequenceOf(UnitAction(
+    internal fun getHurryResearchAction(unit: MapUnit, tile: Tile): UnitAction? {
+        val unique = unit.getMatchingUniques(UniqueType.CanHurryResearch).firstOrNull() ?: return null
+        return UnitAction(
             UnitActionType.HurryResearch,
             associatedUnique = unique,
             action = {
@@ -29,29 +29,29 @@ object UnitActionsGreatPerson {
                     && unit.civ.tech.currentTechnologyName() != null
                     && !unit.civ.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried)
             }
-        ))
+        )
     }
 
-    internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val unique = unit.getMatchingUniques(UniqueType.CanHurryPolicy).firstOrNull() ?: return emptySequence()
-        return sequenceOf(UnitAction(
+    internal fun getHurryPolicyAction(unit: MapUnit, tile: Tile): UnitAction? {
+        val unique = unit.getMatchingUniques(UniqueType.CanHurryPolicy).firstOrNull() ?: return null
+        return UnitAction(
             UnitActionType.HurryPolicy,
             associatedUnique = unique,
             action = {
                 unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
                 unit.consume()
             }.takeIf {unit.hasMovement()}
-        ))
+        )
     }
 
-    internal fun getHurryWonderActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction).firstOrNull() ?: return emptySequence()
+    internal fun getHurryWonderAction(unit: MapUnit, tile: Tile): UnitAction? {
+        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction).firstOrNull() ?: return null
         val canHurryWonder =
             if (!tile.isCityCenter()) false
             else tile.getCity()!!.cityConstructions.isBuildingWonder()
                 && tile.getCity()!!.cityConstructions.canBeHurried()
 
-        return sequenceOf(UnitAction(
+        return UnitAction(
             UnitActionType.HurryWonder,
             associatedUnique = unique,
             action = {
@@ -63,13 +63,13 @@ object UnitActionsGreatPerson {
 
                 unit.consume()
             }.takeIf { unit.hasMovement() && canHurryWonder }
-        ))
+        )
     }
 
-    internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupConstruction).firstOrNull() ?: return emptySequence()
+    internal fun getHurryBuildingAction(unit: MapUnit, tile: Tile): UnitAction? {
+        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupConstruction).firstOrNull() ?: return null
         if (!tile.isCityCenter())
-            return sequenceOf(UnitAction(UnitActionType.HurryBuilding, associatedUnique = unique, action = null))
+            return UnitAction(UnitActionType.HurryBuilding, associatedUnique = unique, action = null)
 
         val cityConstructions = tile.getCity()!!.cityConstructions
         val currentName = cityConstructions.currentConstructionName() // Once: the queue can change between two reads
@@ -81,9 +81,9 @@ object UnitActionsGreatPerson {
             (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
             cityConstructions.getRemainingWork(currentName).toFloat() - 1
         ).toInt()
-        if (productionPointsToAdd <= 0) return emptySequence()
+        if (productionPointsToAdd <= 0) return null
 
-        return sequenceOf(UnitAction(
+        return UnitAction(
             UnitActionType.HurryBuilding,
             title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
             associatedUnique = unique,
@@ -95,19 +95,19 @@ object UnitActionsGreatPerson {
 
                 unit.consume()
             }.takeIf { unit.hasMovement() && canHurryConstruction }
-        ))
+        )
     }
 
-    internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+    internal fun getConductTradeMissionAction(unit: MapUnit, tile: Tile): UnitAction? {
         val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
             && tile.owningCity?.civ != unit.civ
             && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
         // Enabled-ness doesn't depend on the unique, so the one giving the most influence is the best
         val unique = unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
-            .maxByOrNull { it.params[0].toFloat() } ?: return emptySequence()
+            .maxByOrNull { it.params[0].toFloat() } ?: return null
         val influenceEarned = unique.params[0].toFloat()
 
-        return sequenceOf(UnitAction(
+        return UnitAction(
             UnitActionType.ConductTradeMission,
             associatedUnique = unique,
             action = {
@@ -127,6 +127,6 @@ object UnitActionsGreatPerson {
                     NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                 unit.consume()
             }.takeIf { unit.hasMovement() && canConductTradeMission }
-        ))
+        )
     }
 }
