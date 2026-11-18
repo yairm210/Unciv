@@ -188953,11 +188953,11 @@ cuusw_WorldScreen_update = $this => {
             if (!$this.$uiEnabled) {
                 if (cuuswu_AutoPlay_isAutoPlaying($rt_nullCheck($this.$autoPlay)) && !cul_GameInfo_getOneMoreTurnMode($rt_nullCheck($this.$gameInfo))) {
                     var$1 = $rt_nullCheck($this.$viewingCiv0);
-                    $ptr = 38;
+                    $ptr = 39;
                     continue main;
                 }
                 var$1 = $this;
-                $ptr = 36;
+                $ptr = 37;
                 continue main;
             }
             var$1 = $this.$unitActionsTable;
@@ -189029,11 +189029,11 @@ cuusw_WorldScreen_update = $this => {
         if (!$this.$uiEnabled) {
             if (cuuswu_AutoPlay_isAutoPlaying($rt_nullCheck($this.$autoPlay)) && !cul_GameInfo_getOneMoreTurnMode($rt_nullCheck($this.$gameInfo))) {
                 var$1 = $rt_nullCheck($this.$viewingCiv0);
-                $ptr = 38;
+                $ptr = 39;
                 continue main;
             }
             var$1 = $this;
-            $ptr = 36;
+            $ptr = 37;
             continue main;
         }
         var$1 = $this.$unitActionsTable;
@@ -189077,11 +189077,21 @@ cuusw_WorldScreen_update = $this => {
             break main;
         }
         $tradeRequest = $tmp;
-        $tradeRequest = $tradeRequest === null ? null : cuv_ForeignMapUnitView_getUnit($tradeRequest);
         var$1 = $rt_nullCheck(var$1);
-        $ptr = 39;
-        continue main;
+        $ptr = 36;
     case 36:
+        cuuswua_UnitActionsTable_update(var$1, $tradeRequest);
+        if ($rt_suspending()) {
+            break main;
+        }
+        if (cuuswu_AutoPlay_isAutoPlaying($rt_nullCheck($this.$autoPlay)) && !cul_GameInfo_getOneMoreTurnMode($rt_nullCheck($this.$gameInfo))) {
+            var$1 = $rt_nullCheck($this.$viewingCiv0);
+            $ptr = 39;
+            continue main;
+        }
+        var$1 = $this;
+        $ptr = 37;
+    case 37:
         $tmp = cuup_PopupKt_hasOpenPopups(var$1);
         if ($rt_suspending()) {
             break main;
@@ -189092,8 +189102,8 @@ cuusw_WorldScreen_update = $this => {
             $ptr = 52;
             continue main;
         }
-        $ptr = 37;
-    case 37:
+        $ptr = 38;
+    case 38:
         cuusw_WorldScreen_updateGameplayButtons($this);
         if ($rt_suspending()) {
             break main;
@@ -189105,7 +189115,7 @@ cuusw_WorldScreen_update = $this => {
         }
         $ptr = 40;
         continue main;
-    case 38:
+    case 39:
         $tmp = culc_Civilization_isDefeated(var$1);
         if ($rt_suspending()) {
             break main;
@@ -189118,19 +189128,6 @@ cuusw_WorldScreen_update = $this => {
         }
         var$1 = $rt_nullCheck($this.$autoPlay);
         $ptr = 48;
-        continue main;
-    case 39:
-        cuuswua_UnitActionsTable_update(var$1, $tradeRequest);
-        if ($rt_suspending()) {
-            break main;
-        }
-        if (cuuswu_AutoPlay_isAutoPlaying($rt_nullCheck($this.$autoPlay)) && !cul_GameInfo_getOneMoreTurnMode($rt_nullCheck($this.$gameInfo))) {
-            var$1 = $rt_nullCheck($this.$viewingCiv0);
-            $ptr = 38;
-            continue main;
-        }
-        var$1 = $this;
-        $ptr = 36;
         continue main;
     case 40:
         $tmp = cuusb_BaseScreen_getStage($this);
@@ -189210,7 +189207,7 @@ cuusw_WorldScreen_update = $this => {
             break main;
         }
         var$1 = $this;
-        $ptr = 36;
+        $ptr = 37;
         continue main;
     case 49:
         $tmp = cul_GameInfo_checkForVictory(var$1);
@@ -189224,7 +189221,7 @@ cuusw_WorldScreen_update = $this => {
             continue main;
         }
         var$1 = $this;
-        $ptr = 36;
+        $ptr = 37;
         continue main;
     case 50:
         $tmp = cbgss_Actor_getWidth(var$1);
@@ -189299,7 +189296,7 @@ cuusw_WorldScreen_update = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 57:
         $tmp = culc_Civilization_isDefeated(var$1);
@@ -189345,7 +189342,7 @@ cuusw_WorldScreen_update = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 61:
         $tmp = cul_GameInfo_checkForVictory(var$1);
@@ -189375,7 +189372,7 @@ cuusw_WorldScreen_update = $this => {
             $ptr = 66;
             continue main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 63:
         $tmp = kc_CollectionsKt___CollectionsKt_first($tradeRequest);
@@ -189390,14 +189387,14 @@ cuusw_WorldScreen_update = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 65:
         cuusw_WorldScreen_openGreatPersonPicker$Unciv_core($this);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 66:
         $tmp = kc_CollectionsKt___CollectionsKt_toList(var$1);
@@ -189439,7 +189436,7 @@ cuusw_WorldScreen_update = $this => {
             $ptr = 76;
             continue main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     case 70:
         $tmp = var$1.$next();
@@ -189512,7 +189509,7 @@ cuusw_WorldScreen_update = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 37;
+        $ptr = 38;
         continue main;
     default: $rt_invalidPointer();
     }}
@@ -719168,39 +719165,6 @@ culmmm_UnitMovement_canUnitSwapTo = ($this, $destination) => {
     }}
     $rt_nativeThread().push($this, $destination, var$2, var$3, var$4, $ptr);
 },
-culmmm_UnitMovement_getUnitSwappableTiles = $this => {
-    let var$1, var$2, var$3, var$4, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();$this = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = 0;
-        var$2 = 1;
-        var$3 = null;
-        $ptr = 1;
-    case 1:
-        $tmp = culmmm_UnitMovement_getReachableTilesInCurrentTurn$default($this, var$1, var$2, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$4 = new culmmm_UnitMovement$getUnitSwappableTiles$lambda$_24_0;
-        var$4.$_0229 = $this;
-        $ptr = 2;
-    case 2:
-        $tmp = ks_SequencesKt___SequencesKt_filter(var$3, var$4);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        return var$3;
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push($this, var$1, var$2, var$3, var$4, $ptr);
-},
 culmmm_UnitMovement_canUnitSwapToReachableTile = ($this, $reachableTile, $checkEscorted) => {
     let var$3, var$4, $escortedUnit, $otherUnit, $ourPosition, var$8, var$9, var$10, $ptr, $tmp;
     $ptr = 0;
@@ -1099663,7 +1099627,7 @@ cuuswua_UnitActionsTable_update = ($this, $unit) => {
         var$4 = $rt_nullCheck($unit);
         $ptr = 1;
     case 1:
-        $tmp = jl_Object_hashCode(var$4);
+        $tmp = cuv_View_hashCode(var$4);
         if ($rt_suspending()) {
             break main;
         }
@@ -1100323,7 +1100287,7 @@ cuuswua_UnitActionsTable_update = ($this, $unit) => {
         }
         $$this$filterIsInstance$iv = $tmp;
         $unitChanged = 0;
-        $unitAction_0 = cuuswua_UnitActionsTable$update$lambda$_3_1__init_0($this, $unitAction_1, $unit);
+        $unitAction_0 = cuuswua_UnitActionsTable$update$lambda$_3_1__init_($this, $unitAction_1, $unit);
         $actionPage = 2;
         $element = null;
         $ptr = 52;
@@ -1100585,7 +1100549,7 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
         $unitAction = $tmp;
         if (($rt_nullCheck($unitAction)).$autoUnitCycle) {
             $unit = $rt_nullCheck($unit);
-            if (!$unit.$isDestroyed0) {
+            if (!cuv_MapUnitView_isDestroyed($unit)) {
                 if (($rt_nullCheck($unitAction_0.$uiType)).$isSkippingToNextUnit) {
                     $ptr = 8;
                     continue main;
@@ -1100608,21 +1100572,37 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
         }
         return;
     case 8:
-        $tmp = culmm_MapUnit_isMoving($unit);
+        $tmp = cuv_MapUnitViewKt_isMoving($unit);
         if ($rt_suspending()) {
             break main;
         }
         var$5 = $tmp;
-        if (var$5 && culmm_MapUnit_hasMovement($unit)) {
-            ($rt_nullCheck(($rt_nullCheck($this.$worldScreen8)).$bottomUnitTable)).$shouldUpdate0 = 1;
-            return;
+        if (!var$5) {
+            $unit = $this.$worldScreen8;
+            var$4 = 0;
+            var$5 = 1;
+            $unitAction = null;
+            $ptr = 7;
+            continue main;
         }
-        $unit = $this.$worldScreen8;
-        var$4 = 0;
-        var$5 = 1;
-        $unitAction = null;
-        $ptr = 7;
-        continue main;
+        $unitAction = $unit;
+        $ptr = 9;
+    case 9:
+        $tmp = cuv_ForeignMapUnitViewKt_hasMovement($unitAction);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$5 = $tmp;
+        if (!var$5) {
+            $unit = $this.$worldScreen8;
+            var$4 = 0;
+            var$5 = 1;
+            $unitAction = null;
+            $ptr = 7;
+            continue main;
+        }
+        ($rt_nullCheck(($rt_nullCheck($this.$worldScreen8)).$bottomUnitTable)).$shouldUpdate0 = 1;
+        return;
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push($this, $unitAction, $unit, $unitAction_0, var$4, var$5, $ptr);
@@ -1140164,33 +1140144,45 @@ cuv_MapUnitView_healingAmountForTile$default = (var$1, var$2, var$3, var$4, var$
     $rt_nativeThread().push(var$1, var$2, var$3, var$4, var$5, $ptr);
 },
 cuv_MapUnitView_getUnitSwappableTiles = $this => {
-    let var$1, var$2, $ptr, $tmp;
+    let var$1, var$2, var$3, var$4, var$5, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = $rt_nullCheck(($rt_nullCheck(($rt_nullCheck($this)).$unit2)).$movement);
+        var$2 = 0;
+        var$3 = 1;
+        var$4 = null;
         $ptr = 1;
     case 1:
-        $tmp = culmmm_UnitMovement_getUnitSwappableTiles(var$1);
+        $tmp = culmmm_UnitMovement_getReachableTilesInCurrentTurn$default(var$1, var$2, var$3, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $tmp;
-        var$2 = new cuv_MapUnitView$getUnitSwappableTiles$lambda$_51_0;
-        var$2.$_0397 = $this;
+        var$4 = $tmp;
+        var$5 = new culmmm_UnitMovement$getUnitSwappableTiles$lambda$_24_0;
+        var$5.$_0229 = var$1;
         $ptr = 2;
     case 2:
-        $tmp = ks_SequencesKt___SequencesKt_map(var$1, var$2);
+        $tmp = ks_SequencesKt___SequencesKt_filter(var$4, var$5);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        var$1 = new cuv_MapUnitView$getUnitSwappableTiles$lambda$_51_0;
+        var$1.$_0397 = $this;
+        $ptr = 3;
+    case 3:
+        $tmp = ks_SequencesKt___SequencesKt_map(var$4, var$1);
         if ($rt_suspending()) {
             break main;
         }
         var$1 = $tmp;
-        $ptr = 3;
-    case 3:
+        $ptr = 4;
+    case 4:
         $tmp = ks_SequencesKt___SequencesKt_toList(var$1);
         if ($rt_suspending()) {
             break main;
@@ -1140199,7 +1140191,7 @@ cuv_MapUnitView_getUnitSwappableTiles = $this => {
         return var$1;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, var$1, var$2, $ptr);
+    $rt_nativeThread().push($this, var$1, var$2, var$3, var$4, var$5, $ptr);
 },
 cuv_MapUnitView_getValidRoadConnectionTiles = $this => {
     let $item$iv$iv, $$this$filter$iv, $destination$iv$iv, var$4, var$5, $$this$map$iv, $element$iv$iv, $it, var$9, $ptr, $tmp;
@@ -1225551,11 +1225543,11 @@ let cuv_CivView$getUnits$lambda$_56_0_invoke = (var$0, var$1) => {
 cuuswua_UiUnitActions = $rt_classWithoutFields(),
 cuuswua_UiUnitActions_INSTANCE = null,
 cuuswua_UiUnitActions_getUnitActions = ($this, $unit) => {
-    let var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, var$16, $ptr, $tmp;
+    let var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, var$16, var$17, var$18, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$16 = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();var$13 = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$unit = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$18 = $thread.pop();var$17 = $thread.pop();var$16 = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();var$13 = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();$unit = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1225566,369 +1225558,391 @@ cuuswua_UiUnitActions_getUnitActions = ($this, $unit) => {
         if ($rt_suspending()) {
             break main;
         }
+        var$3 = ($rt_nullCheck($unit)).$unit2;
         $ptr = 2;
     case 2:
         culmma_UnitActions_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_nullCheck(culmma_UnitActions_INSTANCE);
-        var$2 = $rt_s(1149);
+        $unit = $rt_nullCheck(culmma_UnitActions_INSTANCE);
+        $unit = $rt_s(1149);
         $ptr = 3;
     case 3:
-        kji_Intrinsics_checkNotNullParameter($unit, var$2);
+        kji_Intrinsics_checkNotNullParameter(var$3, $unit);
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = new culmma_UnitActions$getUnitActions$1;
-        var$2 = null;
+        var$2 = new culmma_UnitActions$getUnitActions$1;
+        $unit = null;
         $ptr = 4;
     case 4:
-        culmma_UnitActions$getUnitActions$1__init_(var$3, $unit, var$2);
+        culmma_UnitActions$getUnitActions$1__init_(var$2, var$3, $unit);
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = var$3;
+        $unit = var$2;
         $ptr = 5;
     case 5:
-        $tmp = ks_SequencesKt__SequenceBuilderKt_sequence(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$2 = new cuuswua_UiUnitActions$getUnitActions$lambda$_1_0;
-        var$2.$_01141 = $unit;
-        $ptr = 6;
-    case 6:
-        $tmp = ks_SequencesKt___SequencesKt_map(var$3, var$2);
+        $tmp = ks_SequencesKt__SequenceBuilderKt_sequence($unit);
         if ($rt_suspending()) {
             break main;
         }
         var$2 = $tmp;
-        var$3 = $rt_nullCheck(cuuswua_UiOnlyUnitActions_INSTANCE);
-        var$4 = $rt_s(1149);
-        $ptr = 7;
-    case 7:
-        kji_Intrinsics_checkNotNullParameter($unit, var$4);
+        $unit = new cuuswua_UiUnitActions$getUnitActions$lambda$_1_0;
+        $unit.$_01141 = var$3;
+        $ptr = 6;
+    case 6:
+        $tmp = ks_SequencesKt___SequencesKt_map(var$2, $unit);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_createArray(cuuswua_UiUnitAction, 6);
-        var$6 = var$5.data;
-        var$7 = 0;
+        $unit = $tmp;
+        var$2 = $rt_nullCheck(cuuswua_UiOnlyUnitActions_INSTANCE);
+        var$4 = $rt_s(1149);
+        $ptr = 7;
+    case 7:
+        kji_Intrinsics_checkNotNullParameter(var$3, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $rt_nullCheck(cu_GUI_INSTANCE);
         $ptr = 8;
     case 8:
-        $tmp = cuuswua_UiOnlyUnitActions_getConstructImprovementAction(var$3, $unit);
+        $tmp = cu_GUI_getWorldScreen(var$4);
         if ($rt_suspending()) {
             break main;
         }
         var$4 = $tmp;
-        var$6[var$7] = var$4;
-        var$7 = 1;
+        var$4 = $rt_nullCheck(($rt_nullCheck(var$4)).$selectedGameView);
         $ptr = 9;
     case 9:
-        $tmp = cuuswua_UiOnlyUnitActions_getConnectRoadAction(var$3, $unit);
+        $tmp = cuv_GameView_getMapUnitView(var$4, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $tmp;
-        var$6[var$7] = var$3;
-        var$7 = 2;
-        var$8 = $rt_nullCheck($unit);
-        $unit = $rt_nullCheck(var$8.$promotions);
+        var$4 = $tmp;
+        var$5 = $rt_createArray(cuuswua_UiUnitAction, 6);
+        var$6 = var$5.data;
+        var$7 = 0;
         $ptr = 10;
     case 10:
-        $tmp = culmm_UnitPromotions_canBePromoted($unit);
+        $tmp = cuuswua_UiOnlyUnitActions_getConstructImprovementAction(var$2, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $tmp;
-        if (!var$9) {
-            $unit = null;
-            var$6[var$7] = $unit;
-            var$7 = 3;
-            $ptr = 12;
-            continue main;
-        }
+        var$8 = $tmp;
+        var$6[var$7] = var$8;
+        var$7 = 1;
         $ptr = 11;
     case 11:
-        cuuswua_UiUnitActionType_$callClinit();
+        $tmp = cuuswua_UiOnlyUnitActions_getConnectRoadAction(var$2, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$10 = cuuswua_UiUnitActionType_Promote;
-        var$11 = 0.0;
-        var$3 = null;
-        var$9 = 0;
-        var$4 = null;
-        var$12 = null;
-        var$13 = null;
-        var$14 = new cuuswua_UiOnlyUnitActions$getPromoteAction$lambda$_3_0;
-        var$14.$_0827 = var$8;
-        if (!(!(culmm_MapUnit_hasMovement(var$8) && !var$8.$attacksThisTurn) ? 0 : 1))
-            var$14 = null;
-        var$15 = 126;
-        var$16 = null;
-        $unit = new cuuswua_UiUnitAction;
-        $ptr = 17;
-        continue main;
+        var$2 = $tmp;
+        var$6[var$7] = var$2;
+        var$9 = 2;
+        var$10 = $rt_nullCheck(var$4);
+        $ptr = 12;
     case 12:
-        $tmp = culmm_MapUnit_isMoving(var$8);
+        $tmp = cuv_MapUnitView_canBePromoted(var$10);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $tmp;
-        if (!var$9) {
-            $unit = null;
-            var$6[var$7] = $unit;
-            var$15 = 4;
+        var$7 = $tmp;
+        if (!var$7) {
+            var$11 = null;
+            var$6[var$9] = var$11;
+            var$9 = 3;
             $ptr = 15;
             continue main;
         }
-        $unit = new cuuswua_UiUnitAction;
         $ptr = 13;
     case 13:
         cuuswua_UiUnitActionType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = cuuswua_UiUnitActionType_ShowUnitDestination;
-        var$11 = 0.0;
-        var$4 = null;
-        var$9 = 0;
-        var$12 = null;
+        var$8 = cuuswua_UiUnitActionType_Promote;
+        var$12 = 0.0;
         var$13 = null;
+        var$14 = 0;
+        var$15 = null;
         var$16 = null;
-        var$14 = new cuuswua_UiOnlyUnitActions$getShowUnitDestinationAction$lambda$_4_0;
-        var$14.$_0515 = var$8;
-        var$15 = 126;
-        var$10 = null;
+        var$17 = null;
+        var$18 = new cuuswua_UiOnlyUnitActions$getPromoteAction$lambda$_3_0;
+        var$18.$_0827 = var$10;
+        var$2 = var$10;
         $ptr = 14;
     case 14:
-        cuuswua_UiUnitAction__init_($unit, var$3, var$11, var$4, var$9, var$12, var$13, var$16, var$14, var$15, var$10);
+        $tmp = cuv_ForeignMapUnitViewKt_hasMovement(var$2);
         if ($rt_suspending()) {
             break main;
         }
-        var$6[var$7] = $unit;
-        var$15 = 4;
-        $ptr = 15;
+        var$7 = $tmp;
+        if (!(!(var$7 && !cuv_ForeignMapUnitView_getAttacksThisTurn(var$10)) ? 0 : 1))
+            var$18 = null;
+        var$7 = 126;
+        var$2 = null;
+        var$11 = new cuuswua_UiUnitAction;
+        $ptr = 19;
+        continue main;
     case 15:
-        $tmp = culmm_MapUnit_getBaseUnit(var$8);
+        $tmp = cuv_MapUnitViewKt_isMoving(var$4);
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $tmp;
-        $unit = $rt_nullCheck($unit);
+        var$7 = $tmp;
+        if (!var$7) {
+            var$11 = null;
+            var$6[var$9] = var$11;
+            var$14 = 4;
+            var$2 = var$4;
+            $ptr = 18;
+            continue main;
+        }
+        var$11 = new cuuswua_UiUnitAction;
         $ptr = 16;
     case 16:
-        $tmp = cumru_BaseUnit_isAirUnit($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$7 = $tmp;
-        if (var$7) {
-            var$14 = null;
-            var$6[var$15] = var$14;
-            var$9 = 5;
-            $ptr = 21;
-            continue main;
-        }
-        $unit = $rt_nullCheck(cu_GUI_INSTANCE);
-        $ptr = 18;
-        continue main;
-    case 17:
-        cuuswua_UiUnitAction__init_($unit, var$10, var$11, var$3, var$9, var$4, var$12, var$13, var$14, var$15, var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$6[var$7] = $unit;
-        var$7 = 3;
-        $ptr = 12;
-        continue main;
-    case 18:
-        $tmp = cu_GUI_getWorldScreen($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        var$16 = $rt_nullCheck($unit);
-        if (($rt_nullCheck(cuuswu_UnitTable_getSelectedUnits($rt_nullCheck(var$16.$bottomUnitTable)))).$size9 > 1) {
-            var$14 = null;
-            var$6[var$15] = var$14;
-            var$9 = 5;
-            $ptr = 21;
-            continue main;
-        }
-        $unit = $rt_nullCheck(var$8.$movement);
-        $ptr = 19;
-    case 19:
-        $tmp = culmmm_UnitMovement_getUnitSwappableTiles($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $ptr = 20;
-    case 20:
-        $tmp = ks_SequencesKt___SequencesKt_none($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$7 = $tmp;
-        if (var$7) {
-            var$14 = null;
-            var$6[var$15] = var$14;
-            var$9 = 5;
-            $ptr = 21;
-            continue main;
-        }
-        var$14 = new cuuswua_UiUnitAction;
-        $ptr = 25;
-        continue main;
-    case 21:
-        $tmp = culmm_MapUnit_getCurrentTile(var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $unit = $rt_nullCheck($unit);
-        $ptr = 22;
-    case 22:
-        $tmp = culmt_Tile_getOwner($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $ptr = 23;
-    case 23:
-        $tmp = culmm_MapUnit_getCiv(var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        $ptr = 24;
-    case 24:
-        $tmp = kji_Intrinsics_areEqual($unit, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$7 = $tmp;
-        if (var$7) {
-            $unit = new jl_StringBuilder;
-            jl_AbstractStringBuilder__init_($unit);
-            jl_AbstractStringBuilder_append($unit, $rt_s(9728));
-            $ptr = 27;
-            continue main;
-        }
-        $unit = $rt_s(9729);
-        $ptr = 31;
-        continue main;
-    case 25:
         cuuswua_UiUnitActionType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        $unit = cuuswua_UiUnitActionType_SwapUnits;
-        var$11 = 0.0;
-        var$3 = null;
-        var$9 = cuuswu_UnitTable_getSelectedUnitIsSwapping($rt_nullCheck(var$16.$bottomUnitTable));
-        var$4 = null;
-        var$12 = null;
+        var$2 = cuuswua_UiUnitActionType_ShowUnitDestination;
+        var$12 = 0.0;
+        var$8 = null;
+        var$7 = 0;
+        var$18 = null;
         var$13 = null;
-        var$10 = new cuuswua_UiOnlyUnitActions$getSwapAction$lambda$_5_0;
-        var$10.$_0537 = var$16;
-        var$7 = 118;
+        var$15 = null;
+        var$17 = new cuuswua_UiOnlyUnitActions$getShowUnitDestinationAction$lambda$_4_0;
+        var$17.$_0515 = var$4;
+        var$14 = 126;
         var$16 = null;
-        $ptr = 26;
-    case 26:
-        cuuswua_UiUnitAction__init_(var$14, $unit, var$11, var$3, var$9, var$4, var$12, var$13, var$10, var$7, var$16);
+        $ptr = 17;
+    case 17:
+        cuuswua_UiUnitAction__init_(var$11, var$2, var$12, var$8, var$7, var$18, var$13, var$15, var$17, var$14, var$16);
         if ($rt_suspending()) {
             break main;
         }
-        var$6[var$15] = var$14;
-        var$9 = 5;
-        $ptr = 21;
-        continue main;
-    case 27:
-        $tmp = culmm_MapUnit_getBaseUnit(var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        $ptr = 28;
-    case 28:
-        $tmp = culmm_MapUnit_getCiv(var$8);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        var$3 = $rt_nullCheck(var$3);
-        $ptr = 29;
-    case 29:
-        $tmp = cumru_BaseUnit_getDisbandGold(var$3, var$4);
+        var$6[var$9] = var$11;
+        var$14 = 4;
+        var$2 = var$4;
+        $ptr = 18;
+    case 18:
+        $tmp = cuv_ForeignMapUnitViewKt_isAirUnit(var$2);
         if ($rt_suspending()) {
             break main;
         }
         var$7 = $tmp;
-        jl_AbstractStringBuilder_append1($unit, var$7);
-        jl_AbstractStringBuilder_append($unit, $rt_s(9730));
-        $ptr = 30;
-    case 30:
-        $tmp = jl_AbstractStringBuilder_toString($unit);
+        if (var$7) {
+            var$8 = null;
+            var$6[var$14] = var$8;
+            var$7 = 5;
+            var$15 = $rt_nullCheck(var$3);
+            $ptr = 23;
+            continue main;
+        }
+        var$2 = $rt_nullCheck(cu_GUI_INSTANCE);
+        $ptr = 20;
+        continue main;
+    case 19:
+        cuuswua_UiUnitAction__init_(var$11, var$8, var$12, var$13, var$14, var$15, var$16, var$17, var$18, var$7, var$2);
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $tmp;
+        var$6[var$9] = var$11;
+        var$9 = 3;
+        $ptr = 15;
+        continue main;
+    case 20:
+        $tmp = cu_GUI_getWorldScreen(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        var$4 = $rt_nullCheck(var$2);
+        if (($rt_nullCheck(cuuswu_UnitTable_getSelectedUnits($rt_nullCheck(var$4.$bottomUnitTable)))).$size9 > 1) {
+            var$8 = null;
+            var$6[var$14] = var$8;
+            var$7 = 5;
+            var$15 = $rt_nullCheck(var$3);
+            $ptr = 23;
+            continue main;
+        }
+        $ptr = 21;
+    case 21:
+        $tmp = cuv_MapUnitView_getUnitSwappableTiles(var$10);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        var$2 = $rt_nullCheck(var$2);
+        $ptr = 22;
+    case 22:
+        $tmp = var$2.$isEmpty();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$7 = $tmp;
+        if (var$7) {
+            var$8 = null;
+            var$6[var$14] = var$8;
+            var$7 = 5;
+            var$15 = $rt_nullCheck(var$3);
+            $ptr = 23;
+            continue main;
+        }
+        var$8 = new cuuswua_UiUnitAction;
+        $ptr = 27;
+        continue main;
+    case 23:
+        $tmp = culmm_MapUnit_getCurrentTile(var$15);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        var$2 = $rt_nullCheck(var$2);
+        $ptr = 24;
+    case 24:
+        $tmp = culmt_Tile_getOwner(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $tmp;
+        $ptr = 25;
+    case 25:
+        $tmp = culmm_MapUnit_getCiv(var$15);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        $ptr = 26;
+    case 26:
+        $tmp = kji_Intrinsics_areEqual(var$2, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$14 = $tmp;
+        if (var$14) {
+            var$2 = new jl_StringBuilder;
+            jl_AbstractStringBuilder__init_(var$2);
+            jl_AbstractStringBuilder_append(var$2, $rt_s(9728));
+            $ptr = 29;
+            continue main;
+        }
+        var$10 = $rt_s(9729);
+        $ptr = 33;
+        continue main;
+    case 27:
+        cuuswua_UiUnitActionType_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$18 = cuuswua_UiUnitActionType_SwapUnits;
+        var$12 = 0.0;
+        var$10 = null;
+        var$7 = cuuswu_UnitTable_getSelectedUnitIsSwapping($rt_nullCheck(var$4.$bottomUnitTable));
+        var$13 = null;
+        var$15 = null;
+        var$16 = null;
+        var$2 = new cuuswua_UiOnlyUnitActions$getSwapAction$lambda$_5_0;
+        var$2.$_0537 = var$4;
+        var$9 = 118;
+        var$4 = null;
+        $ptr = 28;
+    case 28:
+        cuuswua_UiUnitAction__init_(var$8, var$18, var$12, var$10, var$7, var$13, var$15, var$16, var$2, var$9, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6[var$14] = var$8;
+        var$7 = 5;
+        var$15 = $rt_nullCheck(var$3);
+        $ptr = 23;
+        continue main;
+    case 29:
+        $tmp = culmm_MapUnit_getBaseUnit(var$15);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        $ptr = 30;
+    case 30:
+        $tmp = culmm_MapUnit_getCiv(var$15);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$8 = $tmp;
+        var$4 = $rt_nullCheck(var$4);
         $ptr = 31;
     case 31:
+        $tmp = cumru_BaseUnit_getDisbandGold(var$4, var$8);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$14 = $tmp;
+        jl_AbstractStringBuilder_append1(var$2, var$14);
+        jl_AbstractStringBuilder_append(var$2, $rt_s(9730));
+        $ptr = 32;
+    case 32:
+        $tmp = jl_AbstractStringBuilder_toString(var$2);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$10 = $tmp;
+        $ptr = 33;
+    case 33:
         cuuswua_UiUnitActionType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         var$3 = cuuswua_UiUnitActionType_DisbandUnit;
-        var$11 = 0.0;
+        var$12 = 0.0;
+        var$13 = null;
+        var$14 = 0;
+        var$2 = null;
         var$4 = null;
-        var$15 = 0;
-        var$16 = null;
-        var$10 = null;
-        var$14 = new cum_UnitActionConfirmation;
-        var$12 = $rt_s(7196);
-        $ptr = 32;
-    case 32:
-        cum_UnitActionConfirmation__init_(var$14, $unit, var$12);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = new cuuswua_UiOnlyUnitActions$getDisbandAction$lambda$_2_0;
-        $unit.$_0746 = var$8;
-        if (!culmm_MapUnit_hasMovement(var$8))
-            $unit = null;
-        var$7 = 62;
-        var$12 = null;
-        var$13 = new cuuswua_UiUnitAction;
-        $ptr = 33;
-    case 33:
-        cuuswua_UiUnitAction__init_(var$13, var$3, var$11, var$4, var$15, var$16, var$10, var$14, $unit, var$7, var$12);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$6[var$9] = var$13;
+        var$8 = new cum_UnitActionConfirmation;
+        var$18 = $rt_s(7196);
         $ptr = 34;
     case 34:
+        cum_UnitActionConfirmation__init_(var$8, var$10, var$18);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$18 = new cuuswua_UiOnlyUnitActions$getDisbandAction$lambda$_2_0;
+        var$18.$_0746 = var$15;
+        if (!culmm_MapUnit_hasMovement(var$15))
+            var$18 = null;
+        var$9 = 62;
+        var$10 = null;
+        var$15 = new cuuswua_UiUnitAction;
+        $ptr = 35;
+    case 35:
+        cuuswua_UiUnitAction__init_(var$15, var$3, var$12, var$13, var$14, var$2, var$4, var$8, var$18, var$9, var$10);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6[var$7] = var$15;
+        $ptr = 36;
+    case 36:
         $tmp = ks_SequencesKt__SequencesKt_sequenceOf0(var$5);
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $tmp;
-        $ptr = 35;
-    case 35:
-        $tmp = ks_SequencesKt___SequencesKt_filterNotNull($unit);
+        var$2 = $tmp;
+        $ptr = 37;
+    case 37:
+        $tmp = ks_SequencesKt___SequencesKt_filterNotNull(var$2);
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $tmp;
-        $ptr = 36;
-    case 36:
-        $tmp = ks_SequencesKt___SequencesKt_plus(var$2, $unit);
+        var$2 = $tmp;
+        $ptr = 38;
+    case 38:
+        $tmp = ks_SequencesKt___SequencesKt_plus($unit, var$2);
         if ($rt_suspending()) {
             break main;
         }
@@ -1225936,7 +1225950,7 @@ cuuswua_UiUnitActions_getUnitActions = ($this, $unit) => {
         return $unit;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $unit, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, var$16, $ptr);
+    $rt_nativeThread().push($this, $unit, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, var$16, var$17, var$18, $ptr);
 },
 cuuswua_UiUnitActions_getActionDefaultPage = ($this, $unit, $uiUnitActionType) => {
     let var$3, var$4, $ptr, $tmp;
@@ -1225961,6 +1225975,7 @@ cuuswua_UiUnitActions_getActionDefaultPage = ($this, $unit, $uiUnitActionType) =
         if ($rt_suspending()) {
             break main;
         }
+        $unit = ($rt_nullCheck($unit)).$unit2;
         $uiUnitActionType = $rt_nullCheck($uiUnitActionType);
         $ptr = 3;
     case 3:
@@ -1227216,11 +1227231,11 @@ cuuswua_UnitActionsTable$update$lambda$_3_0__init_0 = (var_0, var_1, var_2, var_
     return var_5;
 },
 cuuswua_UnitActionsTable$update$lambda$_3_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, $ptr, $tmp;
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+        $ptr = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1227231,32 +1227246,23 @@ cuuswua_UnitActionsTable$update$lambda$_3_0_invoke = var$0 => {
         var$5 = var$0.$_425;
         var$6 = new cuup_UnitUpgradeMenu;
         var$7 = $rt_nullCheck(var$1);
-        var$1 = $rt_nullCheck(var$7.$worldScreen8);
-        var$8 = var$1.$stage;
-        var$9 = var$2;
-        var$1 = $rt_nullCheck(var$1.$selectedGameView);
+        var$8 = ($rt_nullCheck(var$7.$worldScreen8)).$stage;
+        var$1 = var$2;
+        var$4 = ($rt_nullCheck(var$4)).$upgrade1;
+        var$9 = ($rt_nullCheck(var$5)).$action8 === null ? 0 : 1;
+        var$10 = 1;
+        var$2 = new cuuswua_UnitActionsTable$update$lambda$1$lambda$_11_0;
+        var$2.$_01771 = var$7;
         $ptr = 1;
     case 1:
-        $tmp = cuv_GameView_getMapUnitView(var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$2 = ($rt_nullCheck(var$4)).$upgrade1;
-        var$10 = ($rt_nullCheck(var$5)).$action8 === null ? 0 : 1;
-        var$11 = 1;
-        var$1 = new cuuswua_UnitActionsTable$update$lambda$1$lambda$_11_0;
-        var$1.$_01771 = var$7;
-        $ptr = 2;
-    case 2:
-        cuup_UnitUpgradeMenu__init_(var$6, var$8, var$9, var$3, var$2, var$10, var$11, var$1);
+        cuup_UnitUpgradeMenu__init_(var$6, var$8, var$1, var$3, var$4, var$9, var$10, var$2);
         if ($rt_suspending()) {
             break main;
         }
         return var$6;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, $ptr);
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, $ptr);
 };
 function cuuswua_UnitActionsTable$update$lambda$_3_1() {
     let a = this; jl_Object.call(a);
@@ -1227264,14 +1227270,14 @@ function cuuswua_UnitActionsTable$update$lambda$_3_1() {
     a.$_1183 = null;
     a.$_274 = null;
 }
-let cuuswua_UnitActionsTable$update$lambda$_3_1__init_ = (var$0, var$1, var$2, var$3) => {
+let cuuswua_UnitActionsTable$update$lambda$_3_1__init_0 = (var$0, var$1, var$2, var$3) => {
     var$0.$_0486 = var$1;
     var$0.$_1183 = var$2;
     var$0.$_274 = var$3;
 },
-cuuswua_UnitActionsTable$update$lambda$_3_1__init_0 = (var_0, var_1, var_2) => {
+cuuswua_UnitActionsTable$update$lambda$_3_1__init_ = (var_0, var_1, var_2) => {
     let var_3 = new cuuswua_UnitActionsTable$update$lambda$_3_1();
-    cuuswua_UnitActionsTable$update$lambda$_3_1__init_(var_3, var_0, var_1, var_2);
+    cuuswua_UnitActionsTable$update$lambda$_3_1__init_0(var_3, var_0, var_1, var_2);
     return var_3;
 },
 cuuswua_UnitActionsTable$update$lambda$_3_1_invoke = var$0 => {
@@ -1354554,47 +1354560,31 @@ let cuuswua_UiOnlyUnitActions$getPromoteAction$lambda$_3_0_invoke = var$0 => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = var$0.$_0827;
-        var$2 = $rt_nullCheck(cu_GUI_INSTANCE);
         $ptr = 1;
     case 1:
-        $tmp = cu_GUI_getWorldScreen(var$2);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $tmp;
-        var$2 = $rt_nullCheck(($rt_nullCheck(var$2)).$selectedGameView);
-        $ptr = 2;
-    case 2:
-        $tmp = cuv_GameView_getMapUnitView(var$2, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        $ptr = 3;
-    case 3:
         cu_UncivGame_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         var$2 = $rt_nullCheck(cu_UncivGame_Companion);
-        $ptr = 4;
-    case 4:
+        $ptr = 2;
+    case 2:
         $tmp = cu_UncivGame$Companion_getCurrent(var$2);
         if ($rt_suspending()) {
             break main;
         }
         var$2 = $tmp;
         var$2 = $rt_nullCheck(var$2);
-        $ptr = 5;
-    case 5:
+        $ptr = 3;
+    case 3:
         $tmp = cu_UncivGame_getSettings(var$2);
         if ($rt_suspending()) {
             break main;
         }
         var$2 = $tmp;
         var$3 = ($rt_nullCheck(var$2)).$automaticPromotions;
-        $ptr = 6;
-    case 6:
+        $ptr = 4;
+    case 4:
         cumm_GameSettings$AutomaticPromotions_$callClinit();
         if ($rt_suspending()) {
             break main;
@@ -1354602,12 +1354592,12 @@ let cuuswua_UiOnlyUnitActions$getPromoteAction$lambda$_3_0_invoke = var$0 => {
         if (var$3 === cumm_GameSettings$AutomaticPromotions_ForAllUnits) {
             culac_NextTurnAutomation_$callClinit();
             var$2 = $rt_nullCheck(culac_NextTurnAutomation_INSTANCE);
-            $ptr = 9;
+            $ptr = 7;
             continue main;
         }
         var$2 = $rt_nullCheck(cu_UncivGame_Companion);
-        $ptr = 7;
-    case 7:
+        $ptr = 5;
+    case 5:
         $tmp = cu_UncivGame$Companion_getCurrent(var$2);
         if ($rt_suspending()) {
             break main;
@@ -1354618,14 +1354608,14 @@ let cuuswua_UiOnlyUnitActions$getPromoteAction$lambda$_3_0_invoke = var$0 => {
         var$4.$_01524 = var$1;
         var$5 = 1;
         var$1 = null;
-        $ptr = 8;
-    case 8:
+        $ptr = 6;
+    case 6:
         cu_UncivGame_pushScreen$default(var$2, var$3, var$4, var$5, var$1);
         if ($rt_suspending()) {
             break main;
         }
         return k_Unit_INSTANCE;
-    case 9:
+    case 7:
         culac_NextTurnAutomation_applyPromotions$Unciv_core(var$2, var$1);
         if ($rt_suspending()) {
             break main;
@@ -1354660,12 +1354650,12 @@ let cuuswua_UiOnlyUnitActions$getShowUnitDestinationAction$lambda$_4_0_invoke = 
         var$1 = $rt_nullCheck(var$1);
         $ptr = 2;
     case 2:
-        $tmp = culmm_MapUnit_getMovementDestination(var$1);
+        $tmp = cuv_MapUnitView_getMovementDestination(var$1);
         if ($rt_suspending()) {
             break main;
         }
         var$1 = $tmp;
-        var$3 = ($rt_nullCheck(var$1)).$position2;
+        var$3 = cuv_TileView_position($rt_nullCheck(var$1));
         var$4 = 1;
         var$5 = 0;
         var$1 = null;
@@ -1402258,41 +1402248,6 @@ let cuuswua_UiUnitActionKt$portrait$lambda$_0_0_invoke = var$0 => {
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, $ptr);
 };
-function culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0() {
-    jl_Object.call(this);
-    this.$_01439 = null;
-}
-let culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0_invoke = (var$0, var$1) => {
-    let var$2, var$3, var$4, $ptr, $tmp;
-    $ptr = 0;
-    if ($rt_resuming()) {
-        let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
-    }
-    main: while (true) { switch ($ptr) {
-    case 0:
-        var$1 = $rt_castToClass(var$1, cumru_Promotion);
-        var$2 = var$0.$_01439;
-        var$3 = $rt_s(1420);
-        $ptr = 1;
-    case 1:
-        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$2 = $rt_nullCheck(var$2);
-        $ptr = 2;
-    case 2:
-        $tmp = culmm_UnitPromotions_isAvailable(var$2, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$4 = $tmp;
-        return jl_Boolean_valueOf(var$4);
-    default: $rt_invalidPointer();
-    }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, $ptr);
-};
 function cuuo_BuildingDescriptions$getUniquesStringsWithoutDisablers$lambda$_10_0() {
     jl_Object.call(this);
     this.$_01588 = null;
@@ -1413946,6 +1413901,41 @@ let culcm_ImprovementFunctions$getImprovementBuildingProblems$lambda$_1_0_invoke
     default: $rt_invalidPointer();
     }}
     $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, var$5, var$6, $ptr);
+};
+function culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0() {
+    jl_Object.call(this);
+    this.$_01439 = null;
+}
+let culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0_invoke = (var$0, var$1) => {
+    let var$2, var$3, var$4, $ptr, $tmp;
+    $ptr = 0;
+    if ($rt_resuming()) {
+        let $thread = $rt_nativeThread();
+        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+    }
+    main: while (true) { switch ($ptr) {
+    case 0:
+        var$1 = $rt_castToClass(var$1, cumru_Promotion);
+        var$2 = var$0.$_01439;
+        var$3 = $rt_s(1420);
+        $ptr = 1;
+    case 1:
+        kji_Intrinsics_checkNotNullParameter(var$1, var$3);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$2 = $rt_nullCheck(var$2);
+        $ptr = 2;
+    case 2:
+        $tmp = culmm_UnitPromotions_isAvailable(var$2, var$1);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $tmp;
+        return jl_Boolean_valueOf(var$4);
+    default: $rt_invalidPointer();
+    }}
+    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, $ptr);
 };
 function cuuo_BuildingDescriptions$getUniquesStrings$1() {
     let a = this; kcji_RestrictedSuspendLambda.call(a);
@@ -1947134,7 +1947124,6 @@ culm_MapPathing$getRoadPath$2, 0, kji_FunctionReferenceImpl, [kjf_Function3], 32
 culm_MapPathing$getRoadPath$lambda$_3_0, 0, jl_Object, [kjf_Function3], 1, 0, 0, ["$invoke3", $rt_wrapFunction3(culm_MapPathing$getRoadPath$lambda$_3_0_invoke)],
 cuuo_TechnologyDescriptions$getTechEnabledIcons$1, "TechnologyDescriptions$getTechEnabledIcons$1", 93, kcji_RestrictedSuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuuo_TechnologyDescriptions$getTechEnabledIcons$1_invokeSuspend), "$create0", $rt_wrapFunction2(cuuo_TechnologyDescriptions$getTechEnabledIcons$1_create), "$invoke2", $rt_wrapFunction2(cuuo_TechnologyDescriptions$getTechEnabledIcons$1_invoke)],
 cuuswua_UiUnitActionKt$portrait$lambda$_0_0, 0, jl_Object, [kjf_Function0], 1, 0, 0, 0,
-culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0_invoke)],
 cuuo_BuildingDescriptions$getUniquesStringsWithoutDisablers$lambda$_10_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, 0,
 cuuo_TechnologyDescriptions$getFilteredBuildings$lambda$_9_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(cuuo_TechnologyDescriptions$getFilteredBuildings$lambda$_9_0_invoke)],
 ksi_SerializerCache, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -1947175,9 +1947164,9 @@ ikhci_AsciiCharTree$Companion$build$lambda$_1_1, 0, jl_Object, [kjf_Function2], 
 ikhci_TokenizerKt, 0, jl_Object, [], 17, 0, 0, 0,
 ikui_LineEnding, "LineEnding", 181, jl_Enum, [], 65553, [0,0,0], () => ikui_LineEnding_$callClinit(), 0,
 ikhc_ParserException, "ParserException", 188, jl_IllegalStateException, [], 17, [0,0,0], 0, 0,
-jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_0, 0, jl_Object, [jtt_TemporalQuery], 1, 0, 0, 0]);
-$rt_metadata([jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_1, 0, jl_Object, [ju_Comparator], 1, 0, 0, ["$compare", $rt_wrapFunction2(jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_1_compare)],
-jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator, "DateTimeFormatterBuilder$PadPrinterParserDecorator", 144, jl_Object, [jtf_DateTimeFormatterBuilder$DateTimePrinterParser], 16, [jtf_DateTimeFormatterBuilder,jtf_DateTimeFormatterBuilder,0], 0, ["$parse13", $rt_wrapFunction3(jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator_parse), "$toString", $rt_wrapFunction0(jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator_toString)],
+jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_0, 0, jl_Object, [jtt_TemporalQuery], 1, 0, 0, 0,
+jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_1, 0, jl_Object, [ju_Comparator], 1, 0, 0, ["$compare", $rt_wrapFunction2(jtf_DateTimeFormatterBuilder$_clinit_$lambda$_48_1_compare)]]);
+$rt_metadata([jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator, "DateTimeFormatterBuilder$PadPrinterParserDecorator", 144, jl_Object, [jtf_DateTimeFormatterBuilder$DateTimePrinterParser], 16, [jtf_DateTimeFormatterBuilder,jtf_DateTimeFormatterBuilder,0], 0, ["$parse13", $rt_wrapFunction3(jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator_parse), "$toString", $rt_wrapFunction0(jtf_DateTimeFormatterBuilder$PadPrinterParserDecorator_toString)],
 jtf_DecimalStyle, 0, jl_Object, [], 17, 0, () => jtf_DecimalStyle_$callClinit(), 0,
 jtt_IsoFields$Field, "IsoFields$Field", 146, jl_Enum, [jtt_TemporalField], 66560, [jtt_IsoFields,jtt_IsoFields,0], () => jtt_IsoFields$Field_$callClinit(), ["$resolve1", $rt_wrapFunction3(jtt_IsoFields$Field_resolve), "$isDateBased", $rt_wrapFunction0(jtt_IsoFields$Field_isDateBased), "$isTimeBased", $rt_wrapFunction0(jtt_IsoFields$Field_isTimeBased)],
 jtt_IsoFields$Unit, 0, jl_Enum, [jtt_TemporalUnit], 65552, 0, () => jtt_IsoFields$Unit_$callClinit(), 0,
@@ -1947225,10 +1947214,11 @@ cuusd_ConsoleTileCommands$ConsoleRiverAction$Companion, "ConsoleTileCommands$Con
 culb_BattleDamage$WhenMappings, 0, jl_Object, [], 32785, 0, () => culb_BattleDamage$WhenMappings_$callClinit(), 0,
 culb_BattleDamage$getModifierStringFromUnique$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culb_BattleDamage$getModifierStringFromUnique$lambda$_1_0_invoke)],
 culm_AStar, 0, jl_Object, [], 17, 0, 0, 0,
-culm_MapPathing$getConnection$lambda$_5_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, 0]);
-$rt_metadata([culm_MapPathing$getConnection$lambda$_5_1, 0, jl_Object, [kjf_Function2], 1, 0, 0, 0,
-culm_MapPathing$getConnection$lambda$_5_2, 0, jl_Object, [kjf_Function2], 1, 0, 0, 0,
+culm_MapPathing$getConnection$lambda$_5_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, 0,
+culm_MapPathing$getConnection$lambda$_5_1, 0, jl_Object, [kjf_Function2], 1, 0, 0, 0]);
+$rt_metadata([culm_MapPathing$getConnection$lambda$_5_2, 0, jl_Object, [kjf_Function2], 1, 0, 0, 0,
 culcm_ImprovementFunctions$getImprovementBuildingProblems$lambda$_1_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culcm_ImprovementFunctions$getImprovementBuildingProblems$lambda$_1_0_invoke)],
+culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0, 0, jl_Object, [kjf_Function1], 1, 0, 0, ["$invoke0", $rt_wrapFunction1(culmm_UnitPromotions$getAvailablePromotions$lambda$_21_0_invoke)],
 cuuo_BuildingDescriptions$getUniquesStrings$1, "BuildingDescriptions$getUniquesStrings$1", 93, kcji_RestrictedSuspendLambda, [kjf_Function2], 16, [0,0,0], 0, ["$invokeSuspend", $rt_wrapFunction1(cuuo_BuildingDescriptions$getUniquesStrings$1_invokeSuspend), "$create0", $rt_wrapFunction2(cuuo_BuildingDescriptions$getUniquesStrings$1_create), "$invoke2", $rt_wrapFunction2(cuuo_BuildingDescriptions$getUniquesStrings$1_invoke)],
 ksi_ClassValueReferences, 0, jl_ClassValue, [], 16, 0, 0, ["$computeValue0", $rt_wrapFunction1(ksi_ClassValueReferences_computeValue)],
 ksi_HashSetClassDesc, "HashSetClassDesc", 227, ksi_ListLikeDescriptor, [], 17, [0,0,0], 0, ["$getSerialName", $rt_wrapFunction0(ksi_HashSetClassDesc_getSerialName)],
@@ -1977730,8 +1977720,8 @@ culc_PolicyAction, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000
 ["Lcom/unciv/ui/screens/worldscreen/TechPolicyDiplomacyButtons;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "worldScreen", "Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "<init>", "(Lcom/unciv/ui/screens/worldscreen/WorldScreen;)V", "getWorldScreen", "()Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "fogOfWarButtonHolder", "Lcom/badlogic/gdx/scenes/scene2d/ui/Container;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Button;", "fogOfWarButton", "Lcom/badlogic/gdx/scenes/scene2d/ui/TextButton;", "techButtonHolder",
 "pickTechButton", "pickTechLabel", "Lcom/badlogic/gdx/scenes/scene2d/ui/Label;", "policyButtonHolder", "policyScreenButton", "diplomacyButtonHolder", "diplomacyButton", "undoButtonHolder", "undoButton", "espionageButtonHolder", "espionageButton", "viewingCiv", "Lcom/unciv/view/CivView;", "game", "Lcom/unciv/UncivGame;", "update", "", "updateFogOfWarButton", "", "updateTechButton", "updateUndoButton", "updatePolicyButton", "updateDiplomacyButton", "updateEspionageButton", "handleUndo", "act", "delta", "", "draw",
 "batch", "Lcom/badlogic/gdx/graphics/g2d/Batch;", "parentAlpha", "hit", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "x", "y", "touchable", "Unciv:core"], "", "", 48]], cuuswua_UnitActionsTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000H\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0010\u0008\n\u0002\u0008\u0004\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0007\n\u0002\u0008\u0002\u0018\u0000  2\u00020\u0001:\u0001 B\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J\u0016\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\t2\u0006\u0010\u0012\u001a\u00020\u0013J\u0010\u0010\u0014\u001a\u00020\u00102\u0008\u0010\u0012\u001a\u0004\u0018\u00010\u0013J\u0010\u0010\u0015\u001a\u00020\u00102\u0006\u0010\u0016\u001a\u00020\u0017H\u0002J\u0018\u0010\u0018\u001a\u00020\u00172\u0006\u0010\u0012\u001a\u00020\u00132\u0006\u0010\u0019\u001a\u00020\u001aH\u0002J\u0018\u0010\u001b\u001a\u00020\u00102\u0006\u0010\u0019\u001a\u00020\u001a2\u0006\u0010\u0012\u001a\u00020\u0013H\u0002J\u0018\u0010\u001c\u001a\u00020\u00102\u0006\u0010\u0019\u001a\u00020\u001a2\u0006\u0010\u0012\u001a\u00020\u0013H\u0002J\u0018\u0010\u001d\u001a\u00020\u00102\u0006\u0010\u0016\u001a\u00020\u00172\u0006\u0010\u001e\u001a\u00020\u001fH\u0002R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007R\u000e\u0010\u0008\u001a\u00020\tX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\tX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\u000b\u001a\u00020\tX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\u000c\u001a\u00020\tX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\r\u001a\u00020\u000eX\u000e¢\u0006\u0002\n\u0000¨\u0006!"],
-["Lcom/unciv/ui/screens/worldscreen/unit/actions/UnitActionsTable;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "worldScreen", "Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "<init>", "(Lcom/unciv/ui/screens/worldscreen/WorldScreen;)V", "getWorldScreen", "()Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "currentPage", "", "buttonsPerPage", "numPages", "shownForUnitHash", "animationNotFinished", "", "changePage", "", "delta", "unit", "Lcom/unciv/logic/map/mapunit/MapUnit;", "update", "updateButtonsPerPage",
-"button", "Lcom/badlogic/gdx/scenes/scene2d/ui/Button;", "getUnitActionButton", "unitAction", "Lcom/unciv/ui/screens/worldscreen/unit/actions/UiUnitAction;", "activateAction", "invokeAction", "animateButton", "delay", "", "Companion", "Unciv:core"], "", "", 48]], cuuswu_UnitTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0008\t\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0008\u000e\n\u0002\u0010\u000e\n\u0002\u0008\u0006\n\u0002\u0010\u0002\n\u0002\u0008\n\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001:\u0001kB\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J\u001c\u0010R\u001a\u00020S2\n\u0008\u0002\u0010T\u001a\u0004\u0018\u0001012\u0008\u0008\u0002\u0010U\u001a\u00020)J\u0010\u0010V\u001a\u00020S2\u0008\u0010W\u001a\u0004\u0018\u000109J\u000e\u0010X\u001a\u00020)2\u0006\u0010Y\u001a\u000205J\u0006\u0010Z\u001a\u00020SJ\u0008\u0010[\u001a\u00020SH\u0002J\u001a\u0010\\\u001a\u00020S2\u0006\u0010]\u001a\u00020^2\n\u0008\u0002\u0010_\u001a\u0004\u0018\u000101J\u0010\u0010`\u001a\u00020S2\u0006\u0010a\u001a\u00020bH\u0016J\u001a\u0010c\u001a\u00020S2\u0008\u0010d\u001a\u0004\u0018\u00010e2\u0006\u0010f\u001a\u00020bH\u0016J\"\u0010g\u001a\u0004\u0018\u00010\u00192\u0006\u0010h\u001a\u00020b2\u0006\u0010i\u001a\u00020b2\u0006\u0010j\u001a\u00020)H\u0016R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u000c\u0010\rR\u0014\u0010\u000e\u001a\u00020\u000fX\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0010\u0010\u0011R\u0014\u0010\u0012\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0013\u0010\rR\u0014\u0010\u0014\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0015\u0010\rR\u0014\u0010\u0016\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0017\u0010\rR\u0014\u0010\u0018\u001a\u00020\u0019X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001a\u0010\u001bR\u0014\u0010\u001c\u001a\u00020\u0019X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001d\u0010\u001bR\u000e\u0010\u001e\u001a\u00020\u001fX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010 \u001a\u00020!X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\"\u001a\u00020#X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010$\u001a\u00020%X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010&\u001a\u00020\'X\u0004¢\u0006\u0002\n\u0000R\u001a\u0010(\u001a\u00020)X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008*\u0010+\"\u0004\u0008,\u0010-R\u000e\u0010.\u001a\u00020/X\u000e¢\u0006\u0002\n\u0000R\u0013\u00100\u001a\u0004\u0018\u0001018F¢\u0006\u0006\u001a\u0004\u00082\u00103R\u0013\u00104\u001a\u0004\u0018\u0001058F¢\u0006\u0006\u001a\u0004\u00086\u00107R\u0013\u00108\u001a\u0004\u0018\u0001098F¢\u0006\u0006\u001a\u0004\u0008:\u0010;R!\u0010<\u001a\u0008\u0012\u0004\u0012\u0002010=8FX\u0002¢\u0006\u000c\u001a\u0004\u0008@\u0010A*\u0004\u0008>\u0010?R+\u0010C\u001a\u00020)2\u0006\u0010B\u001a\u00020)8F@FX\u0002¢\u0006\u0012\u001a\u0004\u0008E\u0010+\"\u0004\u0008F\u0010-*\u0004\u0008D\u0010?R+\u0010G\u001a\u00020)2\u0006\u0010B\u001a\u00020)8F@FX\u0002¢\u0006\u0012\u001a\u0004\u0008I\u0010+\"\u0004\u0008J\u0010-*\u0004\u0008H\u0010?R$\u0010M\u001a\u00020L2\u0006\u0010K\u001a\u00020L8F@FX\u000e¢\u0006\u000c\u001a\u0004\u0008N\u0010O\"\u0004\u0008P\u0010Q¨\u0006l"],
+["Lcom/unciv/ui/screens/worldscreen/unit/actions/UnitActionsTable;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "worldScreen", "Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "<init>", "(Lcom/unciv/ui/screens/worldscreen/WorldScreen;)V", "getWorldScreen", "()Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "currentPage", "", "buttonsPerPage", "numPages", "shownForUnitHash", "animationNotFinished", "", "changePage", "", "delta", "unit", "Lcom/unciv/view/MapUnitView;", "update", "updateButtonsPerPage", "button",
+"Lcom/badlogic/gdx/scenes/scene2d/ui/Button;", "getUnitActionButton", "unitAction", "Lcom/unciv/ui/screens/worldscreen/unit/actions/UiUnitAction;", "activateAction", "invokeAction", "animateButton", "delay", "", "Companion", "Unciv:core"], "", "", 48]], cuuswu_UnitTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0008\t\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0008\u000e\n\u0002\u0010\u000e\n\u0002\u0008\u0006\n\u0002\u0010\u0002\n\u0002\u0008\n\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001:\u0001kB\u000f\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0004\u0008\u0004\u0010\u0005J\u001c\u0010R\u001a\u00020S2\n\u0008\u0002\u0010T\u001a\u0004\u0018\u0001012\u0008\u0008\u0002\u0010U\u001a\u00020)J\u0010\u0010V\u001a\u00020S2\u0008\u0010W\u001a\u0004\u0018\u000109J\u000e\u0010X\u001a\u00020)2\u0006\u0010Y\u001a\u000205J\u0006\u0010Z\u001a\u00020SJ\u0008\u0010[\u001a\u00020SH\u0002J\u001a\u0010\\\u001a\u00020S2\u0006\u0010]\u001a\u00020^2\n\u0008\u0002\u0010_\u001a\u0004\u0018\u000101J\u0010\u0010`\u001a\u00020S2\u0006\u0010a\u001a\u00020bH\u0016J\u001a\u0010c\u001a\u00020S2\u0008\u0010d\u001a\u0004\u0018\u00010e2\u0006\u0010f\u001a\u00020bH\u0016J\"\u0010g\u001a\u0004\u0018\u00010\u00192\u0006\u0010h\u001a\u00020b2\u0006\u0010i\u001a\u00020b2\u0006\u0010j\u001a\u00020)H\u0016R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0006\u0010\u0007R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u000c\u0010\rR\u0014\u0010\u000e\u001a\u00020\u000fX\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0010\u0010\u0011R\u0014\u0010\u0012\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0013\u0010\rR\u0014\u0010\u0014\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0015\u0010\rR\u0014\u0010\u0016\u001a\u00020\u0001X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0017\u0010\rR\u0014\u0010\u0018\u001a\u00020\u0019X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001a\u0010\u001bR\u0014\u0010\u001c\u001a\u00020\u0019X\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001d\u0010\u001bR\u000e\u0010\u001e\u001a\u00020\u001fX\u000e¢\u0006\u0002\n\u0000R\u000e\u0010 \u001a\u00020!X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\"\u001a\u00020#X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010$\u001a\u00020%X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010&\u001a\u00020\'X\u0004¢\u0006\u0002\n\u0000R\u001a\u0010(\u001a\u00020)X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008*\u0010+\"\u0004\u0008,\u0010-R\u000e\u0010.\u001a\u00020/X\u000e¢\u0006\u0002\n\u0000R\u0013\u00100\u001a\u0004\u0018\u0001018F¢\u0006\u0006\u001a\u0004\u00082\u00103R\u0013\u00104\u001a\u0004\u0018\u0001058F¢\u0006\u0006\u001a\u0004\u00086\u00107R\u0013\u00108\u001a\u0004\u0018\u0001098F¢\u0006\u0006\u001a\u0004\u0008:\u0010;R!\u0010<\u001a\u0008\u0012\u0004\u0012\u0002010=8FX\u0002¢\u0006\u000c\u001a\u0004\u0008@\u0010A*\u0004\u0008>\u0010?R+\u0010C\u001a\u00020)2\u0006\u0010B\u001a\u00020)8F@FX\u0002¢\u0006\u0012\u001a\u0004\u0008E\u0010+\"\u0004\u0008F\u0010-*\u0004\u0008D\u0010?R+\u0010G\u001a\u00020)2\u0006\u0010B\u001a\u00020)8F@FX\u0002¢\u0006\u0012\u001a\u0004\u0008I\u0010+\"\u0004\u0008J\u0010-*\u0004\u0008H\u0010?R$\u0010M\u001a\u00020L2\u0006\u0010K\u001a\u00020L8F@FX\u000e¢\u0006\u000c\u001a\u0004\u0008N\u0010O\"\u0004\u0008P\u0010Q¨\u0006l"],
 ["Lcom/unciv/ui/screens/worldscreen/unit/UnitTable;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "worldScreen", "Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "<init>", "(Lcom/unciv/ui/screens/worldscreen/WorldScreen;)V", "getWorldScreen", "()Lcom/unciv/ui/screens/worldscreen/WorldScreen;", "prevIdleUnitButton", "Lcom/unciv/ui/screens/worldscreen/unit/IdleUnitButton;", "nextIdleUnitButton", "unitIconHolder", "getUnitIconHolder$Unciv_core", "()Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "unitNameLabel",
 "Lcom/badlogic/gdx/scenes/scene2d/ui/Label;", "getUnitNameLabel$Unciv_core", "()Lcom/badlogic/gdx/scenes/scene2d/ui/Label;", "unitIconNameGroup", "getUnitIconNameGroup$Unciv_core", "promotionsTable", "getPromotionsTable$Unciv_core", "descriptionTable", "getDescriptionTable$Unciv_core", "closeButton", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "getCloseButton$Unciv_core", "()Lcom/badlogic/gdx/scenes/scene2d/Actor;", "separator", "getSeparator$Unciv_core", "presenter", "Lcom/unciv/ui/screens/worldscreen/unit/UnitTable$Presenter;",
 "unitPresenter", "Lcom/unciv/ui/screens/worldscreen/unit/presenter/UnitPresenter;", "cityPresenter", "Lcom/unciv/ui/screens/worldscreen/unit/presenter/CityPresenter;", "spyPresenter", "Lcom/unciv/ui/screens/worldscreen/unit/presenter/SpyPresenter;", "summaryPresenter", "Lcom/unciv/ui/screens/worldscreen/unit/presenter/SummaryPresenter;", "shouldUpdate", "", "getShouldUpdate", "()Z", "setShouldUpdate", "(Z)V", "bg", "Lcom/badlogic/gdx/scenes/scene2d/ui/Image;", "selectedUnit", "Lcom/unciv/view/MapUnitView;",
