@@ -29,12 +29,14 @@ object UnitActions {
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
      *
+     *  @param id Selects among several actions of the same type, see [UnitAction.id] - `null` accepts any
      *  @return whether the action was invoked
      */
-    fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
+    fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType, id: String? = null): Boolean {
         val internalAction =
             getUnitActions(unit, unitActionType)
-            .firstOrNull { it.action != null }   // If there's more than one, take the first enabled one.
+            .firstOrNull { it.action != null // available
+                    && (id == null || it.id == id) }   // If there's more than one, take the first enabled one.
             ?.action ?: return false
         internalAction.invoke()
         return true

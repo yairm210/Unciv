@@ -257,6 +257,7 @@ object UnitActionsFromUniques {
             yield(
                 UnitAction(UnitActionType.TriggerUnique, title,
                     associatedUnique = unique,
+                    id = unique.text,
                     action = unitAction.takeIf {
                         UnitActionModifiers.canActivateSideEffects(unit, unique)
                     })
@@ -294,6 +295,7 @@ object UnitActionsFromUniques {
 
         return UnitAction(UnitActionType.CreateImprovement, "Create [${improvement.name}]",
             associatedUnique = unique,
+            id = improvement.name,
             action = {
                 tile.setImprovement(improvement, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
@@ -328,6 +330,7 @@ object UnitActionsFromUniques {
                         unit
                     ),
                     associatedUnique = unique,
+                    id = improvement.name,
                     action = {
                         val unitTile = unit.getTile()
                         unitTile.setImprovement(improvement, unit.civ, unit)
@@ -386,6 +389,7 @@ object UnitActionsFromUniques {
             yield(UnitAction(UnitActionType.Transform,
                 title = title,
                 associatedUnique = unique,
+                id = unitToTransformTo.name,
                 action = {
                     val oldMovement = unit.currentMovement
                     unit.destroy(destroyTransportedUnit = false)

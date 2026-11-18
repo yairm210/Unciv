@@ -30,6 +30,11 @@ import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
+/** An action a unit has, see [MapUnitView.getActions] and [MapUnitView.tryInvokeUnitAction].
+ *  @property id Tells apart several actions of the same [type] (target unit, improvement, unique...), `null` if the type has at most one
+ *  @property available `false` if the unit has this action, but can't perform it right now (no movement left, etc) */
+data class UnitActionView(val type: UnitActionType, val id: String?, val available: Boolean)
+
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
 class MapUnitView internal constructor(
     unit: MapUnit,
@@ -235,9 +240,12 @@ class MapUnitView internal constructor(
     /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType] */
     fun canInvokeUnitAction(unitActionType: UnitActionType): Boolean =
         UnitActions.getUnitActions(unit, unitActionType).any { it.action != null }
-    /** Invokes the first enabled action of type [unitActionType]
+    /** The actions this unit has, enabled or not (see [UnitActionView.available]) - pass them to [tryInvokeUnitAction] to invoke them */
+    fun getActions(): List<UnitActionView> =
+        UnitActions.getUnitActions(unit).map { UnitActionView(it.type, it.id, it.action != null) }.toList()
+    /** Invokes the first enabled action of type [unitActionType], and matching [id] if given (see [UnitActionView.id])
      *  @return whether an action was invoked */
-    fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
+    fun tryInvokeUnitAction(unitActionType: UnitActionType, id: String? = null): Boolean = UnitActions.invokeUnitAction(unit, unitActionType, id)
     @Readonly fun canPillage(tile: TileView): Boolean = UnitActionsPillage.canPillage(unit, tile.unwrap())
     /** Invokes the first enabled [UnitActionType.TriggerUnique] action whose unique is of [uniqueType]
      *  @return whether an action was invoked */
