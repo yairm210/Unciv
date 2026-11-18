@@ -15,122 +15,118 @@ import kotlin.math.min
 @Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
 object UnitActionsGreatPerson {
 
-    internal fun getHurryResearchActions(unit: MapUnit, tile: Tile) = sequence {
-        for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
-            yield(UnitAction(
-                UnitActionType.HurryResearch,
-                associatedUnique = unique,
-                action = {
-                    unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
-                    unit.consume()
-                }.takeIf {
-                    unit.hasMovement()
-                        && unit.civ.tech.currentTechnologyName() != null
-                        && !unit.civ.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried)
-                }
-            ))
-        }
-    }
-
-    internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile) = sequence {
-        for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
-            yield(UnitAction(
-                UnitActionType.HurryPolicy,
-                associatedUnique = unique,
-                action = {
-                    unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
-                    unit.consume()
-                }.takeIf {unit.hasMovement()}
-            ))
-        }
-    }
-
-    internal fun getHurryWonderActions(unit: MapUnit, tile: Tile) = sequence {
-        for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction)) {
-            val canHurryWonder =
-                if (!tile.isCityCenter()) false
-                else tile.getCity()!!.cityConstructions.isBuildingWonder()
-                    && tile.getCity()!!.cityConstructions.canBeHurried()
-
-            yield(UnitAction(
-                UnitActionType.HurryWonder,
-                associatedUnique = unique,
-                action = {
-                    tile.getCity()!!.cityConstructions.apply {
-                        //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                        addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier).toInt())
-                        constructIfEnough()
-                    }
-
-                    unit.consume()
-                }.takeIf { unit.hasMovement() && canHurryWonder }
-            ))
-        }
-    }
-
-    internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile) = sequence {
-        for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
-            if (!tile.isCityCenter()) {
-                yield(UnitAction(UnitActionType.HurryBuilding, associatedUnique = unique, action = null))
-                continue
+    // The hurried amount doesn't depend on the unique, so the first matching one is enough
+    internal fun getHurryResearchActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val unique = unit.getMatchingUniques(UniqueType.CanHurryResearch).firstOrNull() ?: return emptySequence()
+        return sequenceOf(UnitAction(
+            UnitActionType.HurryResearch,
+            associatedUnique = unique,
+            action = {
+                unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
+                unit.consume()
+            }.takeIf {
+                unit.hasMovement()
+                    && unit.civ.tech.currentTechnologyName() != null
+                    && !unit.civ.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried)
             }
-
-            val cityConstructions = tile.getCity()!!.cityConstructions
-            val currentName = cityConstructions.currentConstructionName() // Once: the queue can change between two reads
-            val canHurryConstruction = cityConstructions.getConstruction(currentName) is Building
-                && cityConstructions.canBeHurried()
-
-            //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-            val productionPointsToAdd = min(
-                (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
-                cityConstructions.getRemainingWork(currentName).toFloat() - 1
-            ).toInt()
-            if (productionPointsToAdd <= 0) continue
-
-            yield(UnitAction(
-                UnitActionType.HurryBuilding,
-                title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
-                associatedUnique = unique,
-                action = {
-                    cityConstructions.apply {
-                        addProductionPoints(productionPointsToAdd)
-                        constructIfEnough()
-                    }
-
-                    unit.consume()
-                }.takeIf { unit.hasMovement() && canHurryConstruction }
-            ))
-        }
+        ))
     }
 
-    internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
+    internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val unique = unit.getMatchingUniques(UniqueType.CanHurryPolicy).firstOrNull() ?: return emptySequence()
+        return sequenceOf(UnitAction(
+            UnitActionType.HurryPolicy,
+            associatedUnique = unique,
+            action = {
+                unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
+                unit.consume()
+            }.takeIf {unit.hasMovement()}
+        ))
+    }
+
+    internal fun getHurryWonderActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupWonderConstruction).firstOrNull() ?: return emptySequence()
+        val canHurryWonder =
+            if (!tile.isCityCenter()) false
+            else tile.getCity()!!.cityConstructions.isBuildingWonder()
+                && tile.getCity()!!.cityConstructions.canBeHurried()
+
+        return sequenceOf(UnitAction(
+            UnitActionType.HurryWonder,
+            associatedUnique = unique,
+            action = {
+                tile.getCity()!!.cityConstructions.apply {
+                    //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                    addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier).toInt())
+                    constructIfEnough()
+                }
+
+                unit.consume()
+            }.takeIf { unit.hasMovement() && canHurryWonder }
+        ))
+    }
+
+    internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        val unique = unit.getMatchingUniques(UniqueType.CanSpeedupConstruction).firstOrNull() ?: return emptySequence()
+        if (!tile.isCityCenter())
+            return sequenceOf(UnitAction(UnitActionType.HurryBuilding, associatedUnique = unique, action = null))
+
+        val cityConstructions = tile.getCity()!!.cityConstructions
+        val currentName = cityConstructions.currentConstructionName() // Once: the queue can change between two reads
+        val canHurryConstruction = cityConstructions.getConstruction(currentName) is Building
+            && cityConstructions.canBeHurried()
+
+        //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+        val productionPointsToAdd = min(
+            (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
+            cityConstructions.getRemainingWork(currentName).toFloat() - 1
+        ).toInt()
+        if (productionPointsToAdd <= 0) return emptySequence()
+
+        return sequenceOf(UnitAction(
+            UnitActionType.HurryBuilding,
+            title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
+            associatedUnique = unique,
+            action = {
+                cityConstructions.apply {
+                    addProductionPoints(productionPointsToAdd)
+                    constructIfEnough()
+                }
+
+                unit.consume()
+            }.takeIf { unit.hasMovement() && canHurryConstruction }
+        ))
+    }
+
+    internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
             && tile.owningCity?.civ != unit.civ
             && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
-        for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
-            val influenceEarned = unique.params[0].toFloat()
+        // Enabled-ness doesn't depend on the unique, so the one giving the most influence is the best
+        val unique = unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
+            .maxByOrNull { it.params[0].toFloat() } ?: return emptySequence()
+        val influenceEarned = unique.params[0].toFloat()
 
-            yield(UnitAction(
-                UnitActionType.ConductTradeMission,
-                associatedUnique = unique,
-                action = {
-                    // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                    var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
+        return sequenceOf(UnitAction(
+            UnitActionType.ConductTradeMission,
+            associatedUnique = unique,
+            action = {
+                // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
+                var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
 
-                    // Apply the gold trade mission modifier
-                    for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
-                        goldEarned *= goldUnique.params[0].toPercent()
+                // Apply the gold trade mission modifier
+                for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
+                    goldEarned *= goldUnique.params[0].toPercent()
 
-                    val goldEarnedInt = goldEarned.toInt()
-                    unit.civ.addGold(goldEarnedInt)
-                    val tileOwningCiv = tile.owningCity!!.civ
+                val goldEarnedInt = goldEarned.toInt()
+                unit.civ.addGold(goldEarnedInt)
+                val tileOwningCiv = tile.owningCity!!.civ
 
-                    tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
-                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [${goldEarnedInt.tr()}] gold and [${influenceEarned.tr()}] influence!",
-                        NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
-                    unit.consume()
-                }.takeIf { unit.hasMovement() && canConductTradeMission }
-            ))
-        }
+                tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
+                unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [${goldEarnedInt.tr()}] gold and [${influenceEarned.tr()}] influence!",
+                    NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                unit.consume()
+            }.takeIf { unit.hasMovement() && canConductTradeMission }
+        ))
     }
 }
