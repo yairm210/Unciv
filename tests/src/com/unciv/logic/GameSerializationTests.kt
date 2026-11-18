@@ -218,7 +218,6 @@ class GameSerializationTests {
     @Test
     fun onlineGameRejectsMissingSpeed() {
         val missingSpeed = "MissingCustomSpeed"
-        val maxModifier = game.ruleset.speeds.values.maxOf { it.modifier }
 
         game.gameParameters.isOnlineMultiplayer = true
         game.gameParameters.speed = missingSpeed
@@ -234,7 +233,8 @@ class GameSerializationTests {
         game.gameParameters.isOnlineMultiplayer = false
         game.gameParameters.speed = missingSpeed
         game.setGlobalTransients()
-        Assert.assertEquals(maxModifier, game.speed.modifier, 0f)
+        // Single-player falls back to the speed whose modifier is closest to 1
+        Assert.assertEquals("Standard", game.speed.name)
     }
 
     @After

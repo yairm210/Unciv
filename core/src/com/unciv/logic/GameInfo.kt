@@ -46,6 +46,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -828,8 +829,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                         "Game speed [$reportedSpeed] is missing from your local ruleset. Please check your ruleset or mod version before retrying."
                     )
                 }
+                // Single-player: fall back to the middle-of-the-pack speed, the one whose general modifier is closest to 1
                 else ->
-                    ruleset.speeds.values.maxBy { it.modifier }
+                    ruleset.speeds.values.minBy { abs(it.modifier - 1f) }
             }
 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
