@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.ImageGetter
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -92,17 +93,21 @@ class UiUnitAction(
 
 /** Entry point for the UI to get [UiUnitAction]s */
 object UiUnitActions {
-    fun getUnitActions(unit: MapUnit): Sequence<UiUnitAction> =
-        UnitActions.getUnitActions(unit).map { UiUnitAction(unit, it) } + UiOnlyUnitActions.getUnitActions(unit)
+    @Suppress("DEPRECATION") // Bridge to logic until the view exposes unit actions
+    fun getUnitActions(unit: MapUnitView): Sequence<UiUnitAction> {
+        val mapUnit = unit.getUnit()
+        return UnitActions.getUnitActions(mapUnit).map { UiUnitAction(mapUnit, it) } + UiOnlyUnitActions.getUnitActions(mapUnit)
+    }
 
     /** Gets the preferred "page" to display a [UiUnitAction] of type [uiUnitActionType] on, possibly dynamic depending on the state or situation [unit] is in.
      *  Note the returned "page numbers" are treated as suggestions, buttons may get redistributed when screen space is scarce. */
     @Readonly
-    fun getActionDefaultPage(unit: MapUnit, uiUnitActionType: UiUnitActionType): Int =
-        uiUnitActionType.getPage(unit)
+    @Suppress("DEPRECATION") // Bridge to logic until getPage works on views
+    fun getActionDefaultPage(unit: MapUnitView, uiUnitActionType: UiUnitActionType): Int =
+        uiUnitActionType.getPage(unit.getUnit())
 
     /** The "paging" actions: [first][Pair.first] page forward, [second][Pair.second] page back. Not part of [getUnitActions]. */
-    internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
+    internal fun getPagingActions(unit: MapUnitView, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
         UiOnlyUnitActions.getPagingActions(unit, actionsTable)
 }
 

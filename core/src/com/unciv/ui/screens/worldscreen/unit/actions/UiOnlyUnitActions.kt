@@ -158,7 +158,7 @@ object UiOnlyUnitActions {
      *  - [first][Pair.first] - [UiUnitActionType.ShowAdditionalActions] (page forward)
      *  - [second][Pair.second] - [UiUnitActionType.HideAdditionalActions] (page back)
      */
-    internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
+    internal fun getPagingActions(unit: MapUnitView, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
         UiUnitAction(UiUnitActionType.ShowAdditionalActions) { actionsTable.changePage(1, unit) } to
             UiUnitAction(UiUnitActionType.HideAdditionalActions) { actionsTable.changePage(-1, unit) }
 }
