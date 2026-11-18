@@ -1,3 +1,24 @@
+## 5.0.1
+
+Avoid ANR when opening empire overview screen from top bar
+
+Add counterintelligence modifier uniques - By SeventhM
+
+Naval AI: path to water attack stations instead of city centers - By DavidZal
+
+By ibrahim-iqbal:
+- Add the battle notification templates where only the city lost HP 
+- Charge "Costs [amount] [stat] per turn" for improvements that are not roads 
+- Fix divide by zero in the trades overview when the viewer is the first civ 
+
+Seed the browser font fixture on the game origin - By YosefLm
+
+By SomeTroglodyte:
+- Language UI shows native names, fix off-by-two in completion percentages
+- Web version: Fix broken quoted parameters in dev console
+- Web version: Suppress double handling of Ctrl-keys by game and browser
+- Prettify web port a bit
+
 ## 5.0.0
 
 Web version of Unciv! - By YosefLm

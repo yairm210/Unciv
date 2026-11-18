@@ -1032,6 +1032,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[relativeAmount]% counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% enemy counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "New spies start with [amount] level(s)"
 	Example: "New spies start with [3] level(s)"
 

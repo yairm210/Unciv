@@ -409,13 +409,14 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
         val modifierTable = Table()
         val tributeModifiers = otherCiv.cityStateFunctions.getTributeModifiers(viewingCiv, requireWholeList = true)
+        val goldWillingness = tributeModifiers.values.sum()
         for (item in tributeModifiers) {
             val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
             modifierTable.add(item.value.tr().toLabel(color)).row()
         }
         modifierTable.add("Sum:".toLabel())
-        modifierTable.add(tributeModifiers.values.sum().toLabel()).row()
+        modifierTable.add(goldWillingness.toLabel()).row()
         diplomacyTable.add(modifierTable).row()
         diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
@@ -427,7 +428,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             diplomacyScreen.rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandGoldButton).row()
-        if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
+        if (goldWillingness < 0) demandGoldButton.disable()
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
