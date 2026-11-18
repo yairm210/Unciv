@@ -215,6 +215,28 @@ class GameSerializationTests {
         Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)
     }
 
+    @Test
+    fun onlineGameRejectsMissingSpeed() {
+        val missingSpeed = "MissingCustomSpeed"
+        val maxModifier = game.ruleset.speeds.values.maxOf { it.modifier }
+
+        game.gameParameters.isOnlineMultiplayer = true
+        game.gameParameters.speed = missingSpeed
+        val exception = Assert.assertThrows(UncivShowableException::class.java) {
+            game.setGlobalTransients()
+        }
+        Assert.assertTrue(exception.message.contains(missingSpeed))
+
+        game.gameParameters.speed = "Standard"
+        game.setGlobalTransients()
+        Assert.assertEquals("Standard", game.speed.name)
+
+        game.gameParameters.isOnlineMultiplayer = false
+        game.gameParameters.speed = missingSpeed
+        game.setGlobalTransients()
+        Assert.assertEquals(maxModifier, game.speed.modifier, 0f)
+    }
+
     @After
     fun cleanup() {
         UncivFiles.saveZipped = saveZippedBackup

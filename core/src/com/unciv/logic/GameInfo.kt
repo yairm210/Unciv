@@ -818,8 +818,19 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             ?: ruleset.difficulties.values.maxByOrNull { it.estimateDifficulty() }
             ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Difficulty]")
         speed = ruleset.speeds[gameParameters.speed]
-            ?: ruleset.speeds.values.maxByOrNull { it.modifier }
-            ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Speed]")
+            ?: when {
+                ruleset.speeds.isEmpty() ->
+                    throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Speed]")
+                gameParameters.isOnlineMultiplayer -> {
+                    // Save-file speed is untrusted; keep the shown name bounded.
+                    val reportedSpeed = gameParameters.speed.take(64)
+                    throw UncivShowableException(
+                        "Game speed [$reportedSpeed] is missing from your local ruleset. Please check your ruleset or mod version before retrying."
+                    )
+                }
+                else ->
+                    ruleset.speeds.values.maxBy { it.modifier }
+            }
 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
