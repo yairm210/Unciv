@@ -552,9 +552,13 @@ class Autosaves(val files: UncivFiles) {
         // so a thread dying mid-save can't leave a truncated Autosave behind
         val autosaveFile = files.getSave(AUTOSAVE_FILE_NAME)
         val tempFile = autosaveFile.sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
+        // Two autosaves can run at once (e.g. Next turn pressed quickly) and share the temp file,
+        // so one could move it away while the other is still writing or about to move it
         try {
-            files.saveGame(gameInfo, tempFile)
-            tempFile.moveTo(autosaveFile)
+            synchronized(this) {
+                files.saveGame(gameInfo, tempFile)
+                tempFile.moveTo(autosaveFile)
+            }
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
             tempFile.delete()
