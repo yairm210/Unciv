@@ -76,9 +76,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
-    @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
-    @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */

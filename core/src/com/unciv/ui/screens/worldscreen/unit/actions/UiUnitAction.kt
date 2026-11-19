@@ -196,7 +196,7 @@ enum class UiUnitActionType private constructor(
     Repair(UnitActionType.Repair, portrait("Repair"), uncivSound = UncivSound.Construction, useFrequency = 90f),
     CreateImprovement(UnitActionType.CreateImprovement, null, false, UncivSound.Chimes, useFrequency = 85f) {
         override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) =
-            if (unit.hasUniqueToCreateWaterImprovements()) 82f else defaultUseFrequency
+            if (unit.hasUnique(UniqueType.CreateWaterImprovements)) 82f else defaultUseFrequency
         override val binding = KeyboardBinding.Create
     },
     HurryResearch(UnitActionType.HurryResearch, portrait("HurryResearch"), uncivSound = UncivSound.Chimes, useFrequency = 76f),

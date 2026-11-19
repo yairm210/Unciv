@@ -68,6 +68,11 @@ object SpecificUnitAutomation {
 
     fun automateCitadelPlacer(unitView: MapUnitView): Boolean {
         val unit = unitView.getUnit()
+        val ruleset = unit.civ.gameInfo.ruleset
+        val canPlaceCitadel = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+            .mapNotNull { ruleset.tileImprovements[it.params[0]] }
+            .any { it.hasUnique(UniqueType.OneTimeTakeOverTilesInRadius) }
+        if (!canPlaceCitadel) return false
         // Keep at least 2 generals alive
         if (unit.hasUnique(UniqueType.StrengthBonusInRadius) 
                 && unit.civ.units.getCivUnits().count { it.hasUnique(UniqueType.StrengthBonusInRadius) } < 3) 
