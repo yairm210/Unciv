@@ -28,6 +28,7 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.InputStream
 import java.io.Writer
+import kotlin.random.Random
 
 const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
@@ -551,14 +552,11 @@ class Autosaves(val files: UncivFiles) {
         // Write to a temp file first and move it over the real one when complete,
         // so a thread dying mid-save can't leave a truncated Autosave behind
         val autosaveFile = files.getSave(AUTOSAVE_FILE_NAME)
-        val tempFile = autosaveFile.sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
-        // Two autosaves can run at once (e.g. Next turn pressed quickly) and share the temp file,
-        // so one could move it away while the other is still writing or about to move it
+        // Two autosaves can run at once (e.g. Next turn pressed quickly), so each gets its own temp file
+        val tempFile = autosaveFile.sibling("$AUTOSAVE_FILE_NAME-${Random.nextLong().toULong().toString(16)}.$TEMP_FILE_EXTENSION")
         try {
-            synchronized(this) {
-                files.saveGame(gameInfo, tempFile)
-                tempFile.moveTo(autosaveFile)
-            }
+            files.saveGame(gameInfo, tempFile)
+            tempFile.moveTo(autosaveFile)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
             tempFile.delete()
@@ -576,9 +574,12 @@ class Autosaves(val files: UncivFiles) {
     }
 
     private fun purgeOldAutosaves(maxAutosavesStored: Int) {
-        // Leftover of an interrupted autosave - getSaves hides these, so delete explicitly
-        val tempFile = files.getSave(AUTOSAVE_FILE_NAME).sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
-        if (tempFile.exists()) tempFile.delete()
+        // Leftovers of interrupted autosaves - getSaves hides these, so delete explicitly.
+        // Skip recent ones, which may belong to an autosave still being written.
+        files.getSave(AUTOSAVE_FILE_NAME).parent().list()
+            .filter { it.extension() == TEMP_FILE_EXTENSION && it.name().startsWith("$AUTOSAVE_FILE_NAME-") }
+            .filter { System.currentTimeMillis() - it.lastModified() > 60_000 }
+            .forEach { it.delete() }
 
         // Since the latest numbered autosave is a copy of the un-numbered autosave file,
         // we add 1 so `maxAutosavesStored` numbered files AND the un-numbered one are kept (see #12790).
