@@ -152,7 +152,7 @@ enum class Countables(
             if (gameContext.relevantUnit == null) return null
             val filter = parameterText.getPlaceholderParameters()[0]
             // Count transported units on the same tile matching the filter
-            return gameContext.relevantUnit!!.getTile().airUnits.count { 
+            return gameContext.relevantUnit!!.getTile().transportedUnits.count {
                 it.isTransported && it.matchesFilter(filter) 
             }
         }

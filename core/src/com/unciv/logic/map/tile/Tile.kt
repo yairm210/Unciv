@@ -43,7 +43,12 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
+    /** Legacy serialized name; use [transportedUnits] in code. */
     var airUnits = ArrayList<MapUnit>(0)
+
+    var transportedUnits: ArrayList<MapUnit>
+        get() = airUnits
+        set(value) { airUnits = value }
 
     var position = HexCoord()
     lateinit var baseTerrain: String
@@ -240,7 +245,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
         if (addUnits) {
             if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
-            toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
+            toReturn.transportedUnits = ArrayList(transportedUnits.map { it.clone() })
         }
         toReturn.position = position
         toReturn.baseTerrain = baseTerrain
@@ -279,13 +284,13 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
     @Readonly
     fun getUnits(): Sequence<MapUnit> {
         // common case - do not allocate memory for a new sequence
-        if (militaryUnit == null && civilianUnit == null && airUnits.isEmpty())
+        if (militaryUnit == null && civilianUnit == null && transportedUnits.isEmpty())
             return emptySequence()
 
         return sequence {
             if (militaryUnit != null) yield(militaryUnit!!)
             if (civilianUnit != null) yield(civilianUnit!!)
-            if (airUnits.isNotEmpty()) yieldAll(airUnits)
+            if (transportedUnits.isNotEmpty()) yieldAll(transportedUnits)
         }
     }
 
@@ -294,7 +299,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
     fun getFirstUnit(): MapUnit? {
         if (militaryUnit != null) return militaryUnit!!
         if (civilianUnit != null) return civilianUnit!!
-        if (airUnits.isNotEmpty()) return airUnits.first()
+        if (transportedUnits.isNotEmpty()) return transportedUnits.first()
         return null
     }
 
@@ -1024,7 +1029,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
      */
     fun removeUnit(mapUnit: MapUnit) {
         when {
-            airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
+            transportedUnits.contains(mapUnit) -> transportedUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
             militaryUnit == mapUnit -> militaryUnit = null
         }

@@ -21,6 +21,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val instanceName: String? get() = unit.instanceName
     val currentMovement: Float get() = unit.currentMovement
     val attacksThisTurn: Int get() = unit.attacksThisTurn
+    val isTransported: Boolean get() = unit.isTransported
 
     // Navigation
     @Deprecated("Scheduled for removal - views should unwrap() instead")

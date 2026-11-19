@@ -544,7 +544,7 @@ class WorldMapHolder(
         val visibleOwnedUnits = tileView.getVisibleUnits()
             .mapNotNull { it.tryGetMapUnitView() }
         
-        if (tileView.isCityCenter() || visibleOwnedUnits.any { it.isAirUnit() }) {
+        if (tileView.isCityCenter() || visibleOwnedUnits.any { it.isAirUnit() || it.isTransported }) {
             unitList.addAll(visibleOwnedUnits)
         }
 

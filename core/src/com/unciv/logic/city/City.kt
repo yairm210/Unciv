@@ -345,7 +345,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     /** Gets max air units that can remain in the city untransported */
     @Readonly fun getMaxAirUnits(): Int = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity +
-        getMatchingUniques(UniqueType.CarryExtraAirUnits)
+        getMatchingUniques(UniqueType.CarryExtraUnits)
             .filter { it.params[1] == "Air" }
             .sumOf { it.params[0].toInt() }
 
@@ -468,7 +468,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         if (!canBeDestroyed() && !overrideSafeties) return
 
         // Destroy planes stationed in city
-        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
+        for (airUnit in getCenterTile().transportedUnits.toList()) airUnit.destroy()
 
         // Evacuate spies BEFORE relinquishing tile ownership, because spy lookup uses tile.owningCity
         // to find which city a spy is stationed in (after save/load when the transient city field is null).

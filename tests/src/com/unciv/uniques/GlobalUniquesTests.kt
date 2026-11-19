@@ -762,7 +762,7 @@ class GlobalUniquesTests {
     // region Can carry air units
 
     @Test
-    fun testCarryExtraAirUnits() {
+    fun testCarryExtraUnits() {
         game.makeHexagonalMap(5)
         val civInfo = game.addCiv()
         val tile = game.getTile(HexCoord.Zero)
