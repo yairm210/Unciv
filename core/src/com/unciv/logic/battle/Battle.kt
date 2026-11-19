@@ -697,7 +697,7 @@ object Battle {
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
-            for (airUnit in airUnits.toList()) airUnit.destroy()
+            for (airUnit in transportedUnits.toList()) airUnit.destroy()
         }
 
         val gameContext = GameContext(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())

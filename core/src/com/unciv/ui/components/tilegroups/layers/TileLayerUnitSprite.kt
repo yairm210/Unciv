@@ -11,6 +11,8 @@ import com.unciv.ui.images.ImageGetter
 class UnitSpriteSlot {
     val spriteGroup = NonTransformGroup()
     var currentImageLocation = ""
+    var currentUnitId = -1
+    var currentUnitCivName = ""
 }
 
 class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
@@ -20,7 +22,13 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     private var militarySlot: UnitSpriteSlot? = null
 
 
-    fun getSpriteSlot(unitView: ForeignMapUnitView) = if (unitView.isCivilian()) civilianSlot else militarySlot
+    // Transported passengers share a slot type with their carrier, but not its sprite.
+    fun getSpriteSlot(unitView: ForeignMapUnitView): UnitSpriteSlot? {
+        val slot = if (unitView.isCivilian()) civilianSlot else militarySlot
+        return slot?.takeIf {
+            it.currentUnitId == unitView.id && it.currentUnitCivName == unitView.civName
+        }
+    }
 
     private fun updateSlot(currentSlot: UnitSpriteSlot?, unitView: ForeignMapUnitView?, isShown: Boolean): UnitSpriteSlot? {
 
@@ -33,7 +41,13 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         }
 
         if (currentSlot == null && location == "") return null // No-op - had none, has none
-        if (currentSlot?.currentImageLocation == "$nationName$location") return currentSlot // No-op - had, has
+        if (currentSlot != null && currentSlot.currentImageLocation == "$nationName$location") {
+            if (unitView != null && isShown) {
+                currentSlot.currentUnitId = unitView.id
+                currentSlot.currentUnitCivName = unitView.civName
+            }
+            return currentSlot // No-op - had, has
+        }
 
         if (location == "" || !ImageGetter.imageExists(location)){
             currentSlot?.spriteGroup?.let { removeOwnedActor(it) }
@@ -49,9 +63,11 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
             addOwnedActor(spriteGroup)
         }
         slot.currentImageLocation = "$nationName$location"
+        slot.currentUnitId = unitView!!.id
+        slot.currentUnitCivName = unitView.civName
         slot.spriteGroup.clear()
 
-        val civView = unitView!!.civ()
+        val civView = unitView.civ()
         val pixelUnitImages = ImageGetter.getLayeredImageColored(
             location,
             null,

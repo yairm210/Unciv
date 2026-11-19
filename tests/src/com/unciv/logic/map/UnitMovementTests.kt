@@ -4,6 +4,7 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -59,6 +60,18 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
+    }
+
+    @Test
+    fun transportedUnitsKeepTheLegacySaveField() {
+        val restored = json().fromJson(Tile::class.java, """{"airUnits":[]}""")
+        assertTrue(restored.transportedUnits.isEmpty())
+
+        testGame.addCity(civInfo, tile)
+        testGame.addUnit("Fighter", civInfo, tile)
+        val serialized = json().toJson(tile)
+        assertTrue(serialized.contains("\"airUnits\""))
+        assertFalse(serialized.contains("\"transportedUnits\""))
     }
 
     @Test
@@ -491,6 +504,44 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun canTeleportTransportWithLandPayload() {
+        testGame.makeHexagonalMap(5)
+        for (i in 1..3) {
+            val waterTile = testGame.tileMap[1,i]
+            waterTile.baseTerrain = Constants.ocean
+            waterTile.setTransients()
+        }
+
+        val carrierBase = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [1] [All] units"
+        ).apply {
+            movement = 2
+            strength = 10
+        }
+        val carrier = testGame.addUnit(carrierBase.name, civInfo, testGame.tileMap[1,1])
+        val landOrigin = carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() }
+        val passengerBase = testGame.createBaseUnit(
+            "Melee",
+            "Can be carried by [All] units"
+        ).apply {
+            movement = 2
+            strength = 5
+        }
+        val passenger = testGame.addUnit(passengerBase.name, civInfo, landOrigin)
+        passenger.movement.moveToTile(carrier.currentTile)
+        assertTrue(passenger.isTransported)
+
+        val otherCiv = testGame.addCiv()
+        testGame.addCity(otherCiv, tile)
+
+        assertTrue("Carrier must be teleported out of the new city territory",
+            carrier.currentTile.position.eq(1, 2))
+        assertSame("Land passenger must follow its carrier", carrier.currentTile, passenger.currentTile)
+        assertTrue(passenger.isTransported)
+    }
+
+    @Test
     fun paradroppingTransportKeepsPayload() {
         val origin = testGame.tileMap[0,0]
         val destination = testGame.tileMap[1,0]
@@ -622,8 +673,8 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         for (passenger in payload) {
             assertEquals(water, passenger.currentTile)
             assertTrue(passenger.isTransported)
-            assertTrue(water.airUnits.contains(passenger))
-            assertFalse(cityTile.airUnits.contains(passenger))
+            assertTrue(water.transportedUnits.contains(passenger))
+            assertFalse(cityTile.transportedUnits.contains(passenger))
         }
 
         UnitAutomation.automateUnitMoves(GameView(testGame.gameInfo, civInfo).getMapUnitView(carrier))
@@ -680,8 +731,8 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
             assertEquals(cityTile, aircraft.currentTile)
             assertFalse(aircraft.isTransported)
         }
-        assertEquals(city.getMaxAirUnits(), cityTile.airUnits.count { !it.isTransported })
-        assertEquals(payload.size, cityTile.airUnits.count { it.isTransported })
+        assertEquals(city.getMaxAirUnits(), cityTile.transportedUnits.count { !it.isTransported })
+        assertEquals(payload.size, cityTile.transportedUnits.count { it.isTransported })
         assertEquals(0, carrier.checkCarryCapacity(cityAircraft[0]))
     }
 
@@ -750,7 +801,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         for (passenger in payload) {
             assertEquals(water, passenger.currentTile)
             assertTrue(passenger.isTransported)
-            assertFalse(cityTile.airUnits.contains(passenger))
+            assertFalse(cityTile.transportedUnits.contains(passenger))
         }
     }
 
@@ -781,7 +832,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         testGame.addUnit("Carrier", foreignCiv, foreignCoast)
         val foreignFighter = testGame.addUnit("Fighter", foreignCiv, foreignCoast)
         foreignFighter.removeFromTile()
-        cityTile.airUnits.add(foreignFighter)
+        cityTile.transportedUnits.add(foreignFighter)
         foreignFighter.currentTile = cityTile
         foreignFighter.isTransported = true
 
@@ -798,20 +849,20 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         for ((passenger, memorySize) in passengers.zip(memorySizes)) {
             assertEquals(nextWater, passenger.currentTile)
             assertTrue(passenger.isTransported)
-            assertTrue(nextWater.airUnits.contains(passenger))
+            assertTrue(nextWater.transportedUnits.contains(passenger))
             assertEquals(UnitMovementMemoryType.UnitMoved, passenger.mostRecentMoveType)
             assertEquals(memorySize, passenger.movementMemories.size)
         }
         for (aircraft in cityAircraft) {
             assertEquals(cityTile, aircraft.currentTile)
             assertFalse(aircraft.isTransported)
-            assertFalse(nextWater.airUnits.contains(aircraft))
+            assertFalse(nextWater.transportedUnits.contains(aircraft))
         }
         assertSame(foreignCiv, foreignFighter.civ)
         assertEquals(cityTile, foreignFighter.currentTile)
         assertTrue(foreignFighter.isTransported)
-        assertTrue(cityTile.airUnits.contains(foreignFighter))
-        assertFalse(nextWater.airUnits.contains(foreignFighter))
+        assertTrue(cityTile.transportedUnits.contains(foreignFighter))
+        assertFalse(nextWater.transportedUnits.contains(foreignFighter))
     }
 
     @Test
@@ -832,7 +883,7 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         val carrier = testGame.addUnit(carrierBase.name, civInfo, origin)
         val fighter = testGame.addUnit("Fighter", civInfo, origin)
         val extra = testGame.addUnit("Fighter", civInfo, null)
-        origin.airUnits.add(extra)
+        origin.transportedUnits.add(extra)
         extra.currentTile = origin
         extra.isTransported = true
 
@@ -843,8 +894,8 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         carrier.putInTile(origin)
 
         assertEquals(origin, carrier.currentTile)
-        assertTrue(origin.airUnits.contains(fighter))
-        assertTrue(origin.airUnits.contains(extra))
+        assertTrue(origin.transportedUnits.contains(fighter))
+        assertTrue(origin.transportedUnits.contains(extra))
         assertTrue(fighter.isTransported)
         assertTrue(extra.isTransported)
         assertEquals(UnitMovement.CannotMoveToReason.NoAirUnitTransport, carrier.movement.getCannotMoveToReason(other))

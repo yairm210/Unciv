@@ -691,12 +691,21 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // remember our first owner
         unit.originalOwner = civInfo.civID
 
+        fun canPlaceUnitOnTile(tile: Tile): Boolean {
+            val carrier = tile.militaryUnit
+            // Spawning is not a boarding action; keep the carrier in its military slot.
+            if (unit.baseUnit.isLandUnit && carrier != null
+                && carrier.owner == unit.owner && carrier.isTransportTypeOf(unit))
+                return false
+            return unit.movement.canMoveTo(tile)
+        }
+
         var unitToPlaceTile: Tile? = null
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
         unit.cache.state = GameContext(unit)
-        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
+        if (canPlaceUnitOnTile(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
@@ -720,8 +729,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             val checkedCandidates = mutableSetOf<Tile>()
             var potentialCandidates = TileCandidates(isRestrictedLandUnit, getPassableNeighbours(currentTile).asIterable())
             while (unitToPlaceTile == null && tryCount++ < 10) {
-                unitToPlaceTile = potentialCandidates.primary.firstOrNull { unit.movement.canMoveTo(it) } // Land units should prefer to go into land tiles
-                    ?: potentialCandidates.secondary.firstOrNull { unit.movement.canMoveTo(it) }
+                unitToPlaceTile = potentialCandidates.primary.firstOrNull { canPlaceUnitOnTile(it) } // Land units should prefer to go into land tiles
+                    ?: potentialCandidates.secondary.firstOrNull { canPlaceUnitOnTile(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
                 checkedCandidates.addAll(potentialCandidates.allTiles)

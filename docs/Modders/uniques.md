@@ -2392,7 +2392,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
+??? example  "Can be carried by [mapUnitFilter] units"
+	Allows non-air units to be transported by matching carrier units.
+
+	Example: "Can be carried by [Wounded] units"
+
+	Applicable to: Unit
+
 ??? example  "Cannot be carried by [mapUnitFilter] units"
+	Overrides "Can be carried by" for matching carrier units.
+
 	Example: "Cannot be carried by [Wounded] units"
 
 	Applicable to: Unit
