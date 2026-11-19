@@ -304,6 +304,10 @@ class MapUnitView internal constructor(
 }
 
 // Unit state derived from [MapUnitView.action]
+@Readonly fun MapUnitView.isActionUntilHealed(): Boolean = action?.endsWith("until healed") == true
+@Readonly fun MapUnitView.isSleeping(): Boolean = action?.startsWith(UnitActionType.Sleep.value) == true
+@Readonly fun MapUnitView.isSleepingUntilHealed(): Boolean = isSleeping() && isActionUntilHealed()
+@Readonly fun MapUnitView.isFortifyingUntilHealed(): Boolean = isFortified() && isActionUntilHealed()
 @Readonly fun MapUnitView.isMoving(): Boolean = action?.startsWith("moveTo") == true
 @Readonly fun MapUnitView.isExploring(): Boolean = action == UnitActionType.Explore.value
 @Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction

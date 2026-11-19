@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts
@@ -114,15 +114,18 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // actually show the buttons of the currentPage
         for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
-            val upgradeAction = unitAction.unitAction as? UpgradeUnitAction
-            if (upgradeAction != null) {
+            val upgradeActionView = unitAction.unitAction
+            val upgrade = if (upgradeActionView != null && upgradeActionView.type == UnitActionType.Upgrade) {
+                unit.getPossibleUpgrades().firstOrNull { it.upgradedUnit.name == upgradeActionView.id }
+            } else null
+            if (upgrade != null) {
                 // This is bound even when the button is disabled, but Actor.activate in ActivationExtensions will block any activation for disabled actors...
                 // But the menu is built to be useful even when you can't upgrade - so **hack** it to get the handler through.
                 // Works because our disable() extension also changes style, and because the normal click is ignored due to unitAction.action being null.
                 button.isDisabled = false
                 button.touchable = Touchable.enabled
                 button.addContextMenu {
-                    UnitUpgradeMenu(worldScreen.stage, button, unit, upgradeAction.upgrade, enable = unitAction.action != null, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, unit, upgrade, enable = unitAction.action != null, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }
