@@ -1352645,117 +1352645,142 @@ culmma_UnitActionModifiers_getSideEffectString = ($this, $unit, $actionUnique, $
     $rt_nativeThread().push($this, $unit, $actionUnique, $defaultAllMovement, $effects, $maxUsages, $removes, $promotionName, $actionUnique_0, var$9, $statCost, var$11, var$12, var$13, var$14, var$15, var$16, var$17, $promotionChar, $stockpileString, var$20, var$21, var$22, var$23, $conditional, $conditionals, $ptr);
 },
 culmma_UnitActionModifiers_getUseFrequency = ($this, $unit, $actionUnique, $default) => {
-    let $$this$firstOrNull$iv, var$5, $element$iv, $it, $ptr, $tmp;
+    let var$4, var$5, var$6, var$7, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$it = $thread.pop();$element$iv = $thread.pop();var$5 = $thread.pop();$$this$firstOrNull$iv = $thread.pop();$default = $thread.pop();$actionUnique = $thread.pop();$unit = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$default = $thread.pop();$actionUnique = $thread.pop();$unit = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$firstOrNull$iv = $rt_s(1149);
+        var$4 = $rt_s(1149);
         $ptr = 1;
     case 1:
-        kji_Intrinsics_checkNotNullParameter($unit, $$this$firstOrNull$iv);
+        kji_Intrinsics_checkNotNullParameter($unit, var$4);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $rt_s(1149);
+        $ptr = 2;
+    case 2:
+        kji_Intrinsics_checkNotNullParameter($unit, var$4);
         if ($rt_suspending()) {
             break main;
         }
         if ($actionUnique !== null) {
-            $$this$firstOrNull$iv = $actionUnique.$modifiersMap;
-            if ($$this$firstOrNull$iv !== null) {
-                $ptr = 2;
+            var$4 = $actionUnique.$modifiersMap;
+            if (var$4 !== null) {
+                $ptr = 3;
                 continue main;
             }
         }
+        $unit = null;
+        if ($unit !== null)
+            $default = $unit.$value5;
         return $default;
-    case 2:
+    case 3:
         cumru_UniqueType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $actionUnique = cumru_UniqueType_UnitActionPriority;
-        $ptr = 3;
-    case 3:
-        $tmp = $$this$firstOrNull$iv.$get1($actionUnique);
+        $ptr = 4;
+    case 4:
+        $tmp = var$4.$get1($actionUnique);
         if ($rt_suspending()) {
             break main;
         }
         $actionUnique = $tmp;
         $actionUnique = $rt_castToInterface($actionUnique, ju_List);
         if ($actionUnique !== null) {
-            $$this$firstOrNull$iv = $rt_nullCheck($actionUnique);
-            $ptr = 4;
+            $actionUnique = $rt_nullCheck($actionUnique);
+            $ptr = 5;
             continue main;
         }
+        $unit = null;
+        if ($unit !== null)
+            $default = $unit.$value5;
         return $default;
-    case 4:
-        $tmp = $$this$firstOrNull$iv.$iterator();
+    case 5:
+        $tmp = $actionUnique.$iterator();
         if ($rt_suspending()) {
             break main;
         }
         $actionUnique = $tmp;
         $actionUnique = $rt_nullCheck($actionUnique);
-        $ptr = 5;
-    case 5:
+        $ptr = 6;
+    case 6:
         $tmp = $actionUnique.$hasNext();
         if ($rt_suspending()) {
             break main;
         }
         var$5 = $tmp;
         if (!var$5) {
-            $element$iv = null;
-            $unit = $rt_castToClass($element$iv, cumru_Unique);
+            var$4 = null;
+            $unit = $rt_castToClass(var$4, cumru_Unique);
             if ($unit !== null) {
                 $unit = $unit.$params;
-                var$5 = 0;
-                $unit = $rt_nullCheck($unit);
-                $ptr = 8;
-                continue main;
+                if ($unit !== null) {
+                    var$5 = 0;
+                    $ptr = 9;
+                    continue main;
+                }
             }
+            $unit = null;
+            if ($unit !== null)
+                $default = $unit.$value5;
             return $default;
         }
-        $ptr = 6;
-    case 6:
+        $ptr = 7;
+    case 7:
         $tmp = $actionUnique.$next();
         if ($rt_suspending()) {
             break main;
         }
-        $element$iv = $tmp;
-        $it = $rt_castToClass($element$iv, cumru_Unique);
+        var$4 = $tmp;
+        var$6 = $rt_castToClass(var$4, cumru_Unique);
         $unit = $rt_nullCheck($unit);
-        $$this$firstOrNull$iv = ($rt_nullCheck($unit.$cache)).$state1;
-        $it = $rt_nullCheck($it);
-        $ptr = 7;
-    case 7:
-        $tmp = cumru_Unique_conditionalsApply($it, $$this$firstOrNull$iv);
+        var$7 = ($rt_nullCheck($unit.$cache)).$state1;
+        var$6 = $rt_nullCheck(var$6);
+        $ptr = 8;
+    case 8:
+        $tmp = cumru_Unique_conditionalsApply(var$6, var$7);
         if ($rt_suspending()) {
             break main;
         }
         var$5 = $tmp;
         if (var$5) {
-            $unit = $rt_castToClass($element$iv, cumru_Unique);
+            $unit = $rt_castToClass(var$4, cumru_Unique);
             if ($unit !== null) {
                 $unit = $unit.$params;
-                var$5 = 0;
-                $unit = $rt_nullCheck($unit);
-                $ptr = 8;
-                continue main;
+                if ($unit !== null) {
+                    var$5 = 0;
+                    $ptr = 9;
+                    continue main;
+                }
             }
+            $unit = null;
+            if ($unit !== null)
+                $default = $unit.$value5;
             return $default;
         }
         $actionUnique = $rt_nullCheck($actionUnique);
-        $ptr = 5;
+        $ptr = 6;
         continue main;
-    case 8:
+    case 9:
         $tmp = $unit.$get3(var$5);
         if ($rt_suspending()) {
             break main;
         }
         $unit = $tmp;
-        return jl_Float_parseFloat($rt_castToClass($unit, jl_String));
+        $unit = $rt_castToClass($unit, jl_String);
+        $unit = $unit === null ? null : jl_Float_valueOf(jl_Float_parseFloat($unit));
+        if ($unit !== null)
+            $default = $unit.$value5;
+        return $default;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $unit, $actionUnique, $default, $$this$firstOrNull$iv, var$5, $element$iv, $it, $ptr);
+    $rt_nativeThread().push($this, $unit, $actionUnique, $default, var$4, var$5, var$6, var$7, $ptr);
 },
 culmma_UnitActionModifiers__clinit_ = () => {
     culmma_UnitActionModifiers_INSTANCE = new culmma_UnitActionModifiers;
@@ -1979236,25 +1979261,25 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 ".\n                Please refer to SerialDescriptor documentation for additional information.\n            ", "selectedFriend", "iRulesetObject", "Nothing found!", "#f53", "Length out of bounds: ", "Offset out of bounds: ", "Pushback buffer full", "Could not export map", "handle", "DisposeHandlersOnCancel[", "Error displaying map \"", "Error loading map!", "{This map has errors:}\n\n", "\n\n{The incompatible elements have been removed.}", "Error loading map \"", "{Error loading map!}", "\n{", "jsonsFolder",
 "fileFilter", "Translation writer took %sms for %s", "filePath", "resultStrings", "getFields(...)", "# This is an empty line  ", "aiFreeTechs", "aiFreeUnits", "attackSound", "cannotBeBuiltWith", "cultureBuildings", "excludedDifficulties", "improvingTech", "obsoleteTech", "occursOn", "promotions", "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities", "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires", "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
 "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo", "RuinReward.uniques", "TerrainType.name", "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques", "Era.citySound", "keyShortcut", "BeliefType", "Promotion.name", "milestones", "FormattedLine.text", "/search/topics", "order", "asc", "unciv-mod repositories:>1", "translationKey", "hashMapKey", "ParsedLine(raw=", ", isTranslatable=", ", translationKey=", ", hashMapKey=", ", defaultValue=", "UnitNameGroups", "getType(...)", "getSuperclass(...)",
-"i:b:/PolicyIcons.atlas:6929:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/slider.mp3:2996:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/fire.mp3:149277:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/construction.mp3:7083:1", "i:b:/sounds/wagon.mp3:30093:1", "i:b:/sounds/arrow.mp3:8976:1", "i:b:/sounds/nonmetalhit.mp3:3168:1",
-"i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/click.mp3:2763:1",
-"i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/cityRenaissance.ogg:176251:1",
-"i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/cityInformation.ogg:138114:1", "i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/cityIndustrial.ogg:162433:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Icons.atlas:27878:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1",
-"i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1",
-"i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/Skin.png:5795:1", "i:b:/Skin.atlas:1753:1", "i:b:/EasterEggs.png:175142:1", "i:b:/ConstructionIcons.atlas:39142:1",
-"i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Tilesets.png:976061:1", "i:b:/Atlases.json:132:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "i:b:/Tech.atlas:9607:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1",
-"i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1",
-"i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1",
-"i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1",
-"i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1",
-"i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1",
-"i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Turkish.properties:535890:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/completionPercentages.properties:828:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Rusyn.properties:451245:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
-"i:b:/jsons/translations/template.properties:67631:1", "i:b:/jsons/translations/Romanian.properties:443222:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/German.properties:556017:1",
-"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Spanish.properties:538311:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Russian.properties:710622:1", "i:b:/jsons/translations/French.properties:556557:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Finnish.properties:411445:1", "i:b:/jsons/translations/Navajo.properties:407745:1",
-"i:b:/jsons/translations/Ukrainian.properties:687895:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539367:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Indonesian.properties:539647:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Latin.properties:461608:1",
-"i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Hungarian.properties:562445:1", "i:b:/jsons/translations/Belarusian.properties:427114:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Italian.properties:544425:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Toki_Pona.properties:472970:1",
-"i:b:/jsons/Tutorials.json:67128:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Flags.atlas:5544:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/Flags.png:314468:1", "i:b:/UnitPromotionIcons.atlas:6074:1", "i:b:/NationIcons.png:205494:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1",
-"c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
+"i:b:/Icons.atlas:27878:1", "i:b:/EasterEggs.png:175142:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/UnitPromotionIcons.atlas:6074:1", "i:b:/NationIcons.png:205494:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/Tutorials.json:67128:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1",
+"i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1",
+"i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1",
+"i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/translations/Ukrainian.properties:687895:1", "i:b:/jsons/translations/Rusyn.properties:451245:1", "i:b:/jsons/translations/German.properties:556017:1",
+"i:b:/jsons/translations/Toki_Pona.properties:472970:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67631:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Navajo.properties:407745:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Belarusian.properties:427114:1",
+"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Hungarian.properties:562445:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Spanish.properties:538311:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
+"i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539367:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1",
+"i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Turkish.properties:535890:1", "i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Italian.properties:544425:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/French.properties:556557:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Indonesian.properties:539647:1", "i:b:/jsons/translations/Romanian.properties:443222:1",
+"i:b:/jsons/translations/Russian.properties:710622:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/Latin.properties:461608:1", "i:b:/jsons/translations/completionPercentages.properties:828:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1",
+"i:b:/jsons/translations/Finnish.properties:411445:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1", "i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1",
+"i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1",
+"i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1",
+"i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1", "i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1",
+"i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/Tech.atlas:9607:1", "i:b:/Flags.atlas:5544:1", "i:b:/ConstructionIcons.atlas:39142:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/Flags.png:314468:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/nonmetalhit.mp3:3168:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/arrow.mp3:8976:1",
+"i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/construction.mp3:7083:1", "i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/fire.mp3:149277:1",
+"i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/wagon.mp3:30093:1", "i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityRenaissance.ogg:176251:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/click.mp3:2763:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/cityInformation.ogg:138114:1",
+"i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/slider.mp3:2996:1", "i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/cityIndustrial.ogg:162433:1",
+"i:b:/Atlases.json:132:1", "i:b:/PolicyIcons.atlas:6929:1", "i:b:/Skin.atlas:1753:1", "i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.png:976061:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Skin.png:5795:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1",
+"c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
 "Downloading", "Finishing", "initialName", "initialID", "Please input a name for your friend!", "Paste player ID from clipboard", "Please input a player ID for your friend!", "Friend name", "Player ID", "Player ID is incorrect", "friendName", "Friend name is already in your friends list!", "Player ID is already in your friends list!", "You have to write a name for your friend!", "You have to write an ID for your friend!", "You cannot add your own player ID in your friend list!", "Player name already used!",
 "Player ID already used!", "provinces.png", "That is not an Open Doctrines map - it has no provinces.png", "provinces.json", "That map\'s provinces.png is empty", "is_sea", "a TileMap with no tiles", "That map\'s declared size [", "] does not match its [", "] tiles - [", "] were found on the grid", "That map is all water - there is nothing to export", "{\"name\":", ",\"description\":\"Exported from Unciv\",\"author\":\"Unciv\",\"map_date\":\"January 2000 AD\",\"license\":\"\",\"has_scripts\":false}", "land_sea.png",
 "countries.json", "metadata.json", "#%02X%02X%02X", "Map exported as [", "Could not save map!", "Could not load the missing mods!", "Downloaded ", "Downloading unupdated mods - ", "Updating mods: ", "Downloading unupdated mods - 0/", "ring buffer filled size: ", " cannot be larger than the buffer size: ", "ring buffer filled size should not be negative but it is ", "n shouldn\'t be negative but it is ", "n shouldn\'t be greater than the buffer size: n = ", ", size = ", "$this$getOrNull", "raw.githubusercontent.com",
