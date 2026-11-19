@@ -111,7 +111,7 @@ object UnitActionsReligion {
                 
                 val newReligion = city.religion.getMajorityReligion()
                 if (previousReligion != newReligion && newReligion != null && city.civ != unit.civ) {
-                    city.civ.addNotification("[${unit.civ.civName}]'s [${unit.name}] has converted [${city.name}] to [${newReligion.name}]!", NotificationCategory.Religion)
+                    city.civ.addNotification("[${unit.civ.civName}]'s [${unit.name}] has converted [${city.name}] to [${newReligion.getReligionDisplayName()}]!", NotificationCategory.Religion)
                 }
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
