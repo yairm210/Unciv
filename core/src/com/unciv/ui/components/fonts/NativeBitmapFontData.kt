@@ -77,10 +77,9 @@ class NativeBitmapFontData(
     override fun getGlyph(ch: Char): BitmapFont.Glyph = super.getGlyph(ch) ?: createAndCacheGlyph(ch)
 
     private fun createAndCacheGlyph(ch: Char): BitmapFont.Glyph {
-        val charPixmap = getPixmapFromChar(ch)
-
         val glyph = BitmapFont.Glyph()
         glyph.id = ch.code
+        val charPixmap = getPixmapFromChar(ch, glyph)
         glyph.width = charPixmap.width
         glyph.height = charPixmap.height
         glyph.xadvance = glyph.width
@@ -144,7 +143,7 @@ class NativeBitmapFontData(
     private fun getPixmapForTextureName(regionName: String) =
         Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(regionName).region)
 
-    private fun getPixmapFromChar(ch: Char): Pixmap {
+    private fun getPixmapFromChar(ch: Char, glyph: BitmapFont.Glyph): Pixmap {
         val textureName = Fonts.allSymbols[ch]
         if (textureName != null && ImageGetter.imageExists(textureName))
             return getPixmapForTextureName(textureName)
@@ -157,8 +156,8 @@ class NativeBitmapFontData(
                     Pixmap(0, 0, Pixmap.Format.RGBA8888) // Empty space
                 }
         if (DiacriticSupport.isEmpty())
-            return fontImplementation.getCharPixmap(ch)
-        return fontImplementation.getCharPixmap(DiacriticSupport.getStringFor(ch))
+            return fontImplementation.getGlyphPixmap(ch, glyph)
+        return fontImplementation.getGlyphPixmap(DiacriticSupport.getStringFor(ch), glyph)
     }
 
     private fun updateTextureRegions() {

@@ -3,6 +3,7 @@ package com.unciv.app.web
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.unciv.UncivGame
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.FontImplementation
@@ -72,7 +73,13 @@ class WebFont : FontImplementation {
 
     override fun getFontSize(): Int = fontSize
 
-    override fun getCharPixmap(symbolString: String): Pixmap {
+    override fun getCharPixmap(symbolString: String) = rasterizeGlyphPixmap(symbolString, null)
+
+    override fun getGlyphPixmap(char: Char, glyph: BitmapFont.Glyph) = getGlyphPixmap(char.toString(), glyph)
+
+    override fun getGlyphPixmap(symbolString: String, glyph: BitmapFont.Glyph) = rasterizeGlyphPixmap(symbolString, glyph)
+
+    private fun rasterizeGlyphPixmap(symbolString: String, glyph: BitmapFont.Glyph?): Pixmap {
         val rasterized = WebFontRasterizer.rasterizeGlyphAligned(
             symbolString,
             fontSize,
@@ -81,17 +88,17 @@ class WebFont : FontImplementation {
             metrics.height,
             metrics.leading,
         )
-        check(rasterized.size >= 2) { "Canvas glyph rasterizer returned no dimensions for '$symbolString'" }
+        check(rasterized.size >= 3) { "Canvas glyph rasterizer returned no geometry for '$symbolString'" }
         val width = rasterized[0]
         val height = rasterized[1]
         check(width > 0 && height > 0) { "Canvas glyph rasterizer returned invalid dimensions ${width}x$height for '$symbolString'" }
-        val expectedLength = 2L + width.toLong() * height.toLong() * 4L
+        val expectedLength = 3L + width.toLong() * height.toLong() * 4L
         check(expectedLength == rasterized.size.toLong()) {
             "Canvas glyph rasterizer returned ${rasterized.size} values for ${width}x$height glyph '$symbolString'"
         }
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         try {
-            var src = 2
+            var src = 3
             for (y in 0 until height) {
                 for (x in 0 until width) {
                     val r = rasterized[src++] and 0xFF
@@ -105,6 +112,7 @@ class WebFont : FontImplementation {
             pixmap.dispose()
             throw ex
         }
+        glyph?.yoffset = rasterized[2]
         return pixmap
     }
 

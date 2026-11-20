@@ -20,6 +20,10 @@ interface FontImplementation {
     fun getCharPixmap(char: Char) = getCharPixmap(char.toString())
     fun getCharPixmap(symbolString: String): Pixmap
 
+    /** Rasterize the glyph and set its vertical offset if it extends below the shared box. */
+    fun getGlyphPixmap(char: Char, glyph: BitmapFont.Glyph): Pixmap = getCharPixmap(char)
+    fun getGlyphPixmap(symbolString: String, glyph: BitmapFont.Glyph): Pixmap = getCharPixmap(symbolString)
+
     fun getSystemFonts(): Sequence<FontFamilyData>
 
     /** Default NIO scanner; Android callers must retain the API 26 guard. */
