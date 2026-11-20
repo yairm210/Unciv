@@ -27,7 +27,7 @@ class TileInfoTable(
 
     override fun Table.addAdditionalContent(tileView: TileView) {
         if (DebugUtils.VISIBLE_MAP)
-            add(tileView.position().toPrettyString()).colspan(2).pad(5f) // No toLabel() to avoid tr(), eats comma
+            add(tileView.position().toPrettyString().toLabel()).colspan(2).pad(5f)
         if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
             val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tileView]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
             add(imagesString.toLabel())

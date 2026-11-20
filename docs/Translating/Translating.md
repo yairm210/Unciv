@@ -85,6 +85,8 @@ which is created on the fly in the [Private Use Area](https://en.wikipedia.org/w
 To activate this feature, set `diacritics_support = true` in your translation. There are a few additional "settings" - translation lines where the "translation" is some control instruction instead.
 All of these are optional, though your language may show glitches unless you define some. For example, Bangla _needs_ a definition for U+09CD, where the Unicode category does not fully define the required behaviour.
 
+These are overrides, omitting them determines processing from Unicode character classes. Note that "left" and "right" mean "this should be processed together with the preceding codepoint in the string", and "this should be processed together with the following codepoint in the string", respectively. You can't derive that order from how a text looks in an editor.
+
 Each of the following definitions represents zero or more characters, and can simply list them as one string.
 For readability, they can also be quoted (" surrounding the entire definition), characters can be separated by spaces, or you can use standard "U+xxxx" representations (these need space separators).
 These entries, unlike the rest of a translation file, also support entry-specific comments: After the code(s), from a '#' to the end of the line.

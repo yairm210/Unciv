@@ -109,7 +109,7 @@ class WorkerAutomation(
             return startWorkOnCurrentTile(unitView)
 
         // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
-        if (unitView.hasUniqueToCreateWaterImprovements() && automateWorkBoats(unitView)) return
+        if (unitView.hasUnique(UniqueType.CreateWaterImprovements) && automateWorkBoats(unitView)) return
 
         if (tryHeadTowardsUndevelopedCity(unitView, unitView.getTile())) return
 

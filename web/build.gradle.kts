@@ -104,6 +104,7 @@ gdxTeaVM {
     webDefaults {
         mainClass.set("com.unciv.app.web.WebLauncher")
         htmlTitle.set("Unciv")
+        logoPath.set("ExtraImages/banner.png")
         processMemory.set(providers.gradleProperty("webCompilerMemory").map(String::toInt).orElse(4096))
         outOfProcess.set(providers.gradleProperty("webCompilerInProcess")
             .map(String::toBooleanStrict).map { !it }.orElse(true))
@@ -113,5 +114,16 @@ gdxTeaVM {
         strict.set(true)
         sourceMap.set(webSourceMaps)
         obfuscated.set(false)
+    }
+}
+
+// Add favicon support
+tasks.matching { it.name == "gdx_teavm_web_js_build" }.configureEach {
+    doLast {
+        val index = layout.buildDirectory.file("dist/js/webapp/index.html").get().asFile
+        if (index.exists() && !index.readText().contains("rel=\"icon\"")) {
+            index.writeText(index.readText().replace("</head>",
+                "<link rel=\"icon\" type=\"image/png\" href=\"assets/ExtraImages/Icons/Unciv128.png\"></head>"))
+        }
     }
 }

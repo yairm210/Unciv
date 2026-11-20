@@ -16,9 +16,6 @@ import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    internal fun getPillageActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> =
-        sequenceOf(getPillageAction(unit, tile)).filterNotNull()
-
     internal fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
         val improvementName = unit.currentTile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null

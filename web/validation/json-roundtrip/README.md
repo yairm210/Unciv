@@ -5,26 +5,15 @@ data classes. It checks settings and save-game round trips (including private,
 nested, Unicode and collection fields), inherited ruleset fields, and skin
 colors/variants. Rulesets and skins are tested as inputs, matching game use.
 
-Export the web module's resolved runtime classpath from the Unciv root first:
+Run from the Unciv root with Gradle 9.6.1, JDK 21, and Node.js.
 
 ```sh
-./gradlew -Pweb -PgdxTeaVMSource=/path/to/gdx-teavm :web:writeValidationClasspath
+gradle -Pweb :web:writeValidationClasspath
+gradle -p web/validation/json-roundtrip '-Dorg.gradle.jvmargs=-Xmx2g' jvmContract runJavaScriptContract
 ```
 
-Run this directory as a separate Gradle build, using Gradle 9.4.1 and JDK 21:
-
-```sh
-gradle jvmContract runJavaScriptContract \
-  -PclasslibJar=/path/to/copied/classlib.jar \
-  -PcoreJar=/path/to/copied/core.jar \
-  -PjsoJar=/path/to/copied/jso.jar
-```
-
-Use a matched set of source-built TeaVM 0.16 fork artifacts. Finish their build
-before copying them: concurrent copies of jars being written can be truncated.
-The source composite selects relocated jars; do not assume a separate original
-jar was refreshed. Store fixture copies under ignored `build/inputs` and record
-their SHA-256 hashes with the validation result.
+Both builds resolve TeaVM and gdx-teavm through the web target's dependency
+lock. If using source overrides, pass the same overrides to both commands.
 
 `jvmContract` is the JDK reference. `runJavaScriptContract` compiles the same
 checks through TeaVM and runs them in Node with real Web Crypto. The fixture

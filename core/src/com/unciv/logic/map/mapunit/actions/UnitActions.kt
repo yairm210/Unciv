@@ -20,7 +20,7 @@ import com.unciv.models.translations.tr
  *  API used by Automation: [invokeUnitAction]
  *  API used by unit tests: [getUnitActions] with `unitActionType` parameter
  *      Note on unit test use: Some UnitAction factories access GUI helpers that crash from a unit test.
- *      Avoid testing actions that need WorldScreen context, and migrate any un-mapped ones you need to `actionTypeToFunctions`.
+ *      Avoid testing actions that need WorldScreen context, and migrate any un-mapped ones you need to `actionTypeToSingleFunctions` or `actionTypeToMultiFunctions`.
  */
 object UnitActions {
 
@@ -29,12 +29,14 @@ object UnitActions {
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
      *
+     *  @param id Selects among several actions of the same type, see [UnitAction.id] - `null` accepts any
      *  @return whether the action was invoked
      */
-    fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
+    fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType, id: String? = null): Boolean {
         val internalAction =
             getUnitActions(unit, unitActionType)
-            .firstOrNull { it.action != null }   // If there's more than one, take the first enabled one.
+            .firstOrNull { it.action != null // available
+                    && (id == null || it.id == id) }   // If there's more than one, take the first enabled one.
             ?.action ?: return false
         internalAction.invoke()
         return true
@@ -47,10 +49,12 @@ object UnitActions {
         val tile = unit.getTile()
 
         // Actions standardized with a directly callable invokeUnitAction
-        for (getActionsFunction in actionTypeToFunctions.values)
+        for (getActionFunction in actionTypeToSingleFunctions.values)
+            getActionFunction(unit, tile)?.let { yield(it) }
+        for (getActionsFunction in actionTypeToMultiFunctions.values)
             yieldAll(getActionsFunction(unit, tile))
 
-        // Actions not migrated to actionTypeToFunctions
+        // Actions not migrated to the actionTypeTo*Functions maps
         addUnmappedUnitActions(unit)
     }
 
@@ -59,37 +63,46 @@ object UnitActions {
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
      */
-    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType) =
-        if (unitActionType in actionTypeToFunctions)
-            actionTypeToFunctions[unitActionType]!!  // we have a mapped getter...
-                .invoke(unit, unit.getTile())        // ...call it to get a collection...
-        else sequence {
+    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType): Sequence<UnitAction> {
+        val singleFunction = actionTypeToSingleFunctions[unitActionType]
+        if (singleFunction != null)                  // we have a mapped getter for a single action...
+            return sequenceOf(singleFunction(unit, unit.getTile())).filterNotNull()
+        val multiFunction = actionTypeToMultiFunctions[unitActionType]
+        if (multiFunction != null)                   // ...or for a collection - call it...
+            return multiFunction(unit, unit.getTile())
+        return sequence {
             addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
         }.filter { it.type == unitActionType }       // ...and take ones matching the type.
+    }
 
-    private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
+    /** Action types that yield at most one action */
+    private val actionTypeToSingleFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> UnitAction?>(
         // Determined by unit uniques
+        UnitActionType.Paradrop to UnitActionsFromUniques::getParadropAction,
+        UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepAction,
+        UnitActionType.SetUp to UnitActionsFromUniques::getSetupAction,
+        UnitActionType.Guard to UnitActionsFromUniques::getGuardAction,
+        UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityAction,
+        UnitActionType.Repair to { unit, _ -> UnitActionsFromUniques.getRepairAction(unit) },
+        UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchAction,
+        UnitActionType.HurryPolicy to UnitActionsGreatPerson::getHurryPolicyAction,
+        UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderAction,
+        UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingAction,
+        UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionAction,
+        UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionAction,
+        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionAction,
+        UnitActionType.SpreadReligion to UnitActionsReligion::getSpreadReligionAction,
+        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyAction,
+        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalAction,
+        UnitActionType.GiftUnit to UnitActions::getGiftAction,
+        UnitActionType.Pillage to UnitActionsPillage::getPillageAction
+    )
+
+    /** Action types that can yield several actions, e.g. one per matching unique */
+    private val actionTypeToMultiFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
-        UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
-        UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
-        UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
-        UnitActionType.Guard to UnitActionsFromUniques::getGuardActions,
-        UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityActions,
-        UnitActionType.Repair to UnitActionsFromUniques::getRepairActions,
-        UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchActions,
-        UnitActionType.HurryPolicy to UnitActionsGreatPerson::getHurryPolicyActions,
-        UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
-        UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
-        UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
-        UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
-        UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
         UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,
-        UnitActionType.SpreadReligion to UnitActionsReligion::getSpreadReligionActions,
-        UnitActionType.RemoveHeresy to UnitActionsReligion::getRemoveHeresyActions,
-        UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions,
-        UnitActionType.AddInCapital to UnitActionsFromUniques::getAddInCapitalActions,
-        UnitActionType.GiftUnit to UnitActions::getGiftActions,
-        UnitActionType.Pillage to UnitActionsPillage::getPillageActions
+        UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions
     )
 
     private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit) {
@@ -199,13 +212,13 @@ object UnitActions {
         ))
     }
 
-    private fun getGiftActions(unit: MapUnit, tile: Tile) = sequence {
+    private fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
-        if (recipient == null || recipient.isCurrentPlayer()) return@sequence
+        if (recipient == null || recipient.isCurrentPlayer()) return null
 
         if (recipient.isCityState) {
-            if (recipient.isAtWarWith(unit.civ)) return@sequence // No gifts to enemy CS
+            if (recipient.isAtWarWith(unit.civ)) return null // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
                 && unit.getMatchingUniques(
@@ -213,17 +226,16 @@ object UnitActions {
                     checkCivInfoUniques = true
                 )
                     .none { unit.matchesFilter(it.params[1]) }
-            ) return@sequence
+            ) return null
         }
         // If gifting to major civ they need to be friendly
-        else if (!tile.isFriendlyTerritory(unit.civ)) return@sequence
+        else if (!tile.isFriendlyTerritory(unit.civ)) return null
 
         // Transported units can't be gifted
-        if (unit.isTransported) return@sequence
+        if (unit.isTransported) return null
 
         if (!unit.hasMovement()) {
-            yield(UnitAction(UnitActionType.GiftUnit, action = null))
-            return@sequence
+            return UnitAction(UnitActionType.GiftUnit, action = null)
         }
 
         val giftAction = {
@@ -248,7 +260,7 @@ object UnitActions {
             else
                 unit.gift(recipient)
         }
-        yield(UnitAction(UnitActionType.GiftUnit, action = giftAction))
+        return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
 
     private suspend fun SequenceScope<UnitAction>.addAutomateActions(unit: MapUnit) {

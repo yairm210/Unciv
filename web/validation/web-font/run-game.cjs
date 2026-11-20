@@ -51,7 +51,13 @@ async function main() {
                 return original.call(this, text);
             };
         });
-        await page.goto(new URL('__font_fixture_seed', appUrl).href, { waitUntil: 'domcontentloaded' });
+        const seedUrl = new URL('__font_fixture_seed', appUrl).href;
+        // Seed IndexedDB on the game origin before loading the application.
+        await page.route(seedUrl, route => route.fulfill({
+            contentType: 'text/html',
+            body: '<!doctype html><title>Font fixture</title>',
+        }), { times: 1 });
+        await page.goto(seedUrl, { waitUntil: 'domcontentloaded' });
         await page.evaluate(async ({ settings, fontBase64 }) => {
             await new Promise((resolve, reject) => {
                 const request = indexedDB.deleteDatabase('unciv');

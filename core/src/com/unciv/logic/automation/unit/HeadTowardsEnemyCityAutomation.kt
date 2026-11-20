@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.view.ForeignCityView
 import com.unciv.view.ForeignMapUnitView
 import com.unciv.view.MapUnitView
@@ -15,6 +16,9 @@ object HeadTowardsEnemyCityAutomation {
     fun tryHeadTowardsEnemyCity(unitView: MapUnitView): Boolean = timeThis("tryHeadTowardsEnemyCity") {
         if (unitView.civ().cities().isEmpty()) return false
 
+        // Naval units cannot enter city centers — path to water tiles they can attack from instead
+        if (unitView.getBaseUnit().isWaterUnit) return tryHeadTowardsEnemyNaval(unitView)
+
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
         val closestReachableEnemyCity = getEnemyCitiesByPriority(unitView)
             .firstOrNull { unitView.canReach(it.getCenterTile()) }
@@ -26,6 +30,74 @@ object HeadTowardsEnemyCityAutomation {
             // This should be cached after the `canReach` call above.
             unitView.getShortestPath(closestReachableEnemyCity.getCenterTile())
         )
+    }
+
+    /**
+     * Naval AI: steam toward the nearest water tile from which we can attack an enemy city or military unit.
+     * Picks cities and units by aerial distance so nearer fleets/cities win over distant capitals.
+     * Station selection uses canMoveTo/canReach, so coastal-only ships never path through ocean they cannot enter.
+     */
+    private fun tryHeadTowardsEnemyNaval(unitView: MapUnitView): Boolean {
+        if (unitView.hasUnique(UniqueType.CannotAttack)) return false
+
+        val waterOnlyAttacks = unitView.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
+            .any { it.params[0] == "Water" }
+
+        var bestDest: TileView? = null
+        var bestAerial = Int.MAX_VALUE
+        val unitTile = unitView.getTile()
+
+        fun considerTarget(targetTile: TileView) {
+            val station = findReachableNavalAttackStation(unitView, targetTile) ?: return
+            val aerial = station.aerialDistanceTo(unitTile)
+            if (aerial < bestAerial) {
+                bestAerial = aerial
+                bestDest = station
+            }
+        }
+
+        if (!waterOnlyAttacks) {
+            for (city in getEnemyCitiesByPriority(unitView).take(8)) {
+                considerTarget(city.getCenterTile())
+            }
+        }
+
+        val civ = unitView.civ()
+        val enemyUnits = civ.getKnownCivs().asSequence()
+            .filter { civ.isAtWarWith(it) }
+            .flatMap { it.getCiv().units.getCivUnits().asSequence() }
+            .map { unitView.gameView.getForeignMapUnitView(it) }
+            .filter { it.isMilitary() }
+            .sortedBy { it.getTile().aerialDistanceTo(unitTile) }
+            .take(15)
+
+        for (enemy in enemyUnits) {
+            considerTarget(enemy.getTile())
+        }
+
+        val dest = bestDest ?: return false
+        if (dest == unitTile) return true
+        unitView.tryHeadTowards(dest)
+        return true
+    }
+
+    /**
+     * Water tile this naval unit can stand on to attack [targetTile].
+     * Ranged ships prefer the far edge of their attack range (not closing in);
+     * melee stays adjacent. Among equal-range stations, prefer the closer one to the unit.
+     */
+    @Readonly
+    private fun findReachableNavalAttackStation(unitView: MapUnitView, targetTile: TileView): TileView? {
+        val melee = unitView.getBaseUnit().isMelee()
+        val range = if (melee) 1 else unitView.getRange().coerceAtLeast(1)
+        val unitTile = unitView.getTile()
+        val candidates = (if (melee) targetTile.getNeighbors() else targetTile.getExploredTilesInDistance(range))
+            .filter { it.isWater && (unitView.canMoveTo(it) || it == unitTile) }
+            .sortedWith(
+                compareByDescending<TileView> { it.aerialDistanceTo(targetTile) } // stay at max range
+                    .thenBy { it.aerialDistanceTo(unitTile) }
+            )
+        return candidates.firstOrNull { unitView.canReach(it) }
     }
 
     @Readonly

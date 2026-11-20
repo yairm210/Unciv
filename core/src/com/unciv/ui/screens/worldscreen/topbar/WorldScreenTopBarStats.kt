@@ -19,6 +19,7 @@ import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.utils.Concurrency
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -69,9 +70,13 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         ) {
             val image = ImageGetter.getStatIcon(icon)
             val action = {
-                val screen = screenFactory()
-                // I don't like that it's ANR-able but to not do so we'd need to get rid of the nullable option
-                if (screen != null) worldScreen.game.pushScreen { screen }
+                Concurrency.runOnGLThread { // To return event immediately - avoid ANR
+                    // This is requited because pushScreen, the "regular" way we avoid ANRs on new screens,
+                    //  only takes a non-nullable screen
+                    val screen = screenFactory()
+                    if (screen != null) worldScreen.game.pushScreen { screen }   
+                }
+                Unit // return type to fit onClick
             }
             label.onClick(action)
             image.onClick(action)

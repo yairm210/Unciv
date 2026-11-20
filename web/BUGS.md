@@ -1,6 +1,6 @@
 # Browser port bug ledger
 
-Updated 2026-11-06. This ledger distinguishes upstream game issues, reusable
+Updated 2026-11-12. This ledger distinguishes upstream game issues, reusable
 TeaVM/backend issues, and browser integration gaps. A passing build does not
 close a runtime bug. Entries marked fixed refer to the validated local revision;
 deployment status is tracked separately in PORTING.md.
@@ -26,6 +26,7 @@ deployment status is tracked separately in PORTING.md.
 | WEB-018 | web display capability provider | Open Options > Display: WebLauncher installed the default `PlatformDisplay`, whose empty screen-mode map caused `DisplayTab` to call `values.first()` on an empty collection. | Fixed: WebLauncher supplies the responsive viewport mode and normalizes stale saved ids; browser fullscreen remains a separate user-gesture path. Generated-game E2E and manual review of before/after-refresh screenshots confirmed `Windowed` and 1280×720/1024×768 viewport updates with no page errors. Advanced is not covered because its tab is clipped beyond the header close button. |
 | WEB-019 | TeaVM Kotlin reflection | Open Options > Multiplayer: sound-provider enumeration calls `UncivSound.Companion::class.declaredMemberProperties`, which requires Kotlin's full reflection factory. TeaVM deliberately excludes that factory and returns a lightweight `ClassReference`; generated code then casts it to `KClassImpl`, causing a `ClassCastException`. | Fixed in core by enumerating a typed `UncivSound.builtInSounds` registry instead of using full Kotlin reflection. The JVM parity test, generated-game Multiplayer sound-menu validation, and full pinned build pass. |
 | WEB-020 | gdx-teavm music lifecycle | Start background music while Howler is waiting for browser audio unlock: `Howler.playing(id)` is initially false, so Unciv's music controller can dispose the queued track before a user gesture starts it. | Fixed in gdx-teavm `d2df1013`: `HowlMusic` reports requested playback as pending until Howler confirms actual playback, retains only the recognized autoplay-blocked request for unlock/retry, and clears it on pause, stop, dispose, completion, load failure, or terminal play error. The production adapter contract runs through TeaVM in Chromium and checks real audio advancement after a trusted click, cancellation-before-unlock, and terminal failures. In the generated game, the default Dropbox music download returned HTTP 200 and played; after reload, the downloaded file persisted and playback resumed. No page errors. Full pinned `:web:preparePages` and `node --check` pass. |
+| WEB-021 | TeaVM stream decoding | Some multiplayer save downloads threw `IllegalStateException` when `InputStreamReader` flushed the UTF-8 decoder before signaling end of input. | Fixed in TeaVM `01e53e07c`. The captured gzip save and a short stream that reports availability until the EOF read both pass in generated JavaScript. |
 
 ## Additional live observation
 

@@ -1,8 +1,6 @@
-import org.teavm.gradle.tasks.GenerateJavaScriptTask
-
 plugins {
     kotlin("jvm") version "2.4.20"
-    id("org.teavm") version "0.16.0"
+    id("com.github.xpenatan.gdx-teavm")
 }
 
 repositories { mavenCentral() }
@@ -12,36 +10,25 @@ val exportedClasspath = file("../../build/validation/runtime-classpath.txt")
 require(exportedClasspath.isFile) { "Run :web:writeValidationClasspath in Unciv first" }
 dependencies {
     implementation(files(exportedClasspath.readLines().filter { it.isNotBlank() }))
-    teavm(teavm.libs.jsoApis)
 }
 
-teavm.js {
-    mainClass = "validation.JsonContract"
-    obfuscated = false
-    strict = true
+gdxTeaVM {
+    js {
+        mainClass.set("validation.JsonContract")
+        outputDir.set(layout.buildDirectory.dir("generated/teavm"))
+        relativePathInOutputDir.set("js")
+        targetFileName.set("unciv-json-validation.js")
+        webappEnabled.set(false)
+        obfuscated.set(false)
+        strict.set(true)
+        outOfProcess.set(false)
+    }
 }
 
 tasks.register<JavaExec>("jvmContract") {
     dependsOn(tasks.classes)
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("validation.JsonContract")
-}
-
-tasks.named<GenerateJavaScriptTask>("generateJavaScript") {
-    val classlib = file(providers.gradleProperty("classlibJar").get())
-    val core = file(providers.gradleProperty("coreJar").get())
-    val jso = file(providers.gradleProperty("jsoJar").get())
-    require(classlib.isFile && core.isFile && jso.isFile) { "Pass built, immutable TeaVM fork jars" }
-    val originalTarget = objects.fileCollection().from(classpath.from.toList())
-    val target = originalTarget.filter {
-        it.name != "teavm-classlib-0.16.0.jar" && it.name != "teavm-jso-apis-0.16.0.jar"
-    }
-    classpath.setFrom(target, classlib, jso)
-    val originalDaemon = objects.fileCollection().from(daemonClasspath.from.toList())
-    daemonClasspath.setFrom(originalDaemon.filter { it.name != "teavm-core-0.16.0.jar" }, core,
-        target.filter { it.name == "teavm-platform-0.16.0.jar" })
-    outOfProcess.set(true)
-    processMemory.set(4096)
 }
 
 tasks.register<Exec>("runJavaScriptContract") {

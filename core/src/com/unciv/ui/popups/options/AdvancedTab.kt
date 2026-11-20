@@ -16,7 +16,6 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
-import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -90,7 +89,6 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
-        addUpdateModCategories()
         addScreenhotGeneration()
 
         super.lateInitialize()
@@ -269,21 +267,6 @@ internal class AdvancedTab(
                 }
             }
         }
-    }
-
-    private fun addUpdateModCategories() {
-        val updateModCategoriesButton = "Update Mod categories".toTextButton()
-        updateModCategoriesButton.onActivation {
-            updateModCategoriesButton.setText(Constants.working.tr())
-            Concurrency.run("GithubTopicQuery") {
-                val result = ModCategories.mergeOnline()
-                launchOnGLThread {
-                    updateModCategoriesButton.setText(result.tr())
-                }
-            }
-        }
-        add(updateModCategoriesButton).colspan(2).row()
-
     }
 
     private fun addScreenhotGeneration() {

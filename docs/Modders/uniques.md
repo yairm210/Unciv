@@ -1032,6 +1032,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[relativeAmount]% counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% enemy counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "New spies start with [amount] level(s)"
 	Example: "New spies start with [3] level(s)"
 
@@ -1789,7 +1799,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 
@@ -2057,7 +2067,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 
@@ -2998,7 +3008,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 

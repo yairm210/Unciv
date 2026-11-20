@@ -481,6 +481,25 @@ class TileImprovementConstructionTests {
         Assert.assertEquals(goldBeforeTurn + predictedGoldDelta, civ.gold)
     }
 
+    /** #16013: maintenance uniques also apply to improvements that are not roads */
+    @Test
+    fun nonRoadImprovementMaintenanceIsCharged() {
+        val (game, civ, city) = roadMaintenanceGame()
+        val improvement = game.createTileImprovement(
+            UniqueType.ImprovementAllMaintenance.text.fillPlaceholders("1", "Gold"),
+            UniqueType.ImprovementMaintenance.text.fillPlaceholders("2", "Gold"),
+        )
+        val tile = ownedNonCenterTile(city)
+        Assert.assertEquals(RoadStatus.None, tile.roadStatus)
+        assertTransportationUpkeep(civ, 0f)
+
+        tile.setImprovement(improvement.name, civ)
+        assertTransportationUpkeep(civ, -3f)
+
+        tile.setPillaged()
+        assertTransportationUpkeep(civ, 0f)
+    }
+
     private data class RoadMaintenanceSetup(val game: TestGame, val civ: Civilization, val city: City)
 
     private fun roadMaintenanceGame(

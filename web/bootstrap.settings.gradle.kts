@@ -48,7 +48,7 @@ settings.includeBuild(teavmSource.absolutePath) {
 private data class ArchiveCandidate(val label: String, val url: String, val sha256: String, val release: Boolean)
 
 private fun resolveWebToolchain(name: String, overridePath: String?): File {
-    val lockFile = File(settings.settingsDir, "web/dependencies.lock.properties")
+    val lockFile = checkNotNull(buildscript.sourceFile).resolveSibling("dependencies.lock.properties")
     if (!lockFile.isFile) throw GradleException("Missing pinned web toolchain lock file: $lockFile")
     val pins = Properties().also { lockFile.inputStream().use(it::load) }
     val expectedVersion = if (name == "teavm" && overridePath != null) {

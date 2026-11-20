@@ -19,7 +19,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
@@ -516,20 +515,34 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < -30)
             modifiers["Influence below -30"] = -300
 
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
-        if (!requireWholeList && modifiers.values.sum() < -200)
+        val constants = civInfo.gameInfo.ruleset.modOptions.constants
+        val globalTributeModifier = constants.tributeGlobalModifier
+        val localTributeModifier = constants.tributeLocalModifier
+        val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+        val numAlivePlayers = aliveMajorCivs.size.coerceAtLeast(1)
+
+        // Both constants bound their bonuses for ranked civs when the Int multiplications below fit.
+        // A matching intimidation Unique can add to those bonuses, so it requires the full calculation.
+        val checkEarlyExit = !requireWholeList
+            && globalTributeModifier >= 0 && localTributeModifier >= 0
+            && globalTributeModifier.toLong() * numAlivePlayers <= Int.MAX_VALUE
+            && 4L * localTributeModifier <= Int.MAX_VALUE
+        if (checkEarlyExit
+            && modifiers.values.sum().toLong() + globalTributeModifier + localTributeModifier < 0
+            && demandingCiv in aliveMajorCivs
+            && !demandingCiv.hasUnique(UniqueType.CityStateEasilyIntimidatedByForce))
             return modifiers
 
         // highest force is rank=0
-        val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
+        val forceRank = aliveMajorCivs.sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
-        // probably not necessary, but just in case, avoid division by zero if there's some edge case where no players are alive
-        val numAlivePlayers = max(civInfo.gameInfo.getAliveMajorCivs().size, 1)
-        val globalModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeGlobalModifier
         // apparently lowest force gets some pity points
-        modifiers["Military Rank"] = globalModifier * (numAlivePlayers - forceRank) / numAlivePlayers
+        modifiers["Military Rank"] = globalTributeModifier * (numAlivePlayers - forceRank) / numAlivePlayers
 
-        if (!requireWholeList && modifiers.values.sum() < -100)
+        if (checkEarlyExit
+            && modifiers.values.sum().toLong() + localTributeModifier < 0
+            && forceRank >= 0
+            && !demandingCiv.hasUnique(UniqueType.CityStateEasilyIntimidatedByForce))
             return modifiers
 
         val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
@@ -545,14 +558,12 @@ class CityStateFunctions(val civInfo: Civilization) {
                 else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
-        val localModifier = civInfo.gameInfo.ruleset.modOptions.constants.tributeLocalModifier
-
         modifiers["Military near City-State"] = when {
-            forceRatio > 3f -> localModifier
-            forceRatio > 2f -> localModifier * 4/5
-            forceRatio > 1.5f -> localModifier * 3/5
-            forceRatio > 1f -> localModifier * 2/5
-            forceRatio > 0.5f -> localModifier / 5
+            forceRatio > 3f -> localTributeModifier
+            forceRatio > 2f -> localTributeModifier * 4/5
+            forceRatio > 1.5f -> localTributeModifier * 3/5
+            forceRatio > 1f -> localTributeModifier * 2/5
+            forceRatio > 0.5f -> localTributeModifier / 5
             else -> 0
         }
         

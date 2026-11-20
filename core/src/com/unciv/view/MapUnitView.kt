@@ -21,6 +21,7 @@ import com.unciv.logic.map.mapunit.PossibleUpgrade
 import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import com.unciv.models.Counter
+import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.logic.map.mapunit.AvailablePromotion
@@ -29,6 +30,21 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
+
+/** An action a unit has, see [MapUnitView.getActions] and [MapUnitView.tryInvokeUnitAction].
+ *  @property id Tells apart several actions of the same [type] (target unit, improvement, unique...), `null` if the type has at most one
+ *  @property available `false` if the unit has this action, but can't perform it right now (no movement left, etc)
+ *  @property confirmation If not null, the player should be asked before invoking this action
+ *  @property priority Modder-set priority of this action, if any - the UI can use it to order actions */
+data class UnitActionView(
+    val type: UnitActionType,
+    val id: String?,
+    val available: Boolean,
+    val title: String,
+    val isCurrentAction: Boolean,
+    val confirmation: UnitActionConfirmation?,
+    val priority: Float?
+)
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
 class MapUnitView internal constructor(
@@ -60,9 +76,6 @@ class MapUnitView internal constructor(
         unit.upgrade.performUpgrade(upgrade, isFree = false)
         return true
     }
-    @Readonly fun hasUniqueToCreateWaterImprovements(): Boolean = unit.cache.hasUniqueToCreateWaterImprovements
-    @Readonly fun hasStrengthBonusInRadiusUnique(): Boolean = unit.cache.hasStrengthBonusInRadiusUnique
-    @Readonly fun hasCitadelPlacementUnique(): Boolean = unit.cache.hasCitadelPlacementUnique
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
@@ -235,9 +248,13 @@ class MapUnitView internal constructor(
     /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType] */
     fun canInvokeUnitAction(unitActionType: UnitActionType): Boolean =
         UnitActions.getUnitActions(unit, unitActionType).any { it.action != null }
-    /** Invokes the first enabled action of type [unitActionType]
+    /** The actions this unit has, enabled or not (see [UnitActionView.available]) - pass them to [tryInvokeUnitAction] to invoke them */
+    fun getActions(): List<UnitActionView> =
+        UnitActions.getUnitActions(unit).map { UnitActionView(it.type, it.id, it.action != null, it.title, it.isCurrentAction, it.confirmation,
+            UnitActionModifiers.getActionPriority(unit, it.associatedUnique)) }.toList()
+    /** Invokes the first enabled action of type [unitActionType], and matching [id] if given (see [UnitActionView.id])
      *  @return whether an action was invoked */
-    fun tryInvokeUnitAction(unitActionType: UnitActionType): Boolean = UnitActions.invokeUnitAction(unit, unitActionType)
+    fun tryInvokeUnitAction(unitActionType: UnitActionType, id: String? = null): Boolean = UnitActions.invokeUnitAction(unit, unitActionType, id)
     @Readonly fun canPillage(tile: TileView): Boolean = UnitActionsPillage.canPillage(unit, tile.unwrap())
     /** Invokes the first enabled [UnitActionType.TriggerUnique] action whose unique is of [uniqueType]
      *  @return whether an action was invoked */
@@ -284,6 +301,10 @@ class MapUnitView internal constructor(
 }
 
 // Unit state derived from [MapUnitView.action]
+@Readonly fun MapUnitView.isActionUntilHealed(): Boolean = action?.endsWith("until healed") == true
+@Readonly fun MapUnitView.isSleeping(): Boolean = action?.startsWith(UnitActionType.Sleep.value) == true
+@Readonly fun MapUnitView.isSleepingUntilHealed(): Boolean = isSleeping() && isActionUntilHealed()
+@Readonly fun MapUnitView.isFortifyingUntilHealed(): Boolean = isFortified() && isActionUntilHealed()
 @Readonly fun MapUnitView.isMoving(): Boolean = action?.startsWith("moveTo") == true
 @Readonly fun MapUnitView.isExploring(): Boolean = action == UnitActionType.Explore.value
 @Readonly fun MapUnitView.isAutomatingRoadConnection(): Boolean = action == Constants.connectRoadAction

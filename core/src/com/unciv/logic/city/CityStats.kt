@@ -436,6 +436,12 @@ class CityStats(val city: City) {
                 newHappinessList[source] = newHappinessList[source]!! + stats.totalStats.happiness
             }
 
+        // "[relativeAmount]% [Happiness]" scales the happiness this city produces, not its unhappiness (#16025)
+        val happinessPercentBonus = statPercentBonusTree.totalStats.happiness
+        if (happinessPercentBonus != 0f)
+            for ((source, amount) in newHappinessList)
+                if (amount > 0f) newHappinessList[source] = amount * happinessPercentBonus.toPercent()
+
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList = newHappinessList
@@ -507,8 +513,9 @@ class CityStats(val city: City) {
         val statsFromSpecialists = getStatsFromSpecialists(city.population.getNewSpecialists())
         val statsFromUniquesBySource = getStatsFromUniquesBySource()
         updateBaseStatList(statsFromBuildings, statsFromSpecialists, statsFromUniquesBySource)
-        updateCityHappiness(statsFromBuildings, statsFromSpecialists, statsFromUniquesBySource)
+        // Percent bonuses first, so "[relativeAmount]% [Happiness]" can apply to city happiness (#16025)
         updateStatPercentBonusList(currentConstruction)
+        updateCityHappiness(statsFromBuildings, statsFromSpecialists, statsFromUniquesBySource)
 
         updateFinalStatList(currentConstruction, calculateGrowthModifiers) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
