@@ -296,44 +296,80 @@ class Ruleset {
     }
 
     private fun mergePolicies(ruleset: Ruleset) {
-        val noRemovals = ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty()
-        if (noRemovals && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty()) return
+        // Ensure we're not modifying a base or mod ruleset
+        check(folderLocation == null)
+        val removals = ruleset.modOptions.policiesToRemove
+        val branchRemovals = ruleset.modOptions.policyBranchesToRemove
+        if (removals.isEmpty() && branchRemovals.isEmpty() && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty()) return
+
+        // Policy and PolicyBranch instances are shared with the source rulesets and refer to each other
+        // (Policy.branch), so they must never be modified here. Whenever a branch needs to change,
+        // we build a new one, and it gets its own clones of the policies so back-references stay consistent.
+        fun Policy.copyDataTo(target: Policy) {
+            target.name = name
+            target.originRuleset = originRuleset
+            target.uniques = ArrayList(uniques)
+            target.civilopediaText = civilopediaText
+            target.row = row
+            target.column = column
+            target.requires = requires?.let { ArrayList(it) }
+        }
+
+        // Builds a new branch that owns clones of [members].
+        fun PolicyBranch.derive(members: List<Policy>): PolicyBranch {
+            val newBranch = PolicyBranch()
+            copyDataTo(newBranch)
+            newBranch.branch = newBranch
+            newBranch.priorities = HashMap(priorities)
+            newBranch.era = era
+            newBranch.policies = ArrayList(members.map { member ->
+                Policy().also {
+                    member.copyDataTo(it)
+                    it.branch = newBranch
+                }
+            })
+            return newBranch
+        }
 
         /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
-         *  but are still considered "available" */
+         *  but are still considered "available". The branch itself is registered in `policies` too. */
         fun removePolicyBranch(policyBranch: PolicyBranch) {
             policyBranches.remove(policyBranch.name)
+            policies.remove(policyBranch.name)
             for (policy in policyBranch.policies)
                 policies.remove(policy.name)
         }
 
-        if (!noRemovals) {
-            ruleset.modOptions.policyBranchesToRemove
-                .flatMap { policyBranchToRemove ->
-                    policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
-                }.toSet().forEach {
-                    removePolicyBranch(it)
-                }
-
-            val overriddenPolicyBranches = policyBranches
-                .filter { it.key in ruleset.policyBranches }.map { it.value }
-            for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
+        // Drop the branches that are removed or redefined by the incoming mod, with all their old members
+        branchRemovals
+            .flatMap { branchToRemove ->
+                policyBranches.filter { it.value.matchesFilter(branchToRemove) }.values
+            }.toSet().forEach {
+                removePolicyBranch(it)
+            }
+        policyBranches.filter { it.key in ruleset.policyBranches }.values.toList().forEach {
+            removePolicyBranch(it)
         }
 
-        policyBranches.putAll(ruleset.policyBranches)
+        // Removals apply to what existed before this mod, so they run before the mod's own entries are merged in
+        if (removals.isNotEmpty()) {
+            policies.selectiveRemove(removals) { matchesFilter(it) }
 
-        if (!noRemovals) {
-            // Remove the policies
-            policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
-
-            // Remove the policies if they exist in the policy branches too
-            for (policyToRemove in ruleset.modOptions.policiesToRemove) {
-                for (branch in policyBranches.values) {
-                    branch.policies.removeAll { it.matchesFilter(policyToRemove) }
-                }
+            // Remove the policies if they exist in the policy branches too. Only branches that actually lose members are copied
+            for (branch in policyBranches.values.toList()) {
+                val kept = branch.policies.filter { member -> removals.none { member.matchesFilter(it) } }
+                if (kept.size == branch.policies.size) continue
+                val pruned = branch.derive(kept)
+                policyBranches[pruned.name] = pruned
+                // The branch stays registered in `policies` even when a filter such as "[X] branch" matched the branch
+                // entry along with its members; surviving members only if they were registered before.
+                policies[pruned.name] = pruned
+                for (member in pruned.policies)
+                    if (member.name in policies) policies[member.name] = member
             }
         }
 
+        policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
     }
 
