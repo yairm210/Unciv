@@ -76,6 +76,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var automatedRoadConnectionDestination: HexCoord? = null
 
     var attacksThisTurn = 0
+    var savedScienceOfLast8TurnsWhenSpawned: Int? = null
+    var savedCultureOfLast8TurnsWhenSpawned: Int? = null
     var promotions = UnitPromotions()
 
     /** Indicates if unit should be located with 'next unit' action */
@@ -837,6 +839,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         newUnit.promotions = promotions.clone(newUnit)
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
+        newUnit.savedScienceOfLast8TurnsWhenSpawned = savedScienceOfLast8TurnsWhenSpawned
+        newUnit.savedCultureOfLast8TurnsWhenSpawned = savedCultureOfLast8TurnsWhenSpawned
 
         newUnit.updateUniques()
         newUnit.updateVisibleTiles()
