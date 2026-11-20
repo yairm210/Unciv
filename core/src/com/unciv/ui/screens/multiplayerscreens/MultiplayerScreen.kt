@@ -7,7 +7,6 @@ import com.unciv.Constants
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
-import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.disable
@@ -76,25 +75,8 @@ class MultiplayerScreen : PickerScreen() {
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
         rightSideButton.onClick {
-            val missingMods = selectedGame!!.preview!!.gameParameters.getModsAndBaseRuleset()
-                .filter { !RulesetCache.containsKey(it) }
-            if (missingMods.isEmpty()) return@onClick MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!)
-
-            // Download missing mods
-            Concurrency.runOnNonDaemonThreadPool(LoadGameScreen.downloadMissingMods) {
-                try {
-                    LoadGameScreen.loadMissingMods(missingMods, onModDownloaded = {
-                        Concurrency.runOnGLThread { ToastPopup("[$it] Downloaded!", this@MultiplayerScreen) }
-                    },
-                    onCompleted = {
-                        RulesetCache.loadRulesets()
-                        Concurrency.runOnGLThread { MultiplayerHelpers.loadMultiplayerGame(this@MultiplayerScreen, selectedGame!!) }
-                    })
-                } catch (ex: Exception) {
-                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
-                    launchOnGLThread { ToastPopup(message, this@MultiplayerScreen) }
-                }
-            }
+            val game = selectedGame ?: return@onClick
+            MultiplayerHelpers.loadMultiplayerGame(this, game)
         }
     }
 

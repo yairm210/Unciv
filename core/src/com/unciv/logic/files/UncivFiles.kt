@@ -23,6 +23,7 @@ import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
+import com.unciv.logic.github.ModRepositoryCacheEntry
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
@@ -35,6 +36,7 @@ private const val AUTOSAVE_FILE_NAME = "Autosave"
 private const val TEMP_FILE_EXTENSION = "tmp"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+const val MOD_REPOSITORY_CACHE_FILE_NAME = "ModRepositoryCache.json"
 const val EXCLUDED_MOD_AUTHORS_FILE_NAME = "ExcludedModAuthors.txt"
 
 class UncivFiles(
@@ -380,6 +382,26 @@ class UncivFiles(
         catch (ex: Exception){ // Not a huge deal if this fails
             Log.error("Error loading mod cache", ex)
             return emptyList()
+        }
+    }
+
+    fun loadModRepositoryCache(): List<ModRepositoryCacheEntry> {
+        val file = getLocalFile(MOD_REPOSITORY_CACHE_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        return try {
+            json().fromJsonFile(Array<ModRepositoryCacheEntry>::class.java, file).toList()
+        } catch (ex: Exception) {
+            Log.error("Error loading mod repository cache", ex)
+            emptyList()
+        }
+    }
+
+    fun saveModRepositoryCache(entries: List<ModRepositoryCacheEntry>) {
+        val file = getLocalFile(MOD_REPOSITORY_CACHE_FILE_NAME)
+        try {
+            json().toJson(entries, file)
+        } catch (ex: Exception) {
+            Log.error("Error saving mod repository cache", ex)
         }
     }
 

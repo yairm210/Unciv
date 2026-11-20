@@ -62,6 +62,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var minutesUntilForceResign = 3 * 24 * 60
     /** Time a player recover on their timer before they can be forced to resign. Time isn't added if the player get their turn skipped*/
     var minutesRecoveredPerTurn = 60 * 24
+    var autoUpdateModsOnJoin: Boolean = false
 
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
@@ -107,6 +108,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.minutesUntilSkipTurn = minutesUntilSkipTurn
         parameters.minutesUntilForceResign = minutesUntilForceResign
         parameters.minutesRecoveredPerTurn = minutesRecoveredPerTurn
+        parameters.autoUpdateModsOnJoin = autoUpdateModsOnJoin
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns

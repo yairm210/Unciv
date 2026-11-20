@@ -3,13 +3,17 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.github.Github
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.MultiplayerGamePreview
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.formatShort
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
@@ -24,10 +28,56 @@ object MultiplayerHelpers {
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
-        Concurrency.run("JoinMultiplayerGame") {
+        val gameParameters = selectedGame.preview?.gameParameters
+        val taskName = if (gameParameters?.autoUpdateModsOnJoin == true)
+            LoadGameScreen.downloadOutOfDateMods
+        else LoadGameScreen.downloadMissingMods
+
+        Concurrency.runOnNonDaemonThreadPool(taskName) {
+            var modsChanged = false
             try {
+                if (gameParameters?.autoUpdateModsOnJoin == true) {
+                    val installedMods = gameParameters.getModsAndBaseRuleset().mapNotNull { modName ->
+                        val ruleset = RulesetCache[modName] ?: return@mapNotNull null
+                        val modUrl = ruleset.modOptions.modUrl
+                        if (modUrl.isEmpty()) return@mapNotNull null
+                        Triple(modName, ruleset, modUrl)
+                    }
+                    val latestRepos = Github.getLatestModRepositories(installedMods.map { it.third })
+                    val modsToUpdate = installedMods.mapNotNull { (modName, ruleset, modUrl) ->
+                        val repo = latestRepos[modUrl] ?: return@mapNotNull null
+                        if (repo.pushed_at == ruleset.modOptions.lastUpdated) return@mapNotNull null
+                        modName to repo
+                    }
+
+                    for ((modName, repo) in modsToUpdate) {
+                        repo.downloadAndExtract()
+                            ?: throw Exception("Could not download updated mod [$modName].")
+                        modsChanged = true
+                        Concurrency.runOnGLThread {
+                            ToastPopup("[$modName] Downloaded!", screen)
+                        }
+                    }
+                }
+
+                val missingMods = gameParameters?.getModsAndBaseRuleset()
+                    ?.filterNot { RulesetCache.containsKey(it) }
+                    .orEmpty()
+                if (missingMods.isNotEmpty()) {
+                    LoadGameScreen.loadMissingMods(
+                        missingMods,
+                        onModDownloaded = {
+                            modsChanged = true
+                            Concurrency.runOnGLThread { ToastPopup("[$it] Downloaded!", screen) }
+                        },
+                        onCompleted = {}
+                    )
+                }
+
+                if (modsChanged) RulesetCache.loadRulesets()
                 UncivGame.Current.onlineMultiplayer.downloadGame(selectedGame)
             } catch (ex: Exception) {
+                if (modsChanged) RulesetCache.loadRulesets()
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     loadingGamePopup.reuseWith(message, true)

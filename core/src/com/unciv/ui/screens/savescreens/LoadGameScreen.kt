@@ -11,6 +11,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.FileConversions
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.github.Github
 import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.RulesetCache
@@ -42,6 +43,7 @@ class LoadGameScreen : LoadOrSaveScreen(searchable = true) {
         private const val loadFromClipboard = "Load copied data"
         private const val copyExistingSaveToClipboard = "Copy saved game to clipboard"
         internal const val downloadMissingMods = "Download missing mods"
+        internal const val downloadOutOfDateMods = "Download out of date mods"
     }
 
     init {
@@ -236,26 +238,46 @@ class LoadGameScreen : LoadOrSaveScreen(searchable = true) {
     private fun redownloadUnupdatedMods(modNames: LinkedHashSet<String>) {
         descriptionLabel.setText("Downloading unupdated mods...")
         Concurrency.runOnNonDaemonThreadPool("redownloadUnupdatedMods") { 
-            val modsToCheck = modNames.mapNotNull { RulesetCache[it] }
-                .filter { it.nations.any() && it.modOptions.modUrl.isNotEmpty()  }
-            
-            val reposToUpdate = modsToCheck
-                .mapNotNull { 
-                    val repo = GithubAPI.Repo.parseUrl(it.modOptions.modUrl) ?: return@mapNotNull null
-                    if (it.modOptions.lastUpdated == repo.pushed_at) return@mapNotNull null
-                    repo
+            var modsChanged = false
+            try {
+                val modsToCheck = modNames.mapNotNull { modName ->
+                    val ruleset = RulesetCache[modName] ?: return@mapNotNull null
+                    if (ruleset.nations.isEmpty() || ruleset.modOptions.modUrl.isEmpty()) return@mapNotNull null
+                    Triple(modName, ruleset, ruleset.modOptions.modUrl)
                 }
-            
-            Concurrency.runOnGLThread {
-                ToastPopup("Updating mods: $reposToUpdate", this@LoadGameScreen)
-                descriptionLabel.setText("Downloading unupdated mods - 0/${reposToUpdate.size}")
-            }
 
-            for ((index, repo) in reposToUpdate.withIndex()) {
-                repo.downloadAndExtract()
+                val latestRepos = Github.getLatestModRepositories(
+                    modsToCheck.map { it.third },
+                    forceRefresh = true
+                )
+                val reposToUpdate = modsToCheck.mapNotNull { (modName, ruleset, modUrl) ->
+                    val repo = latestRepos[modUrl] ?: return@mapNotNull null
+                    if (ruleset.modOptions.lastUpdated == repo.pushed_at) return@mapNotNull null
+                    modName to repo
+                }
+
                 Concurrency.runOnGLThread {
-                    ToastPopup("Downloaded ${repo.name}", this@LoadGameScreen)
-                    descriptionLabel.setText("Downloading unupdated mods - ${index+1}/${reposToUpdate.size}")
+                    ToastPopup("Updating mods: ${reposToUpdate.map { it.first }}", this@LoadGameScreen)
+                    descriptionLabel.setText("Downloading unupdated mods - 0/${reposToUpdate.size}")
+                }
+
+                for ((index, modAndRepo) in reposToUpdate.withIndex()) {
+                    val (modName, repo) = modAndRepo
+                    repo.downloadAndExtract()
+                        ?: throw UncivShowableException("Could not download updated mod [$modName].")
+                    modsChanged = true
+                    Concurrency.runOnGLThread {
+                        ToastPopup("Downloaded [$modName]", this@LoadGameScreen)
+                        descriptionLabel.setText("Downloading unupdated mods - ${index + 1}/${reposToUpdate.size}")
+                    }
+                }
+                if (modsChanged) RulesetCache.loadRulesets()
+            } catch (ex: Exception) {
+                if (modsChanged) RulesetCache.loadRulesets()
+                val (message) = getLoadExceptionMessage(ex, "Could not update mods:")
+                launchOnGLThread {
+                    ToastPopup(message, this@LoadGameScreen)
+                    descriptionLabel.setText(message)
                 }
             }
         }
