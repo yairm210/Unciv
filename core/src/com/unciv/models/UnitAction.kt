@@ -29,6 +29,9 @@ open class UnitAction(
     val associatedUnique: Unique? = null,
     /** If not null, the UI asks for confirmation before invoking [action] */
     val confirmation: UnitActionConfirmation? = null,
+    /** Distinguishes between several actions of the same [type] - `null` for types that yield at most one action.
+     *  Stable between calls, so the view API can look the action up again by ([type], [id]) to invoke it. */
+    val id: String? = null,
     /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
@@ -60,7 +63,7 @@ class UpgradeUnitAction(
     title: String,
     val upgrade: PossibleUpgrade,
     action: (() -> Unit)?,
-) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = upgrade.unique, action = action) {
+) : UnitAction(UnitActionType.Upgrade, title, associatedUnique = upgrade.unique, id = upgrade.upgradedUnit.name, action = action) {
     val unitToUpgradeTo: BaseUnit get() = upgrade.upgradedUnit
 }
 

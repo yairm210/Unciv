@@ -1,25 +1,29 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
-import com.unciv.logic.map.mapunit.actions.UnitActions
 import com.unciv.models.UncivSound
-import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionConfirmation
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.ImageGetter
+import com.unciv.view.MapUnitView
+import com.unciv.view.UnitActionView
+import com.unciv.view.isActionUntilHealed
+import com.unciv.view.isCivilian
+import com.unciv.view.isFortifyingUntilHealed
+import com.unciv.view.isSleeping
+import com.unciv.view.isSleepingUntilHealed
 import yairm210.purity.annotations.Readonly
 
 /**
  *  UI Unit Action - what the UI works with, instead of calling [UnitActions] directly.
  *
- *  Either wraps a logic [UnitAction] (see the secondary constructor), or is UI-only (see [UiOnlyUnitActions]).
+ *  Either wraps a [UnitActionView] (see the secondary constructor), or is UI-only (see [UiOnlyUnitActions]).
  *
- *  @property unitAction The logic action this was created from, if any
+ *  @property unitAction The view action this was created from, if any
  *  @property confirmation if not null, the UI asks the player before invoking [action]
  *  @property action null if the action is currently disabled
  */
@@ -29,19 +33,25 @@ class UiUnitAction(
     val title: String = uiType.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = uiType.uncivSound,
-    val unitAction: UnitAction? = null,
+    val unitAction: UnitActionView? = null,
     val confirmation: UnitActionConfirmation? = null,
     val action: (() -> Unit)? = null
 ) {
-    constructor(unit: MapUnit, unitAction: UnitAction) : this(
+    constructor(unit: MapUnitView, unitAction: UnitActionView) : this(
         UiUnitActionType.of(unitAction.type), UiUnitActionType.of(unitAction.type).getUseFrequency(unit, unitAction),
         unitAction.title, unitAction.isCurrentAction, unitAction = unitAction,
-        confirmation = unitAction.confirmation, action = unitAction.action
+        confirmation = unitAction.confirmation,
+        action = if (unitAction.available) {
+            {
+                unit.tryInvokeUnitAction(unitAction.type, unitAction.id)
+            }
+        } else null
     )
 
     fun getIcon(size: Float = 20f): Actor {
         uiType.imageGetter?.let { return it.invoke() }
-        val associatedUnique = unitAction?.associatedUnique
+        // For TriggerUnique, the id is the unique's text
+        val associatedUnique = unitAction?.id?.takeIf { uiType == UiUnitActionType.TriggerUnique }?.let { Unique(it) }
         return when (uiType) {
             UiUnitActionType.CreateImprovement -> {
                 ImageGetter.getImprovementPortrait(title.getPlaceholderParameters()[0], size)
@@ -92,17 +102,20 @@ class UiUnitAction(
 
 /** Entry point for the UI to get [UiUnitAction]s */
 object UiUnitActions {
-    fun getUnitActions(unit: MapUnit): Sequence<UiUnitAction> =
-        UnitActions.getUnitActions(unit).map { UiUnitAction(unit, it) } + UiOnlyUnitActions.getUnitActions(unit)
+    @Suppress("DEPRECATION") // Bridge to logic until the view exposes unit actions
+    fun getUnitActions(unit: MapUnitView): Sequence<UiUnitAction> {
+        return unit.getActions().asSequence().map { UiUnitAction(unit, it) } + UiOnlyUnitActions.getUnitActions(unit.getUnit())
+    }
 
     /** Gets the preferred "page" to display a [UiUnitAction] of type [uiUnitActionType] on, possibly dynamic depending on the state or situation [unit] is in.
      *  Note the returned "page numbers" are treated as suggestions, buttons may get redistributed when screen space is scarce. */
     @Readonly
-    fun getActionDefaultPage(unit: MapUnit, uiUnitActionType: UiUnitActionType): Int =
+    @Suppress("DEPRECATION") // Bridge to logic until getPage works on views
+    fun getActionDefaultPage(unit: MapUnitView, uiUnitActionType: UiUnitActionType): Int =
         uiUnitActionType.getPage(unit)
 
     /** The "paging" actions: [first][Pair.first] page forward, [second][Pair.second] page back. Not part of [getUnitActions]. */
-    internal fun getPagingActions(unit: MapUnit, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
+    internal fun getPagingActions(unit: MapUnitView, actionsTable: UnitActionsTable): Pair<UiUnitAction, UiUnitAction> =
         UiOnlyUnitActions.getPagingActions(unit, actionsTable)
 }
 
@@ -135,8 +148,8 @@ enum class UiUnitActionType private constructor(
     EscortFormation(UnitActionType.EscortFormation, portrait("Escort"), false, page = 1, useFrequency = 50f),
     SwapUnits("Swap units", portrait("Swap"), false, useFrequency = 60f),
     Automate(UnitActionType.Automate, portrait("Automate"), useFrequency = 25f) {
-        override fun getPage(unit: MapUnit) =
-            if (unit.cache.hasUniqueToBuildImprovements || unit.hasUnique(UniqueType.AutomationPrimaryAction)) 0 else 1
+        override fun getPage(unit: MapUnitView) =
+            if (unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.AutomationPrimaryAction)) 0 else 1
     },
     ConnectRoad("Connect road", portrait("RoadConnection"), false, useFrequency = 25f),
     StopAutomation(UnitActionType.StopAutomation, portrait("Stop"), false, useFrequency = 10f),
@@ -144,31 +157,31 @@ enum class UiUnitActionType private constructor(
     ShowUnitDestination("Show unit destination", portrait("ShowUnitDestination"), false, page = 1, useFrequency = 30f),
     Sleep(UnitActionType.Sleep, portrait("Sleep"), useFrequency = 29f) {
         // Sleep moves to second page if current action is SleepUntilHealed or if unit is wounded and it's not already the current action
-        override fun getPage(unit: MapUnit) =
-            if (unit.isSleepingUntilHealed() || unit.health < 100 && !(unit.isSleeping() && !unit.isActionUntilHealed())) 1 else 0
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unit.isSleeping()) 21f else defaultUseFrequency
+        override fun getPage(unit: MapUnitView) =
+            if (unit.isSleepingUntilHealed() || unit.unitHealth < 100 && !(unit.isSleeping() && !unit.isActionUntilHealed())) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) = if (unit.isSleeping()) 21f else defaultUseFrequency
     },
     SleepUntilHealed(UnitActionType.SleepUntilHealed, portrait("Sleep"), useFrequency = 44f) {
         // SleepUntilHealed only moves to the second page if Sleep is the current action
-        override fun getPage(unit: MapUnit) =
+        override fun getPage(unit: MapUnitView) =
             if (unit.isSleeping() && !unit.isActionUntilHealed()) 1 else 0
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unit.isSleepingUntilHealed()) 20f else defaultUseFrequency
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) = if (unit.isSleepingUntilHealed()) 20f else defaultUseFrequency
     },
     Fortify(UnitActionType.Fortify, portrait("Fortify"), uncivSound = UncivSound.Fortify, useFrequency = 30f) {
         // Fortify moves to second page if current action is FortifyUntilHealed or if unit is wounded and it's not already the current action
-        override fun getPage(unit: MapUnit) =
-            if (unit.isFortifyingUntilHealed() || unit.health < 100 && !(unit.isFortified() && !unit.isActionUntilHealed())) 1 else 0
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
+        override fun getPage(unit: MapUnitView) =
+            if (unit.isFortifyingUntilHealed() || unit.unitHealth < 100 && !(unit.isFortified() && !unit.isActionUntilHealed())) 1 else 0
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
     },
     FortifyUntilHealed(UnitActionType.FortifyUntilHealed, portrait("FortifyUntilHealed"), uncivSound = UncivSound.Fortify, useFrequency = 45f) {
         // FortifyUntilHealed only moves to the second page if Fortify is the current action
-        override fun getPage(unit: MapUnit) =
+        override fun getPage(unit: MapUnitView) =
             if (unit.isFortified() && !unit.isActionUntilHealed()) 1 else 0
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) = if (unitAction?.isCurrentAction == true) 10f else defaultUseFrequency
     },
     Guard(UnitActionType.Guard, portrait("Guard"), uncivSound = UncivSound.Fortify, useFrequency = 0f),
     Explore(UnitActionType.Explore, portrait("Explore"), useFrequency = 5f) {
-        override fun getPage(unit: MapUnit) = if (unit.isCivilian()) 1 else 0
+        override fun getPage(unit: MapUnitView) = if (unit.isCivilian()) 1 else 0
     },
     StopExploration(UnitActionType.StopExploration, portrait("Stop"), false, useFrequency = 20f),
     Promote("Promote", portrait("Promote"), false, UncivSound.Promote, useFrequency = 150f),
@@ -182,8 +195,8 @@ enum class UiUnitActionType private constructor(
     ConstructImprovement("Construct improvement", portrait("ConstructImprovement"), false, useFrequency = 85f),
     Repair(UnitActionType.Repair, portrait("Repair"), uncivSound = UncivSound.Construction, useFrequency = 90f),
     CreateImprovement(UnitActionType.CreateImprovement, null, false, UncivSound.Chimes, useFrequency = 85f) {
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
-            if (unitAction?.associatedUnique?.type == UniqueType.CreateWaterImprovements) 82f else defaultUseFrequency
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) =
+            if (unit.hasUnique(UniqueType.CreateWaterImprovements)) 82f else defaultUseFrequency
         override val binding = KeyboardBinding.Create
     },
     HurryResearch(UnitActionType.HurryResearch, portrait("HurryResearch"), uncivSound = UncivSound.Chimes, useFrequency = 76f),
@@ -198,8 +211,8 @@ enum class UiUnitActionType private constructor(
     EnhanceReligion(UnitActionType.EnhanceReligion, portrait("EnhanceReligion"), uncivSound = UncivSound.Choir, useFrequency = 79f),
     DisbandUnit("Disband unit", portrait("DisbandUnit"), false, page = 1, useFrequency = 0f),
     GiftUnit(UnitActionType.GiftUnit, portrait("Present"), uncivSound = UncivSound.Silent, page = 1, useFrequency = 5f) {
-        override fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?) =
-            if (unitAction?.action == null) 1f else defaultUseFrequency
+        override fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?) =
+            if (unitAction?.available != true) 1f else defaultUseFrequency
     },
     Skip(UnitActionType.Skip, portrait("Skip"), uncivSound = UncivSound.Silent, useFrequency = 0f),
     ShowAdditionalActions("Show more", portrait("ShowMore"), false, useFrequency = 0f),
@@ -221,7 +234,7 @@ enum class UiUnitActionType private constructor(
 
     /** The use frequency for this action type, before [UnitActionModifiers.getUseFrequency] applies the modifiers of the action's unique. */
     @Readonly
-    open fun getDefaultUseFrequency(unit: MapUnit, unitAction: UnitAction?): Float = defaultUseFrequency
+    open fun getDefaultUseFrequency(unit: MapUnitView, unitAction: UnitActionView?): Float = defaultUseFrequency
 
     /**
      *  How often this action is used, a higher value means more often and that it should be on an earlier page.
@@ -230,12 +243,12 @@ enum class UiUnitActionType private constructor(
      *  we need to inform the player that taking the action is an option.
      */
     @Readonly
-    fun getUseFrequency(unit: MapUnit, unitAction: UnitAction?): Float =
-        UnitActionModifiers.getUseFrequency(unit, unitAction?.associatedUnique, getDefaultUseFrequency(unit, unitAction))
+    fun getUseFrequency(unit: MapUnitView, unitAction: UnitActionView?): Float =
+        unitAction?.priority ?: getDefaultUseFrequency(unit, unitAction)
 
     /** The preferred page for this action type, for [unit] in its current state. */
     @Readonly
-    open fun getPage(unit: MapUnit): Int = page
+    open fun getPage(unit: MapUnitView): Int = page
 
     companion object {
         private val byType = entries.filter { it.type != null }.associateBy { it.type }

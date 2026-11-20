@@ -7,8 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts
@@ -18,6 +17,9 @@ import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.view.MapUnitView
+import com.unciv.view.hasMovement
+import com.unciv.view.isMoving
 import yairm210.purity.annotations.Readonly
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
@@ -49,13 +51,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         defaults().left().padLeft(padBetweenButtons).padBottom(padBetweenButtons)
     }
 
-    fun changePage(delta: Int, unit: MapUnit) {
+    fun changePage(delta: Int, unit: MapUnitView) {
         if (delta == 0 || numPages <= 1) return
         currentPage = (currentPage + delta) % numPages
         update(unit)
     }
 
-    fun update(unit: MapUnit?) {
+    fun update(unit: MapUnitView?) {
         val newUnitHash = unit?.hashCode() ?: 0
         var unitChanged = false
         if (shownForUnitHash != newUnitHash) {
@@ -112,15 +114,18 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // actually show the buttons of the currentPage
         for (unitAction in pageActionBuckets[currentPage]) {
             val button = getUnitActionButton(unit, unitAction)
-            val upgradeAction = unitAction.unitAction as? UpgradeUnitAction
-            if (upgradeAction != null) {
+            val upgradeActionView = unitAction.unitAction
+            val upgrade = if (upgradeActionView != null && upgradeActionView.type == UnitActionType.Upgrade) {
+                unit.getPossibleUpgrades().firstOrNull { it.upgradedUnit.name == upgradeActionView.id }
+            } else null
+            if (upgrade != null) {
                 // This is bound even when the button is disabled, but Actor.activate in ActivationExtensions will block any activation for disabled actors...
                 // But the menu is built to be useful even when you can't upgrade - so **hack** it to get the handler through.
                 // Works because our disable() extension also changes style, and because the normal click is ignored due to unitAction.action being null.
                 button.isDisabled = false
                 button.touchable = Touchable.enabled
                 button.addContextMenu {
-                    UnitUpgradeMenu(worldScreen.stage, button, worldScreen.selectedGameView.getMapUnitView(unit), upgradeAction.upgrade, enable = unitAction.action != null, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, unit, upgrade, enable = unitAction.action != null, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }
@@ -168,7 +173,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         buttonsPerPage = (availableHeight / buttonHeight).toInt().coerceIn(minButtonsPerPage, maxButtonsPerPage)
     }
 
-    private fun getUnitActionButton(unit: MapUnit, unitAction: UiUnitAction): Button {
+    private fun getUnitActionButton(unit: MapUnitView, unitAction: UiUnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val binding = unitAction.uiType.binding
@@ -193,7 +198,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         return actionButton
     }
 
-    private fun activateAction(unitAction: UiUnitAction, unit: MapUnit) {
+    private fun activateAction(unitAction: UiUnitAction, unit: MapUnitView) {
         val confirmation = unitAction.confirmation
         if (confirmation == null) {
             invokeAction(unitAction, unit)
@@ -204,7 +209,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         }.open()
     }
 
-    private fun invokeAction(unitAction: UiUnitAction, unit: MapUnit) {
+    private fun invokeAction(unitAction: UiUnitAction, unit: MapUnitView) {
         unitAction.action!!.invoke()
         worldScreen.shouldUpdate = true
         // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
@@ -212,7 +217,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // overlay, since the user definitely wants to interact with the new unit.
         worldScreen.mapHolder.removeUnitActionOverlay()
         if (!UncivGame.Current.settings.autoUnitCycle) return
-        if (unit.isDestroyed || 
+        if (unit.isDestroyed() || 
             unitAction.uiType.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
             worldScreen.switchToNextUnit()
         else worldScreen.bottomUnitTable.shouldUpdate = true

@@ -211,11 +211,13 @@ object UnitActionModifiers {
         else "(${effects.joinToString { it.tr() }})"
     }
     
+    /** The modder-set priority (`UnitActionPriority`) of the action stemming from [actionUnique], if one applies */
     @Readonly
-    fun getUseFrequency(unit: MapUnit, actionUnique: Unique?, default: Float): Float {
-        val modifier = actionUnique?.modifiersMap?.get(UniqueType.UnitActionPriority)
-            ?.firstOrNull { it.conditionalsApply(unit.cache.state) } ?: return default
-                
-        return modifier.params[0].toFloat()
-    }
+    fun getActionPriority(unit: MapUnit, actionUnique: Unique?): Float? =
+        actionUnique?.modifiersMap?.get(UniqueType.UnitActionPriority)
+            ?.firstOrNull { it.conditionalsApply(unit.cache.state) }?.params?.get(0)?.toFloat()
+
+    @Readonly
+    fun getUseFrequency(unit: MapUnit, actionUnique: Unique?, default: Float): Float =
+        getActionPriority(unit, actionUnique) ?: default
 }
