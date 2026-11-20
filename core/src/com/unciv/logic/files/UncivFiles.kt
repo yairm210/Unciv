@@ -24,6 +24,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.InputStream
@@ -128,7 +129,7 @@ class UncivFiles(
         val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
         val externalFiles = when {
-            !files.isExternalStorageAvailable -> emptySequence()
+            !files.isExternalStorageAvailable || !PlatformSpecific.current.hasJavaFileAccess -> emptySequence()
             getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
             else -> Sequence { files.external(saveFolder).list().iterator() }
         }
