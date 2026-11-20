@@ -11,6 +11,10 @@ import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
+    
+    override fun getId(): String = unit.id.toString()
+    override fun getInstanceName(): String? = unit.instanceName
+
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
     override fun getCivInfo(): Civilization = unit.civ
@@ -33,7 +37,10 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
 
-    override fun takeDamage(damage: Int) = unit.takeDamage(damage)
+    override fun takeDamage(damage: Int, recorder: AttackRecorder?) {
+        recorder?.markUnitAffected(this)
+        unit.takeDamage(amount = damage, recorder = recorder)
+    }
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
