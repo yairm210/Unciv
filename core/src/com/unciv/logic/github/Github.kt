@@ -2,9 +2,11 @@ package com.unciv.logic.github
 
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.github.Github.CountingInputStream.Companion.create
 import com.unciv.logic.github.Github.repoNameToFolderName
@@ -22,12 +24,74 @@ import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.io.InputStream
+import java.time.Duration
+import java.time.Instant
 
 
 /**
  * Utility managing Github access (except the link in WorldScreenCommunityPopup)
  */
 object Github {
+    private val modRepositoryCacheMaxAge = Duration.ofHours(24)
+
+    /**
+     * Gets current GitHub repository metadata, reusing a successful check for up to 24 hours.
+     * Results are keyed by the original mod URL; non-GitHub URLs are omitted.
+     */
+    suspend fun getLatestModRepositories(
+        modUrls: Collection<String>,
+        forceRefresh: Boolean = false,
+        now: Instant = Instant.now()
+    ): Map<String, GithubAPI.Repo> {
+        val repositoryUrlPattern = Regex(
+            """^https?://(?:www\.)?github\.com/([^/#?]+)/([^/#?]+)(?:[/?#].*)?$""",
+            RegexOption.IGNORE_CASE
+        )
+        val requestedRepositories = modUrls.mapNotNull { url ->
+            val match = repositoryUrlPattern.matchEntire(url) ?: return@mapNotNull null
+            val owner = match.groupValues[1]
+            val name = match.groupValues[2].removeSuffix(".git")
+            if (name.isEmpty()) return@mapNotNull null
+            Triple(url, "$owner/$name", Pair(owner, name))
+        }
+        if (requestedRepositories.isEmpty()) return emptyMap()
+
+        val files = UncivGame.Current.files
+        val cache = files.loadModRepositoryCache().associateByTo(LinkedHashMap()) {
+            it.repository.lowercase()
+        }
+        val resultsByRepository = LinkedHashMap<String, GithubAPI.Repo>()
+
+        try {
+            for ((_, repository, ownerAndName) in requestedRepositories.distinctBy { it.second.lowercase() }) {
+                val cacheKey = repository.lowercase()
+                val cached = cache[cacheKey]
+                val repo = if (!forceRefresh && cached != null && cached.isFresh(now, modRepositoryCacheMaxAge)) {
+                    cached.repo
+                } else {
+                    val (owner, name) = ownerAndName
+                    val refreshedRepo = GithubAPI.Repo.query(owner, name)
+                        ?: throw UncivShowableException("Could not refresh GitHub information for [$repository].")
+                    if (refreshedRepo.pushed_at.isEmpty())
+                        throw UncivShowableException("GitHub did not provide an update time for [$repository].")
+
+                    val entry = cached ?: ModRepositoryCacheEntry().also { cache[cacheKey] = it }
+                    entry.repository = repository
+                    entry.checkedAt = now.toString()
+                    entry.repo = refreshedRepo
+                    refreshedRepo
+                }
+                resultsByRepository[cacheKey] = repo
+            }
+        } finally {
+            files.saveModRepositoryCache(cache.values.toList())
+        }
+
+        return requestedRepositories.associate { (url, repository) ->
+            url to resultsByRepository.getValue(repository.lowercase())
+        }
+    }
+
     /** Helper implementing minimum viable bytes-read tracking with a callback to display a progress percentage.
      *  Pass-through if either the callback is null or the content length is not known beforehand.
      *

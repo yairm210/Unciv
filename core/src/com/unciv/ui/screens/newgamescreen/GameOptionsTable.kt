@@ -116,6 +116,7 @@ class GameOptionsTable(
             selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
             selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
             selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
+            checkboxTable.addAutoUpdateModsOnJoinCheckbox()
         }
         add(checkboxTable).center().row()
         add(selectBoxTable).center().row()
@@ -209,6 +210,12 @@ class GameOptionsTable(
             addCheckbox("Allow anyone to spectate", gameParameters.anyoneCanSpectate)
             {
                 gameParameters.anyoneCanSpectate = it
+            }
+
+    private fun Table.addAutoUpdateModsOnJoinCheckbox() =
+            addCheckbox("Auto-update mods on join", gameParameters.autoUpdateModsOnJoin)
+            {
+                gameParameters.autoUpdateModsOnJoin = it
             }
 
     private fun Table.addEnableEspionageCheckbox() =
