@@ -8,8 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
-import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.models.translations.TranslationCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -20,141 +19,199 @@ import com.unciv.utils.ScreenOrientation
 import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
+import kotlin.math.abs
 
 /** Settings that apply across all games, stored in GameSettings.json */
 class GameSettings {
-    enum class PathfindingAlgorithm {
-        ClassicPathfinding,
-        AStarPathfinding
-    }
+    // This should group and order fields into regions by their Tab in OptionsPopup
+    //// 4-slash comments correspond to "section" headers within an Options Tab
 
-    /** Allows panning the map by moving the pointer to the screen edges */
-    var mapAutoScroll: Boolean = false
-    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
-    var mapPanningSpeed: Float = 6f
-    
-    var useAStarPathfinding: Boolean = false
+    //region 1: Display
 
-    var showWorkedTiles: Boolean = false
-    var showResourcesAndImprovements: Boolean = true
-    var showTileYields: Boolean = false
-    var showUnitMovements: Boolean = false
-    var showSettlersSuggestedCityLocations: Boolean = true
-    var stopAutomatedWorkersRemoveVegetation: Boolean = false
-
-    var checkForDueUnits: Boolean = true
-    var checkForDueUnitsCycles: Boolean = false
-    var autoUnitCycle: Boolean = true
-    var smallUnitButton: Boolean = true
-    var singleTapMove: Boolean = false
-    var longTapMove: Boolean = true
-    var language: String = Constants.english
-    @Transient
-    var locale: Locale? = null
+    //// Screen
     var screenSize: ScreenSize = ScreenSize.Small
-    var screenMode: Int = 0
+    /** Orientation for mobile platforms */
+    var displayOrientation = ScreenOrientation.Landscape
+    var screenMode = 0
+    /** Allows panning the map by moving the pointer to the screen edges */
+    var mapAutoScroll = false
+    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
+    var mapPanningSpeed = 6f
+
+    //// Graphics
+    var tileSet: String = Constants.defaultTileset
+    var unitSet: String? = Constants.defaultUnitset
+    var skin: String = Constants.defaultSkin
+
+    //// UI
+    /** NotificationScroll on Word Screen visibility control - mapped to [NotificationsScroll.UserSetting] enum */
+    // Defaulting this to "" - and implement the fallback only in NotificationsScroll leads to Options popup and actual effect being in disagreement!
+    var notificationScroll: String = NotificationsScroll.UserSetting.default().name
+    var showMinimap = true
+    var showTutorials = true
+    // There have no UI other than the "Reset tutorials" button:
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
+    enum class AutomaticPromotions(private val label: String) {
+        ForAllUnits("For all units"),
+        ForAutomatedUnits("For automated units"),
+        Off("Off");
+        override fun toString() = label.tr()
+    }
+
+    enum class LongPressIndicatorSetting {
+        Default, Off, On, Debug; // Debug only offered on Debug page of Options
+        /** Android defaults to off - Desktop defaults to on.
+         * Manually setting it once turns it into "On" or "Off" properly */
+        fun toBoolean() = this == On || Gdx.app.type == ApplicationType.Desktop && this == Default
+        companion object {
+            fun of(bool: Boolean) = if (bool) On else Off
+        }
+    }
+    var showLongPressIndicators = LongPressIndicatorSetting.Default
+
+    var showZoomButtons = false
+    var forbidPopupClickBehindToClose = false
+    var useCirclesToIndicateMovableTiles = false
+    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
+    var pediaUnitArtSize = 0f
+
+    //// Visual Hints
+    var showUnitMovements = false
+    var showSettlersSuggestedCityLocations = true
+    var showTileYields = false
+    var showWorkedTiles = false
+    var showResourcesAndImprovements = true
+    var showPixelImprovements = true
+    var unitIconOpacity = 1f // default corresponds to fully opaque
+
+    //// Performance
+    var continuousRendering = false
+    /** User override for using a plain SpriteBatch; null = automatic, see [isAlternativeRenderingEnabled] */
+    var alternativeRendering: Boolean? = null
+
+    //// Experimental
+    var unitMovementButtonAnimation = false
+    var unitActionsTableAnimation = false
+
+    //endregion
+
+    //region 2: Gameplay
+    var checkForDueUnits = true
+    var checkForDueUnitsCycles = false
+    var smallUnitButton = true
+    var autoUnitCycle = true
+    /** Cycle units by distance instead of queue */
+    var alternateUnitCycleOrder = false
+    var singleTapMove = false
+    var longTapMove = true
+    var orderTradeOffersByAmount = true
+    var confirmNextTurn = false
+    var notificationsLogMaxTurns = 5
+    //endregion
+
+    //region 3: Automation
+
+    //// Automation
+    var autoAssignCityProduction = false
+    var autoBuildingRoads = true
+    var automatedWorkersReplaceImprovements = true
+    var stopAutomatedWorkersRemoveVegetation = false
+    var automatedUnitsMoveOnTurnStart = false
+    var automatedUnitsCanUpgrade = false
+    /** Superseded by [automaticPromotions], retained for migration purposes */
+    var automatedUnitsChoosePromotions = false
+    var automaticPromotions = AutomaticPromotions.Off
+    var citiesAutoBombardAtEndOfTurn = false
+    var autoAssignSpecialistsInNewCities = true
+
+    //// Autoplay
+    var autoPlay = GameSettingsAutoPlay()
+
+    //endregion
+
+    //region 4: Language
+    var language: String = Constants.english
+    @Transient
+    var locale: Locale? = null
+    //endregion
+
+    //region 5: Sound
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f
     var musicVolume = 0.5f
     var voicesVolume = 0.5f
     var pauseBetweenTracks = 10
+    //endregion
 
-    var turnsBetweenAutosaves = 1
-    var maxAutosavesStored = 10
-    var tileSet: String = Constants.defaultTileset
-    var unitSet: String? = Constants.defaultUnitset
-    var skin: String = Constants.defaultSkin
-    var showTutorials: Boolean = true
-    var autoAssignCityProduction: Boolean = false
-
-    /** This set of construction names has two effects:
-     *  * Matching constructions are no longer candidates for [autoAssignCityProduction]
-     *  * Matching constructions are offered in a separate 'Disabled' category in CityScreen
-     */
-    var disabledAutoAssignConstructions = HashSet<String>()
-
-    var autoBuildingRoads: Boolean = true
-    var automatedWorkersReplaceImprovements = true
-    var automatedUnitsMoveOnTurnStart: Boolean = false
-    var automatedUnitsCanUpgrade: Boolean = false
-    var automatedUnitsChoosePromotions: Boolean = false
-    var citiesAutoBombardAtEndOfTurn: Boolean = false
-
-    var showMinimap: Boolean = true
-    var minimapSize: Int = 6    // default corresponds to 15% screen space
-    var unitIconOpacity = 1f // default corresponds to fully opaque
-    val showPixelUnits: Boolean get() = unitSet != null
-    var showPixelImprovements: Boolean = true
-    var continuousRendering = false
-    var orderTradeOffersByAmount = true
-    var confirmNextTurn = false
-    var windowState = WindowState()
-    var isFreshlyCreated = false
-    var visualMods = HashSet<String>()
-    var useDemographics: Boolean = false
-    var showZoomButtons: Boolean = false
-    var forbidPopupClickBehindToClose: Boolean = false
-    var useCirclesToIndicateMovableTiles: Boolean = false
-    
-    var unitMovementButtonAnimation: Boolean = false
-    var unitActionsTableAnimation: Boolean = false
-
-    var notificationsLogMaxTurns = 5
-
-    var showAutosaves: Boolean = false
-
-    var androidCutout: Boolean = false
-    var androidHideSystemUi = true
-
+    //region 6: Multiplayer
     var multiplayer = GameSettingsMultiplayer()
+    //endregion
 
-    var autoPlay = GameSettingsAutoPlay()
+    //region 7: Keyboard
+    var keyBindings = KeyboardBindings()
+    //endregion
+
+    //region 8: Advanced
+    var maxAutosavesStored = 10
+    var turnsBetweenAutosaves = 1
+
+    var androidCutout = false
+    var androidHideSystemUi = true
+    var fontFamilyData: FontFamilyData = FontFamilyData.default
+    var fontSizeMultiplier: Float = 1f
+    var longPressDelay = 1.1f
+    var multiTapInterval = 0.25f
+
+    /** Maximum zoom-out of the map - performance heavy */
+    var maxWorldZoomOut = 2f
+    var enableEasterEggs = true
+    /** If on, selected notifications are drawn enlarged with wider padding */
+    var enlargeSelectedNotification = true
+    var useAStarPathfinding = false
+    //endregion
+
+    //region 9: Not in OptionsPopup
+
+    // Controlled by dragging the minimap
+    var minimapSize = 6    // default corresponds to 15% screen space
+
+    // This was a checkbox setting long ago
+    val showPixelUnits get() = unitSet != null
+
+    // Preserves desktop window size between runs
+    var windowState = WindowState()
+
+    // Used by launcher to recognize a first-run
+    var isFreshlyCreated = false
+
+    // Controlled from ModManagementScreen
+    var visualMods = HashSet<String>()
+
+    // On load screen
+    var showAutosaves = false
 
     /** Holds EmpireOverviewScreen per-page persistable states */
     val overview = OverviewPersistableData()
 
-    /** Orientation for mobile platforms */
-    var displayOrientation = ScreenOrientation.Landscape
-
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
 
-    var fontFamilyData: FontFamilyData = FontFamilyData.default
-    var fontSizeMultiplier: Float = 1f
-
-    var enableEasterEggs: Boolean = true
-
-    /** Maximum zoom-out of the map - performance heavy */
-    var maxWorldZoomOut = 2f
-
-    var keyBindings = KeyboardBindings()
-
-    /** NotificationScroll on Word Screen visibility control - mapped to [NotificationsScroll.UserSetting] enum */
-    // Defaulting this to "" - and implement the fallback only in NotificationsScroll leads to Options popup and actual effect being in disagreement!
-    var notificationScroll: String = NotificationsScroll.UserSetting.default().name
-
-    /** If on, selected notifications are drawn enlarged with wider padding */
-    var enlargeSelectedNotification = true
-
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
     var nationPickerListMode = NationPickerListMode.List
-
-    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
-    var pediaUnitArtSize = 0f
-
-    /** Cycle units by distance instead of queue */
-    var alternateUnitCycleOrder: Boolean = false
 
     /** Don't close developer console after a successful command */
     var keepConsoleOpen = false
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
+
+    //endregion
+
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null
@@ -167,6 +224,12 @@ class GameSettings {
     }
 
     //region <Methods>
+
+    /** Resolves [alternativeRendering]: an explicit user choice wins, otherwise auto-detect.
+     *  See https://github.com/carlislefox/libgdx-texture-array-batch/issues/1 -
+     *  TL;DR the Mali-G68 GPU gives horrendous results with TextureArrayBatch, all other GPUs should default to false. */
+    fun isAlternativeRenderingEnabled() =
+        alternativeRendering ?: (Gdx.graphics?.glVersion?.rendererString == "Mali-G68")
 
     fun save() {
         if (Gdx.app == null) return // Simulation mode from ConsoleLauncher
@@ -205,13 +268,25 @@ class GameSettings {
         return Collator.getInstance(getCurrentLocale())
     }
 
-    @Readonly
-    fun getCurrentNumberFormat(): NumberFormat {
-        return LocaleCode.getNumberFormatFromLanguage(language)
+    /** A NumberFormat for the chosen [language] - mutable and can be configured in [block] right away */
+    fun getAndModifyCurrentNumberFormat(block: (DecimalFormat.() -> Unit)?): DecimalFormat {
+        val formatter = TranslationCache.getNumberFormatter()
+        if (block != null) formatter.block()
+        return formatter
     }
+
+    /** Gets the localized percent pattern matching the chosen [language] */
+    fun getCurrentPercentPattern() = (NumberFormat.getPercentInstance(getCurrentLocale()) as? DecimalFormat)?.toPattern() ?: "0%"
 
     //endregion
     //region <Nested classes>
+
+    enum class PathfindingAlgorithm {
+        ClassicPathfinding,
+        AStarPathfinding
+    }
+
+    enum class NationPickerListMode { Icons, List }
 
     /**
      *  Knowledge on Window "state", limited.
@@ -263,10 +338,11 @@ class GameSettings {
     }
 
     enum class ScreenSize(
-        @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
-        val virtualWidth: Float,
-        val virtualHeight: Float
+        private val virtualWidth: Float,
+        private val virtualHeight: Float
     ) {
+        /** Concrete dimensions come from [guess], see [getHeight] */
+        Auto(0f, 0f),
         Micro(630f,420f),
         Tiny(750f,500f),
         Small(900f,600f),
@@ -276,9 +352,39 @@ class GameSettings {
         FullHD(1920f, 1280f),
         QuadHD(2560f, 1707f);
         override fun toString() = name.tr() // Allow direct use in a SelectBox
+
+        /** Minimum virtual height of the stage. For [Auto] taken from the size guessed from the physical screen.
+         *  (The actual stage width is determined by screen aspect ratio, see [getWidth]) */
+        fun getHeight(): Float = if (this == Auto) guess().virtualHeight else virtualHeight
+        /** Nominal virtual width, informational only. For [Auto] taken from the size guessed from the physical screen. */
+        fun getWidth(): Float = if (this == Auto) guess().virtualWidth else virtualWidth
+
+        companion object {
+            /** Picks the concrete [ScreenSize] giving roughly the same number of virtual units per physical inch of the shorter screen side everywhere */
+            fun guess(): ScreenSize {
+                val mode = Gdx.graphics.displayMode
+                val shorterSideInches = minOf(mode.width / Gdx.graphics.ppiX, mode.height / Gdx.graphics.ppiY)
+                // On desktop you use a mouse pointer, on phones you use your fat fingers
+                val unitsPerInch = if (Gdx.app.type != ApplicationType.Desktop) 230f else 100f
+                val targetVirtualHeight = shorterSideInches * unitsPerInch
+                return entries.filter { it != Auto }.minBy { abs(it.virtualHeight - targetVirtualHeight) }
+            }
+        }
     }
 
-    enum class NationPickerListMode { Icons, List }
+    class GameSettingsAutoPlay {
+        var showAutoPlayButton = false
+        var autoPlayUntilEnd = false
+        var autoPlayMaxTurns = 10
+        var fullAutoPlayAI = true
+        var autoPlayMilitary = true
+        var autoPlayCivilian = true
+        var autoPlayEconomy = true
+        var autoPlayTechnology = true
+        var autoPlayPolicies = true
+        var autoPlayReligion = true
+        var autoPlayDiplomacy = true
+    }
 
     //endregion
     //region Multiplayer-specific
@@ -338,20 +444,6 @@ class GameSettings {
             val preEncodedAuthValue = "$userId:$serverPassword"
             return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
         }
-    }
-
-    class GameSettingsAutoPlay {
-        var showAutoPlayButton: Boolean = false
-        var autoPlayUntilEnd: Boolean = false
-        var autoPlayMaxTurns = 10
-        var fullAutoPlayAI: Boolean = true
-        var autoPlayMilitary: Boolean = true
-        var autoPlayCivilian: Boolean = true
-        var autoPlayEconomy: Boolean = true
-        var autoPlayTechnology: Boolean = true
-        var autoPlayPolicies: Boolean = true
-        var autoPlayReligion: Boolean = true
-        var autoPlayDiplomacy: Boolean = true
     }
 
     //endregion

@@ -142,15 +142,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat]"
-	Example: "Gain [3] [Culture]"
+??? example  "Gain [amount] [civWideStat]"
+	Example: "Gain [3] [Gold]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount]-[amount] [stat]"
-	Example: "Gain [3]-[3] [Culture]"
+??? example  "Gain [amount]-[amount] [civWideStat]"
+	Example: "Gain [3]-[3] [Gold]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
@@ -208,6 +208,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Add [resource] to this tile"
+	Example: "Add [Iron] to this tile"
+
+	Applicable to: Triggerable
+
 ??? example  "Remove [resourceFilter] resources from this tile"
 	Example: "Remove [Strategic] resources from this tile"
 
@@ -260,6 +265,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Get the leader title of [leaderTitle]"
 	Example: "Get the leader title of [Sovereign [leaderName] the Great]"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Triggerable
+
+??? example  "Choose a music track for [param], [param], [param]"
+	Parameters are unchecked, strings not matching existing tracks or flags are ignored.
+
+	See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
+
+	The first parameter is the track name prefix, e.g. a Civilization name or "this civ".
+
+	The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.
+
+	The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.
+
+	Example: "Choose a music track for [Unknown], [Unknown], [Unknown]"
 
 	This unique is automatically hidden from users.
 
@@ -340,6 +362,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[unitTriggerTarget] is destroyed"
 	Example: "[This Unit] is destroyed"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] takes over the City-State owning the tile it's standing on"
+	Only allows taking over City-States not at war with the unit's root nation. Does not require a friendship or an alliance with the target City-State.
+
+	Example: "[This Unit] takes over the City-State owning the tile it's standing on"
 
 	Applicable to: UnitTriggerable
 
@@ -553,6 +582,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "City-State Influence recovers at twice the normal rate"
 	Applicable to: Global
 
+??? example  "Gain [positiveAmount] Influence per turn with City-States you could demand tribute from"
+	Example: "Gain [3] Influence per turn with City-States you could demand tribute from"
+
+	Applicable to: Global
+
+??? example  "Units are [relativeAmount]% more effective at intimidating City-States"
+	Example: "Units are [+20]% more effective at intimidating City-States"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
 
@@ -664,13 +703,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to [civWideStat]"
-	Example: "Enables conversion of city production to [Gold]"
+??? example  "Enables conversion of city production to [stat]"
+	Example: "Enables conversion of city production to [Culture]"
 
 	Applicable to: Global
 
-??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
-	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+??? example  "Production to [stat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Culture] conversion in cities changed by [+20]%"
 
 	Applicable to: Global
 
@@ -993,8 +1032,25 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[relativeAmount]% counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% enemy counterintelligence effectiveness [cityFilter]"
+	Example: "[+20]% enemy counterintelligence effectiveness [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "New spies start with [amount] level(s)"
 	Example: "New spies start with [3] level(s)"
+
+	Applicable to: Global
+
+??? example  "Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]"
+	Temporary effective rank change ([relativeAmount] added to rank, e.g. +1) for spies doing the given action in a matching city. Does not permanently level the spy. Stacks additively, capped by maxSpyRank.
+
+	Example: "Spies in [in all cities] cities act as though they have [+20] levels for [Counter-intelligence]"
 
 	Applicable to: Global
 
@@ -1137,6 +1193,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
@@ -1172,6 +1230,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
@@ -1218,6 +1278,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+??? example  "Start bias [terrainFilter]"
+	Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.
+
+	Example: "Start bias [Fresh Water]"
+
+	Applicable to: Nation, CityState
+
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 
@@ -1234,12 +1301,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
 ??? example  "Will not be chosen for new games"
-	Applicable to: Nation
+	Unconditional - it is evaluated while a game is being set up, where there is nothing to evaluate conditionals against.
+
+	Applicable to: Nation, Victory
 
 ??? example  "Comment [comment]"
 	Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent.
@@ -1251,6 +1326,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## Personality uniques
 ??? example  "Will not build [baseUnitFilter/buildingFilter]"
 	Example: "Will not build [Melee]"
+
+	Applicable to: Personality
+
+??? example  "[relativeAmount]% weight to [baseUnitFilter/buildingFilter] for AI decisions"
+	Example: "[+20]% weight to [Melee] for AI decisions"
+
+	This unique is automatically hidden from users.
 
 	Applicable to: Personality
 
@@ -1271,12 +1353,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
@@ -1289,6 +1371,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1304,12 +1392,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
@@ -1319,6 +1407,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1353,12 +1447,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
@@ -1368,6 +1462,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1639,14 +1739,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stockpile] when killed within 4 tiles of a city following this religion"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
@@ -1659,6 +1761,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1691,7 +1799,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 
@@ -1716,12 +1824,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Excess Food converted to Production when under construction"
 	Applicable to: Building, Unit
@@ -1854,6 +1962,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1953,7 +2067,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 
@@ -1978,12 +2092,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Excess Food converted to Production when under construction"
 	Applicable to: Building, Unit
@@ -2134,6 +2248,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength"
+	Example: "Before engaging in combat performs an extra ranged attack with [3]% of melee combat strength"
+
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Spread Religion Strength"
 	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 
@@ -2233,6 +2352,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "All healing effects doubled"
+	Does not stack
+
 	Applicable to: Global, Unit
 
 ??? example  "Heals [amount] damage if it kills a unit"
@@ -2258,6 +2379,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] [mapUnitFilter] units"
+	Using several of these uniques with complex overlapping filters is supported.
+
 	Example: "Can carry [3] [Wounded] units"
 
 	Applicable to: Unit
@@ -2332,11 +2455,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stockpile]"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Mana]"
 
 	Applicable to: Global, Unit
 
 ??? example  "May capture killed [mapUnitFilter] units"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "May capture killed [Wounded] units"
 
 	Applicable to: Unit
@@ -2491,6 +2618,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2509,6 +2642,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## UnitType uniques
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2524,12 +2663,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Not shown on world screen"
 	This unique is automatically hidden from users.
@@ -2550,6 +2689,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2659,8 +2804,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2792,6 +2935,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Coastal Water"
+	Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.
+
+	Note that terrain filters do not recognize this distinction, filtering for "Coast" or "Ocean" will only look for a terrain of that name.
+
+	Also note that for compatibility reasons, terrains named "Coast" are assuned to have this Unique even if it's missing. This may be removed in a future version.
+
+	A tile marked this way marks adjacent land tiles as "Coastal", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc.
+
 	Applicable to: Terrain
 
 ??? example  "Excluded from map editor"
@@ -2800,6 +2951,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2848,19 +3005,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Unbuildable"
-	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith
+	Blocks from being built and from the default Gold purchase, possibly by conditional. It is then hidden from the menu, unless a unique allows buying it, such as "Can be purchased with [stat] [cityFilter]" on the object or a civ's "May buy [buildingFilter] buildings with [stat] [cityFilter]"; in that case it is shown and can be bought
 
 	Applicable to: Building, Unit, Improvement
 
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Must be next to [tileFilter]"
 	Example: "Must be next to [Farm]"
@@ -2878,8 +3035,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2963,6 +3118,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
+??? example  "Marks a barbarian camp"
+	When several barbarian camp improvements are available, each new camp chooses one randomly.
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Improvement
+
 ??? example  "Unpillagable"
 	Applicable to: Improvement
 
@@ -3003,6 +3165,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3134,6 +3302,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3149,12 +3323,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Free [unit] found in the ruins"
 	Example: "Free [Musketman] found in the ruins"
@@ -3167,6 +3341,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3184,6 +3364,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3212,6 +3398,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3231,6 +3423,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Provides a unique luxury"
 	Applicable to: CityState
+
+??? example  "Start bias [terrainFilter]"
+	Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.
+
+	Example: "Start bias [Fresh Water]"
+
+	Applicable to: Nation, CityState
 
 ## ModOptions uniques
 ??? example  "Diplomatic relationships cannot change"
@@ -3273,6 +3472,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ??? example  "Allow raze holy city"
+	This unique does not support conditionals.
+
+	Applicable to: ModOptions
+
+??? example  "City-states search for first city location"
+	By default, city-state settlers with no cities yet found on their current tile when valid (predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.
+
 	This unique does not support conditionals.
 
 	Applicable to: ModOptions
@@ -3333,26 +3539,31 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: ModOptions
 
 ## Event uniques
+??? example  "Only the first available choice is offered"
+	When triggered, only the first choice (in declaration order) whose conditionals apply is offered. This makes the event equivalent to a `when`/`case` statement.
+
+	Applicable to: Event
+
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ## EventChoice uniques
 ??? example  "Only available"
 	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "Unavailable"
 	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
 
 ??? example  "[relativeAmount]% weight to this choice for AI decisions"
 	Example: "[+20]% weight to this choice for AI decisions"
@@ -3362,6 +3573,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3372,6 +3589,26 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Comment [comment]"
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
+
+## Victory uniques
+!!! note ""
+
+    Uniques that determine whether a victory can be achieved, and by whom
+
+??? example  "Only available"
+	Meant to be used together with conditionals, like "Only available &lt;after adopting [policy]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
+
+??? example  "Unavailable"
+	Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice, Victory
+
+??? example  "Will not be chosen for new games"
+	Unconditional - it is evaluated while a game is being set up, where there is nothing to evaluate conditionals against.
+
+	Applicable to: Nation, Victory
 
 ## Conditional uniques
 !!! note ""
@@ -3601,8 +3838,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when above [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when above [amount] Happiness'
-
 	Example: "&lt;when above [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3610,8 +3845,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when below [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness - for that use 'when below [amount] Happiness'
-
 	Example: "&lt;when below [3] [Culture]&gt;"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
@@ -3619,7 +3852,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when between [amount] and [amount] [stat/resource]&gt;"
-	Stats refers to the accumulated stat, not stat-per-turn. Therefore, does not support Happiness. 'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
+	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
 	Example: "&lt;when between [3] and [3] [Culture]&gt;"
 
@@ -3672,7 +3905,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
+??? example  "&lt;in cities with [nonNegativeAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3766,7 +3999,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [positiveAmount] movement&gt;"
+??? example  "&lt;when above [nonNegativeAmount] movement&gt;"
 	Example: "&lt;when above [3] movement&gt;"
 
 	Applicable to: Conditional
@@ -4011,11 +4244,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon being defeated&gt;"
+	Does not apply to units destroyed by nuclear explosions, which do not count as combat defeats.
+
 	Applicable to: UnitTriggerCondition
 
 ??? example  "&lt;upon being promoted&gt;"
@@ -4243,6 +4480,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[resourceFilter]: A resource name, type, 'all', or a Stat listed in the resource's improvementStats.
 *[specialist]: The name of any specialist.
 *[speed]: The name of any speed.
+*[spyAction]: A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpile]: The name of any stockpiled resource.
@@ -4252,6 +4490,6 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[unitNameGroup]: The name of a unit name group found in UnitNameGroups.json, or one of their unique tags.
 *[unitTriggerTarget]: `This Unit` or `Target Unit`.
-*[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
+*[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

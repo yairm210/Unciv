@@ -30,7 +30,7 @@ class AutoPlayStatusButton(
         }
         val directAutoPlay = {
             if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer
-                && worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
+                && worldScreen.selectedGameView.civView.getCiv() == worldScreen.gameInfo.currentPlayerCiv) {
                 worldScreen.autoPlay.startMultiturnAutoPlay()
                 nextTurnButton.update()
             }

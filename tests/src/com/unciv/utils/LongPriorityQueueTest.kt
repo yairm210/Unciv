@@ -1,13 +1,13 @@
 package com.unciv.utils
 
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.streams.toList
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class LongPriorityQueueTest {
     
     @Test

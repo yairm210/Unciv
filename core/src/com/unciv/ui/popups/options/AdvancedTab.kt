@@ -1,57 +1,59 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexCoord
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
-import com.unciv.models.metadata.ModCategories
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
+import com.unciv.utils.isRunFromJar
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
-import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.isDirectory
-import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.pathString
+import kotlinx.coroutines.flow.flowOn
 
 internal class AdvancedTab(
     optionsPopup: OptionsPopup
@@ -70,14 +72,16 @@ internal class AdvancedTab(
 
         addFontFamilySelect()
         addFontSizeMultiplier()
+
+        addSeparator()
+
+        addGestureControls()
+
         addSeparator()
 
         addMaxZoomSlider()
-
         addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
-
         addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
-
         addCheckbox("Enable experimental A* pathing", settings::useAStarPathfinding)
 
         addSeparator()
@@ -85,7 +89,6 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
-        addUpdateModCategories()
         addScreenhotGeneration()
 
         super.lateInitialize()
@@ -156,45 +159,18 @@ internal class AdvancedTab(
     }
 
     private fun addFontFamilySelect() {
-        /** Build provider for [addAsyncSelectBox]: per-mod scan */
-        @Suppress("NewApi")
-        fun loadModFonts(mod: Path) = flow {
-            kotlin.io.path.fileVisitor {  }
-            if (!mod.isDirectory()) return@flow
-            val fontsPath = mod.resolve("fonts")
-            if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
-            java.nio.file.Files.list(fontsPath).use { stream->
-                for (file in stream) {
-                    if (file.extension.lowercase() != "ttf") continue
-                    emit(FontFamilyData(
-                        "${file.nameWithoutExtension} (${mod.name})",
-                        file.nameWithoutExtension,
-                        file.pathString
-                    ))
-                }
-            }
-        }
-
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
         @Suppress("NewApi")
         fun loadFonts() = flow {
             // Add default font
             emit(FontFamilyData.default)
             // List mod fonts
-            val modsDir = UncivGame.Current.files.getModsFolder()
-            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26) {
-                if (modsDir.type() == Files.FileType.External) {
-                    val modNio = modsDir.file().toPath()
-                    java.nio.file.Files.list(modNio).use { stream ->
-                        for (mod in stream)
-                            emitAll(loadModFonts(mod))
-                    }
-                }
-            }
+            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26)
+                emitAll(Fonts.fontImplementation.getModFonts(UncivGame.Current.files.getModsFolder()))
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)
-        }
+        }.flowOn(Dispatchers.IO)
 
         addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { reloadWorldAndOptions() }
     }
@@ -205,48 +181,92 @@ internal class AdvancedTab(
         }
     }
 
+    private fun addGestureControls() {
+        val testButton = "Test area".toTextButton()
+        fun reloadSettings() = ActorAttachments.get(testButton).reloadSettings()
+
+        addSlider("Long press delay", settings::longPressDelay, 0.2f, 4f, 0.1f).padTop(20f).actor.apply {
+            onChange { reloadSettings() }
+        }
+        addSlider("Double tap interval", settings::multiTapInterval, 0.15f, 1f, 0.05f).actor.apply {
+            onChange { reloadSettings() }
+        }
+
+        fun onActivation(type: ActivationTypes, text: String) = testButton.run {
+            onActivation(type, noEquivalence = true) {
+                clearActions()
+                setText(text.tr())
+                addAction(Actions.sequence(
+                    Actions.delay(3f),
+                    Actions.run { setText("Test area".tr()) }
+                ))
+            }
+        }
+        onActivation(ActivationTypes.Tap, "Single tap")
+        onActivation(ActivationTypes.RightClick, "Right-click")
+        onActivation(ActivationTypes.Doubletap, "Double-click")
+        onActivation(ActivationTypes.Longpress, "Long press")
+        add(testButton).minWidth(240f).colspan(2).center().row()
+    }
+
     private fun addMaxZoomSlider() {
         addSlider("Max zoom out", settings::maxWorldZoomOut, 2f, 6f, 1f) {
             if (GUI.isWorldLoaded())
                 GUI.getMap().reloadMaxZoom()
-        }
+        }.padTop(20f)
     }
 
     private fun addTranslationGeneration() {
         if (Gdx.app.type != Application.ApplicationType.Desktop) return
 
         val generateTranslationsButton = "Generate translation files".toTextButton()
-
-        generateTranslationsButton.onActivation {
-            generateTranslationsButton.setText(Constants.working.tr())
-            Concurrency.run("WriteTranslations") {
-                val result = TranslationFileWriter.writeNewTranslationFiles()
-                launchOnGLThread {
-                    // notify about completion
-                    generateTranslationsButton.setText(result.tr())
-                    generateTranslationsButton.disable()
-                }
-            }
-        }
-
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
-        add(generateTranslationsButton).colspan(2).row()
-    }
 
-    private fun addUpdateModCategories() {
-        val updateModCategoriesButton = "Update Mod categories".toTextButton()
-        updateModCategoriesButton.onActivation {
-            updateModCategoriesButton.setText(Constants.working.tr())
-            Concurrency.run("GithubTopicQuery") {
-                val result = ModCategories.mergeOnline()
+        // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
+        val entries = listOf("All mods") +
+            (if (isRunFromJar(this)) emptyList() else listOf(BaseRuleset.Civ_V_GnK.fullName)) +
+            RulesetCache.keys.filter { mod -> BaseRuleset.entries.none { it.fullName == mod } }.sorted()
+        val modSelect = TranslatedSelectBox(entries, "All mods")
+
+        val backupCheckBox = "backup".toCheckBox()
+        modSelect.onChange {
+            backupCheckBox.isDisabled = modSelect.selected.value == BaseRuleset.Civ_V_GnK.fullName
+        }
+
+        addWrapped {
+            defaults().space(10f)
+            add(generateTranslationsButton)
+            add(modSelect).maxWidth(this@AdvancedTab.stage.width / 2)
+            add(backupCheckBox)
+        }
+        val resultCell = add().colspan(2)
+        row()
+
+        if (entries.size == 1) {
+            // nothing to do - neither builtin translations nor mods
+            generateTranslationsButton.disable()
+            modSelect.isDisabled = true
+            backupCheckBox.isDisabled = true
+            return
+        }
+
+        generateTranslationsButton.onActivation {
+            resultCell.setActor(null)
+            generateTranslationsButton.setText(Constants.working.tr())
+            generateTranslationsButton.disable()
+            Concurrency.run("WriteTranslations") {
+                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value, backup = backupCheckBox.isChecked)
                 launchOnGLThread {
-                    updateModCategoriesButton.setText(result)
+                    if (stage == null) return@launchOnGLThread // Guard the width below in case the user closed the Options in the mean time
+                    // notify about completion
+                    val resultLabel = WrappableLabel(result, stage.width / 2, Color.GOLD).apply { wrap = true }
+                    resultCell.minHeight(resultLabel.height + 10f).setActor(resultLabel)
+                    generateTranslationsButton.setText("Generate translation files".tr())
+                    generateTranslationsButton.enable()
                 }
             }
         }
-        add(updateModCategoriesButton).colspan(2).row()
-
     }
 
     private fun addScreenhotGeneration() {
@@ -302,9 +322,9 @@ internal class AdvancedTab(
                 selectUnit = true
             )
 
-            newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 3]) // Then click on Keshik
+            newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 3])) // Then click on Keshik
             if (currentConfig.attackCity)
-                newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
+                newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 2])) // Then click city again for attack table
             newScreen.mapHolder.zoomIn(true)
             withContext(Dispatchers.IO) {
                 Thread.sleep(300)
@@ -330,8 +350,8 @@ internal class AdvancedTab(
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
-            val clipboardContents = Gdx.app.clipboard.contents.trim()
-            if (clipboardContents.isUUID()) {
+            val clipboardContents = Gdx.app.clipboard.contents?.trim()
+            if (clipboardContents != null && clipboardContents.isUUID()) {
                 ConfirmPopup(
                     stage,
                     "Doing this will reset your current user ID to the clipboard contents - are you sure?",

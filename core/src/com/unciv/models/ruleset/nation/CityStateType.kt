@@ -1,23 +1,25 @@
 package com.unciv.models.ruleset.nation
 
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 import com.unciv.ui.components.extensions.colorFromRGB
 import yairm210.purity.annotations.Readonly
 
-class CityStateType: INamed {
-    override var name = ""
+class CityStateType : RulesetObject() {
+    override fun getUniqueTarget() = UniqueTarget.CityState
 
     var friendBonusUniques = ArrayList<String>()
-    val friendBonusUniqueMap by lazy { friendBonusUniques.toUniqueMap() }
-    var allyBonusUniques = ArrayList<String>()
-    val allyBonusUniqueMap by lazy { allyBonusUniques.toUniqueMap() }
-    private fun ArrayList<String>.toUniqueMap() =
-        UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState, sourceObjectName = name) })
+    @delegate:Transient
+    val friendBonusUniqueMap: UniqueMap by lazy { uniqueMapProvider(uniqueObjectsProvider(friendBonusUniques)) }
 
-    var color: List<Int> = listOf(255,255,255)
+    var allyBonusUniques = ArrayList<String>()
+    @delegate:Transient
+    val allyBonusUniqueMap: UniqueMap by lazy { uniqueMapProvider(uniqueObjectsProvider(allyBonusUniques)) }
+
+    var color: List<Int> = listOf(255, 255, 255)
     private val colorObject by lazy { colorFromRGB(color) }
     @Readonly fun getColor() = colorObject
+
+    override fun makeLink() = "CityStateType/$name"
 }

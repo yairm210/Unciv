@@ -39,37 +39,67 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 
+/** Specifies filenames to load for a Ruleset, and how to extract shared views over their contents.
+ *
+ *  [getRulesetObjects] and [getUniques] are used by ruleset-wide validation and unique parsing.
+ *  [getINamed] backs [getNames] for files whose entries have names without being [IRulesetObject]s.
+ *  Override [getNames] directly when a file contains names outside its main objects, such as nation
+ *  city names or spy names.
+ */
 enum class RulesetFile(
     val filename: String,
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
-    @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
+    @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } },
+    @Readonly val getINamed: Ruleset.() -> Sequence<INamed> = { getRulesetObjects() },
+    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getINamed().map { it.toRulesetName(this, getINamed) } }
 ) {
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
     Eras("Eras.json", { eras.values.asSequence() }),
-    Religions("Religions.json"),
-    Nations("Nations.json", { nations.values.asSequence() }),
+    Religions("Religions.json", getNames = { religions.asSequence().map { rulesetName(it, "Religion") } }),
+    Nations("Nations.json", { nations.values.asSequence() }, getNames = {
+        val ruleset = this
+        nations.values.asSequence().flatMap { nation ->
+            sequence {
+                yield(nation.toRulesetName(ruleset))
+                yield(ruleset.rulesetName(nation.leaderName, "Nation.leaderName", nation.originRuleset.ifEmpty { ruleset.name }))
+                yieldAll(nation.cities.map { ruleset.rulesetName(it, "Nation.cities", nation.originRuleset.ifEmpty { ruleset.name }) })
+                yieldAll(nation.spyNames.map { ruleset.rulesetName(it, "Nation.spyNames", nation.originRuleset.ifEmpty { ruleset.name }) })
+            }
+        }
+    }),
     Policies("Policies.json", { policies.values.asSequence() }),
     Techs("Techs.json", { technologies.values.asSequence() }),
     Terrains("Terrains.json", { terrains.values.asSequence() }),
     Tutorials("Tutorials.json", { tutorials.values.asSequence() }),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
-    Specialists("Specialists.json"),
+    Specialists("Specialists.json", getINamed = { specialists.values.asSequence() }),
     Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
-    UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }),
+    UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }, getNames = {
+        val ruleset = this
+        unitNameGroups.values.asSequence().flatMap { group ->
+            sequence {
+                yield(group.toRulesetName(ruleset))
+                yieldAll(group.unitNames.map { ruleset.rulesetName(it, "UnitNameGroup.unitNames", group.originRuleset.ifEmpty { ruleset.name }) })
+            }
+        }
+    }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
-    VictoryTypes("VictoryTypes.json"),
+    VictoryTypes("VictoryTypes.json", { victories.values.asSequence() }),
     CityStateTypes("CityStateTypes.json", getUniques =
-        { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
+        { cityStateTypes.values.asSequence().flatMap {
+            it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() + it.uniqueObjects
+        } },
+        getINamed = { cityStateTypes.values.asSequence() }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
     Events("Events.json", { events.values.asSequence() + events.values.flatMap { it.choices } }),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
-    Difficulties("Difficulties.json"),
-    Quests("Quests.json"),
+    Difficulties("Difficulties.json", getINamed = { difficulties.values.asSequence() }),
+    Quests("Quests.json", getINamed = { quests.values.asSequence() }),
     Ruins("Ruins.json", { ruinRewards.values.asSequence() });
 }
 
@@ -172,6 +202,10 @@ class Ruleset {
         ?: SubStat.safeValueOf(resourceName)
         ?: tileResources[resourceName]
 
+    /** The victories offered as checkboxes in the new game options, and enabled by the "all victories" default. */
+    @Readonly fun selectableVictories(): List<Victory> =
+        victories.values.filter { !it.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+
     private inline fun <reified T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items) {
@@ -187,112 +221,223 @@ class Ruleset {
     }
 
     fun add(ruleset: Ruleset) {
+        beliefs.selectiveRemove(ruleset.modOptions.beliefsToRemove) { matchesFilter(it) }
         beliefs.putAll(ruleset.beliefs)
-        ruleset.modOptions.beliefsToRemove
-            .flatMap { beliefsToRemove ->
-                beliefs.filter { it.value.matchesFilter(beliefsToRemove) }.keys
-            }.toSet().forEach {
-                beliefs.remove(it)
-            }
-
-        ruleset.modOptions.buildingsToRemove
-            .flatMap { buildingToRemove ->
-                buildings.filter { it.value.matchesFilter(buildingToRemove) }.keys
-            }.toSet().forEach {
-                buildings.remove(it)
-            }
+        buildings.selectiveRemove(ruleset.modOptions.buildingsToRemove) { matchesFilter(it) }
         buildings.putAll(ruleset.buildings)
+        difficulties.selectiveRemove(ruleset.modOptions.difficultiesToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        speeds.selectiveRemove(ruleset.modOptions.speedsToRemove)
         speeds.putAll(ruleset.speeds)
         globalUniques = GlobalUniques.combine(globalUniques, ruleset.globalUniques)
-        ruleset.modOptions.nationsToRemove
-            .flatMap { nationToRemove ->
-                nations.filter { it.value.matchesFilter(nationToRemove) }.keys
-            }.toSet().forEach {
-                nations.remove(it)
-            }
+        nations.selectiveRemove(ruleset.modOptions.nationsToRemove) { matchesFilter(it) }
         nations.putAll(ruleset.nations)
-        
+        mergePolicies(ruleset)
+        quests.selectiveRemove(ruleset.modOptions.questsToRemove)
+        quests.putAll(ruleset.quests)
+
+        // Remove associated Religions, including when they're favored by Nations
+        religions.removeAll(ruleset.modOptions.religionsToRemove)
+        religions.addAll(ruleset.religions)
+        nations.filter { it.value.favoredReligion !in religions }
+            .forEach { it.value.favoredReligion = null }
+
+        ruinRewards.selectiveRemove(ruleset.modOptions.ruinRewardsToRemove)
+        ruinRewards.putAll(ruleset.ruinRewards)
+        specialists.selectiveRemove(ruleset.modOptions.specialistsToRemove)
+        specialists.putAll(ruleset.specialists)
+        mergeTechnologies(ruleset)
+        terrains.selectiveRemove(ruleset.modOptions.terrainsToRemove) { matchesFilter(it) }
+        terrains.putAll(ruleset.terrains)
+        tileImprovements.selectiveRemove(ruleset.modOptions.improvementsToRemove) { matchesFilter(it) }
+        tileImprovements.putAll(ruleset.tileImprovements)
+        tileResources.selectiveRemove(ruleset.modOptions.resourcesToRemove) { matchesFilter(it) }
+        tileResources.putAll(ruleset.tileResources)
+        tutorials.selectiveRemove(ruleset.modOptions.tutorialsToRemove)
+        tutorials.putAll(ruleset.tutorials)
+        unitTypes.selectiveRemove(ruleset.modOptions.unitTypesToRemove) { matchesFilter(it) }
+        unitTypes.putAll(ruleset.unitTypes)
+        victories.selectiveRemove(ruleset.modOptions.victoriesToRemove)
+        victories.putAll(ruleset.victories)
+        cityStateTypes.selectiveRemove(ruleset.modOptions.cityStateTypesToRemove)
+        cityStateTypes.putAll(ruleset.cityStateTypes)
+        units.selectiveRemove(ruleset.modOptions.unitsToRemove) {
+            setRuleset(this@Ruleset)
+            matchesFilter(it)
+        }
+        units.putAll(ruleset.units)
+        personalities.selectiveRemove(ruleset.modOptions.personalitiesToRemove)
+        personalities.putAll(ruleset.personalities)
+        events.selectiveRemove(ruleset.modOptions.eventsToRemove)
+        events.putAll(ruleset.events)
+        unitPromotions.selectiveRemove(ruleset.modOptions.unitPromotionsToRemove)
+        unitPromotions.putAll(ruleset.unitPromotions)
+        unitNameGroups.selectiveRemove(ruleset.modOptions.unitNameGroupsToRemove)
+        unitNameGroups.putAll(ruleset.unitNameGroups)
+
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
+
+        mods += ruleset.mods
+    }
+
+    /** Helper for the "ToRemove" lists of ModOptions */
+    private fun <T: INamed> MutableMap<String, T>.selectiveRemove(
+        removals: Set<String>,
+        filter: T.(String) -> Boolean = { it in Constants.all || name == it }
+    ) {
+        if (removals.isEmpty()) return
+        removals.flatMap { item ->
+            filter { it.value.filter(item) }.keys
+        }.toSet().forEach {
+            remove(it)
+        }
+    }
+
+    private fun mergePolicies(ruleset: Ruleset) {
+        val noRemovals = ruleset.modOptions.policiesToRemove.isEmpty() && ruleset.modOptions.policyBranchesToRemove.isEmpty()
+        if (noRemovals && ruleset.policies.isEmpty() && ruleset.policyBranches.isEmpty()) return
+
         /** We must remove all policies from a policy branch otherwise we have policies that cannot be picked
          *  but are still considered "available" */
-        fun removePolicyBranch(policyBranch: PolicyBranch){
+        fun removePolicyBranch(policyBranch: PolicyBranch) {
             policyBranches.remove(policyBranch.name)
             for (policy in policyBranch.policies)
                 policies.remove(policy.name)
         }
-        
-        ruleset.modOptions.policyBranchesToRemove
-            .flatMap { policyBranchToRemove ->
-                policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
-            }.toSet().forEach {
-                removePolicyBranch(it)
-            }
-        
-        val overriddenPolicyBranches = policyBranches
-            .filter { it.key in ruleset.policyBranches }.map { it.value }
-        for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch
-        )
+
+        if (!noRemovals) {
+            ruleset.modOptions.policyBranchesToRemove
+                .flatMap { policyBranchToRemove ->
+                    policyBranches.filter { it.value.matchesFilter(policyBranchToRemove) }.values
+                }.toSet().forEach {
+                    removePolicyBranch(it)
+                }
+
+            val overriddenPolicyBranches = policyBranches
+                .filter { it.key in ruleset.policyBranches }.map { it.value }
+            for (policyBranch in overriddenPolicyBranches) removePolicyBranch(policyBranch)
+        }
+
         policyBranches.putAll(ruleset.policyBranches)
-        
-        policies.putAll(ruleset.policies)
 
-        // Remove the policies
-        ruleset.modOptions.policiesToRemove
-            .flatMap { policyToRemove ->
-                policies.filter { it.value.matchesFilter(policyToRemove) }.keys
-            }.toSet().forEach {
-                policies.remove(it)
-            }
+        if (!noRemovals) {
+            // Remove the policies
+            policies.selectiveRemove(ruleset.modOptions.policiesToRemove) { matchesFilter(it) }
 
-        // Remove the policies if they exist in the policy branches too
-        for (policyToRemove in ruleset.modOptions.policiesToRemove) {
-            for (branch in policyBranches.values) {
-                branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+            // Remove the policies if they exist in the policy branches too
+            for (policyToRemove in ruleset.modOptions.policiesToRemove) {
+                for (branch in policyBranches.values) {
+                    branch.policies.removeAll { it.matchesFilter(policyToRemove) }
+                }
             }
         }
 
-        quests.putAll(ruleset.quests)
+        policies.putAll(ruleset.policies)
+    }
 
-        // Remove associated Religions, including when they're favored by Nations
-        religions.addAll(ruleset.religions)
-        religions.removeAll(ruleset.modOptions.religionsToRemove)
-        nations.filter { it.value.favoredReligion in ruleset.modOptions.religionsToRemove }
-            .forEach { it.value.favoredReligion = null }
+    private fun mergeTechnologies(ruleset: Ruleset) {
+        // Ensure we're not modifying a base or mod ruleset
+        check(folderLocation == null)
+        // Ensure existing techColumns are correctly numbered (dense, increasing, 0-based)
+        check(techColumns.withIndex().all { it.value.columnNumber == it.index })
+        val removals = ruleset.modOptions.techsToRemove
+        if (removals.isEmpty() && ruleset.technologies.isEmpty()) return
 
-        ruinRewards.putAll(ruleset.ruinRewards)
-        specialists.putAll(ruleset.specialists)
-        ruleset.modOptions.techsToRemove
-            .flatMap { techToRemove ->
-                technologies.filter { it.value.matchesFilter(techToRemove) }.keys
-            }.toSet().forEach {
-                technologies.remove(it)
+        // Incoming columns need to be ordered by columnNumber, but may have gaps and needn't start at 0
+        val incomingCols = ruleset.techColumns.sortedBy { it.columnNumber }
+
+        // Technology and TechColumn instances are shared with the source rulesets and refer to each other
+        // (Technology.column), so they must never be modified here. Whenever a column needs to change,
+        // we build a new one, and it gets its own clones of the techs so back-references stay consistent.
+        fun Technology.cloneWithoutColumn() = Technology().also {
+            it.name = name
+            it.originRuleset = originRuleset
+            it.uniques.addAll(uniques)
+            it.civilopediaText = civilopediaText
+            it.cost = cost
+            it.prerequisites.addAll(prerequisites)
+            it.row = row
+            it.quote = quote
+        }
+
+        // Builds a new column that owns clones of [techs] (also registered in [technologies]).
+        // [props] supplies era and costs.
+        fun TechColumn.derive(
+            columnNumber: Int = this.columnNumber,
+            techs: List<Technology> = this.techs,
+            props: TechColumn = this
+        ): TechColumn {
+            val newColumn = TechColumn().also {
+                it.columnNumber = columnNumber
+                it.era = props.era
+                it.techCost = props.techCost
+                it.buildingCost = props.buildingCost
+                it.wonderCost = props.wonderCost
             }
+            for (tech in techs) {
+                val clone = tech.cloneWithoutColumn()
+                clone.column = newColumn
+                newColumn.techs += clone
+                technologies[clone.name] = clone
+            }
+            return newColumn
+        }
+
+        // Reuse the instance if it's already in the right place
+        fun TechColumn.at(position: Int) =
+            if (columnNumber == position) this else derive(columnNumber = position)
+
+        // Drop techs that are removed or superseded by the incoming mod.
+        // Only columns that actually lose techs are copied; columns left empty disappear.
+        technologies.selectiveRemove(removals) { matchesFilter(it) }  // no-op if removals is empty
+        val existingCols = techColumns.mapNotNull { column ->
+            val kept = column.techs.filter { it.name in technologies && it.name !in ruleset.technologies }
+            when {
+                kept.size == column.techs.size -> column
+                kept.isEmpty() -> null
+                else -> column.derive(techs = kept)
+            }
+        }
+
+        // Add new techs (replaces superseded entries by name)
         technologies.putAll(ruleset.technologies)
-        techColumns.addAll(ruleset.techColumns)
-        terrains.putAll(ruleset.terrains)
-        tileImprovements.putAll(ruleset.tileImprovements)
-        tileResources.putAll(ruleset.tileResources)
-        tutorials.putAll(ruleset.tutorials)
-        unitTypes.putAll(ruleset.unitTypes)
-        victories.putAll(ruleset.victories)
-        cityStateTypes.putAll(ruleset.cityStateTypes)
-        ruleset.modOptions.unitsToRemove
-            .flatMap { unitToRemove ->
-                units.filter { it.apply { value.setRuleset(this@Ruleset) }.value.matchesFilter(unitToRemove) }.keys
-            }.toSet().forEach {
-                units.remove(it)
+
+        // Merge both column lists in columnNumber order. The output position becomes the new
+        // columnNumber, so the result is dense, increasing and 0-based again.
+        val resultCols = ArrayList<TechColumn>(existingCols.size + incomingCols.size)
+        var i = 0
+        var j = 0
+        while (true) {
+            val position = resultCols.size
+            val a = existingCols.getOrNull(i)
+            val b = incomingCols.getOrNull(j)
+            when {
+                a == null && b == null -> break
+                b == null || (a != null && a.columnNumber < b.columnNumber) -> {
+                    resultCols += a!!.at(position)
+                    i++
+                }
+                a == null || b.columnNumber < a.columnNumber -> {
+                    resultCols += b.at(position)
+                    j++
+                }
+                else -> {  // same columnNumber: merge, incoming mod's era and costs win
+                    resultCols += a.derive(position, a.techs + b.techs, props = b)
+                    i++
+                    j++
+                }
             }
-        units.putAll(ruleset.units)
-        personalities.putAll(ruleset.personalities)
-        events.putAll(ruleset.events)
-        modOptions.uniques.addAll(ruleset.modOptions.uniques)
-        modOptions.constants.merge(ruleset.modOptions.constants)
+        }
 
-        unitPromotions.putAll(ruleset.unitPromotions)
-        unitNameGroups.putAll(ruleset.unitNameGroups)
+        // Every tech is in exactly one column, and column and map agree on the instances
+        check(resultCols.sumOf { it.techs.size } == technologies.size)
+        // columns.techs and the technologies map agree on the instances
+        check(resultCols.all { col -> col.techs.all { it.column === col && technologies[it.name] === it } })
 
-        mods += ruleset.mods
+        techColumns.clear()
+        techColumns.addAll(resultCols)
     }
 
     fun clear() {
@@ -330,7 +475,11 @@ class Ruleset {
     fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
     @Readonly
     fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
-    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
+    /** Returns all non-empty ruleset names that can act as translation keys, with their source metadata. */
+    @Readonly
+    fun allNames(): Sequence<RulesetName> =
+        RulesetFile.entries.asSequence().flatMap { it.getNames(this) }.filter { it.name.isNotEmpty() }
+    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects()
 
     fun load(folderHandle: FileHandle) {
         fun RulesetFile.file() = folderHandle.child(filename)
@@ -343,7 +492,7 @@ class Ruleset {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {
-                Log.error("Failed to get modOptions from json file", ex)
+                Log.error("Failed to get modOptions from json file; Mod name: $name, folder: ${folderHandle.path()}", ex)
             }
         }
 
@@ -502,14 +651,17 @@ class Ruleset {
             events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
 
-        // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
-        // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does
-        if (Gdx.files != null) { // we're not running console mode
+        // Tutorials exist per builtin ruleset or mod, but there's also a global file that should always be loaded in a game.
+        // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does.
+        // Only load them when not running console mode, and only for base rulesets.
+        // (games with extensions should get them from the base, and having them loaded in all extension mods would have the
+        // extension as originRuleset in combined rulesets, not to mention wasting some memory).
+        if (modOptions.isBaseRuleset && Gdx.files != null) { // we're not running console mode
             val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
             if (globalTutorialsFile.exists())
                 tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
         }
-        
+
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
             tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))
@@ -540,17 +692,21 @@ class Ruleset {
                     cityStateTypes[cityStateType.name] = CityStateType().apply {
                         name = cityStateType.name
                         color = cityStateType.color
+                        uniques = ArrayList(cityStateType.uniques.filter {
+                            UniqueValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                null
+                            ).isEmpty()
+                        })
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })

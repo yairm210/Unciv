@@ -134,7 +134,7 @@
       },
       "aiUnitSupplyModifier": {
         "type": "number",
-        "default": 5,
+        "default": 0,
         "title": "AI Unit Supply Modifier",
         "description": "Modifier for the number of units the AI can supply."
       },

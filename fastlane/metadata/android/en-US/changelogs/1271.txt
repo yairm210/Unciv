@@ -1,0 +1,13 @@
+Allow removing all forms of starting locations in map editor
+
+Disable "pick improvement" when selecting an unpickable improvement
+
+Make multiplayer check worker work with specific game ids again
+
+"Popup confirm" unit actions correctly move to next unit, refresh UI, etc
+
+More detailed color coding of diplomacy modifiers - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix a few console quirks 
+- Allow using Unique Builder for console activatetrigger

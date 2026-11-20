@@ -31,6 +31,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.Collections.synchronizedMap
 import java.util.Collections.synchronizedSet
 import java.util.concurrent.TimeUnit
@@ -155,6 +157,16 @@ private fun String.toUuidOrNull() = try {
 }
 
 private class UncivServerRunner : CliktCommand() {
+    private companion object {
+        /**
+         * Game data is compressed before upload, so this allows even very large saves while
+         * preventing a single request from exhausting the server's disk space.
+         */
+        const val maxGameFileSizeBytes = 32 * 1024 * 1024
+        const val maxWebSocketFrameSizeBytes = 64L * 1024L
+        const val previewSuffix = "_Preview"
+    }
+
     private val port by option(
         "-p", "-port",
         envvar = "UncivServerPort",
@@ -240,6 +252,30 @@ private class UncivServerRunner : CliktCommand() {
         @OptIn(ExperimentalUuidApi::class) val password = authMap[authInfo.userId]
         return password == null || password == authInfo.password
     }
+
+    /**
+     * Multiplayer clients only store a game UUID, optionally followed by [_Preview].
+     * Keeping this allow-list here prevents route parameters from escaping the configured
+     * multiplayer directory through `..`, path separators, or platform-specific paths.
+     */
+    @OptIn(ExperimentalUuidApi::class)
+    private fun String.isValidGameFileName(): Boolean {
+        val gameId = removeSuffix(previewSuffix)
+        return gameId.toUuidOrNull()?.toString() == gameId
+    }
+
+    /** Copies a request body without accepting an unbounded upload. */
+    private fun copyGameFile(input: java.io.InputStream, output: java.io.OutputStream): Boolean {
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var bytesRead: Int
+        var totalBytes = 0L
+        while (input.read(buffer).also { bytesRead = it } != -1) {
+            totalBytes += bytesRead
+            if (totalBytes > maxGameFileSizeBytes) return false
+            output.write(buffer, 0, bytesRead)
+        }
+        return true
+    }
     // endregion Auth
 
     private fun serverRun(serverPort: Int, fileFolderName: String) {
@@ -248,6 +284,9 @@ private class UncivServerRunner : CliktCommand() {
         val file = File(fileFolderName)
         echo("Starting UncivServer for ${file.absolutePath} on http://localhost$portStr")
         if (!file.exists()) file.mkdirs()
+        // Load credentials before accepting connections. Starting first left a short window
+        // where every valid UUID/password pair was treated as an unregistered account.
+        if (authV1Enabled) loadAuthFile()
         val server = embeddedServer(Netty, port = serverPort) {
             install(ContentNegotiation) { json() }
 
@@ -268,7 +307,7 @@ private class UncivServerRunner : CliktCommand() {
             if (chatV1Enabled) install(WebSockets) {
                 pingPeriod = 30.seconds
                 timeout = 60.seconds
-                maxFrameSize = Long.MAX_VALUE
+                maxFrameSize = maxWebSocketFrameSizeBytes
                 @OptIn(ExperimentalSerializationApi::class)
                 contentConverter = KotlinxWebsocketSerializationConverter(Json {
                     classDiscriminator = "type"
@@ -289,6 +328,12 @@ private class UncivServerRunner : CliktCommand() {
                         val fileName = call.parameters["fileName"] ?: return@put call.respond(
                             HttpStatusCode.BadRequest, "Missing filename!"
                         )
+                        if (!fileName.isValidGameFileName()) return@put call.respond(
+                            HttpStatusCode.BadRequest, "Invalid game filename!"
+                        )
+                        if ((call.request.contentLength() ?: 0) > maxGameFileSizeBytes) return@put call.respond(
+                            HttpStatusCode.PayloadTooLarge, "Game file is too large!"
+                        )
 
                         val authInfo = call.principal<BasicAuthInfo>() ?: return@put call.respond(
                             HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
@@ -304,16 +349,33 @@ private class UncivServerRunner : CliktCommand() {
                         val file = File(fileFolderName, fileName)
                         if (!validateGameAccess(file, authInfo)) return@put call.respond(HttpStatusCode.Unauthorized)
 
-                        withContext(Dispatchers.IO) {
-                            file.outputStream().use {
-                                call.request.receiveChannel().toInputStream().copyTo(it)
+                        val written = withContext(Dispatchers.IO) {
+                            val temporaryFile = File.createTempFile(".upload-", ".tmp", file.parentFile)
+                            try {
+                                call.request.receiveChannel().toInputStream().use { input ->
+                                    temporaryFile.outputStream().use { output -> copyGameFile(input, output) }
+                                }.also { completed ->
+                                    if (completed) {
+                                        Files.move(
+                                            temporaryFile.toPath(), file.toPath(),
+                                            StandardCopyOption.REPLACE_EXISTING
+                                        )
+                                    }
+                                }
+                            } finally {
+                                // The move removes it on success; this handles an oversize or failed request.
+                                temporaryFile.delete()
                             }
                         }
+                        if (!written) return@put call.respond(HttpStatusCode.PayloadTooLarge, "Game file is too large!")
                         call.respond(HttpStatusCode.OK)
                     }
                     get("/files/{fileName}") {
                         val fileName = call.parameters["fileName"] ?: return@get call.respond(
                             HttpStatusCode.BadRequest, "Missing filename!"
+                        )
+                        if (!fileName.isValidGameFileName()) return@get call.respond(
+                            HttpStatusCode.BadRequest, "Invalid game filename!"
                         )
 
                         // If IdentifyOperators is enabled an Operator IP is displayed
@@ -439,10 +501,6 @@ private class UncivServerRunner : CliktCommand() {
                 }
             }
         }.start(wait = false)
-
-        if (authV1Enabled) {
-            loadAuthFile()
-        }
 
         echo("Server running on http://localhost$portStr! Press Ctrl+C to stop")
         Runtime.getRuntime().addShutdownHook(Thread {

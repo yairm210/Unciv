@@ -96,10 +96,6 @@
         "movementType": "Land"
     },
     {
-        "name": "Armor",
-        "movementType": "Land"
-    },
-    {
         "name": "WaterCivilian",
         "movementType": "Water"
     },

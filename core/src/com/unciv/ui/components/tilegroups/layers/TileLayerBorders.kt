@@ -1,11 +1,11 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.CivView
+import com.unciv.view.ForeignCivView
+import com.unciv.view.TileView
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.mix
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.PI
 import kotlin.math.atan
@@ -18,32 +18,18 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         var isRightConcave: Boolean = false,
     )
 
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-
-    private var previousTileOwner: Civilization? = null
-    private val borderSegments = HashMap<Tile, BorderSegment>()
+    private var previousTileOwner: ForeignCivView? = null
+    private val borderSegments = HashMap<TileView, BorderSegment>()
 
     fun reset() {
         if (borderSegments.isNotEmpty()) {
             for (borderSegment in borderSegments.values)
                 for (image in borderSegment.images)
-                    image.remove()
+                    removeOwnedActor(image)
             borderSegments.clear()
         }
     }
 
-
-    /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    private fun Tile.getLeftSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
-    }
-
-    /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    private fun Tile.getRightSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
-    }
 
     private fun updateBorders() {
 
@@ -51,8 +37,8 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
 
-        val tile = tileGroup.tile
-        val tileOwner = tile.getOwner()
+        val tileView = tileGroup.tileView
+        val tileOwner = tileView.getOwner()
 
         // If owner changed - clear previous borders
         if (previousTileOwner != tileOwner)
@@ -64,10 +50,12 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (tileOwner == null)
             return
 
+        val tileMapView = tileView.getTileMap()
+
         // Setup new borders
-        val civOuterColor = tile.getOwner()!!.nation.getOuterColor()
-        val civInnerColor = tile.getOwner()!!.nation.getInnerColor()
-        for (neighbor in tile.neighbors) {
+        val civOuterColor = tileOwner.getOuterColor()
+        val civInnerColor = tileOwner.getInnerColor()
+        for (neighbor in tileGroup.neighbors) {
             var shouldRemoveBorderSegment = false
             var shouldAddBorderSegment = false
 
@@ -79,8 +67,8 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 shouldRemoveBorderSegment = true
             }
             else if (neighborOwner != tileOwner) {
-                val leftSharedNeighbor = tile.getLeftSharedNeighbor(neighbor)
-                val rightSharedNeighbor = tile.getRightSharedNeighbor(neighbor)
+                val leftSharedNeighbor = tileMapView.getLeftSharedNeighbor(tileView, neighbor)
+                val rightSharedNeighbor = tileMapView.getRightSharedNeighbor(tileView, neighbor)
 
                 // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
                 // This is because we do not draw borders against non-existing tiles either.
@@ -101,7 +89,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
             if (shouldRemoveBorderSegment) {
                 for (image in borderSegments[neighbor]!!.images)
-                    image.remove()
+                    removeOwnedActor(image)
                 borderSegments.remove(neighbor)
             }
             if (shouldAddBorderSegment) {
@@ -121,7 +109,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     else -> error("This shouldn't happen?")
                 }
 
-                val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
+                val relativeWorldPosition = tileMapView.getNeighborTilePositionAsWorldCoords(tileView, neighbor)
 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
@@ -130,7 +118,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     strings.orFallback { getBorder(borderShapeString,"Inner") }
                 ).setHexagonSize()
 
-                addActor(innerBorderImage)
+                addOwnedActor(innerBorderImage)
                 images.add(innerBorderImage)
                 innerBorderImage.rotateBy(angle)
                 innerBorderImage.color = civOuterColor
@@ -139,7 +127,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     strings.orFallback { getBorder(borderShapeString, "Outer") }
                 ).setHexagonSize()
 
-                addActor(outerBorderImage)
+                addOwnedActor(outerBorderImage)
                 images.add(outerBorderImage)
                 outerBorderImage.rotateBy(angle)
                 outerBorderImage.color = civInnerColor
@@ -148,8 +136,23 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
-        updateBorders()
+    // Inputs of updateBorders: our owner, and the owners of each visible neighbor and of the two tiles it shares with us
+    // (which decide concave/convex, and may themselves be unexplored, so they're not necessarily among the visible neighbors).
+    // Owner colors are constant per civ, and a change of owner is reflected in the owner name.
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        val tileOwner = tileView.getOwner() ?: return 0L // no owner - no borders; nothing else is read
+        val tileMapView = tileView.getTileMap()
+        var key = 1L.mix(tileOwner.civName)
+        for (neighbor in tileGroup.neighbors) {
+            key = key.mix(neighbor.position()).mix(neighbor.getOwner()?.civName)
+                .mix(tileMapView.getLeftSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+                .mix(tileMapView.getRightSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+        }
+        return key
     }
 
+    override fun doUpdate(viewingCiv: CivView?) {
+        updateBorders()
+    }
 }

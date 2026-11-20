@@ -69,25 +69,26 @@ allprojects {
 
             "com.badlogic.gdx.utils.IntArray.get",
 
-            "java.util.stream.StreamSupport.longStream",
-            "java.util.stream.LongStream.parallel",
-
-            "kotlin.LongArray.get",
-            "kotlin.LongArray.iterator",
-
-            "kotlin.collections.List.get",
-            "kotlin.collections.firstNotNullOfOrNull",
-            "kotlin.collections.copyInto",
-            "kotlin.sequences.shuffled",
-
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
+
+            "java.text.ParsePosition.getIndex",
+            "java.util.BitSet.clone",
+
+            "kotlin.collections.orEmpty",
+            "kotlin.collections.toTypedArray",
         )
         wellKnownPureClasses = setOf(
+            "java.text.DecimalFormatSymbols"
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
+            "kotlin.collections.ArrayDeque",
+            "java.util.PriorityQueue",
+        )
+        wellKnownNewInstanceFunctions = setOf(
+            "kotlin.text.split"
         )
         warnOnPossibleAnnotations = false
     }
@@ -164,7 +165,6 @@ private fun getSdkPath(): String? {
 if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
-        apply(plugin = "kotlin-android")
 
         val natives by configurations.creating
 
@@ -194,6 +194,8 @@ project(":core") {
         "implementation"(rootProject.libs.kotlin.reflect)
 
         "implementation"(rootProject.libs.purity.annotations)
+        // androidx isn't actually android-specific and core/desktop are safe to depend on it
+        "implementation"(rootProject.libs.androidx.collection)
 
         "api"(rootProject.libs.bundles.ktor.client)
     }

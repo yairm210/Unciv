@@ -2,8 +2,10 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
@@ -13,7 +15,7 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
@@ -48,9 +50,8 @@ internal object CivilopediaImageGetters {
                 tile.baseTerrain = terrain.name
         }
         tile.setTerrainTransients()
-        val group = TileGroup(tile, tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
+        val group = TileGroup(TileView.forSingleTile(tile), tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
                 imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
-        group.isForceVisible = true
         group.isForMapEditorIcon = true
         group.update()
         return group
@@ -67,11 +68,11 @@ internal object CivilopediaImageGetters {
         if (nation == null) null
         else ImageGetter.getNationPortrait(nation, size)
     }
-    val policy = fun(name: String, size: Float): IconCircleGroup? {
+    val policy = fun(name: String, size: Float): IconCircleGroup<Image>? {
         val complete = name.endsWith(Policy.branchCompleteSuffix)
         val policyName = if (complete) name.replace(Policy.branchCompleteSuffix, "") else name
         // result is nullable: policy branch complete have no icons but are linked -> nonexistence must be passed down
-        fun tryImage(path: String, color: Color): IconCircleGroup? {
+        fun tryImage(path: String, color: Color): IconCircleGroup<Image>? {
             if (ImageGetter.imageExists(path)) return ImageGetter.getImage(path).apply {
                 setSize(size * policyInnerSize,size * policyInnerSize)
                 this.color = color

@@ -10,6 +10,7 @@ import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.fonts.Fonts.extractPixmapFromTextureRegion
 import com.unciv.ui.components.fonts.Fonts.font
 import com.unciv.ui.components.fonts.Fonts.fontImplementation
+import java.nio.ByteOrder
 import kotlin.math.ceil
 
 /**
@@ -31,6 +32,7 @@ import kotlin.math.ceil
  *  @see extractPixmapFromTextureRegion
  *  @see FontRulesetIcons
  */
+@Suppress("ConstPropertyName")
 object Fonts {
 
     /** All text is originally rendered in one size, and then scaled to fit the size of the text we need now.
@@ -41,6 +43,7 @@ object Fonts {
 
     lateinit var fontImplementation: FontImplementation
     lateinit var font: BitmapFont
+    
 
     /** This resets all cached font data in object Fonts.
      *  Do not call from normal code - reset the Skin instead: `BaseScreen.setSkin()`
@@ -50,6 +53,24 @@ object Fonts {
         fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
         font = fontImplementation.getBitmapFont()
         font.data.markupEnabled = true
+    }
+
+    /** Creates an RGBA font pixmap from row-major ARGB pixels, converting [argb] in place.
+     * Transparent pixels keep white RGB so mipmap filtering does not darken glyph edges.
+     */
+    fun pixmapFromArgb(width: Int, height: Int, argb: IntArray): Pixmap {
+        require(argb.size == width * height)
+        for (i in argb.indices) {
+            val rgba = Integer.rotateLeft(argb[i], 8)
+            argb[i] = if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba
+        }
+        return Pixmap(width, height, Pixmap.Format.RGBA8888).apply {
+            blending = Pixmap.Blending.None
+            // RGBA integers must be stored as R, G, B, A bytes on either endianness.
+            // The view's bulk put avoids a JNI drawPixel call for every pixel and
+            // leaves the original buffer's position, limit and byte order untouched.
+            pixels.duplicate().order(ByteOrder.BIG_ENDIAN).asIntBuffer().put(argb)
+        }
     }
 
     /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
@@ -140,6 +161,7 @@ object Fonts {
     const val greatScientist = '⚛'      // U+269B 'atom'
     const val death = '☠'               // U+2620 'skull and crossbones'
     const val automate = '⛏'            // U+26CF 'pick'
+    const val pencil = '✏'              // U+270F 'pencil'
 
     //region Symbols that can be optionally added to the font from atlas textures
     // (a mod can override these, otherwise the font supplies the glyph)
@@ -148,15 +170,17 @@ object Fonts {
     const val star = '✯'                // U+272F 'pinwheel star'
     const val status = '◉'              // U+25C9 'fisheye'
     // The following two are used for sort visualization.
-    // They may disappear (show as placeholder box) on Linux if you clean out asian fonts.
-    // Alternatives: "↑" U+2191, "↓" U+2193 - much wider and weird spacing in some fonts (e.g. Verdana).
-    // These are possibly the highest codepoints in use in Unciv -
-    // Taken into account when limiting FontRulesetIcons codepoints (it respects the private area ending at U+F8FF)
-    const val sortUpArrow = '￪'         // U+FFEA 'half wide upward arrow'
-    const val sortDownArrow = '￬'       // U+FFEC 'half wide downward arrow'
+    const val sortUpArrow = '↑'         // U+2191 'upwards arrow'
+    const val sortDownArrow = '↓'       // U+2193 'downwards arrow'
     const val rightArrow = '→'          // U+2192, e.g. Battle table or event-based tutorials
     //endregion
 
+    /** Map of unicode codepoints to texture paths.
+     *
+     *  These will be injected into the font, if the texture is available.
+     *  That also makes these characters moddable - same as the textures when used directly.
+     *  A missing texture gives the selected font then the system font precedence.
+     */
     val allSymbols = mapOf(
         turn to "EmojiIcons/Turn",
         strength to "StatIcons/Strength",
@@ -184,6 +208,7 @@ object Fonts {
         sortUpArrow to "EmojiIcons/SortedAscending",
         sortDownArrow to "EmojiIcons/SortedDescending",
         rightArrow to "EmojiIcons/RightArrow",
+        pencil to "OtherIcons/Pencil",
         *MayaCalendar.allSymbols
     )
     //endregion

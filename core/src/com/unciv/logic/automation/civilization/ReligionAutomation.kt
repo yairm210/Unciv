@@ -211,12 +211,12 @@ object ReligionAutomation {
         var score = 0f // Roughly equivalent to the sum of stats gained across all cities
 
         for (city in civInfo.cities) {
-            for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+            city.getCenterTile().forEachTileInDistance(city.getWorkRange()) { tile ->
                 val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
-                
+
                 score += tileScore * when {
-                    city.workedTiles.contains(tile.position) -> 1f // worked
+                    city.isWorked(tile) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
                 } * (tileRng.nextFloat() * 0.05f + 0.975f)
@@ -470,7 +470,7 @@ object ReligionAutomation {
         )
     }
 
-    private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
+    @Readonly private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
         val chosenBeliefs = hashSetOf<Belief>()
         // The `continue`s should never be reached, but just in case I'd rather have the AI have a
         // belief less than make the game crash. The `continue`s should only be reached whenever

@@ -1,0 +1,11 @@
+Preparations for web version :)
+
+By ibrahim-iqbal: 
+- Add an "Off" label for the automatic promotions setting 
+
+By Qualia-Li:
+- Fix loading screenshots darkening the map between turns 
+- Exclude foreign ships from AI naval defence counts 
+- Resolve reachable movement when approaching enemy cities 
+
+Fix GreatPerson quest completion conditions - By TinyClayMan

@@ -46,6 +46,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
                 }
                 MapGeneratedMainType.randomGenerated -> {
                     mapParameters.name = ""
+                    randomMapOptionsTable.activateRandomMapType()
                     mapTypeSpecificTable.add(randomMapOptionsTable)
                     newGameScreen.unlockTables()
                 }
@@ -77,5 +78,14 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         return scenarioOptionsTable.selectedScenario
     }
 
-    internal fun cancelBackgroundJobs() = savedMapOptionsTable.cancelBackgroundJobs()
+    internal fun cancelBackgroundJobs() {
+        generatedMapOptionsTable.cancelBackgroundJobs()
+        randomMapOptionsTable.cancelBackgroundJobs()
+        savedMapOptionsTable.cancelBackgroundJobs()
+    }
+
+    internal fun refreshExampleMap() {
+        generatedMapOptionsTable.generateExampleMap()
+        randomMapOptionsTable.generateExampleMap()
+    }
 }

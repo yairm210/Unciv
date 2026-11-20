@@ -58,8 +58,7 @@ open class UniqueMap() {
 
     // 160ms vs 1000-1250ms/30s
     @Readonly
-    @Deprecated(message = "forEachUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachUnique"))
+    /** forEachUnique is faster, for cases that require high perf */
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
         ?.asSequence()
         ?: emptySequence()
@@ -72,15 +71,13 @@ open class UniqueMap() {
     }
 
     @Readonly
-    @Deprecated(message = "forEachTagUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachTagUnique"))
+    /** forEachTagUnique is faster, for cases that require high perf */
     fun getTagUniques(uniqueTag: String) = tagUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
     @Readonly
-    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachMatchingUnique"))
+    /** forEachMatchingUnique faster, for cases that require high perf */ 
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -102,8 +99,7 @@ open class UniqueMap() {
     }
 
     @Readonly
-    @Deprecated(message = "forEachMatchingTagUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachMatchingTagUnique"))
+    /** forEachMatchingTagUnique faster, for cases that require high perf */
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getTagUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -125,20 +121,28 @@ open class UniqueMap() {
     fun forEachMatchingUnique(list: List<Unique>, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
         for (i in 0..<list.size) {
             val unique = list[i]
-            if (unique.isTimedTriggerable || !filter(unique) || !unique.conditionalsApply(gameContext))
-                continue
+            if (unique.isTimedTriggerable) continue
+            if (!filter(unique)) continue
+            if (!unique.conditionalsApply(gameContext)) continue
             unique.forEachMultiplied(gameContext, op)
         }
     }
     
     @Readonly
-    fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
-        getUniques(uniqueType).any { it.conditionalsApply(state) }
+    fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState): Boolean {
+        val uniques = typedUniqueMap[uniqueType] ?: return false
+        return uniques.any { !it.isTimedTriggerable && it.conditionalsApply(state) }
+    }
 
     @Readonly
-    fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
-        getTagUniques(uniqueTag)
-            .any { it.conditionalsApply(state) }
+    fun hasMatchingTagUnique(uniqueTag: String, state: GameContext = GameContext.EmptyState): Boolean {
+        val tagUniques = tagUniqueMap[uniqueTag] ?: return false
+        for (i in 0..< tagUniques.size) {
+            val tagUnique = tagUniques[i]
+            if (!tagUnique.isTimedTriggerable && tagUnique.conditionalsApply(state)) return true
+        }
+        return false
+    }
 
     @Readonly
     fun getAllUniques() = tagUniqueMap.values.asSequence().flatten()

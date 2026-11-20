@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.modmanager.ModManagementScreen
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -99,7 +100,9 @@ class ModCheckboxTable(
             if (mod.widget.isChecked) mods += mod.mod.name
         }
 
-        add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods", defaultPad = 0f) {
+        add(ExpanderTab("Extension mods",
+            icon = ImageGetter.getImage("OtherIcons/Mods").apply { setSize(20f, 20f) },
+            persistenceID = "NewGameExpansionMods", defaultPad = 0f) {
             it.defaults().pad(5f,0f)
 
             val searchModsTextField = UncivTextField("Search mods")

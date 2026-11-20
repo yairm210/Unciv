@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
@@ -19,12 +20,13 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar.toMayaNumerals
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.removeFontColorFromStatIcons
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.WrappableLabel
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
@@ -387,6 +389,7 @@ class NotificationsScroll(
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, maxLabelWidth, ImageGetter.CHARCOAL, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
+            label.removeFontColorFromStatIcons()
             if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
                 label.wrap = true
                 listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)
@@ -435,7 +438,7 @@ class NotificationsScroll(
         restoreButton.checkScrollX(pixelsX)
     }
 
-    inner class RestoreButton : Container<IconCircleGroup>() {
+    inner class RestoreButton : Container<IconCircleGroup<Group>>() {
         private var blockCheck = true
         private var blockAct = true
         private var active = false

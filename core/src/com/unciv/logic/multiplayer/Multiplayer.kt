@@ -58,7 +58,7 @@ class Multiplayer {
          * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
          *    Only for Android, obviously
          */
-        multiplayerGameUpdater = flow<Unit> {
+        multiplayerGameUpdater = if (UncivGame.Current.supportsOnlineMultiplayer) flow<Unit> {
             while (true) {
                 delay(500)
                 if (!currentCoroutineContext().isActive) return@flow
@@ -76,7 +76,7 @@ class Multiplayer {
                 val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
                 throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
-        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }.launchIn(CoroutineScope(Dispatcher.DAEMON)) else Job().apply { cancel() }
     }
 
     @Readonly
@@ -163,6 +163,9 @@ class Multiplayer {
         //Set civ info to AI
         playerCiv.playerType = PlayerType.AI
         playerCiv.playerId = ""
+        
+        playerCiv.turnsPlayedAsHuman = 0
+        playerCiv.totalTurnTimeSeconds = 0
 
         //call next turn so turn gets simulated by AI
         if (gameInfo.currentPlayer == playerCivName) gameInfo.nextTurn()
@@ -309,6 +312,7 @@ class Multiplayer {
     @Readonly
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+                || preview1.turns == preview2.turns && preview1.currentPlayer != preview2.currentPlayer
     }
 
     companion object {

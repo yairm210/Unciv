@@ -2,14 +2,13 @@ package com.unciv.logic
 
 import com.unciv.UncivGame
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 
 object UncivKtor {
-    val client = HttpClient(CIO) {
+    val client = HttpClient {
         followRedirects = true
         install(HttpRequestRetry) {
             maxRetries = 3

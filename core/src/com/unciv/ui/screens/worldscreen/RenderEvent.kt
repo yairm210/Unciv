@@ -22,10 +22,20 @@ class RenderEvent(
     event: Event,
     val worldScreen: WorldScreen,
     val unit: MapUnit? = null,
+    /** Width the texts wrap to - an upper limit rather than a size: [WrappableLabel.optimizePrefWidth]
+     *  can bring a label below it, and a child that cannot wrap at all makes the result wider.
+     *
+     *  It is fixed at construction because it is baked into the children there, and their preferred
+     *  width is settled from that moment on: [WrappableLabel.getPrefWidth] is the minimum of the
+     *  measured width, the `expectedWidth` handed to the constructor, and the value
+     *  [WrappableLabel.optimizePrefWidth] computes once - from that same `expectedWidth`, and
+     *  clamped to it. Laying an existing instance out again therefore cannot widen or narrow it -
+     *  the Table would follow, it recomputes its columns from zero on every run, but the labels
+     *  keep reporting the width they were built for. To change this width, build a new one. */
+    val labelWidth: Float = worldScreen.stage.width * 0.5f,
     val onChoice: (EventChoice) -> Unit
 ) : Table() {
     private val gameInfo get() = worldScreen.gameInfo
-    private val stageWidth get() = worldScreen.stage.width
 
     val isValid: Boolean
 
@@ -39,14 +49,14 @@ class RenderEvent(
         isValid = choices != null
         if (isValid) {
             if (event.text.isNotEmpty()) {
-                add(WrappableLabel(event.text, stageWidth * 0.5f).apply {
+                add(WrappableLabel(event.text, labelWidth).apply {
                     wrap = true
                     setAlignment(Align.center)
                     optimizePrefWidth()
                 }).row()
             }
             if (event.civilopediaText.isNotEmpty()) {
-                add(event.renderCivilopediaText(stageWidth * 0.5f, ::openCivilopedia)).row()
+                add(event.renderCivilopediaText(labelWidth, ::openCivilopedia)).row()
             }
 
             for (choice in choices!!) addChoice(choice)
@@ -74,7 +84,7 @@ class RenderEvent(
                     .filterNot { it.isHiddenToUsers() }
                     .map { FormattedLine(it) }
             ).asIterable()
-        add(MarkupRenderer.render(lines, stageWidth * 0.5f, linkAction = ::openCivilopedia)).row()
+        add(MarkupRenderer.render(lines, labelWidth, linkAction = ::openCivilopedia)).row()
     }
 
     private fun openCivilopedia(link: String) = worldScreen.openCivilopedia(link)

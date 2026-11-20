@@ -5,14 +5,14 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class CityPopulationManagerTest {
 
     private lateinit var civ: Civilization
@@ -197,13 +197,14 @@ class CityPopulationManagerTest {
     @Test
     fun `should automatically assign new pop to best job`() {
         // given
-        city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0))
-        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
+        city.clearWorkedTiles()
+        val anchorTile = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile)
+        city.lockTile(anchorTile) // force the first pop to work on a specific tile to avoid being reassigned
         val goodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodTile.setImprovementBasic("Farm")
 
-        assertFalse(city.workedTiles.contains(goodTile.position))
+        assertFalse(city.isWorked(goodTile))
 
         city.population.foodStored = 14
 
@@ -212,24 +213,25 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodTile.position))
+        assertTrue(city.isWorked(goodTile))
     }
 
     @Test
     fun `should automatically assign new pop to best job according to city focus`() {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
-        city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0))
-        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
+        city.clearWorkedTiles()
+        val anchorTile2 = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile2)
+        city.lockTile(anchorTile2) // force the first pop to work on a specific tile to avoid being reassigned
         val goodFoodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodFoodTile.setImprovementBasic("Farm")
-        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+        assertFalse(city.isWorked(goodFoodTile))
 
         val goodGoldTile = testGame.setTileTerrain(HexCoord(0,1), Constants.grassland)
         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
         goodGoldTile.setImprovementBasic(goldImprovement)
-        assertFalse(city.workedTiles.contains(goodGoldTile.position))
+        assertFalse(city.isWorked(goodGoldTile))
 
         city.population.foodStored = 14
 
@@ -238,17 +240,18 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodGoldTile.position))
-        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+        assertTrue(city.isWorked(goodGoldTile))
+        assertFalse(city.isWorked(goodFoodTile))
     }
 
     @Test
     fun `should automatically assign new pop to best job with specialists`() {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
-        city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0))
-        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
+        city.clearWorkedTiles()
+        val anchorTile3 = city.tileMap[HexCoord(-1,0)]
+        city.workTile(anchorTile3)
+        city.lockTile(anchorTile3) // force the first pop to work on a specific tile to avoid being reassigned
         val specialistBuilding = testGame.createBuilding()
         specialistBuilding.specialistSlots.add("Merchant", 1)
         city.cityConstructions.addBuilding(specialistBuilding)

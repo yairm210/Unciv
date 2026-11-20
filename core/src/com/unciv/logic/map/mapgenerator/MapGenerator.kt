@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.*
+import com.unciv.logic.map.MapSize.Companion.auto
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -22,10 +23,13 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
+import kotlin.math.E
 import kotlin.math.abs
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.ulp
 import kotlin.sequences.filter
@@ -42,6 +46,16 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     companion object {
         private const val consoleTimings = false
+
+        /**
+         * @return Radius in range 0.0 (center of map) to 1.0 (edge of map).
+         */
+        internal fun getTileRadius(tile: Tile, tileMap: TileMap): Double {
+            // Numbers betwee 0.0-1.0
+            val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toDouble()
+            val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toDouble()
+            return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
+        }
     }
 
     private var randomness = MapGenerationRandomness()
@@ -134,7 +148,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
     fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
-        val mapSize = mapParameters.mapSize
+        val mapSize = if (mapParameters.mapSize.name != auto) mapParameters.mapSize else resolveAutoMapSize(mapParameters, gameParameters, gameInfo)
         val mapType = mapParameters.type
 
         if (mapParameters.seed == 0L)
@@ -191,7 +205,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         // Region based map generation - not used when generating maps in map editor
         val civilizations = gameInfo?.civilizations
-        if (civilizations?.isNotEmpty() ?: false) {
+        val isMapEditor = civilizations?.isEmpty() ?: true
+        if (! isMapEditor) {
             map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
@@ -215,31 +230,55 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             runAndMeasure("spreadResources") { spreadResources(map) }
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
-        
-        mirror(map)
 
+        if (isMapEditor)
+            mirror(map)
+        
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
 
         return map
     }
-    
-    private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
+    private fun resolveAutoMapSize(mapParameters: MapParameters, gameParameters: GameParameters, gameInfo: GameInfo?): MapSize {
+        if (gameInfo == null) return mapParameters.mapSize
+
+        val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv }
+        val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
+        // This is mostly just vibes, tries to make the average distance between a civ and its closest neighbor as close to 13 tiles as possible
+        val majorCivContribution = 384 * numberOfMajorCivs - 134
+        val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
+
+        // Calculates mapsize from tile number, simple algebra reversing area formulas
+        val aspectRatio = 1.55 // This is around the default aspect ratios
+        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) + 1.0/2).roundToInt()
+        mapParameters.mapSize.height = sqrt(targetNumberOfTiles/aspectRatio).roundToInt()
+        mapParameters.mapSize.width = (sqrt(targetNumberOfTiles/aspectRatio) * aspectRatio).roundToInt()
+
+        return mapParameters.mapSize
+    }
     private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
-    private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
     private fun flipLeftRight(vector: HexCoord): HexCoord = HexCoord.of(vector.y, vector.x)
 
     private fun mirror(map: TileMap) {
-        fun getMirrorTile(tile: Tile, mirroringType: String): Tile? {
+        val mirroringType = map.mapParameters.mirroring
+        
+        fun getMirrorTile(tile: Tile): Tile? {
+            // Don't use tile.getRow() here - it's (x+y)/2 with truncation, so x+y = -1, 0 and 1 all land in row 0,
+            // which made mirror pairs both count as "source" and stay unmirrored.
+            // flipTopBottom negates rowSum, flipLeftRight negates column; tiles with rowSum/column == 0 are on the axis.
+            val rowSum = tile.position.x + tile.position.y
+            val column = tile.getColumn()
             val mirrorTileVector = when (mirroringType) {
-                MirroringType.topbottom -> if (tile.getRow() <= 0) return null else flipTopBottom(tile.position)
-                MirroringType.leftright -> if (tile.getColumn() <= 0) return null else flipLeftRight(tile.position)
-                MirroringType.aroundCenterTile -> if (tile.getRow() <= 0) return null else flipLeftRight(flipTopBottom(tile.position))
+                MirroringType.topbottom -> if (rowSum <= 0) return null else flipTopBottom(tile.position)
+                MirroringType.leftright -> if (column <= 0) return null else flipLeftRight(tile.position)
+                MirroringType.aroundCenterTile ->
+                    if (rowSum < 0 || (rowSum == 0 && column <= 0)) return null
+                    else flipLeftRight(flipTopBottom(tile.position))
                 MirroringType.fourway -> when {
-                    tile.getRow() < 0 && tile.getColumn() < 0 -> return null
-                    tile.getRow() < 0 && tile.getColumn() >= 0 -> flipLeftRight(tile.position)
-                    tile.getRow() >= 0 && tile.getColumn() < 0 -> flipTopBottom(tile.position)
+                    rowSum <= 0 && column <= 0 -> return null
+                    rowSum <= 0 -> flipLeftRight(tile.position)
+                    column <= 0 -> flipTopBottom(tile.position)
                     else -> flipLeftRight(flipTopBottom(tile.position))
                 }
 
@@ -248,17 +287,20 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             return map.getIfTileExistsOrNull(mirrorTileVector.x, mirrorTileVector.y)
         }
         
-        fun copyTile(tile: Tile, mirroringType: String) {
-            val mirrorTile = getMirrorTile(tile, mirroringType) ?: return
+        fun copyTile(tile: Tile) {
+            val mirrorTile = getMirrorTile(tile) ?: return
             
-            tile.setBaseTerrain(mirrorTile.getBaseTerrain())
+            // Wonder must be replaced first: setBaseTerrain normalizes against the tile's *current* wonder,
+            // and a leftover wonder with turnsInto (e.g. Mountain) would override the mirrored base terrain
             tile.naturalWonder = mirrorTile.naturalWonder
+            tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
             tile.tileResource = mirrorTile.tileResource
+            tile.resourceAmount = mirrorTile.resourceAmount
             tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
-                val neighborMirror = getMirrorTile(neighbor, mirroringType) ?: continue
+                val neighborMirror = getMirrorTile(neighbor) ?: continue
                 if (neighborMirror !in mirrorTile.neighbors) continue // we landed on the edge here
                 tile.setConnectedByRiver(neighbor, mirrorTile.isConnectedByRiver(neighborMirror))
             }
@@ -266,7 +308,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         if (map.mapParameters.mirroring == MirroringType.none) return
         for (tile in map.values) {
-            copyTile(tile, map.mapParameters.mirroring)
+            copyTile(tile)
         }
     }
 
@@ -360,24 +402,25 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val lakeTerrains = terrainConditions.filter { it.isFreshwater && !it.rareFeature && it.terrain.type == TerrainType.Water }
         if (lakeTerrains.isNotEmpty()) {
             //define lakes
-            val waterTiles = map.values.filter { it.isWater }.toMutableList()
+            val waterTiles = map.values.filter { it.isWater }.toHashSet()
 
-            val tilesInArea = ArrayList<Tile>()
-            val tilesToCheck = ArrayList<Tile>()
+            val tilesInArea = HashSet<Tile>()
+            val tilesToCheck = ArrayDeque<Tile>()
 
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeAt(0)
+                val initialWaterTile = waterTiles.first()
+                waterTiles.remove(initialWaterTile)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeAt(0)
+                    val tileWeAreChecking = tilesToCheck.removeFirst()
                     for (vector in tileWeAreChecking.neighbors){
-                        if (tilesInArea.contains(vector)) continue
-                        if (!waterTiles.contains(vector)) continue
+                        if (vector in tilesInArea) continue
+                        if (vector !in waterTiles) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector
@@ -510,6 +553,32 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val oceanTerrains = baseTerrainPicker.filter { it.terrain.isOcean && !it.rareFeature }
         val noTerrainUniques = landTerrains.none { it.isConstrained}
         val elevationTerrains = baseTerrainPicker.filter {  it.occursInChains }.mapTo(mutableSetOf()) { it.name }
+        
+        /**
+         * @return Temperature at the provided tile before adding noise etc..
+         * May be outside of range -1.0 to 1.0, so make sure to coerce it at some point.
+         */
+        fun getExpectedTemperature(tile: Tile): Double {
+            /** Latitude in range -1.0 (south pole equivalent) to +1.0 (north pole equivalent). */
+            val normalizedLatitude =
+                if (tileMap.mapParameters.shape == MapShape.flatEarth) 2 * getTileRadius(tile, tileMap) - 1
+                else tile.latitude.toDouble() / tileMap.maxLatitude
+            /**
+             * Flat earth temperature should be -1.0 at latitudes ±0.9, and -1.111 at latitudes ±1.0.
+             * Instead of adjusting the temperature later, we can adjust the latitude here.
+             * This way, custom map types don't have to worry as much about flat earth logic.
+             */
+            val adjustedLatitude = 
+                if (tileMap.mapParameters.shape == MapShape.flatEarth) normalizedLatitude * 10.0 / 9.0
+                else normalizedLatitude
+            /** This part translates from latitude to temperature. */
+            return when (tileMap.mapParameters.type) {
+                // Starting temperature is -0.4 across most (southern ~75%) of the map, but declines to -1.0 in the north so ice can spawn
+                MapType.boreal -> -0.4 - 0.6 * E.pow(5 * adjustedLatitude - 5)
+                /** Cold poles, warm equator. Most map types use this function. */
+                else -> 1.0 - 2.0 * abs(adjustedLatitude)
+            }
+        }
 
         for (tile in tileMap.values.asSequence()) {
             if (tile.baseTerrain in elevationTerrains)
@@ -519,16 +588,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
             tile.humidity = humidity
 
-            val expectedTemperature = if (tileMap.mapParameters.shape == MapShape.flatEarth) {
-                // Flat Earth uses radius because North is center of map
-                val radius = getTileRadius(tile, tileMap)
-                val radiusTemperature = getTemperatureAtRadius(radius)
-                radiusTemperature
-            } else {
-                // Globe Earth uses latitude because North is top of map
-                val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-                latitudeTemperature
-            }
+            val expectedTemperature = getExpectedTemperature(tile)
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
@@ -569,66 +629,6 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
-    private fun getTileRadius(tile: Tile, tileMap: TileMap): Float {
-        // Numbers betwee 0.0-1.0
-        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toFloat()
-        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toFloat()
-        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
-    }
-
-    private fun getTemperatureAtRadius(radius: Float): Double {
-        /*
-        Radius is in the range of 0.0 to 1.0
-        Temperature is in the range of -1.0 to 1.0
-
-        Radius of 0.0 (arctic) is -1.0 (cold)
-        Radius of 0.25 (mid North) is 0.0 (temperate)
-        Radius of 0.5 (equator) is 1.0 (hot)
-        Radius of 0.75 (mid South) is 0.0 (temperate)
-        Radius of 1.0 (antarctic) is -1.0 (cold)
-
-        Scale the radius range to the temperature range
-        */
-        return when {
-            /*
-            North Zone
-            Starts cold at arctic and gets hotter as it goes South to equator
-            x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
-            */
-            radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
-
-            /*
-            South Zone
-            Starts hot at equator and gets colder as it goes South to antarctic
-            x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
-            */
-            radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
-
-            /*
-            Equator
-            Always hot
-            radius == 0.5
-            */
-            else -> 1.0
-        }
-    }
-
-    /**
-     * @x1 start of the original range
-     * @x2 end of the original range
-     * @y1 start of the new range
-     * @y2 end of the new range
-     * @value value to be scaled from the original range to the new range
-     *
-     * @returns value in new scale
-     * special thanks to @letstalkaboutdune for the math
-     */
-    private fun scaleToRange(x1: Double, x2: Double, y1: Double, y2: Double, value: Float): Double {
-        val gain = (y2 - y1) / (x2 - x1)
-        val offset = y2 - (gain * x2)
-        return (gain * value) + offset
-    }
-
     /**
      * [MapParameters.vegetationRichness] is the threshold for vegetation spawn
      */
@@ -637,13 +637,18 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val vegetationTerrains = terrainFeaturePicker.filter { it.hasVegitation && !it.rareFeature }
             .ifEmpty {terrainFeaturePicker.filter { Constants.vegetation.contains(it.name)}}
         val candidateTerrains = vegetationTerrains.flatMap{ it.terrain.occursOn }
+        // some map types are more forested than others
+        val vegetationRichness = tileMap.mapParameters.vegetationRichness + when (tileMap.mapParameters.type) {
+            MapType.boreal -> +0.10
+            else -> 0.0
+        }
         // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.lastTerrain.name in candidateTerrains }) {
 
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
-            if (vegetation <= tileMap.mapParameters.vegetationRichness) {
+            if (vegetation <= vegetationRichness) {
                 val possibleVegetation = vegetationTerrains.filter { it.matchesTempAndTerrain(tile)
                     && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }
@@ -681,11 +686,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
         val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
+        if (iceTerrains.isEmpty()) return
+
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             spawnFlatEarthIceWalls(tileMap, iceTerrains, oceanTerrains)
         }
-
-        if (iceTerrains.isEmpty()) return
 
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()

@@ -19,6 +19,7 @@ import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.utils.Concurrency
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -69,8 +70,13 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         ) {
             val image = ImageGetter.getStatIcon(icon)
             val action = {
-                val screen = screenFactory()
-                if (screen != null) worldScreen.game.pushScreen(screen)
+                Concurrency.runOnGLThread { // To return event immediately - avoid ANR
+                    // This is requited because pushScreen, the "regular" way we avoid ANRs on new screens,
+                    //  only takes a non-nullable screen
+                    val screen = screenFactory()
+                    if (screen != null) worldScreen.game.pushScreen { screen }   
+                }
+                Unit // return type to fit onClick
             }
             label.onClick(action)
             image.onClick(action)
@@ -84,7 +90,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
             overviewPage: EmpireOverviewCategories,
             noPad: Boolean = false
         ) = addStat(icon, label, noPad) {
-            EmpireOverviewScreen(worldScreen.selectedCiv, overviewPage)
+            EmpireOverviewScreen(worldScreen.selectedGameView.civView, overviewPage)
         }
 
         fun addPerTurnLabel(label: Label) {
@@ -96,7 +102,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         addStat("Gold", goldLabel, EmpireOverviewCategories.Stats, true)
         addPerTurnLabel(goldPerTurnLabel)
 
-        addStat("Science", scienceLabel) { TechPickerScreen(worldScreen.selectedCiv) }
+        addStat("Science", scienceLabel) { TechPickerScreen(worldScreen.selectedGameView.civView.getCiv()) }
 
         val invokeResourcesPage = {
             worldScreen.openEmpireOverview(EmpireOverviewCategories.Resources)
@@ -147,7 +153,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         faithLabel.setText(civInfo.religionManager.storedFaith.tr())
         faithPerTurnLabel.setText(rateLabel(nextTurnStats.faith))
 
-        scaleTo(worldScreen.stage.width)
+        scaleToWidth(worldScreen.stage.width)
     }
 
     private fun getCultureText(civInfo: Civilization, nextTurnStats: Stats): String {

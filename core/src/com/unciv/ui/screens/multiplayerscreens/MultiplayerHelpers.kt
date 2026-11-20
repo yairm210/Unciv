@@ -49,22 +49,60 @@ object MultiplayerHelpers {
         if (preview?.currentPlayer != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
             val currentPlayer = preview.getCurrentPlayerCiv()
-            val playerDescriptor = if (currentPlayer.playerId == UncivGame.Current.settings.multiplayer.getUserId()) {
-                "You"
-            } else {
-                val friend = UncivGame.Current.settings.multiplayer.friendList
-                    .firstOrNull{ it.playerID == currentPlayer.playerId }
-                friend?.name ?: "Unknown"
-            }
-            val playerText = "{${preview.currentPlayer}}{ }({$playerDescriptor})"
+            val mpSettings = UncivGame.Current.settings.multiplayer
+            // "You", name of friend, or null
+            val playerDescriptor: String? = 
+                if (currentPlayer.playerId == mpSettings.getUserId()) "You" 
+                else mpSettings.friendList.firstOrNull { it.playerID == currentPlayer.playerId }?.name
+            
+            var playerText = "{${preview.currentPlayer}}"
+            if (playerDescriptor != null)
+                playerText += "{ }({$playerDescriptor})"
 
-            descriptionText.appendLine("Current Turn: [$playerText] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            val currentTurnTime = Duration.between(currentTurnStartTime, Instant.now())
+            var currentPlayerLine = "Current Turn: [$playerText] since [${currentTurnTime.formatShort()}] ago"
+            // Don't show average until we are sure all players have updated to compatible version
+            // This check can be removed after a few weeks/months
+            if (currentPlayer.turnsPlayedAsHuman > 0) {
+                val updatedTotalTurnTime = Duration.ofSeconds(currentPlayer.totalTurnTimeSeconds.toLong()) + currentTurnTime
+                val averageTurnTime = updatedTotalTurnTime.dividedBy(currentPlayer.turnsPlayedAsHuman + 1L) // +1 to include current turn and avoid div by 0
+                currentPlayerLine += " (average: [${averageTurnTime.formatShort()}])"
+            }
+            descriptionText.appendLine(currentPlayerLine.tr())
             descriptionText.appendLine("Time to play the turn: [${Duration.ofMinutes(currentPlayer.playerMinutesBeforeForceResign.toLong()).formatShort()}]".tr())
 
             val playerCivName = preview.civilizations
                 .firstOrNull{ it.playerId == UncivGame.Current.settings.multiplayer.getUserId() }?.civName ?: "Unknown"
 
             descriptionText.appendLine("{$playerCivName}, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}".tr())
+
+            /** Use average turn time data to estimate time until our turn */
+            fun estimateTimeUntilOurTurn(): String? {
+                // ignore AIs, spectators, and defeated players
+                val players = preview.civilizations.filter { it.isAlive == true && it.isPlayerCivilization() && it.civID != Constants.spectator }
+                val playerCivIDs = players.map { it.civID }
+                val fromIndex = playerCivIDs.indexOf(preview.currentPlayer)
+                val untilIndex = playerCivIDs.indexOf(playerCivName)
+                if (players.size < 4 // no estimate for small games
+                    || playerCivName == preview.currentPlayer // no estimate if it's our turn
+                    || fromIndex == -1 // just in case - should not happen 
+                    || untilIndex == -1 // ensure we are alive
+                ) return null
+                // how many players left until our turn
+                val numRemainingPlayers = Math.floorMod(untilIndex - fromIndex, players.size)
+                if (players.any { it.turnsPlayedAsHuman < 5 }) // don't show time estimate if insufficient data
+                    return "There are [$numRemainingPlayers] players until our turn"
+                // list player civs between current player and ourselves, wrapping around if needed
+                val remainingPlayers = (players.drop(fromIndex) + players.take(untilIndex)).take(numRemainingPlayers)
+                val estimatedSecondsRemaining = remainingPlayers.sumOf { it.totalTurnTimeSeconds / it.turnsPlayedAsHuman }
+                val timeRemaining = Duration.ofSeconds(estimatedSecondsRemaining.toLong())
+                return "There are [$numRemainingPlayers] players and an estimated [${timeRemaining.formatShort()}] until our turn"
+            }
+
+            val timeUntilOurTurnText = estimateTimeUntilOurTurn()
+            if (timeUntilOurTurnText != null)
+                descriptionText.appendLine(timeUntilOurTurnText.tr())
+
             descriptionText.appendLine("{Base ruleset:} ${preview.gameParameters.baseRuleset}".tr())
             if (preview.gameParameters.mods.isNotEmpty())
                 descriptionText.appendLine(("{Mods:} " + preview.gameParameters.mods.joinToString()).tr())

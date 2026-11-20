@@ -4,13 +4,15 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.IConstruction  // Kdoc only
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
 import yairm210.purity.annotations.Readonly
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *
  *  @param keepZeroAmounts If `false`, entries with [amount][ResourceSupply.amount] 0 are eliminated
  */
-@InternalState
+@ModifiesInternalStateOnly
 class ResourceSupplyList(
     private val keepZeroAmounts: Boolean = false
 ) : ArrayList<ResourceSupplyList.ResourceSupply>(24) {
@@ -38,13 +40,17 @@ class ResourceSupplyList(
     @Readonly fun sumBy(resource: TileResource) =
         asSequence().filter { it.resource == resource }.sumOf { it.amount }
 
+    @Readonly
+    fun origins(): List<String> =
+        asSequence().map { it.origin }.distinct().toList()
+
     /**
      *  Add [element] unless one for [resource][ResourceSupply.resource]/[origin][ResourceSupply.origin] already exists,
      *  in which case the amounts are added up. Ensures the list contains no entries with [amount][ResourceSupply.amount] 0 unless [keepZeroAmounts] is on.
      *  @return `true` if the length of the list changed.
      */
     override fun add(element: ResourceSupply): Boolean {
-        val existingResourceSupply = get(element.resource, element.origin)
+        @LocalState val existingResourceSupply = get(element.resource, element.origin)
         if (existingResourceSupply != null) {
             // This is at the time of writing the _only_ place updating the field.
             // To check: Change to val, comment out this line, compile, revert.
@@ -95,33 +101,9 @@ class ResourceSupplyList(
     }
 
     /** Create a new [ResourceSupplyList] aggregating resources over all origins */
-    fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
-
-    /**
-     * Applies the given modifiers list to the resource supplies.
-     *
-     * @param resourceModifiers The list of resource modifiers to apply to the supply list.
-     */
-    fun applyModifiers(resourceModifiers: Map<String, Float>) {
-        for ((resourceName, modifier) in resourceModifiers) {
-            if (modifier == 1f) continue
-            for (resourceSupply in this) {
-                if (resourceSupply.resource.name == resourceName) {
-                    resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
-                }
-            }
-        }
-    }
-
-    /**
-     * Applies the given modifier function to the resource supplies.
-     */
-    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
-        for (resourceSupply in this) {
-            val modifier = resourceModifier(resourceSupply.resource)
-            if (modifier == 1f) continue
-            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
-        }
+    fun sumByResource(newOrigin: String): ResourceSupplyList {
+        val list = ResourceSupplyList(keepZeroAmounts)
+        return list.addByResource(this, newOrigin)
     }
 
     /**
@@ -132,6 +114,15 @@ class ResourceSupplyList(
         // The filter creates a separate list so the iteration does not modify concurrently
         filter { it.origin == origin }.forEach { remove(it) }
         return this
+    }
+
+    /** Multiply each entry's amount by its resource's modifier, if one exists. */
+    fun applyModifiers(modifiers: Map<String, Float>) {
+        if (modifiers.isEmpty()) return
+        for (@LocalState resourceSupply in this) {
+            val modifier = modifiers[resourceSupply.resource.name] ?: continue
+            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
     }
 
     companion object {

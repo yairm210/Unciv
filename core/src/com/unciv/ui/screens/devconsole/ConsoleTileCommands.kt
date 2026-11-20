@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 
@@ -19,7 +20,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
 
         "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
             val selectedTile = console.getSelectedTile()
-            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].originalUnquoted()).toString())
+            DevConsoleResponse.hint(selectedTile.matchesFilter(params[0].originalUnquoted(), console.screen.viewingCiv).toString())
         },
 
         "setimprovement" to ConsoleAction("tile setimprovement <improvementName> [civName]") { console, params ->
@@ -86,10 +87,16 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
                 setBaseTerrain(selectedTile, terrain)
         },
 
-        "setresource" to ConsoleAction("tile setresource <resourceName>") { console, params ->
+        "setresource" to ConsoleAction("tile setresource <resourceName> [amount]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val resource = params[0].find(console.gameInfo.ruleset.tileResources.values)
-            selectedTile.tileResource = resource
+            val amount = params.getOrNull(1)?.takeIf { !it.isEmpty() }?.toInt()
+            if (amount != null && resource.resourceType != ResourceType.Strategic)
+                return@ConsoleAction DevConsoleResponse.error("Can't set resource amount for ${resource.resourceType} resource")
+            if (amount != null && amount <= 0)
+                return@ConsoleAction DevConsoleResponse.error("Invalid resource amount")
+            selectedTile.setTileResource(resource)
+            if (amount != null) selectedTile.resourceAmount = amount
             selectedTile.setTerrainTransients()
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
@@ -119,7 +126,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         "find" to ConsoleAction("tile find <tileFilter>") { console, params ->
             val filter = params[0]
             val locations = console.gameInfo.tileMap.tileList
-                .filter { it.matchesFilter(filter.originalUnquoted()) }  // filters are case sensitive
+                .filter { it.matchesFilter(filter.originalUnquoted(), console.screen.viewingCiv) }  // filters are case sensitive
                 .map { it.position }
             if (locations.isEmpty()) DevConsoleResponse.hint("None found")
             else {
@@ -157,7 +164,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         setBaseTerrain(tile, wonder.turnsInto ?: tile.baseTerrain)
         for (civ in tile.tileMap.gameInfo.civilizations) {
             if (wonder.name in civ.naturalWonders) continue
-            if (civ.isDefeated() || civ.isBarbarian || civ.isSpectator()) continue
+            if (civ.isDefeated() || civ.isBarbarian || civ.isSpectator) continue
             if (!civ.hasExplored(tile)) continue
             civ.cache.discoverNaturalWonders()
             civ.updateStatsForNextTurn()

@@ -135,19 +135,12 @@ fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
     return value
 }
 
+@Readonly
 inline fun BitSet.forEachSetBit(action: (Int) -> Unit) {
     var bit = nextSetBit(0)
     while (bit >= 0) {
         action(bit)
         bit = nextSetBit(bit + 1)
-    }
-}
-
-inline fun BitSet.forEachClearBit(action: (Int) -> Unit) {
-    var bit = nextClearBit(0)
-    while (bit >= 0) {
-        action(bit)
-        bit = nextClearBit(bit + 1)
     }
 }
 
@@ -175,3 +168,16 @@ inline fun <T> GdxLongArray.fold(initial: T, op: (T, Long) -> T): T {
     }
     return r
 }
+
+/**
+ * Removes all elements in the range `[start]..<[endExclusive].`
+ *
+ * This is an in-place operation that modifies the list without re-allocation.
+ * It works by leveraging the fact that [subList] returns a live view of the original list, clearing the view truncates the original.
+ *
+ * @param start start index (inclusive)
+ * @param endExclusive end index (exclusive)
+ * @throws IndexOutOfBoundsException if the range is invalid
+ * @see java.util.ArrayList.removeRange (the protected method this mimics)
+ */
+fun <T> ArrayList<T>.removeRange(start: Int, endExclusive: Int) = subList(start, endExclusive).clear()

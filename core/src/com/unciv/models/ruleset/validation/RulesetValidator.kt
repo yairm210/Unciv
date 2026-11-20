@@ -8,16 +8,17 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.RulesetFile
+import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.nation.getContrastRatio
-import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -27,15 +28,19 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.ruleset.validation.RulesetValidator.Companion.create
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.models.translations.fillPlaceholders
+import com.unciv.ui.components.extensions.getContrastRatio
+import com.unciv.ui.components.extensions.getRelativeLuminance
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
+import com.unciv.utils.isRunFromJar
+import kotlin.reflect.KProperty0
 
 /**
  *  Class mananging ruleset validation.
@@ -65,7 +70,7 @@ open class RulesetValidator protected constructor(
     /** `true` for a [BaseRulesetValidator] instance, `false` for a [RulesetValidator] instance. */
     private val reportRulesetSpecificErrors = ruleset.modOptions.isBaseRuleset
 
-    protected val uniqueValidator = UniqueValidator(ruleset)
+    protected val uniqueValidator = UniqueValidator(ruleset, tryFixUnknownUniques)
 
     private lateinit var textureNamesCache: AtlasPreview
 
@@ -118,6 +123,10 @@ open class RulesetValidator protected constructor(
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
 
+        checkFreeBuildingPossibleRecursions(lines)
+        addTranslationNameCollisionWarnings(lines)
+        addEmptyNamesErrors(lines)
+
         initTextureNamesCache(lines)
 
         // Tileset tests - e.g. json configs complete and parseable
@@ -134,14 +143,14 @@ open class RulesetValidator protected constructor(
         for (belief in ruleset.beliefs.values) {
             if (belief.type == BeliefType.Any || belief.type == BeliefType.None)
                 lines.add("${belief.name} type is ${belief.type}, which is not allowed!", sourceObject = belief)
-            uniqueValidator.checkUniques(belief, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(belief, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addBuildingErrors(lines: RulesetErrorList) {
         for (building in ruleset.buildings.values) {
             checkBuilding(building, lines)
-            uniqueValidator.checkUniques(building, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(building, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -154,15 +163,18 @@ open class RulesetValidator protected constructor(
 
         if (building.replaces != null && building.uniqueTo == null)
             lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
+        if (building.replaces == building.name)
+            lines.add("${building.name} replaces itself!")
     }
 
     protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {
         for (cityStateType in ruleset.cityStateTypes.values) {
             for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
-                val errors = uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null,
+                val errors = uniqueValidator.checkUnique(unique, null,
                     if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
                 lines.addAll(errors)
             }
+            uniqueValidator.checkUniques(cityStateType, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -177,7 +189,7 @@ open class RulesetValidator protected constructor(
             if (difficulty.turnBarbariansCanEnterPlayerTiles < 0)
                 lines.add("Difficulty ${difficulty.name} has a negative turnBarbariansCanEnterPlayerTiles!",
                     RulesetErrorSeverity.Warning, sourceObject = null)
-            uniqueValidator.checkUniques(difficulty, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(difficulty, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -195,7 +207,7 @@ open class RulesetValidator protected constructor(
                     RulesetErrorSeverity.WarningOptionsOnly, era
                 )
 
-            uniqueValidator.checkUniques(era, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(era, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -203,14 +215,14 @@ open class RulesetValidator protected constructor(
         // An Event is not a IHasUniques, so not suitable as sourceObject
         for (event in ruleset.events.values) {
             for (choice in event.choices) {
-                uniqueValidator.checkUniques(choice, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+                uniqueValidator.checkUniques(choice, lines, reportRulesetSpecificErrors)
             }
-            uniqueValidator.checkUniques(event, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(event, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addGlobalUniqueErrors(lines: RulesetErrorList) {
-        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+        uniqueValidator.checkUniques(ruleset.globalUniques, lines, reportRulesetSpecificErrors)
 
         val fakeUniqueContainer = object : IHasUniques {
             override var uniques: ArrayList<String> = ArrayList()
@@ -224,7 +236,6 @@ open class RulesetValidator protected constructor(
             val unique = Unique(uniqueText)
             val errors = uniqueValidator.checkUnique(
                 unique,
-                tryFixUnknownUniques,
                 fakeUniqueContainer,
                 if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities
             )
@@ -236,6 +247,8 @@ open class RulesetValidator protected constructor(
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.replaces != null && improvement.uniqueTo == null)
                 lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+            if (improvement.replaces == improvement.name)
+                lines.add("${improvement.name} replaces itself!")
             if (improvement.terrainsCanBeBuiltOn.isEmpty()
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
@@ -268,27 +281,38 @@ open class RulesetValidator protected constructor(
                 )
             }
 
-            uniqueValidator.checkUniques(improvement, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(improvement, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addModOptionsErrors(lines: RulesetErrorList) {
         // Basic Unique validation (type, target, parameters) should always run.
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
-        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true)
 
+        // TODO: Create overload method for floating point constants. Settle on using either floats or doubles in ModConstants.kt
+        /**
+         * @param propertyName If the constant has a getter, then you should manually enter its name here.
+         */
+        fun checkConstant(property: KProperty0<Int>, range: IntRange, propertyName: String? = null) {
+            if (property.get() in range) return
+            fun IntRange.describe() = when {
+                this.first == Int.MIN_VALUE -> "Maximum $last"
+                this.last == Int.MAX_VALUE -> "Minimum $first"
+                else -> "Minimum $first, Maximum $last"
+            }
+            lines.add("ModConstant '${propertyName ?: property.name}}' does not meet criteria '${range.describe()}'.")
+        }
+        
         //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
         val constants = ruleset.modOptions.constants
-        if (constants.cityExpandRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityExpandRange'.", sourceObject = null)
-        if (constants.cityWorkRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityWorkRange'.", sourceObject = null)
-        if (constants.minimalCityDistance < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
-        if (constants.minimalCityDistanceOnDifferentContinents < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
-        if (constants.baseCityBombardRange < 1)
-            lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
+        checkConstant(constants::cityExpandRange, 1..100)
+        checkConstant(constants::cityWorkRange, 1..100)
+        // Crashed with 10 as of writing
+        checkConstant(constants::minimalCityDistance, 0..9)
+        checkConstant(constants::minimalCityDistanceOnDifferentContinents, 0..9)
+        // Game hangs with very high values
+        checkConstant(constants::baseCityBombardRange, 0..1000)
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
@@ -321,7 +345,7 @@ open class RulesetValidator protected constructor(
     protected open fun addNationErrors(lines: RulesetErrorList) {
         for (nation in ruleset.nations.values) {
             checkNation(nation, lines)
-            uniqueValidator.checkUniques(nation, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(nation, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -349,20 +373,19 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            if (personality.uniques.isNotEmpty())
-                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addPolicyErrors(lines: RulesetErrorList) {
         for (policy in ruleset.policies.values) {
-            uniqueValidator.checkUniques(policy, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(policy, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addPromotionErrors(lines: RulesetErrorList) {
         for (promotion in ruleset.unitPromotions.values) {
-            uniqueValidator.checkUniques(promotion, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(promotion, lines, reportRulesetSpecificErrors)
             checkContrasts(promotion.innerColorObject ?: PortraitPromotion.defaultInnerColor,
                 promotion.outerColorObject ?: PortraitPromotion.defaultOuterColor, promotion, lines)
             checkPromotion(promotion, lines)
@@ -380,15 +403,14 @@ open class RulesetValidator protected constructor(
 
     protected open fun addResourceErrors(lines: RulesetErrorList) {
         for (resource in ruleset.tileResources.values) {
-            uniqueValidator.checkUniques(resource, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(resource, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addRuinsErrors(lines: RulesetErrorList) {
         for (reward in ruleset.ruinRewards.values) {
-            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
-            uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -414,14 +436,18 @@ open class RulesetValidator protected constructor(
                     lines.add("The 'untilTurn' field in the turn increment list must be monotonously increasing, but $untilTurn is <= $lastTurn", sourceObject = speed)
                 lastTurn = untilTurn
             }
-            uniqueValidator.checkUniques(speed, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(speed, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addTechErrors(lines: RulesetErrorList) {
+        val duplicateColumnNumbers = ruleset.techColumns.groupBy { it.columnNumber }.filter { it.value.size > 1 }.map { it.key }
+        if (duplicateColumnNumbers.isNotEmpty())
+            lines.add("Tech column numbers $duplicateColumnNumbers have multiple TechColumn entries", RulesetErrorSeverity.ErrorOptionsOnly)
+
         for (tech in ruleset.technologies.values) {
             if (tech.row < 1) lines.add("Tech ${tech.name} has a row value below 1: ${tech.row}", sourceObject = tech)
-            uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(tech, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -453,14 +479,14 @@ open class RulesetValidator protected constructor(
 
     protected open fun addTerrainErrors(lines: RulesetErrorList) {
         for (terrain in ruleset.terrains.values) {
-            uniqueValidator.checkUniques(terrain, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(terrain, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addUnitErrors(lines: RulesetErrorList) {
         for (unit in ruleset.units.values) {
             checkUnit(unit, lines)
-            uniqueValidator.checkUniques(unit, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unit, lines, reportRulesetSpecificErrors)
         }
     }
 
@@ -472,9 +498,15 @@ open class RulesetValidator protected constructor(
 
         if (unit.replaces != null && unit.uniqueTo == null)
             lines.add("${unit.name} should replace ${unit.replaces} but does not have uniqueTo assigned!")
+        if (unit.replaces == unit.name)
+            lines.add("${unit.name} replaces itself!")
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+
+        val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${unit.name}")
+        if (unit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) })
+            lines.add("Unit ${unit.name} includes the unit's UnitSet art in civilopediaText, which is superseded by the \"Size of Unitset art in Civilopedia\" option", RulesetErrorSeverity.WarningOptionsOnly, unit)
     }
 
     protected open fun addUnitTypeErrors(lines: RulesetErrorList) {
@@ -482,24 +514,25 @@ open class RulesetValidator protected constructor(
         for (unitType in ruleset.unitTypes.values) {
             if (unitType.movementType !in unitMovementTypes)
                 lines.add("Unit type ${unitType.name} has an invalid movement type ${unitType.movementType}", sourceObject = unitType)
-            uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unitType, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addUnitNameGroupsErrors(lines: RulesetErrorList) {
         for (unitNameGroup in ruleset.unitNameGroups.values) {
-            uniqueValidator.checkUniques(unitNameGroup, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
+            uniqueValidator.checkUniques(unitNameGroup, lines, reportRulesetSpecificErrors)
         }
     }
 
     protected open fun addVictoryTypeErrors(lines: RulesetErrorList) {
-        // Victory and Milestone aren't IHasUniques and are unsuitable as sourceObject
         for (victoryType in ruleset.victories.values) {
+            uniqueValidator.checkUniques(victoryType, lines, reportRulesetSpecificErrors)
+
             for (milestone in victoryType.milestoneObjects) {
                 if (milestone.type == null)
                     lines.add(
                         "Victory type ${victoryType.name} has milestone \"${milestone.uniqueDescription}\" that is of an unknown type!",
-                        RulesetErrorSeverity.Error, sourceObject = null
+                        RulesetErrorSeverity.Error, sourceObject = victoryType
                     )
             }
 
@@ -507,9 +540,83 @@ open class RulesetValidator protected constructor(
                 if (otherVictory.name > victoryType.name && otherVictory.milestones == victoryType.milestones)
                     lines.add(
                         "Victory types ${victoryType.name} and ${otherVictory.name} have the same requirements!",
-                        RulesetErrorSeverity.Warning, sourceObject = null
+                        RulesetErrorSeverity.Warning, sourceObject = victoryType
                     )
         }
+    }
+
+    private fun addTranslationNameCollisionWarnings(lines: RulesetErrorList) {
+        val translatableNames = ruleset.allNames().toList()
+
+        val builtInRulesetNames = BaseRuleset.entries.map { it.fullName }.toSet()
+        // Base rulesets intentionally reuse a few display names in different source types:
+        // "Scout" is both a BaseUnit and UnitType, "Settler" is a BaseUnit and Difficulty,
+        // and some great person names appear in both UnitNameGroups and generated unit names.
+        val knownBenignSourceCollisions = setOf(
+            setOf("BaseUnit", "UnitType"),
+            setOf("BaseUnit", "Difficulty"),
+            setOf("BaseUnit", "Difficulty", "Tutorial"),
+            setOf("BaseUnit", "UnitNameGroup"),
+            setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Personality", "Nation.leaderName"),
+            setOf("Specialist", "UnitNameGroup")
+        )
+
+        val duplicateNames = translatableNames
+            .groupBy { it.name }
+            .filter { (_, names) -> shouldReportTranslationNameCollision(names, builtInRulesetNames, knownBenignSourceCollisions) }
+            .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
+            .toSortedMap()
+
+        for ((name, sources) in duplicateNames) {
+            lines.add(
+                "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
+                RulesetErrorSeverity.OK,
+                sourceObject = null
+            )
+        }
+    }
+
+    private fun shouldReportTranslationNameCollision(
+        names: List<RulesetName>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        val sourceTypes = names.map { it.source }.toSet()
+        if (sourceTypes.size < 2) return false
+
+        val origins = names.map { it.originRuleset }
+        if (isCollisionWithinSingleBuiltInRuleset(origins, builtInRulesetNames)) return false
+        if (isKnownBenignBuiltInSourceCollision(sourceTypes, origins, builtInRulesetNames, knownBenignSourceCollisions)) return false
+
+        return true
+    }
+
+    private fun isCollisionWithinSingleBuiltInRuleset(
+        origins: List<String>,
+        builtInRulesetNames: Set<String>
+    ): Boolean {
+        if (origins.any { it.isEmpty() }) return false
+        val distinctOrigins = origins.toSet()
+        return distinctOrigins.size == 1 && distinctOrigins.single() in builtInRulesetNames
+    }
+
+    private fun isKnownBenignBuiltInSourceCollision(
+        sourceTypes: Set<String>,
+        origins: List<String>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        return sourceTypes in knownBenignSourceCollisions
+            && origins.all { it in builtInRulesetNames }
+    }
+
+    private fun addEmptyNamesErrors(lines: RulesetErrorList) {
+        val emptyNameObjects = ruleset.allRulesetObjects()
+            .filter { it.name.isEmpty() && it !is EventChoice }
+            .toList()
+        for (obj in emptyNameObjects)
+            lines.add("There's a ${obj::class.simpleName} with an empty name in ${obj.originRuleset}", RulesetErrorSeverity.Error, obj)
     }
 
     //endregion
@@ -545,8 +652,8 @@ open class RulesetValidator protected constructor(
     private data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(innerColor)
-        val outerColorLuminance = getRelativeLuminance(outerColor)
+        val innerColorLuminance = innerColor.getRelativeLuminance()
+        val outerColorLuminance = outerColor.getRelativeLuminance()
 
         val innerLerpColor: Color
         val outerLerpColor: Color
@@ -676,7 +783,7 @@ open class RulesetValidator protected constructor(
     private fun checkTilesetSanity(lines: RulesetErrorList) {
         // If running from a jar *and* checking a builtin ruleset, skip this check.
         // - We can't list() the jsons, and the unit test before release is sufficient, the tileset config can't have changed since then.
-        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+        if (ruleset.folderLocation == null && isRunFromJar(this))
             return
 
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons/TileSets")
@@ -753,4 +860,51 @@ open class RulesetValidator protected constructor(
         }
     }
 
+    private fun checkFreeBuildingPossibleRecursions(lines: RulesetErrorList) {
+        fun <K, V> Sequence<Pair<K, V>>.groupByPair() =
+            groupBy({ it.first }, { it.second })
+        fun getBuildingIndex(type: UniqueType): Map<String, List<Unique>> =
+            ruleset.allUniques()
+            .filter { it.type == type }
+            .map { it.params[0] to it }
+            .groupByPair()
+        fun List<Unique>.displayUniques(): String =
+            joinToString {
+                "\"${it.text}\"" +
+                    if (it.sourceObjectType == null) ""
+                    else " on ${it.getSourceNameForUser()} \"${it.sourceObjectName}\""
+            }
+        val suppressorKey = "is both granted free and could possibly be removed by triggers"
+        fun getSuppressor() =
+            UniqueType.SuppressWarnings.placeholderText.fillPlaceholders(suppressorKey)
+
+        // Map of building **names** that are granted free via triggerable anywhere to a List of source Uniques
+        val allFreeBuildings = getBuildingIndex(UniqueType.GainFreeBuildings)
+        // Map of building **filters** that are removed via triggerable anywhere to a List of source Uniques
+        val allRemovals = getBuildingIndex(UniqueType.RemoveBuilding)
+        // Possible sources of infinite recursion: Map of buildingName to a list of all possibly removing Uniques
+        val possibleRecursions = allFreeBuildings.keys.asSequence()
+            .filter { it in ruleset.buildings } // The names can still be non-existing, which is checked elsewhere
+            .map { name -> name to ruleset.buildings[name]!! }
+            .flatMap { (name, building) ->
+                allRemovals.keys.flatMap { filter ->
+                    // Double flatMap since more than one filter can match the building, and we want all removal Uniques in a single List
+                    allRemovals[filter]!!.mapNotNull {
+                        if (building.matchesFilter(filter)) name to it else null
+                    }
+                }
+            }
+            .groupByPair()
+
+        // Output
+        for ((buildingName, removals) in possibleRecursions) {
+            val grants = allFreeBuildings[buildingName]!!
+            val text = "Building \"$buildingName\" $suppressorKey.\n" +
+                "This can lead to infinite recursion if care is not taken that conditionals are mutually exclusive.\n" +
+                "Grants: ${grants.displayUniques()},\n" +
+                "Possible removals: ${removals.displayUniques()}\n" +
+                "If you're *SURE* this is safe, add the unique \"${getSuppressor()}\" to the building."
+            lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, ruleset.buildings[buildingName], grants.firstOrNull() )
+        }
+    }
 }

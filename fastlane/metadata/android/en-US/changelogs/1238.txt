@@ -1,0 +1,17 @@
+Fixed mosque of djenne not working until industrial age
+
+By Fanfblrik: 
+- Don't wipe city-state relations on liberation 
+- Freeze Demographics rankings to turn-start snapshots 
+
+fix: MP upload no longer causes improvements to advance - By cy-elec
+
+By WhoIsJohannes:
+- AI improvements: parallel settlers, expansion un-latch, research agreements, annex guard 
+- CPU performance improvements 
+
+By SomeTroglodyte:
+- Fix "on losing unit" triggers running when a new unit can't be placed
+- Allow limited conditionals on UniqueType.HiddenFromCivilopedia
+- Catch load from custom location exceptions
+- Fix the tile info "needs tech" line

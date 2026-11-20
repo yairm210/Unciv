@@ -12,15 +12,15 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stat.Companion.statsUsableToBuy
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.components.fonts.Fonts
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
     @Readonly fun isBuildable(cityConstructions: CityConstructions): Boolean
-    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
+    /** @param queue A snapshot of [cityConstructions]' queue taken once by a caller that checks many constructions in a row
+     *  (the city screen builds its list on another thread), see [INonPerpetualConstruction.getRejectionReasons] */
+    @Readonly fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String> = cityConstructions.constructionQueue): Boolean
     
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * Uses [state] to determine which civ or city this is built for*/
@@ -40,7 +40,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     @Readonly fun getProductionCost(civInfo: Civilization, city: City?): Int
     @Readonly fun getStatBuyCost(city: City, stat: Stat): Int?
-    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
+    /** @param ownQueue The part of [cityConstructions]' own queue that counts as already existing when checking [UniqueType.MaxNumberBuildable].
+     *  The default is all of it: "may another copy be added?". To re-check an entry that is queued already, pass the entries
+     *  before it, and to check one about to be bought, pass the queue without it ([CityConstructions.queueWithoutOneOf]) -
+     *  otherwise the entry counts against itself.
+     *  Take the queue once per task: it can be replaced by another thread at any time. */
+    @Readonly fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String> = cityConstructions.constructionQueue): Sequence<RejectionReason>
+
+    /** [isBuildable] with an explicit [ownQueue], see [getRejectionReasons] */
+    @Readonly fun isBuildable(cityConstructions: CityConstructions, ownQueue: List<String>): Boolean =
+        getRejectionReasons(cityConstructions, ownQueue).none()
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     @Readonly fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
@@ -74,7 +83,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
     @Readonly
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+        // Buying a queued entry takes it out of the queue, so it must not count against itself
+        val rejectionReasons = getRejectionReasons(cityConstructions, cityConstructions.queueWithoutOneOf(name))
         return rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 
@@ -153,9 +163,14 @@ enum class PurchaseReason(val purchasable: Boolean) {
 }
 
 
-class RejectionReason(val type: RejectionReasonType,
-                      val errorMessage: String = type.errorMessage,
-                      val shouldShow: Boolean = type.shouldShow) {
+class RejectionReason(
+    val type: RejectionReasonType,
+    val errorMessage: String = type.errorMessage,
+    val shouldShow: Boolean = type.shouldShow,
+    val extraData: IExtraData? = null
+) {
+    interface IExtraData
+    data class RequiresBuildingInAllCitiesExtraData(val required: String, val cities: List<City>) : IExtraData
 
     @Readonly fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
@@ -260,7 +275,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
-    
+
     NoSuchImprovement(false, "No such improvement exists in the ruleset"),
     NoTileCanContainImprovement(false, "No tile can contain this improvement"),
 
@@ -276,63 +291,13 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     PopulationRequirement(true, "Requires more population"),
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
-    NoPlaceToPutUnit(true, "No space to place this unit");
+    NoPlaceToPutUnit(true, "No space to place this unit"),
+    ;
 
     val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }
     @Pure fun toInstance() = defaultInstance
 
     @Pure
-    fun toInstance(errorMessage: String = this.errorMessage,
-        shouldShow: Boolean = this.shouldShow): RejectionReason {
-        return RejectionReason(this, errorMessage, shouldShow)
-    }
-}
-
-open class PerpetualConstruction(override var name: String, val description: String) :
-    IConstruction {
-
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    @Readonly open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
-    override fun getStockpiledResourceRequirements(state: GameContext) = Counter.ZERO
-
-    companion object {
-        val science = PerpetualStatConversion(Stat.Science)
-        val gold = PerpetualStatConversion(Stat.Gold)
-        val culture = PerpetualStatConversion(Stat.Culture)
-        val faith = PerpetualStatConversion(Stat.Faith)
-        val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {
-            override fun isBuildable(cityConstructions: CityConstructions): Boolean = true
-        }
-
-        val perpetualConstructionsMap: Map<String, PerpetualConstruction>
-                = mapOf(science.name to science, gold.name to gold, culture.name to culture, faith.name to faith, idle.name to idle)
-
-        /** @return whether [name] represents a PerpetualConstruction - note "" is translated to Nothing in the queue so `isNamePerpetual("")==true` */
-        fun isNamePerpetual(name: String) = name.isEmpty() || name in perpetualConstructionsMap
-    }
-
-    override fun isBuildable(cityConstructions: CityConstructions): Boolean =
-            throw Exception("Impossible!")
-
-    override fun getResourceRequirementsPerTurn(state: GameContext?) = Counter.ZERO
-
-    override fun requiredResources(state: GameContext): Set<String> = emptySet()
-}
-
-open class PerpetualStatConversion(val stat: Stat) :
-    PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
-
-    override fun getProductionTooltip(city: City, withIcon: Boolean) : String
-            = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}${if (withIcon) stat.character else ""}/${Fonts.turn}"
-    @Readonly fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
-
-    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        val city = cityConstructions.city
-        if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled())
-            return false
-
-        val stateForConditionals = city.state
-        return city.civ.getMatchingUniques(UniqueType.EnablesCivWideStatProduction, stateForConditionals)
-            .any { it.params[0] == stat.name }
-    }
+    fun toInstance(errorMessage: String = this.errorMessage, shouldShow: Boolean = this.shouldShow, extraData: RejectionReason.IExtraData? = null) =
+        RejectionReason(this, errorMessage, shouldShow, extraData)
 }

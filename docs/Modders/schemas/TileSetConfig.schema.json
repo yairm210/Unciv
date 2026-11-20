@@ -15,35 +15,6 @@
       "title": "Use Summary Images",
       "description": "If true, summary images are used for specific groups of images instead of using individual tile images. The summary images must be placed in the same folder as every other tile image."
     },
-    "unexploredTileColor": {
-      "type": "object",
-      "title": "Unexplored Tile Color",
-      "description": "The color used for unexplored tiles. The color gets approximated by 60% to allow the colors of the images below to shine through.",
-      "properties": {
-        "r": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "g": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "b": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "a": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        }
-      },
-      "required": ["r", "g", "b", "a"],
-      "additionalProperties": false
-    },
     "fogOfWarColor": {
       "type": "object",
       "title": "Fog Of War Color",

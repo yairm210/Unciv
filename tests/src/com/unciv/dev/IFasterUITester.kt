@@ -8,7 +8,15 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  *  @see FasterUIDevTesters
  */
 interface IFasterUITester {
+    /** [FasterUIDevelopment] will offer your tester with this label. [FasterUIDevTesters] defaults it to the enum name.  */
     fun testGetLabel(): String?
+
+    /** Create your testing container and content. Will be added to the stage centered, and if it does not set its own size, sized to half the stage per direction. */
     fun testCreateExample(screen: BaseScreen): Actor
+
+    /** Optional code to execute after your testing container is on the stage */
     fun testAfterAdd() {}
+
+    /** If we want to launch any Unciv screen directly, provide this one and a dummy `Actor()` from [testCreateExample] */
+    val testLaunchScreen: (() -> BaseScreen)? get() = null
 }

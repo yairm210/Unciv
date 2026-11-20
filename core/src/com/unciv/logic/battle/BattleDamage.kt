@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
@@ -34,7 +35,7 @@ object BattleDamage {
         return "$source - $conditionalsText"
     }
 
-    @Readonly
+    @Readonly @ReturnsNewInstance
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
         val modifiers = Counter<String>()
 
@@ -56,7 +57,7 @@ object BattleDamage {
                 modifiers[greatGeneralName] = greatGeneralBonus
 
         } else if (combatant is CityCombatant) {
-            for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
+            combatant.city.forEachMatchingUnique(UniqueType.StrengthForCities, conditionalState) { unique ->
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }
@@ -96,7 +97,7 @@ object BattleDamage {
         val civInfo = combatant.getCivInfo()
         val modifiers = Counter<String>()
 
-        for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
+        combatant.unit.forEachMatchingUnique(UniqueType.Strength, conditionalState, checkCivInfoUniques = true) { unique ->
             modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
         }
 
@@ -136,7 +137,7 @@ object BattleDamage {
         attacker: ICombatant,
         defender: ICombatant, tileToAttackFrom: Tile
     ): Counter<String> {
-        @LocalState val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
+        val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
 
         if (attacker is MapUnitCombatant) {
 
@@ -157,9 +158,10 @@ object BattleDamage {
                     var flankingBonus = BattleConstants.BASE_FLANKING_BONUS
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
-                    for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
-                            gameContext = getGameContext(CombatAction.Attack, attacker, defender)))
+                    attacker.unit.forEachMatchingUnique(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
+                            gameContext = getGameContext(CombatAction.Attack, attacker, defender)) { unique ->
                         flankingBonus *= unique.params[0].toPercent()
+                    }
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
                 }
@@ -215,7 +217,7 @@ object BattleDamage {
         val modifiers = Counter<String>()
 
         if (attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)) {
+            attacker.unit.forEachMatchingUnique(UniqueType.StrengthWhenAirsweep) { unique ->
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }
@@ -225,7 +227,7 @@ object BattleDamage {
 
     @Readonly
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile): Counter<String> {
-        @LocalState val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend, tileToAttackFrom)
+        val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend, tileToAttackFrom)
         val tile = defender.getTile()
 
         if (defender is MapUnitCombatant && !defender.unit.isEmbarked()) { // Embarked units get no terrain defensive bonuses
@@ -317,6 +319,18 @@ object BattleDamage {
         val ratio = getAttackingStrength(attacker, defender, tileToAttackFrom) /
                 getDefendingStrength(attacker, defender, tileToAttackFrom)
         return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
+    }
+
+    /** (max, min) bonus damage dealt to [defender] from an additional [UniqueType.ExtraRangedAttack] - `(0, 0)` if not applicable. */
+    @Readonly
+    fun getExtraRangedAttackBonusDamage(attacker: MapUnitCombatant, defender: ICombatant, tileToAttackFrom: Tile): Pair<Int, Int> {
+        var maxExtra = 0
+        var minExtra = 0
+        for (fakeAttacker in Battle.getExtraRangedAttackFakeUnits(attacker)) {
+            maxExtra += calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 1f)
+            minExtra += calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 0f)
+        }
+        return maxExtra to minExtra
     }
 
     @Pure

@@ -1,0 +1,14 @@
+Fixed minimap problems when spectating-as-civ
+
+Avoid future ANRs from screen-switching
+
+reject ruleset objects that replace themselves - By mvanhorn
+
+Record client version of latest turn submitted by each civ in Multiplayer - By unciv-loof
+
+By SomeTroglodyte:
+- Fix "Connect road" with A-Star pathing enabled
+- Allow assigning "key" mappings to extra mouse buttons
+- More screens support the "F1" binding to Civilopedia
+- Prevent double terrain damage from healing
+- Fix equalizeColumns for empty lower tables

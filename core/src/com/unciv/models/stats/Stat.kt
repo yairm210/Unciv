@@ -30,6 +30,7 @@ enum class Stat(
         @Pure fun safeValueOf(name: String) = valuesAsMap[name]
         @Pure fun isStat(name: String) = name in valuesAsMap
         @Pure fun names() = valuesAsMap.keys
+        val fontChars = entries.map { it.character }.toSet()
         val statsWithCivWideField = setOf(Gold, Science, Culture, Faith, Happiness)
     }
 }

@@ -4,7 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests [Technology][Technology] and [Era][com.unciv.models.ruleset.tech.Era] filters*/
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class TechFilterTests {
     private lateinit var game: TestGame
     private lateinit var civ: Civilization

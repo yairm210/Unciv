@@ -78,7 +78,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it != otherCiv && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it != otherCiv && it.isMajorCiv && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
@@ -129,12 +129,18 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
             when (offer.type) {
                 TradeOfferType.Embassy -> {
-                    for (tile in from.getCapital()!!.getCenterTile().getTilesInDistance(2))
+                    from.getCapital()!!.getCenterTile().forEachTileInDistance(2) { tile ->
                         tile.setExplored(to, true)
+                    }
                 }
                 TradeOfferType.Gold -> {
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
+                }
+                TradeOfferType.Stockpiled_Resource -> {
+                    val resource = from.gameInfo.ruleset.tileResources[offer.name] ?: return
+                    to.gainStockpiledResource(resource, offer.amount)
+                    from.gainStockpiledResource(resource, -offer.amount)
                 }
                 TradeOfferType.Technology -> {
                     to.tech.addTechnology(offer.name)
@@ -199,7 +205,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeOfferType.PeaceProposal -> {
                     // Convert PeaceProposal to peaceTreaty and apply to warring civs
                     val trade = Trade()
-                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = from.gameInfo.speed)
                     trade.ourOffers.add(peaceOffer)
                     trade.theirOffers.add(peaceOffer)
                     
@@ -211,7 +217,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     }
 
                     thirdCiv.getDiplomacyManager(from)!!.apply {
-                        trades.add(trade)
+                        trades.add(trade.reverse())
                         updateHasOpenBorders()
                     }
 

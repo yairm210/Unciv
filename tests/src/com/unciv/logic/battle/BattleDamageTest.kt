@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class BattleDamageTest {
     private lateinit var attackerCiv: Civilization
     private lateinit var defenderCiv: Civilization
@@ -51,6 +51,36 @@ class BattleDamageTest {
         // then
         assertEquals(1, attackModifiers.size)
         assertEquals(25, attackModifiers.sumValues())
+    }
+
+    @Test
+    fun `should keep promotion modifiers in ruleset order`() {
+        // Promotion names are chosen so HashSet iteration reverses the ruleset insertion order.
+        val alphaPromotion = testGame.createUnitPromotion("[+10]% Strength <when attacking>")
+        testGame.ruleset.unitPromotions.remove(alphaPromotion.name)
+        alphaPromotion.name = "Alpha"
+        testGame.ruleset.unitPromotions[alphaPromotion.name] = alphaPromotion
+
+        val zetaPromotion = testGame.createUnitPromotion("[+20]% Strength <when attacking>")
+        testGame.ruleset.unitPromotions.remove(zetaPromotion.name)
+        zetaPromotion.name = "Zeta"
+        testGame.ruleset.unitPromotions[zetaPromotion.name] = zetaPromotion
+
+        defaultAttackerUnit.promotions.promotions.add(alphaPromotion.name)
+        defaultAttackerUnit.promotions.promotions.add(zetaPromotion.name)
+        defaultAttackerUnit.updateUniques()
+
+        val attackModifiers = BattleDamage.getAttackModifiers(
+            MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile
+        )
+
+        assertEquals(listOf("Alpha", "Zeta"), attackModifiers.keys.map { key ->
+            when {
+                "Alpha" in key -> "Alpha"
+                "Zeta" in key -> "Zeta"
+                else -> key
+            }
+        })
     }
 
     @Test

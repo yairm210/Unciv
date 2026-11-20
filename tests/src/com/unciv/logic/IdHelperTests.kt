@@ -1,11 +1,11 @@
 package com.unciv.logic
 
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class IdHelperTests {
     @Test
     fun getCheckDigit_uuid_tests() {

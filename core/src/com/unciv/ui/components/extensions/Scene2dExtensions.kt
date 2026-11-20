@@ -29,21 +29,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActorAttachments
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.components.input.onChange
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleButton
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -132,16 +134,17 @@ fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 
-fun Actor.surroundWithCircle(
+fun <T : Actor> T.surroundWithCircle(
     size: Float,
     resizeActor: Boolean = true,
     color: Color = Color.WHITE,
     circleImageLocation: String = ImageGetter.circleLocation
-): IconCircleGroup {
+): IconCircleGroup<T> {
     return IconCircleGroup(size, this, resizeActor, color, circleImageLocation)
 }
 
-fun Actor.surroundWithThinCircle(color: Color=ImageGetter.CHARCOAL): IconCircleGroup = surroundWithCircle(width+2f, false, color)
+fun <T : Actor> T.surroundWithThinCircle(color: Color = ImageGetter.CHARCOAL): IconCircleGroup<T> =
+    surroundWithCircle(width + 2f, false, color)
 
 
 fun Actor.addBorder(size: Float, color: Color, expandCell: Boolean = false): Table {
@@ -281,8 +284,13 @@ fun Image.setSize(size: Float) {
 }
 
 /** Proxy for [ScrollPane.scrollTo] using the [bounds][Actor.setBounds] of a given [actor] for its parameters */
-fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) =
-    scrollTo(actor.x, actor.y, actor.width, actor.height, center, center)
+fun ScrollPane.scrollTo(actor: Actor, center: Boolean = false) {
+    if (!center)
+        return scrollTo(actor.x, actor.y, actor.width, actor.height, false, false)
+    // According to @Kilo-cy, the logical call to pass the centering to the method
+    // suffers a regression in Gdx 1.14.2 which deplaces the actor by its height upwards
+    scrollTo(actor.x + actor.width / 2, actor.y + actor.height / 2, 0f, 0f, true, true)
+}
 
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
@@ -292,15 +300,8 @@ fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = fal
 
 /** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
  *  hover version of the image from it, then [surroundWithCircle] it. */
-fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): Group {
-    val style = ImageButton.ImageButtonStyle()
-    val image = ImageGetter.getDrawable(this)
-    style.imageUp = image
-    style.imageOver = image.tint(overColor)
-    val button = ImageButton(style)
-    button.setSize(iconSize, iconSize)
-    return button.surroundWithCircle( circleSize, false, circleColor)
-}
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color) =
+    IconCircleButton(this, iconSize, circleSize, circleColor, overColor)
 
 /** Return a "close" button, visually a circle with "x" icon that goes red on mouse-over.
  *
@@ -313,12 +314,7 @@ fun getCloseButton(
     circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
     overColor: Color = Color.RED,
     action: () -> Unit
-): Group {
-    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
-    closeButton.onActivation(action)
-    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-    return closeButton
-}
+) = IconCircleButton.getCloseButton(size, iconSize, circleColor, overColor, action)
 
 /**
  * Adds a white-circled (x) close button to [parent], positioned to the top right,
@@ -329,11 +325,11 @@ fun addRoundCloseButton(
     action: () -> Unit
 ): Group {
     val size = 30f
-    val button = getCloseButton(size, size-15f, Color.CLEAR, Color.RED, action = action)
+    val button = getCloseButton(size, size - 15f, Color.CLEAR, Color.RED, action = action)
         .surroundWithCircle(size, false, BaseScreen.clearColor)
-        .surroundWithCircle(size+4f, false, Color.WHITE)
+        .surroundWithCircle(size + 4f, false, Color.WHITE)
     parent.addActor(button)
-    button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
+    button.setPosition(parent.width - button.width * 0.75f, parent.height - button.height * 0.75f)
     return button
 }
 
@@ -393,6 +389,28 @@ fun Label.setFontSize(size: Int): Label {
     return this
 }
 
+/** Only if this Label contains [Stat symbols][Stat.fontChars], tweak `fontColor` and `text`
+ *  so that these symbols render normally and not as black outline.
+ *  - **Only makes sense when the font color is very dark**
+ *  - **To be called _after_ translation!**
+ */
+fun Label.removeFontColorFromStatIcons() {
+    if (text.none { it in Stat.fontChars }) return
+    val fontColorMarkup = "[#${style.fontColor.toString().substring(0, 6)}]"
+    val newText = buildString {
+        append(fontColorMarkup)
+        for (char in text) {
+            if (char in Stat.fontChars) {
+                append("[]")
+                append(char)
+                append(fontColorMarkup)
+            } else append(char)
+        }
+    }
+    setFontColor(Color.WHITE)
+    setText(newText)
+}
+
 /** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
  *  @return the receiver to allow chaining
  */
@@ -448,6 +466,7 @@ object GdxKeyCodeFixes {
         DEL -> "Del"  // Gdx would name this "Forward Delete"
         BACKSPACE -> "Backspace"  // Gdx would name this "Delete"
         else -> Input.Keys.toString(keyCode)
+            ?: VirtualMouseButtonKeys.fromKey(keyCode)?.label
             ?: ""
     }
 
@@ -456,7 +475,8 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = VirtualMouseButtonKeys.fromLabel(name)?.keyCode
+                ?: Input.Keys.valueOf(name)
             if (code == -1) UNKNOWN else code
         }
     }
@@ -468,40 +488,66 @@ fun Input.isAltKeyPressed() = isKeyPressed(Input.Keys.ALT_LEFT) || isKeyPressed(
 fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
         (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
 
-/** Sets first row cell's minWidth to the max of the widths of that column over all given tables
+/**
+ * Ensures consistent horizontal layout for [tables] by setting [minWidth][Cell.minWidth] of each
+ * column's top [Cell] to the max of the [widths][Table.getColumnWidth] of that column over all given tables.
  *
- * Notes:
+ * Intended to align independently laid-out Tables that are meant to look like one grid - e.g. a
+ * fixed header row, a scrolling body, and a totals row, each a separate Table/ScrollPane so they
+ * can scroll or update independently while still lining up visually.
+ *
+ * ### Notes:
  * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
- * - first table determines columns processed, all others must have at least the same column count.
- * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
- * - Note: The receiver <Group> isn't actually needed except to make sure the arguments are descendants.
+ * - Unequal column counts between tables are allowed,
+ *   as are 'ragged' Tables (unequal column counts per row) and [colspan][Cell.colspan].
+ * - Per table and column, only the topmost cell that is *not* `colspan`ned gets its `minWidth` set.
+ *   If every cell ever occupying that column position is colspanned across a wider column range
+ *   (for all rows), that column is **silently left unequalized** for that table - there is no
+ *   single unambiguous cell to size. This is a deliberate, accepted limitation, not a bug.
+ * - Cells needing `minWidth` with `actor == null` get a dummy inert [Actor] assigned,
+ *   since empty cells otherwise ignore `minWidth` entirely.
+ * - Tables are left with `needsLayout==true`, so while equal width is ensured,
+ *   you may have to call `pack()` if you want to see the value _before_ this is rendered.
  */
 fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
         table.packIfNeeded()
     }
-    val columns = tables.first().columns
-    check(tables.all { it.columns >= columns }) {
-        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
-    }
+    if (tables.count { it.rows > 0 } <= 1) return // Nothing to do when at most one table has actual cells
 
+    val tablesWithRows = tables.filter { it.rows > 0 } // getColumnWidth crashes on tables with no cells at all
+    val columns = tablesWithRows.maxOf { it.columns }
     val widths = (0 until columns)
         .mapTo(ArrayList(columns)) { column ->
-            tables.maxOf { it.getColumnWidth(column) }
+            tablesWithRows.maxOf { it.getColumnWidth(column) } // getColumnWidth is 0f for non-existent columns
         }
+    fun neutralActor() = Actor().apply { touchable = Touchable.disabled }
+
     for (table in tables) {
-        for (column in 0 until columns)
-            table.cells[column].run {
-                if (actor == null)
+        if (table.rows == 0) continue
+        // Support ragged tables by treating the topmost Cell per column, whichever row it's in:
+        // This code assumes normal Table construction where Cell.row increases monotonously over [cells].
+        // Table currently does not allow breaking that rule, but is must be said there is no documented guarantee.
+        val columnDone = BooleanArray(table.columns)
+        // Not using gdx.Array.iterator to sidestep reentrancy warning and problems - this is efficient:
+        for (i in 0 until table.cells.size) {
+            val cell = table.cells[i]
+            if (cell.colspan != 1) continue // ignore colspanned cells, some other row must have better candidates
+            val col = cell.column
+            if (columnDone[col]) continue
+            columnDone[col] = true
+            cell.run {
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
-                else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
-                    // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
-                    if (!Align.isCenterHorizontal(labelAlign))
+                if (actor == null) setActor(neutralActor())
+                else (actor as? Label)?.run {
+                    if (Align.isCenterHorizontal(align) && !Align.isCenterHorizontal(labelAlign))
                         setAlignment(Align.center)
+                    if (Align.isRight(align) && !Align.isRight(labelAlign))
+                        setAlignment(Align.right)
                 }
-                minWidth(widths[column] - padLeft - padRight)
+                minWidth(widths[col] - padLeft - padRight)
             }
+        }
         table.invalidate()
     }
 }
@@ -518,8 +564,69 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     return field.get(this) as Pixmap
 }
 
-fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
+}
+
+/** Recursively return all children of a Group, depth-first */
+fun Group.allChildren(): Sequence<Actor> = sequence {
+    for (child in children) {
+        if (child is Group) yieldAll(child.allChildren())
+        yield(child)
+    }
+}
+
+/** Adds an indicator icon with shadow on top of a Portrait. The defaults look good on 30f-sized Portraits.
+ *  @receiver A Portrait, already sized
+ *  @param relativeSize This allows scaling the indicator.
+ *  @param shiftXSize This allows scaling the shift towards the right.
+ *  @param shiftYSize This allows scaling the shift towards the top.
+ *  @param indicatorName allows using something other than OtherIcons/Capital
+ */
+fun Portrait.addCapitalIndicator(
+    relativeSize: Float = .546f,
+    shiftXSize: Float = .848f,
+    shiftYSize: Float = shiftXSize,
+    indicatorName: String = "OtherIcons/Capital"
+) {
+    val shiftXSize = this.width * shiftXSize
+    val shiftYSize = this.width * shiftYSize
+    val indicatorSize = this.width * relativeSize
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        color = Color.BLACK.cpy().apply { a = 0.4f }
+        setSize(indicatorSize * 1.2f)
+        setPosition(shiftXSize * 1.04f, shiftYSize * .96f, Align.center)
+    })
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        setSize(indicatorSize)
+        setPosition(shiftXSize, shiftYSize, Align.center)
+    })
+}
+
+/** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
+fun Color.getRelativeLuminance(): Double {
+    @Pure
+    fun getRelativeChannelLuminance(channel: Float): Double =
+        if (channel < 0.03928) channel / 12.92
+        else ((channel + 0.055) / 1.055).pow(2.4)
+
+    val r = getRelativeChannelLuminance(r)
+    val g = getRelativeChannelLuminance(g)
+    val b = getRelativeChannelLuminance(b)
+
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+@Readonly
+fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range from 1 to 21
+    val innerColorLuminance = color1.getRelativeLuminance()
+    val outerColorLuminance = color2.getRelativeLuminance()
+
+    return if (innerColorLuminance > outerColorLuminance)
+        (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+    else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
 }

@@ -1,0 +1,13 @@
+Malfermfonta reimplementado de la plej fama civilizaciokonstrua ludo de ĉiuj tempoj — rapida, malpeza, sen reklamoj, por ĉiam senpaga!
+
+Konstruu vian civilizacion, esploru teknologiojn, vastigu viajn urbojn kaj venku viajn malamikojn!
+
+Petoj? Cimoj? Ĉu vi volas helpi la disvolvon? Cimspurilo de la aplikaĵo <a href="https://github.com/yairm210/Unciv/issues">GitHub-temoj de Unciv</a>
+
+Ĉu demandoj? Ĉu komentoj? Aliĝu al ni ĉe Discord ĉe <a href="https://discord.gg/bjrB4Xw">Unciv Discord</a> ;)
+
+Ĉu vi volas helpi traduki la ludon al via lingvo? Vidu <a href="https://yairm210.github.io/Unciv/Translating/Translating/">Vikio por traduki</a>
+
+La mondo atendas! Ĉu vi konstruos vian civilizacion en imperion, kiu eltenos la provon de la tempo?
+
+La permeso “plena reta aliro” estas bezonata por uzant-iniciataj elŝutoj kaj por la plurludanta reĝimo. Ĉiuj aliaj listigitaj permesoj estas inkluzivitaj aŭtomate de la API uzata por realigi plurludantajn vicosciigojn. Retaj permesoj estas uzataj por listigi modifaĵojn, elŝuti modifaĵojn, elŝuti muzikon kaj alŝuti/elŝuti plurludantajn ludojn. Neniu alia interreta komunikado estas iniciata de Unciv.

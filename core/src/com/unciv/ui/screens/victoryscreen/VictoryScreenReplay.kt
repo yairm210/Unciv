@@ -51,7 +51,7 @@ class VictoryScreenReplay(
         )
         replayMap = ReplayMap(
             gameInfo.tileMap,
-            worldScreen.viewingCiv,
+            worldScreen.selectedGameView.civView.getCiv(),
             worldScreen.stage.width - 50,
             worldScreen.stage.height - 250  // Empiric: `stage.height - pager.contentScroll_field.height` after init is 244.
         )

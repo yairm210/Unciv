@@ -2,11 +2,17 @@
 package com.unciv.uniques
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.CityStateFunctions
+import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.stats.Stats
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
@@ -14,7 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.abs
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class GlobalUniquesTests {
 
     private lateinit var game: TestGame
@@ -579,7 +585,7 @@ class GlobalUniquesTests {
 
     @Test
     fun foodConsumptionBySpecialistsTest() {
-        val civInfo = game.addCiv("[-50]% Food consumption by specialists [in all cities]")
+        val civInfo = game.addCiv("[-50]% Food consumption by [Specialists] [in all cities]")
         val city = game.addCity(civInfo, game.getTile(HexCoord.Zero), true, initialPopulation = 1)
 
         val building = game.createBuilding()
@@ -626,6 +632,21 @@ class GlobalUniquesTests {
         Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -1f) < epsilon)
     }
 
+    /** #16025: a percent Happiness bonus scales the city's happiness sources, not its unhappiness */
+    @Test
+    fun statPercentBonusAppliesToCityHappiness() {
+        val civInfo = game.addCiv()
+        val city = game.addCity(civInfo, game.getTile(HexCoord.Zero), true)
+        city.cityConstructions.addBuilding(game.createBuilding("[+2 Happiness]"))
+        city.cityStats.update()
+        val citiesUnhappiness = city.cityStats.happinessList["Cities"]!!
+        Assert.assertEquals(2f, city.cityStats.happinessList["Buildings"]!!, epsilon.toFloat())
+
+        city.cityConstructions.addBuilding(game.createBuilding("[+100]% [Happiness]"))
+        city.cityStats.update()
+        Assert.assertEquals(4f, city.cityStats.happinessList["Buildings"]!!, epsilon.toFloat())
+        Assert.assertEquals(citiesUnhappiness, city.cityStats.happinessList["Cities"]!!, epsilon.toFloat())
+    }
 
     // endregion happiness
 
@@ -689,7 +710,7 @@ class GlobalUniquesTests {
         val tests = listOf(
             "<if no Civilization has adopted [Oligarchy]>" to 1,
             "<if no Civilization has adopted [Tradition]>" to 0,
-            "<if no Civilization has adopted [God of Craftsman]>" to 1,
+            "<if no Civilization has adopted [God of Craftsmen]>" to 1,
             "<if no Civilization has adopted [Not A Policy]>" to 1,
             "<if no Civilization has adopted [Ancestor Worship]>" to 0,
             "<if no Civilization has adopted [Not A Belief]>" to 1,
@@ -754,6 +775,282 @@ class GlobalUniquesTests {
     }
 
     // endregion
+
+    // region Reveal entire map
+
+    private val revealEntireMapUnique = Unique("Reveals the entire map")
+    private val discoveryGoldUnique =
+        "[+100 Gold] for discovering a Natural Wonder (bonus enhanced to [+500 Gold] if first to discover it)"
+    private val knownWonderGoldUnique = "[+1 Gold] for every known Natural Wonder"
+    private val uponDiscoveringWonderGoldUnique =
+        "Gain [250] [Gold] <upon discovering a Natural Wonder>"
+
+    private fun revealEntireMap(civ: Civilization) =
+        UniqueTriggerActivation.triggerUnique(revealEntireMapUnique, civ)
+
+    private fun placeNaturalWonder(position: HexCoord, wonderName: String): Tile {
+        val tile = game.getTile(position)
+        tile.naturalWonder = wonderName
+        tile.setTerrainTransients()
+        return tile
+    }
+
+    private fun setupRevealMapCiv(vararg uniques: String): Civilization {
+        game.makeHexagonalMap(5)
+        val civ = game.addCiv(*uniques, isPlayer = true)
+        game.addCity(civ, game.getTile(HexCoord.Zero), true)
+        return civ
+    }
+
+    private fun discoveryNotifications(civ: Civilization) =
+        civ.notifications.filter { it.text.startsWith("We have discovered [") }
+
+    private fun rewardNotifications(civ: Civilization) =
+        civ.notifications.filter { it.text.startsWith("We have received [") }
+
+    private fun assertEntireMapExplored(civ: Civilization) {
+        Assert.assertTrue(
+            "Revealing the map should explore every tile",
+            game.tileMap.values.all { it.isExplored(civ) }
+        )
+    }
+
+    @Test
+    fun revealEntireMapDiscoversRemoteNaturalWonder() {
+        val civ = setupRevealMapCiv()
+        val wonderTile = placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        Assert.assertFalse(wonderTile.isExplored(civ))
+        Assert.assertFalse(civ.naturalWonders.contains("Mount Fuji"))
+        Assert.assertFalse(civ.viewableTiles.contains(wonderTile))
+
+        Assert.assertTrue(revealEntireMap(civ))
+
+        assertEntireMapExplored(civ)
+        Assert.assertTrue(civ.naturalWonders.contains("Mount Fuji"))
+        Assert.assertEquals(listOf("Mount Fuji"), civ.naturalWonders)
+    }
+
+    @Test
+    fun revealEntireMapDoesNotGrantVisionOrMeetCivilizations() {
+        val civ = setupRevealMapCiv()
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        val otherCiv = game.addCiv(isPlayer = true)
+        game.addCity(otherCiv, game.getTile(HexCoord(0, -5)), true)
+        placeNaturalWonder(HexCoord(4, 0), "Old Faithful")
+
+        val viewableBefore = civ.viewableTiles.toSet()
+        val diplomacyBefore = civ.diplomacy.keys.toSet()
+        val otherViewableBefore = otherCiv.viewableTiles.toSet()
+
+        Assert.assertTrue(revealEntireMap(civ))
+
+        Assert.assertEquals(viewableBefore, civ.viewableTiles)
+        Assert.assertEquals(diplomacyBefore, civ.diplomacy.keys.toSet())
+        Assert.assertFalse(civ.knows(otherCiv))
+        Assert.assertFalse(otherCiv.knows(civ))
+        Assert.assertEquals(otherViewableBefore, otherCiv.viewableTiles)
+        Assert.assertFalse(otherCiv.naturalWonders.contains("Mount Fuji"))
+        Assert.assertFalse(otherCiv.naturalWonders.contains("Old Faithful"))
+        Assert.assertTrue(civ.naturalWonders.contains("Mount Fuji"))
+        Assert.assertTrue(civ.naturalWonders.contains("Old Faithful"))
+        Assert.assertFalse(game.tileMap.values.all { it.isExplored(otherCiv) })
+    }
+
+    @Test
+    fun revealEntireMapGrantsFirstDiscoveryRewardsAndKnownWonderStats() {
+        val civ = setupRevealMapCiv(discoveryGoldUnique, knownWonderGoldUnique)
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        Assert.assertEquals(0, civ.gold)
+        Assert.assertTrue(revealEntireMap(civ))
+
+        Assert.assertEquals(500, civ.gold)
+        Assert.assertTrue(
+            civ.stats.getStatMapForNextTurn()["Natural Wonders"]!!.equals(Stats(gold = 1f, happiness = 1f))
+        )
+        Assert.assertEquals(1, discoveryNotifications(civ).size)
+        Assert.assertEquals(1, rewardNotifications(civ).size)
+    }
+
+    @Test
+    fun revealEntireMapGrantsOrdinaryRewardWhenWonderAlreadyKnown() {
+        val civ = setupRevealMapCiv(discoveryGoldUnique, knownWonderGoldUnique)
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        val otherCiv = game.addCiv()
+        otherCiv.naturalWonders.add("Mount Fuji")
+
+        Assert.assertTrue(revealEntireMap(civ))
+
+        Assert.assertEquals(100, civ.gold)
+        Assert.assertTrue(
+            civ.stats.getStatMapForNextTurn()["Natural Wonders"]!!.equals(Stats(gold = 1f, happiness = 1f))
+        )
+        Assert.assertEquals(listOf("Mount Fuji"), otherCiv.naturalWonders)
+    }
+
+    @Test
+    fun revealEntireMapDiscoversEachWonderNameOnce() {
+        val civ = setupRevealMapCiv(discoveryGoldUnique)
+        placeNaturalWonder(HexCoord(0, 4), "Great Barrier Reef")
+        placeNaturalWonder(HexCoord(0, 5), "Great Barrier Reef")
+        placeNaturalWonder(HexCoord(4, 0), "Mount Fuji")
+
+        Assert.assertTrue(revealEntireMap(civ))
+
+        Assert.assertEquals(setOf("Great Barrier Reef", "Mount Fuji"), civ.naturalWonders.toSet())
+        Assert.assertEquals(2, civ.naturalWonders.size)
+        Assert.assertEquals(1000, civ.gold)
+        Assert.assertEquals(2, discoveryNotifications(civ).size)
+        Assert.assertEquals(2, rewardNotifications(civ).size)
+
+        Assert.assertTrue(revealEntireMap(civ))
+        civ.cache.updateViewableTiles()
+
+        Assert.assertEquals(setOf("Great Barrier Reef", "Mount Fuji"), civ.naturalWonders.toSet())
+        Assert.assertEquals(2, civ.naturalWonders.size)
+        Assert.assertEquals(1000, civ.gold)
+        Assert.assertEquals(2, discoveryNotifications(civ).size)
+        Assert.assertEquals(2, rewardNotifications(civ).size)
+    }
+
+    @Test
+    fun revealEntireMapFiresUponDiscoveringNaturalWonderOncePerNewWonder() {
+        val civ = setupRevealMapCiv(uponDiscoveringWonderGoldUnique)
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+        placeNaturalWonder(HexCoord(4, 0), "Old Faithful")
+        civ.naturalWonders.add("Mount Fuji")
+
+        Assert.assertTrue(revealEntireMap(civ))
+
+        Assert.assertEquals(setOf("Mount Fuji", "Old Faithful"), civ.naturalWonders.toSet())
+        Assert.assertEquals(250, civ.gold)
+        Assert.assertEquals(1, discoveryNotifications(civ).size)
+        Assert.assertEquals(1, civ.notifications.count { it.text.contains("due to discovering a Natural Wonder") })
+
+        Assert.assertTrue(revealEntireMap(civ))
+        Assert.assertEquals(250, civ.gold)
+        Assert.assertEquals(1, discoveryNotifications(civ).size)
+        Assert.assertEquals(1, civ.notifications.count { it.text.contains("due to discovering a Natural Wonder") })
+    }
+
+    @Test
+    fun revealEntireMapSucceedsWithoutNewDiscoveries() {
+        val civ = setupRevealMapCiv(discoveryGoldUnique, uponDiscoveringWonderGoldUnique)
+
+        Assert.assertTrue(revealEntireMap(civ))
+        assertEntireMapExplored(civ)
+        Assert.assertTrue(civ.naturalWonders.isEmpty())
+        Assert.assertEquals(0, civ.gold)
+        Assert.assertTrue(discoveryNotifications(civ).isEmpty())
+        Assert.assertTrue(rewardNotifications(civ).isEmpty())
+
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+        civ.naturalWonders.add("Mount Fuji")
+        val knownBefore = civ.naturalWonders.toList()
+
+        Assert.assertTrue(revealEntireMap(civ))
+        assertEntireMapExplored(civ)
+        Assert.assertEquals(knownBefore, civ.naturalWonders)
+        Assert.assertEquals(0, civ.gold)
+        Assert.assertTrue(discoveryNotifications(civ).isEmpty())
+        Assert.assertTrue(rewardNotifications(civ).isEmpty())
+    }
+
+    @Test
+    fun normalSightDoesNotDiscoverWondersOutsideViewableTiles() {
+        val civ = setupRevealMapCiv(discoveryGoldUnique, uponDiscoveringWonderGoldUnique)
+        val wonderTile = placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        civ.cache.updateViewableTiles()
+
+        Assert.assertFalse(civ.viewableTiles.contains(wonderTile))
+        Assert.assertFalse(civ.naturalWonders.contains("Mount Fuji"))
+        Assert.assertEquals(0, civ.gold)
+        Assert.assertFalse(wonderTile.isExplored(civ))
+        Assert.assertTrue(civ.viewableTiles.all { it.isExplored(civ) })
+    }
+
+    @Test
+    fun spectatorRegistersNaturalWondersWithoutRewards() {
+        game.makeHexagonalMap(5)
+        val spectator = game.addCiv(game.ruleset.nations[Constants.spectator]!!, isPlayer = true)
+        placeNaturalWonder(HexCoord(0, 4), "Mount Fuji")
+
+        Assert.assertTrue(revealEntireMap(spectator))
+
+        assertEntireMapExplored(spectator)
+        Assert.assertTrue(spectator.naturalWonders.contains("Mount Fuji"))
+        Assert.assertEquals(0, spectator.gold)
+        Assert.assertTrue(spectator.notifications.none { it.text.contains("discover", ignoreCase = true) })
+
+        spectator.naturalWonders.clear()
+        spectator.cache.updateViewableTiles()
+
+        Assert.assertTrue(spectator.naturalWonders.contains("Mount Fuji"))
+        Assert.assertEquals(0, spectator.gold)
+        Assert.assertTrue(spectator.notifications.none { it.text.contains("discover", ignoreCase = true) })
+    }
+
+    // endregion
+    
+    // region City-State uniques
+    @Test
+    fun cityStateBNWGunboatDiplomacyInfluenceGainTest() {
+        // when
+        game.makeHexagonalMap(5)
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        game.addCity(cityState, cityStateCapitalTile)
+        
+        val normalCiv = game.addCiv()
+        val bullyCiv = game.addCiv(
+            "Gain [5] Influence per turn with City-States you could demand tribute from"
+        )
+
+        game.addUnit("Giant Death Robot", normalCiv, game.getTile(-2, 0))
+        game.addUnit("Giant Death Robot", bullyCiv, game.getTile(2, 0))
+
+        val normalDM = cityState.getDiplomacyManager(normalCiv)
+        val bullyDM = cityState.getDiplomacyManager(bullyCiv)
+        normalDM!!.nextTurn()
+        bullyDM!!.nextTurn()
+        
+        // then
+        Assert.assertTrue(bullyDM.getInfluence() > normalDM.getInfluence())
+        Assert.assertTrue(bullyDM.getInfluence() >= 5)
+    }
+
+    @Test
+    fun cityStateBNWGunboatDiplomacyDreadfulTributeTest() {
+        // when
+        game.makeHexagonalMap(5)
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        game.addCity(cityState, cityStateCapitalTile)
+
+        val bullyCiv = game.addCiv(
+            "Units are [+25]% more effective at intimidating City-States"
+        )
+
+        game.addUnit("Pikeman", bullyCiv, game.getTile(2, 0))
+
+        val bullyTributeRank = CityStateFunctions(cityState)
+            .getTributeModifiers(bullyCiv, false)["Military Rank"]
+        val bullyTributeForce = CityStateFunctions(cityState)
+            .getTributeModifiers(bullyCiv, false)["Military near City-State"]
+        val bullyTributeExtra = CityStateFunctions(cityState)
+            .getTributeModifiers(bullyCiv, false)["From Uniques"]
+        
+        // then
+        Assert.assertTrue(bullyTributeRank != null
+            && bullyTributeForce != null
+            && bullyTributeExtra != null
+            && (bullyTributeExtra!!.toFloat() / (bullyTributeRank!! + bullyTributeForce!!).toFloat()) == 0.25f
+        )
+    }
 
     // endregion
 

@@ -26,19 +26,36 @@ object MapGeneratedMainType {
 }
 
 object MapType {
-    const val perlin = "Perlin"
     const val pangaea = "Pangaea"
+    const val smallContinents = "Small Continents"
+    const val perlin = "Perlin"
+    const val fractal = "Fractal"
     const val continentAndIslands = "Continent and Islands"
+    const val archipelago = "Archipelago"
     const val twoContinents = "Two Continents"
     const val threeContinents = "Three Continents"
-    const val fourCorners = "Four Corners"
-    const val archipelago = "Archipelago"
-    const val fractal = "Fractal"
     const val innerSea = "Inner Sea"
     const val lakes = "Lakes"
-    const val smallContinents = "Small Continents"
+    const val fourCorners = "Four Corners"
+    const val boreal = "Boreal"
+    const val spiral = "Spiral"
     
-    val allValues = listOf(perlin, pangaea, continentAndIslands, twoContinents, threeContinents, fourCorners, archipelago, fractal, innerSea, lakes, smallContinents)
+    // ordered based on popularity poll
+    val allValues = listOf(
+        pangaea,
+        smallContinents,
+        perlin,
+        fractal,
+        continentAndIslands,
+        archipelago,
+        twoContinents,
+        threeContinents,
+        innerSea,
+        lakes,
+        fourCorners,
+        spiral,
+        boreal
+    )
 
     // All ocean tiles
     const val empty = "Empty"
@@ -46,10 +63,10 @@ object MapType {
 
 object MirroringType {
     const val none = "None"
-    const val aroundCenterTile = "Around Center Tile"
-    const val fourway = "4-way"
-    const val topbottom = "Top-Bottom"
-    const val leftright = "Bottom-Top"
+    const val leftright = "Left-right"
+    const val topbottom = "Top-bottom"
+    const val fourway = "Four-way"
+    const val aroundCenterTile = "Around center tile"
 }
 
 class MapParameters : IsPartOfGameInfoSerialization {
@@ -76,7 +93,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
 
     var seed: Long = System.currentTimeMillis()
     var tilesPerBiomeArea = 6
-    var maxCoastExtension = 2
+    var maxCoastExtension = 3
     var elevationExponent = 0.7f
     var temperatureintensity = 0.6f
     var vegetationRichness = 0.4f
@@ -111,6 +128,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         toReturn.rareFeaturesRichness = rareFeaturesRichness
         toReturn.resourceRichness = resourceRichness
         toReturn.waterThreshold = waterThreshold
+        toReturn.mirroring = mirroring
         toReturn.createdWithVersion = createdWithVersion
         return toReturn
     }
@@ -122,7 +140,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     fun resetAdvancedSettings() {
         reseed()
         tilesPerBiomeArea = 6
-        maxCoastExtension = 2
+        maxCoastExtension = 3
         elevationExponent = 0.7f
         temperatureintensity = 0.6f
         temperatureShift = 0.0f

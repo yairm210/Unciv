@@ -12,9 +12,10 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -48,23 +49,15 @@ class Era : RulesetObject() {
 
     override fun makeLink() = "Era/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2, color = getHexColor())
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
-        yield(FormattedLine("Embarked strength: [$embarkDefense]${Fonts.strength}"))
-        yield(FormattedLine("Base unit buy cost: [$baseUnitBuyCost]${Fonts.gold}"))
-        yield(FormattedLine("Research agreement cost: [$researchAgreementCost]${Fonts.gold}"))
-        yield(FormattedLine())
-        yieldAll(ruleset.technologies.values.asSequence()
-            .filter { it.era() == name }
-            .map { FormattedLine(it.name, it.makeLink()) })
-
-        yieldAll(uniquesToCivilopediaTextLines())
-
-        val eraGatedObjects = getEraGatedObjects(ruleset).toList()
-        if (eraGatedObjects.isEmpty()) return@sequence
-        yield(FormattedLine())
-        yield(FormattedLine("{See also}:"))
-        yieldAll(eraGatedObjects.map { FormattedLine(it.name, it.makeLink()) })
-    }.toList()
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        add("Embarked strength: [$embarkDefense]${Fonts.strength}")
+        add("Base unit buy cost: [$baseUnitBuyCost]${Fonts.gold}")
+        add("Research agreement cost: [$researchAgreementCost]${Fonts.gold}")
+        space()
+        addObjects(ruleset.technologies.values.asSequence().filter { it.era() == name })
+        addUniques()
+        addSeeAlso(getEraGatedObjects(ruleset))
+    }
     override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
     @Readonly
@@ -87,7 +80,7 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
-    @Readonly
+    @Readonly @ReturnsNewInstance
     fun getStartingUnits(ruleset: Ruleset): MutableList<String> {
         val startingUnits = mutableListOf<String>()
         val startingSettlerName: String =

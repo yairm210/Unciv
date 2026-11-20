@@ -79,13 +79,14 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
         var cost = baseUnit.getBaseBuyCost(city, stat)?.toDouble() ?: return null
         val conditionalState = city.state
 
-        for (unique in city.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
+        city.forEachMatchingUnique(UniqueType.BuyUnitsDiscount) { unique ->
             if (stat.name == unique.params[0] && baseUnit.matchesFilter(unique.params[1], conditionalState))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in city.getMatchingUniques(UniqueType.BuyItemsDiscount))
+        city.forEachMatchingUnique(UniqueType.BuyItemsDiscount) { unique ->
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
+        }
 
         return (cost / 10f).toInt() * 10
     }

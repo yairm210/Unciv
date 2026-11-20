@@ -45,7 +45,7 @@ internal object UniqueTriggerExecutors {
         }
 
         for (civ in civInfo.gameInfo.civilizations) {
-            if (civ == civInfo || !civ.isMajorCiv()) continue
+            if (civ == civInfo || !civ.isMajorCiv) continue
             val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
                 "[${civInfo.civName}] $messageSuffix"
             } else {

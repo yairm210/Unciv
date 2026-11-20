@@ -51,9 +51,9 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     fun clone(): CivConstructions {
         val toReturn = CivConstructions()
         toReturn.civInfo = civInfo
-        toReturn.freeBuildings.putAll(freeBuildings)
-        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
-        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
+        toReturn.freeBuildings.putAll(freeBuildings.mapValues { it.value.toHashSet() })
+        toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided.mapValues { it.value.toHashSet() })
+        toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided.mapValues { it.value.toHashSet() })
         toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice)  // add copies
         toReturn.builtItemsWithIncreasingCost.add(builtItemsWithIncreasingCost)
         return toReturn
@@ -184,19 +184,28 @@ class CivConstructions : IsPartOfGameInfoSerialization {
      *  It counts:
      *  * "Spaceship part" units added to "spaceship" in capital
      *  * Built buildings or those in a construction queue
-     *  * Units on the map or being constructed
+     *  * Units on the map, and every copy in a construction queue (each queued copy becomes a unit)
+     *
+     *  @param checkedCity The city the count is made for, if any.
+     *  @param checkedCityQueue If given, this is taken as [checkedCity]'s queue instead of its current one - the part that counts as
+     *  existing. Used so an already-enqueued entry does not count against itself when it is re-checked.
+     *  Callers pass a snapshot they took once; the queues of all other cities are read once each.
      */
     @Readonly
-    fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
+    fun countConstructedObjects(
+        objectToCount: INonPerpetualConstruction,
+        checkedCity: City? = null,
+        checkedCityQueue: List<String>? = null
+    ): Int {
         val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
+        fun City.queue() = if (this == checkedCity && checkedCityQueue != null) checkedCityQueue else cityConstructions.constructionQueue
 
         return amountInSpaceShip + when (objectToCount) {
             is Building -> civInfo.cities.count {
-                it.cityConstructions.containsBuildingOrEquivalent(objectToCount.name)
-                || it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name)
+                it.cityConstructions.containsBuildingOrEquivalent(objectToCount.name) || objectToCount.name in it.queue()
             }
             is BaseUnit -> civInfo.units.getCivUnits().count { it.name == objectToCount.name } +
-                civInfo.cities.count { it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name) }
+                civInfo.cities.sumOf { city -> city.queue().count { it == objectToCount.name } }
             else -> 0
         }
     }

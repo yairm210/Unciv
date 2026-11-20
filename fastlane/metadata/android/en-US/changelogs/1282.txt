@@ -1,0 +1,15 @@
+CPU performance improvements
+
+Avoid ANRs in edgecases
+
+Coastal oil placed regularly
+
+Civ-specific tile filters work in console
+
+Construction queue: MaxNumberBuildable counting and thread-safe queue access - By JoshKirk800
+
+"Estimated time until turn" improvements - By unciv-loof  
+
+Translate the Natural Wonder bonus notification - By ibrahim-iqbal
+
+New Hostile Takeover unit unique - By HungLTL

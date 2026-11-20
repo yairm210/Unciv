@@ -23,7 +23,6 @@ import yairm210.purity.annotations.Readonly
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.random.Random
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
  * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
@@ -86,7 +85,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             val EMPTY = TerrainListData(UniqueMap.EMPTY, emptySet())
         }
     }
-    
+
     @Transient
     var tileUniqueMapCache = ConcurrentHashMap<List<String>, TerrainListData>()
 
@@ -123,6 +122,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Continent ID to Continent size */
     val continentSizes = HashMap<Int, Int>()
 
+    @Transient
+    /** Continent IDs sorted by size descending */
+    val continentsSortedBySize = ArrayList<Int>()
+
     //endregion
     //region Constructors
 
@@ -130,7 +133,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * creates a hexagonal map of given radius (filled with grassland)
      *
      * To help you visualize how Unciv hexagonal coordinate system works, here's a small example:
-     * 
+     *
      * ```
      *          _____         _____         _____
      *         /     \       /     \       /     \
@@ -235,7 +238,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Deprecated(message = "forEachTileInDistance is faster. If not viable, then this can still be used",
         replaceWith = ReplaceWith("forEachTileInDistance"))
     fun getTilesInDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
-            getTilesInDistanceRange(origin, 0..distance)
+        @Suppress("DEPRECATION")
+        getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
@@ -243,7 +247,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Deprecated(message = "forEachTileInDistanceRange is faster. If not viable, then this can still be used",
         replaceWith = ReplaceWith("forEachTileInDistanceRange"))
     fun getTilesInDistanceRange(origin: HexCoord, range: IntRange): Sequence<Tile> =
-            range.asSequence().flatMap { getTilesAtDistance(origin, it) }
+        @Suppress("DEPRECATION")
+        range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
@@ -262,7 +267,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                     var currentX = centerX - distance
                     var currentY = centerY - distance
 
-                    for (i in 0 until distance) { // From 6 to 8
+                    repeat (distance) { // From 6 to 8
                         yield(getIfTileExistsOrNull(currentX, currentY))
                         // We want to get the tile on the other side of the clock,
                         // so if we're at current = origin-delta we want to get to origin+delta.
@@ -270,13 +275,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                         yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
                         currentX += 1 // we're going upwards to the left, towards 8 o'clock
                     }
-                    for (i in 0 until distance) { // 8 to 10
+                    repeat (distance) { // 8 to 10
                         yield(getIfTileExistsOrNull(currentX, currentY))
                         yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
                         currentX += 1
                         currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
                     }
-                    for (i in 0 until distance) { // 10 to 12
+                    repeat (distance) { // 10 to 12
                         yield(getIfTileExistsOrNull(currentX, currentY))
                         yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
                         currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
@@ -290,7 +295,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         = forEachTileInDistance(origin, distance, {true}, op)
     @Readonly
     fun forEachTileInDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
-        for (i in 0 until distance)
+        for (i in 0..distance)
             forEachTileAtDistance(origin, i, filter, op)
     }
 
@@ -317,7 +322,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             if (filter(tile)) op(tile)
         } else if (distance == 1) {
             for (tile in get(origin).neighbors) {
-                if (filter(tile)) 
+                if (filter(tile))
                     op(tile)
             }
         } else {
@@ -328,8 +333,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var currentX = centerX - distance
             var currentY = centerY - distance
 
-            var tile: Tile? = null
-            for (i in 0 until distance) { // From 6 to 8
+            var tile: Tile?
+            repeat (distance) { // From 6 to 8
                 tile = getIfTileExistsOrNull(currentX, currentY)
                 if (tile != null && filter(tile)) op(tile)
                 // We want to get the tile on the other side of the clock,
@@ -339,7 +344,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 if (tile != null && filter(tile)) op(tile)
                 currentX += 1 // we're going upwards to the left, towards 8 o'clock
             }
-            for (i in 0 until distance) { // 8 to 10
+            repeat (distance) { // 8 to 10
                 tile = getIfTileExistsOrNull(currentX, currentY)
                 if (tile != null && filter(tile)) op(tile)
                 tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
@@ -347,7 +352,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 currentX += 1
                 currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
             }
-            for (i in 0 until distance) { // 10 to 12
+            repeat (distance) { // 10 to 12
                 tile = getIfTileExistsOrNull(currentX, currentY)
                 if (tile != null && filter(tile)) op(tile)
                 tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
@@ -465,12 +470,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
         val vectorUnwrappedLeft = HexCoord.of(position.x + radius, position.y - radius)
         val vectorUnwrappedRight = HexCoord.of(position.x - radius, position.y + radius)
-        
+
         fun squareSum(hexCoord: HexCoord): Int {
             val x = hexCoord.x
             val y = hexCoord.y
             return x * x + y * y
-        }  
+        }
 
         return if (squareSum(vectorUnwrappedRight) < squareSum(vectorUnwrappedLeft))
             vectorUnwrappedRight
@@ -496,12 +501,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
-            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+            forEachTileAtDistance(position, i) { cTile -> // for each tile in that layer,
                 val cTileHeight = cTile.tileHeight
 
                 // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile
-                if (i == sightDistance+1 && (cTileHeight <= aUnitHeight || forAttack))
-                    continue
+                if (i == sightDistance + 1 && (cTileHeight <= aUnitHeight || forAttack))
+                    return@forEachTileAtDistance
 
                 /*
             Okay so, if we're looking at a tile from height a to one with height c with a MAXIMUM HEIGHT of b in the middle,
@@ -562,7 +567,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         val players = gameInfo.gameParameters.players.size
         return bigIslands >= players
     }
-    
+
     fun usingArchipelagoRegions(): Boolean {
         val totalLand = continentSizes.values.sum().toFloat()
         val largestContinent = continentSizes.values.maxOf { it }.toFloat()
@@ -582,17 +587,17 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         check(tileList.isNotEmpty()) { "No tiles were found in the save?!" }
 
         if (tileMatrix.isEmpty()) {
-            val topY = tileList.asSequence().map { it.position.y }.max()
-            bottomY = tileList.asSequence().map { it.position.y }.min()
-            val rightX = tileList.asSequence().map { it.position.x }.max()
-            leftX = tileList.asSequence().map { it.position.x }.min()
+            val topY = tileList.maxOf { it.position.y }
+            bottomY = tileList.minOf { it.position.y }
+            val rightX = tileList.maxOf { it.position.x }
+            leftX = tileList.minOf { it.position.x }
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
             tileMatrix.ensureCapacity(rightX - leftX + 1)
-            for (x in leftX..rightX) {
+            repeat (rightX - leftX + 1) {
                 val row = ArrayList<Tile?>(topY - bottomY + 1)
-                for (y in bottomY..topY) row.add(null)
+                repeat(topY - bottomY + 1) { row.add(null) }
                 tileMatrix.add(row)
             }
         } else {
@@ -607,20 +612,25 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileMatrix[tileInfo.position.x - leftX][tileInfo.position.y - bottomY] = tileInfo
         }
         for ((index, tileInfo) in values.withIndex()) {
+            tileInfo.tileMap = this
+            tileInfo.zeroBasedIndex = index
+            tileInfo.ruleset = this.ruleset!!
+        }
+        for (tileInfo in values) {
             // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
             // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
             // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
             // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
-            tileInfo.tileMap = this
-            tileInfo.zeroBasedIndex = index
-            tileInfo.ruleset = this.ruleset!!
+            // Similarly, ruleset must be set on ALL tiles before setTerrainTransients runs on ANY tile,
+            // since transient setup can evaluate unique conditionals (e.g. isAdjacentTo) that read
+            // ruleset on neighbor tiles not yet reached in iteration order.
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
-        
-        val minColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
-        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.max()
+
+        val minColumn = tileList.minOf { HexMath.getColumn(it.position) }
+        val maxColumn = tileList.maxOf { HexMath.getColumn(it.position) }
         width = maxColumn - minColumn + 1
     }
 
@@ -673,11 +683,11 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     ): MapUnit? {
         val unit = baseUnit.newMapUnit(civInfo, unitId)
 
-        fun getPassableNeighbours(tile: Tile): Set<Tile> =
-                tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
+        fun getPassableNeighbours(tile: Tile) =
+                tile.neighbors.filter { unit.movement.canPassThrough(it) }
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        unit.assignOwner(civInfo, false)
+        unit.assignOwner(civInfo, updateCivInfo = false)
         // remember our first owner
         unit.originalOwner = civInfo.civID
 
@@ -690,22 +700,40 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
+            class TileCandidates(
+                val primary: MutableList<Tile> = mutableListOf(),
+                val secondary: MutableList<Tile> = mutableListOf()
+            ) {
+                constructor(isRestrictedLandUnit: Boolean, tiles: Iterable<Tile>) : this() {
+                    if (!isRestrictedLandUnit) {
+                        primary.addAll(tiles)
+                    }
+                    else for (tile in tiles)
+                        if (!isRestrictedLandUnit || tile.isLand) primary += tile
+                        else secondary += tile
+                }
+                val allTiles get() = primary.asSequence() + secondary
+            }
+
+            val isRestrictedLandUnit = unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater
             var tryCount = 0
-            var potentialCandidates = getPassableNeighbours(currentTile)
+            val checkedCandidates = mutableSetOf<Tile>()
+            var potentialCandidates = TileCandidates(isRestrictedLandUnit, getPassableNeighbours(currentTile).asIterable())
             while (unitToPlaceTile == null && tryCount++ < 10) {
-                unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
-                        .firstOrNull { unit.movement.canMoveTo(it) }
+                unitToPlaceTile = potentialCandidates.primary.firstOrNull { unit.movement.canMoveTo(it) } // Land units should prefer to go into land tiles
+                    ?: potentialCandidates.secondary.firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
-                val newPotentialCandidates = mutableSetOf<Tile>()
-                potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
-                potentialCandidates = newPotentialCandidates
+                checkedCandidates.addAll(potentialCandidates.allTiles)
+                val newCandidates = potentialCandidates.allTiles
+                    .flatMap { getPassableNeighbours(it).filter { it !in checkedCandidates } }
+                    .toSet()
+                potentialCandidates = TileCandidates(isRestrictedLandUnit, newCandidates)
             }
         }
 
         if (unitToPlaceTile == null) {
-            civInfo.units.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            civInfo.units.removeUnit(unit, updateCivInfo = false) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
 
@@ -718,10 +746,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (promotion in unit.baseUnit.promotions)
             unit.promotions.addPromotion(promotion, true)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitsGainPromotion)) {
-            if (unit.matchesFilter(unique.params[0])) {
+        civInfo.forEachMatchingUnique(UniqueType.UnitsGainPromotion) { unique ->
+            if (unit.matchesFilter(unique.params[0]))
                 unit.promotions.addPromotion(unique.params[1], true)
-            }
         }
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
@@ -741,6 +768,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      *
      * @param player units of this player will be removed
      */
+    @Suppress("unused")
     fun stripPlayer(player: Player) {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
@@ -757,6 +785,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param player player whose all units will be changed
      * @param newNation new nation to be set up
      */
+    @Suppress("unused")
     fun switchPlayersNation(player: Player, newNation: Nation) {
         val newCiv = Civilization(newNation)
         tileList.forEach {
@@ -802,7 +831,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (!startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.remove(StartingLocation(tile.position, nationName))
+        startingLocations.removeAll { it.position == tile.position && it.nation == nationName }
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
@@ -810,9 +839,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Removes all starting positions for [nationName], maintaining the transients */
     fun removeStartingLocations(nationName: String) {
         if (startingLocationsByNation[nationName] == null) return
-        for (tile in startingLocationsByNation[nationName]!!) {
-            startingLocations.remove(StartingLocation(tile.position, nationName))
-        }
+        startingLocations.removeAll { it.nation == nationName }
         startingLocationsByNation[nationName]!!.clear()
     }
 
@@ -844,6 +871,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
+            continentsSortedBySize.clear()
             return
         }
 
@@ -854,7 +882,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 if (continent == -1) continue
                 continentSizes[continent] = 1 + (continentSizes[continent] ?: 0)
             }
-            if (continentSizes.isNotEmpty()) return
+            if (continentSizes.isNotEmpty()) {
+                updateContinentsSortedBySize()
+                return
+            }
         }
 
         var landTiles = values.filter { it.isLand && !it.isImpassible() }
@@ -876,6 +907,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             currentContinent++
             landTiles = landTiles.filter { it !in continent }
         }
+        updateContinentsSortedBySize()
+    }
+
+    private fun updateContinentsSortedBySize() {
+        continentsSortedBySize.clear()
+        continentsSortedBySize.addAll(continentSizes.entries.sortedByDescending { it.value }.map { it.key })
     }
     //endregion
 

@@ -2,7 +2,7 @@
 
 ## The AI plays to win
 
-In a perfect world, the AI would pass the "Turing test" of gameplay - you would't be able to tell if you're playing against a human or AI.
+In a perfect world, the AI would pass the "Turing test" of gameplay - you wouldn't be able to tell if you're playing against a human or AI.
 
 Examples:
 
@@ -31,7 +31,7 @@ A crash stacktrace is halfway to a solution - a game save which reliably produce
 
 Whenever an unexpected situation occurs - the game has reached an incorrect state - we should crash, to allow the problem to be fixed as soon as possible. Persisting with an incorrect state makes the eventual resulting problems further from the cause, and complicates debugging.
 
-Howver, we should never crash due to bad *user input*. Bad input - e.g. badly defined mods - *are* expected, and should be handled accordingly. 
+However, we should never crash due to bad *user input*. Bad input - e.g. badly defined mods - *are* expected, and should be handled accordingly. 
 
 This is analogous to the difference between an http 4XX and 5XX - bad inputs are expected at the interface with the world, bad interval state is unexpected.
 

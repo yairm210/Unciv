@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import yairm210.purity.annotations.ReturnsNewInstance
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -22,12 +22,12 @@ import kotlin.math.sqrt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
-    @Pure
+    @Pure @ReturnsNewInstance
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
-    @Pure
+    @Pure @ReturnsNewInstance
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
@@ -123,7 +123,7 @@ object HexMath {
                 - longitudinalRadius + referenceLong)
     }
 
-    @Readonly
+    @Pure
     fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
@@ -150,10 +150,10 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
+    @Pure fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
+    @Pure fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): HexCoord {
@@ -216,11 +216,10 @@ object HexMath {
             return listOf(origin.cpy())
         }
 
-        @Readonly
+        @Pure
         fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
 
-        @LocalState
         var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current
@@ -383,8 +382,11 @@ object HexMath {
 //
 //}
 
-/** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
-@Suppress("RemoveRedundantQualifierName")
+/**
+ *  Holds a position on our hexagon-based [TileMap].
+ *  * This data class is required for serialization/deserialization, see [InlineHexCoord].
+ */
+@Suppress("RemoveRedundantQualifierName") // `HexCoord.of()` reads better than `of()`
 data class HexCoord(val x: Int = 0, val y: Int = 0) {
 
     @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
@@ -441,10 +443,18 @@ data class HexCoord(val x: Int = 0, val y: Int = 0) {
 }
 
 @JvmInline
-/** When we need to create a lot of coords we prefer to use this implementation - since it's inline it's passed around as as int
-    and doesn't require memory allocation or memory access */
+/**
+ *  Alternate implementation of [HexCoord], currently unused for reasons of serialization/backward compatibility.
+ *
+ *  When we need to create a lot of coords we would prefer to use this implementation -
+ *  since it's inline it's passed around as an int and doesn't require memory allocation or memory access.
+ *
+ *  * Java reflection will see a [InlineHexCoord] member fields as [Int], so Gdx [Json] has no chance to map the specific type.
+ *  * That limitation does not hold for certain collections - e.g. an ArrayList<InlineHexCoord> will not have its element type
+ *    erased, and Gdx _will_ see it and pass it down, allowing the type to be recognized for [Json.setSerializer].
+ */
 value class InlineHexCoord(val coords: Int = 0) {
-    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+    // x value is stored in the top 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
 
     val x: Int
         get() = coords shr 16
@@ -466,5 +476,3 @@ value class InlineHexCoord(val coords: Int = 0) {
 }
 
 @Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
-@Pure fun Vector2.toVector2() = this // compatibility
-@Pure fun Vector2.asSerializable() = HexCoord(x.toInt(),y.toInt())

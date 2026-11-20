@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueAutoUpdater
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith
  *    the final replacement (tests the "fully deprecated → fully deprecated → current" path).
  * 7. [UniqueAutoUpdater] handles a ruleset containing both half-deprecated and fully deprecated uniques.
  */
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class DeprecatedUniquesTest {
 
     // -------------------------------------------------------------------------------------
@@ -108,36 +108,11 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A unique matching DeprecatedUniqueType should produce at least one ErrorOptionsOnly error, got: ${errors.map { it.errorSeverityToReport }}",
             errors.any { it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly }
-        )
-    }
-
-    // -------------------------------------------------------------------------------------
-    // Test 4 — Validator: half-deprecated unique (WARNING in UniqueType) reports WarningOptionsOnly
-    // -------------------------------------------------------------------------------------
-
-    @Test
-    fun halfDeprecatedUniqueReportsWarningInValidator() {
-        // FoodConsumptionBySpecialists has DeprecationLevel.WARNING and stays in UniqueType.
-        // Its text: "[relativeAmount]% Food consumption by specialists [cityFilter]"
-        val unique = Unique("[+50]% Food consumption by specialists [in all cities]")
-
-        RulesetCache.loadRulesets(noMods = true)
-        val ruleset = RulesetCache.getVanillaRuleset()
-
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
-
-        assertTrue(
-            "A half-deprecated unique (DeprecationLevel.WARNING) should produce a WarningOptionsOnly warning, got: ${errors.map { it.errorSeverityToReport }}",
-            errors.any { it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly }
-        )
-        assertTrue(
-            "A half-deprecated unique must NOT produce an ErrorOptionsOnly error (it still works)",
-            errors.none { it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly }
         )
     }
 

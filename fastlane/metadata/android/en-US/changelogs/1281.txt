@@ -1,0 +1,15 @@
+Reduced memory when downloading games from multiplayer server
+
+Nuke targets are scrollable, so too many targets don't make the "nuke" button go off-screen
+
+Citybutton clicks show units again
+
+Added search for saved games
+
+Many small LLM fixes - By JoshKirk800 (new contributor!)
+
+Clarify nuclear death exclusions for combat uniques - By mvanhorn
+
+Harden minimap for empty explored region - By SomeTroglodyte
+
+Fix "Off" promotion-automation option being untranslatable - By ibrahim-iqbal

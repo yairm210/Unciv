@@ -3,15 +3,21 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    val all = setOf("All", "all")
+    const val lowercaseAll = "all"
+    const val uppercaseAll = "All"
+    val all = setOf(uppercaseAll, lowercaseAll)
     const val NO_ID = -1
 
     const val english = "English"
 
+    // Terrain
     const val impassable = "Impassable"
     const val ocean = "Ocean"
 
-    /** The "Coast" _terrain_ */
+    /** The "Coast" _terrain_
+     *  @see com.unciv.models.ruleset.tile.Terrain.isCoast
+     */
+    @Deprecated("By PR #15123, except for tests. Remove use in Terrain and this deprecation after a grace period.")
     const val coast = "Coast"
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
@@ -42,20 +48,21 @@ object Constants {
 
     const val barbarianEncampment = "Barbarian encampment"
     const val cityCenter = "City center"
-    
+    const val allRoad = "All Road"
+
     // Treaties
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val defensivePact = "Defensive Pact"
-    
+
     // Agreements
     const val openBorders = "Open Borders"
-    
+
     // Other trade items
     const val acceptEmbassy = "Accept Embassy"
     const val goldPerTurn = "Gold per turn"
     const val flatGold = "Gold"
-    
+
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"
     /** Used as origin in ResourceSupplyList */
@@ -90,12 +97,16 @@ object Constants {
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
+    const val humanPlayer = "Human player"
+    const val aiPlayer = "AI player"
 
     const val embarked = "Embarked"
     const val wounded = "Wounded"
 
     const val remove = "Remove "
     const val repair = "Repair"
+    /** [com.unciv.logic.map.mapunit.MapUnit.action] value while automatically connecting a road */
+    const val connectRoadAction = "Connect road"
 
     const val uniqueOrDelimiter = "\" OR \""
     const val stringSplitCharacter = '␟' // U+241 - Unit separator character. Used to join texts and split them with a char that is virtually guaranteed to not be used in normal text. 
@@ -131,4 +142,10 @@ object Constants {
     const val uncivRepoURL = "https://github.com/yairm210/Unciv/"
     /** URL to the wiki, including trailing slash */
     const val wikiURL = "https://yairm210.github.io/Unciv/"
+
+    /** Gdx's own default (only visible in the ActorGestureListener() constructor) for the "tap square" -
+     *  distance the pointer can travel between tap events while still being considered the same tap.
+     *  Gdx docs say unit is pixels, but they're actually stage units for an ActorGestureListener.
+     */
+    const val DEFAULT_HALF_TAP_SQUARE_SIZE = 20f
 }

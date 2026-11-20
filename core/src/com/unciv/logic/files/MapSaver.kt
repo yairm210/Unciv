@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.screens.savescreens.Gzip
 
 object MapSaver {
 
@@ -16,7 +15,7 @@ object MapSaver {
 
     fun mapFromSavedString(mapString: String): TileMap {
         val unzippedJson = try {
-            Gzip.unzip(mapString.trim())
+            FileConversions.unzip(mapString.trim())
         } catch (_: Exception) {
             mapString
         }
@@ -25,15 +24,16 @@ object MapSaver {
     fun mapToSavedString(tileMap: TileMap): String {
         tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
         val mapJson = json().toJson(tileMap)
-        return if (saveZipped) Gzip.zip(mapJson) else mapJson
+        return if (saveZipped) FileConversions.zip(mapJson) else mapJson
     }
 
     fun saveMap(mapName: String, tileMap: TileMap) {
-        getMap(mapName).writeString(mapToSavedString(tileMap), false, Charsets.UTF_8.name())
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+        FileConversions.writeJson(getMap(mapName), tileMap, saveZipped)
     }
 
     fun loadMap(mapFile: FileHandle): TileMap {
-        return mapFromSavedString(mapFile.readString(Charsets.UTF_8.name()))
+        return FileConversions.readJson(mapFile, TileMap::class.java)!!
     }
 
     fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
@@ -45,15 +45,6 @@ object MapSaver {
     }
 
     fun loadMapPreview(mapFile: FileHandle): TileMap.Preview {
-        return mapPreviewFromSavedString(mapFile.readString())
-    }
-
-    private fun mapPreviewFromSavedString(mapString: String): TileMap.Preview {
-        val unzippedJson = try {
-            Gzip.unzip(mapString.trim())
-        } catch (_: Exception) {
-            mapString
-        }
-        return json().fromJson(TileMap.Preview::class.java, unzippedJson)
+        return FileConversions.readJson(mapFile, TileMap.Preview::class.java)!!
     }
 }

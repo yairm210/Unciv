@@ -3,17 +3,22 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.brighten
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -52,6 +57,9 @@ internal class DisplayTab(
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials()
+        addCheckbox("Show long-press indicators", settings.showLongPressIndicators.toBoolean()) {
+            settings.showLongPressIndicators = GameSettings.LongPressIndicatorSetting.of(it)
+        }
         addCheckbox("Show zoom buttons in world screen", settings::showZoomButtons, true)
         addCheckbox("Never close popups by clicking outside", settings::forbidPopupClickBehindToClose)
         addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
@@ -82,9 +90,31 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
+        addCheckbox("Enable alternative rendering", settings.isAlternativeRenderingEnabled()){
+            settings.alternativeRendering = it
+            reloadWorldAndOptions()
+        }
+        
+        val rendererString = Gdx.graphics.glVersion.rendererString
+        fun fpsText() = "FPS: ${Gdx.graphics.framesPerSecond}\nRenderer: $rendererString"
+        val fpsLabel = fpsText().toLabel()
+        fpsLabel.actions.add(Actions.forever(Actions.run {
+            fpsLabel.setText(fpsText())
+        }))
+        add(fpsLabel).colspan(2).padTop(10f).row()
+        
+        
+
+        val disableNewerRenderingDescription = "On some devices this rendering method is faster"
+        val disableNewerRenderingLabel = WrappableLabel(
+            disableNewerRenderingDescription,
+            optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
+        )
+        disableNewerRenderingLabel.wrap = true
+        add(disableNewerRenderingLabel).colspan(2).padTop(10f).row()
+
         addHeader("Experimental")
 
-        addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
         addCheckbox("Animate Unit actions menu", settings::unitActionsTableAnimation)
 
@@ -110,7 +140,10 @@ internal class DisplayTab(
         addSlider("Size of Unitset art in Civilopedia", settings::pediaUnitArtSize, 0f, 360f) {
             GUI.setUpdateWorldOnNextRender() // TODO: I doubt that helps, the setting has only influence on CivilopediaScreen
         }.actor.apply {
-            setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
+            setSnapToValues(threshold = 60f,
+                0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f,
+                editLabel = "{Size of Unitset art in Civilopedia}:"
+            )
         }
     }
 

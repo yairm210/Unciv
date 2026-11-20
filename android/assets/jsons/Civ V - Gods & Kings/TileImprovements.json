@@ -303,7 +303,7 @@
 	{
 		"name": "Barbarian encampment",
 		"terrainsCanBeBuiltOn": ["Land"],
-		"uniques": ["Unpillagable", "Unbuildable", "Excluded from map editor"],
+		"uniques": ["Unpillagable", "Unbuildable", "Excluded from map editor", "Marks a barbarian camp"],
         "civilopediaText": [{"text":"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}]
 	}
 ]

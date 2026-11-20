@@ -1,10 +1,7 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.unciv.Constants
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.mapgenerator.RiverGenerator.Companion.continueRiverOn
-import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverCoordinate
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.GameContext
@@ -28,6 +25,7 @@ class RiverGenerator(
     private val maxRiverLength = ruleset.modOptions.constants.maxRiverLength
 
     fun spawnRivers(resultingTiles: MutableSet<Tile>? = null) {
+        if (maxRiverLength <= 0) return
         if (tileMap.values.none { it.isWater }) return
         val numberOfRivers = (tileMap.values.count { it.isLand } * riverCountMultiplier).roundToInt()
 

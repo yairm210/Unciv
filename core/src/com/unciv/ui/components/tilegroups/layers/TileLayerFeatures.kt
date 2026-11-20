@@ -1,13 +1,12 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.mix
 import kotlin.math.atan2
 
 
@@ -18,32 +17,29 @@ private class RoadImage {
 
 class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
-    private val roadImages = HashMap<Tile, RoadImage>()
+    private val roadImages = HashMap<TileView, RoadImage>()
 
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-
-    private fun updateRoadImages(viewingCiv: Civilization?) {
+    private fun updateRoadImages(viewingCiv: CivView?) {
 
         if (tileGroup.isForMapEditorIcon)
             return
 
-        val tile = tileGroup.tile
-        val isTileVisible = viewingCiv == null || tile.isVisible(viewingCiv)
+        val tileView = tileGroup.tileView
+        val tileMapView = tileView.getTileMap()
+        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileView)
 
-        for (neighbor in tile.neighbors) {
+        for (neighbor in tileGroup.neighbors) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && viewingCiv != null && !neighbor.isVisible(viewingCiv) -> RoadStatus.None // don't show roads on non-visible tiles
-                tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
-                tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
+                !isTileVisible && !viewingCiv.canSeeTile(neighbor) -> RoadStatus.None // don't show roads on non-visible tiles
+                tileView.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
+                tileView.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
             }
             if (currentStatus == roadStatus) continue // the image is correct
-            
+
             if (roadImage == null) { // create when missing
                 roadImage = RoadImage().also { roadImages[neighbor] = it }
                 roadImages[neighbor] = roadImage
@@ -52,7 +48,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             roadImage.roadStatus = roadStatus
 
             if (roadImage.image != null) {
-                roadImage.image!!.remove()
+                removeOwnedActor(roadImage.image!!)
                 roadImage.image = null
             }
             if (roadStatus == RoadStatus.None) continue // no road image
@@ -60,30 +56,47 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             val image = ImageGetter.getImage(strings.orFallback { roadsMap[roadStatus]!! })
             roadImage.image = image
 
-            val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
+            val relativeWorldPosition = tileMapView.getNeighborTilePositionAsWorldCoords(tileView, neighbor)
 
             // This is some crazy voodoo magic so I'll explain.
-            image.moveBy(25f, 25f) // Move road to center of tile
-            // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
-            // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-            image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
+            // Roads start at the tile origin; we offset them to the tile centre then toward the neighbor.
+            image.setPosition(
+                tileX + 25f - relativeWorldPosition.x * 0.8f * 25f,
+                tileY + 25f - relativeWorldPosition.y * 0.8f * 25f
+            )
 
             image.setSize(10f, 6f)
             image.setOrigin(0f, 3f) // This is so that the rotation is calculated from the middle of the road and not the edge
 
             image.rotation = (180 / Math.PI * atan2(relativeWorldPosition.y.toDouble(),relativeWorldPosition.x.toDouble())).toFloat()
 
-            addActor(image)
+            addOwnedActor(image)
         }
 
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    // Inputs of updateRoadImages: own + neighbors' road status and visibility, and which neighbors are explored
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        var key = 1L
+            .mix(tileGroup.isForMapEditorIcon)
+            .mix(viewingCiv?.civName)
+            .mix(viewingCiv == null || viewingCiv.canSeeTile(tileView))
+            .mix(tileView.roadStatus.ordinal)
+        for (neighbor in tileGroup.neighbors) {
+            key = key.mix(neighbor.position()).mix(neighbor.roadStatus.ordinal)
+                .mix(viewingCiv == null || viewingCiv.canSeeTile(neighbor))
+        }
+        return key
+    }
+
+    override fun doUpdate(viewingCiv: CivView?) {
         updateRoadImages(viewingCiv)
     }
 
     fun dim() {
-        color.a = 0.5f
+        invalidate()
+        forEachOwnedActor { it.color.a = 0.5f }
     }
 
 }

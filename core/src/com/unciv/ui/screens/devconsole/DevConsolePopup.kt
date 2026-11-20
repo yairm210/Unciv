@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.devconsole
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -8,11 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Scaling
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -21,15 +22,36 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.UniqueBuilderScreen
 import com.unciv.ui.screens.devconsole.CliInput.Companion.splitToCliInput
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import org.jetbrains.annotations.VisibleForTesting
 
 
-class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All) {
+class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.DevConsole) {
     companion object {
         private const val maxHistorySize = 42
+
+        @VisibleForTesting
+        data class ConsoleCommandTestingDescriptor(val nodes: List<String>, val format: String)
+        /** For crude unit tests, I don't want to open up all the internal interfaces, so give the test something else to work with */
+        @VisibleForTesting
+        fun enumerateCommands(): Sequence<ConsoleCommandTestingDescriptor> = sequence {
+            enumerateCommands(0, ConsoleCommandRoot(), emptyList())
+        }
+        private suspend fun SequenceScope<ConsoleCommandTestingDescriptor>.enumerateCommands(level: Int, node: ConsoleCommand, nodes: List<String>) {
+            if (node is ConsoleAction) {
+                yield(ConsoleCommandTestingDescriptor(nodes, node.format))
+            } else if (node is ConsoleCommandNode) {
+                for ((name, subnode) in node.subcommands) {
+                    val subnodes = nodes + name
+                    enumerateCommands(level + 1, subnode, subnodes)
+                }
+            }
+        }
     }
+
     private val history by screen.game.settings::consoleCommandHistory
     private var keepOpen by screen.game.settings::keepConsoleOpen
 
@@ -38,6 +60,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
     internal val textField = UncivTextField("") // always has focus, so a hint won't show
     private val responseLabel = "".toLabel(Color.RED).apply { wrap = true }
     private val inputWrapper = Table()
+    private val uniqueBuilderButton = "OtherIcons/Settings".toImageButton(32f, 40f, Color.GRAY, Color.GOLD)
 
     private val commandRoot = ConsoleCommandRoot()
     internal val gameInfo = screen.gameInfo
@@ -62,6 +85,19 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
 
         add(responseLabel).colspan(2).minWidth(innerTable.prefWidth).maxWidth(stageToShowOn.width * 0.8f)
 
+        uniqueBuilderButton.isVisible = false
+        uniqueBuilderButton.color.a = 0f
+        uniqueBuilderButton.onClick {
+            val params = textField.text.splitToCliInput()
+            val target = if (params.firstOrNull()?.content == "unit") UniqueTarget.UnitTriggerable else UniqueTarget.Triggerable
+            val text = params.drop(2).firstOrNull()?.content ?: ""
+            screen.game.pushScreen { UniqueBuilderScreen(gameInfo.ruleset, target, text) {
+                textField.text = params.take(2).joinToString(" ") { it.toString() } + " \"$it\""
+                textField.cursorPosition = 1000
+            } }
+        }
+        inputWrapper.addActor(uniqueBuilderButton)
+
         keyShortcuts.add(KeyCharAndCode.BACK) { close() }
 
         textField.keyShortcuts.add(Input.Keys.ENTER, ::onEnter)
@@ -73,11 +109,14 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
 
-        if (Gdx.app.type != Application.ApplicationType.Android) // I think this might be what's causing Android to fail, not sure
-            setFillParent(false) // ALLOW clicking the map while the console is open!
         open(true)
 
         screen.stage.keyboardFocus = textField
+    }
+
+    override fun validate() {
+        super.validate()
+        uniqueBuilderButton.setPosition(textField.x + textField.width - 5f, textField.y + textField.height / 2, Align.right)
     }
 
     private fun getAutocompleteButton() = ImageGetter.getArrowImage()
@@ -195,6 +234,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         if (handleCommandResponse.isOK) {
             screen.shouldUpdate = true
             addHistory()
+            hideUniqueBuilderButton()
             if (!keepOpen) close() else textField.text = ""
             return
         }
@@ -220,6 +260,21 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         innerTable.validate()
         val newHeight = innerTable.prefHeight.coerceIn(120f, maxPopupHeight)
         getCell(getScrollPane()).height(newHeight)  // Gdx quirks: Or else the ScrollPane's new prefHeight won't be respected
+        textField.onscreenKeyboard.show(textField)
+        fitOrCenterContentIntoVisibleArea()
+    }
+
+    internal fun showUniqueBuilderButton() {
+        if (uniqueBuilderButton.isVisible) return
+        uniqueBuilderButton.isVisible = true
+        uniqueBuilderButton.addAction(Actions.fadeIn(0.33f))
+    }
+    private fun hideUniqueBuilderButton() {
+        if (!uniqueBuilderButton.isVisible) return
+        uniqueBuilderButton.addAction(Actions.sequence(
+            Actions.fadeOut(0.33f),
+            Actions.run { uniqueBuilderButton.isVisible = false }
+        ))
     }
 
     private fun handleCommand(): DevConsoleResponse {
@@ -228,7 +283,8 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
     }
 
     private fun getAutocomplete(): Pair<Int,String>? {
-        val params = textField.text.splitToCliInput()
+        val rawParams = textField.text.splitToCliInput()
+        val params = if (rawParams.size == 1 && rawParams[0].toString() in commandRoot.subcommands.keys) rawParams + CliInput("") else rawParams
         val autoCompleteString = commandRoot.autocomplete(this, params)
             ?: return null
         val replaceLength = params.lastOrNull()?.originalLength() ?: 0
@@ -244,7 +300,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
     internal fun getCivByNameOrNull(name: CliInput): Civilization? =
         gameInfo.civilizations.firstOrNull { name.equals(it.civID) }
 
-    internal fun getSelectedTile() = screen.mapHolder.selectedTile
+    internal fun getSelectedTile() = screen.mapHolder.selectedTile?.position()?.let { gameInfo.tileMap[it] }
         ?: throw ConsoleErrorException("Select tile")
 
     /** Gets city by selected tile */
@@ -258,8 +314,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         val selectedTile = getSelectedTile()
         if (selectedTile.getFirstUnit() == null) throw ConsoleErrorException("Select tile with units")
         val units = selectedTile.getUnits().toList()
-        val selectedUnit = screen.bottomUnitTable.selectedUnit
-        return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
-        else units.first()
+        val selectedUnitId = screen.bottomUnitTable.selectedUnit?.id
+        return units.firstOrNull { it.id == selectedUnitId } ?: units.first()
     }
 }

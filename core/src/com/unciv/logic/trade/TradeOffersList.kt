@@ -2,11 +2,13 @@ package com.unciv.logic.trade
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.ModifiesInternalStateOnly
 
-@InternalState
+@ModifiesInternalStateOnly
 class TradeOffersList: ArrayList<TradeOffer>(), IsPartOfGameInfoSerialization {
     override fun add(element: TradeOffer): Boolean {
-        val equivalentOffer = firstOrNull { it.name == element.name && it.type == element.type }
+        @LocalState val equivalentOffer = firstOrNull { it.name == element.name && it.type == element.type }
         if (equivalentOffer == null) {
             super.add(element)
             return true

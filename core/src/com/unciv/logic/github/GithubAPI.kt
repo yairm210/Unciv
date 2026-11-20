@@ -18,6 +18,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
+import java.io.File
 import java.io.FileFilter
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
@@ -97,12 +98,27 @@ object GithubAPI {
         block()
     }
 
-    /** Format a download URL for a branch archive */
+    /** Format a download URL for a branch archive.
+     *  [branch] can be a commit hash, in which case the proper archive URL for that commit looks a bit different.
+     */
     // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
     // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
     @Pure
-    internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
+    internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) =
+        if (branch.length == 40 && branch.all { it.isHex() }) "$gitRepoUrl/archive/$branch.zip"
+        else "$gitRepoUrl/archive/refs/heads/$branch.zip"
+
+    private val githubArchiveUrlRegex = Regex("""^https://github\.com/([^/]+)/([^/]+)/archive/(.+)\.zip$""")
+
+    /** As of 23/10/26 `github.com/.../archive/...` answers with a redirect whose Content-Security-Policy header exceeds the 8192 bytes the ktor CIO engine accepts :/
+     *   so go straight to the host it redirects to. Other URLs are returned unchanged. */
+    @Pure
+    fun toCodeloadUrl(url: String): String {
+        val match = githubArchiveUrlRegex.matchEntire(url) ?: return url
+        val (owner, repo, ref) = match.destructured
+        return "https://codeload.github.com/$owner/$repo/zip/$ref"
+    }
 
     /** Format a download URL for a release archive */
     @Readonly
@@ -425,7 +441,7 @@ object GithubAPI {
 
         // Thanks to: https://stackoverflow.com/a/74328603/10585461
         UncivKtor.client.prepareRequest {
-            url(zipUrl)
+            url(toCodeloadUrl(zipUrl))
             timeout { requestTimeoutMillis = Long.MAX_VALUE }
             if (updateProgressPercent != null) onDownload(::reportProgress)
         }.execute { resp ->
@@ -434,7 +450,8 @@ object GithubAPI {
              * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
              */
             when {
-                resp.status == HttpStatusCode.NotFound -> return@execute resp
+                resp.status == HttpStatusCode.NotFound ->
+                    throw UncivShowableException("Mod archive not found")
 
                 (resp.status == HttpStatusCode.Forbidden) &&
                     resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
@@ -504,12 +521,15 @@ object GithubAPI {
         // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
 
         val job = coroutineContext[Job]
+        val destinationPath = unzipDestination.file().canonicalPath + File.separator
         // Actual unpacking
         try {
             while (job?.isActive != false) {
                 val entry = stream.nextEntry ?: break
                 if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
-                val dest = unzipDestination.child(entry.name).file()
+                val dest = unzipDestination.child(entry.name).file().canonicalFile
+                if (!dest.path.startsWith(destinationPath))
+                    throw ZipException("ZIP entry points outside the destination")
                 dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
                 dest.outputStream().use { stream.copyTo(it) }
                 stream.closeEntry()
@@ -599,9 +619,6 @@ object GithubAPI {
 
     @Pure
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
-        // kotlin's isHexLetter and isAsciiDigit are private
-        @Pure
-        fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
         // Special case for specific commit (getting an older point-in-time version of a mod) zips
         if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
             return folderName.removeSuffix(defaultModName).removeSuffix("-")
@@ -617,4 +634,8 @@ object GithubAPI {
             return defaultModName.removeSuffix("-main").removeSuffix("-master")
         return folderName
     }
+
+    // kotlin's isHexLetter and isAsciiDigit are private
+    @Pure
+    private fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
 }

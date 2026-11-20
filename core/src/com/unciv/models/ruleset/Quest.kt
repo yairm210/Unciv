@@ -1,28 +1,33 @@
 package com.unciv.models.ruleset
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.managers.quests.QuestImplementation
+import com.unciv.logic.civilization.managers.quests.IQuestImplementation
 import com.unciv.models.stats.INamed
 import yairm210.purity.annotations.Readonly
 
-enum class QuestName(val value: String) {
-    Route("Route"),
-    ClearBarbarianCamp("Clear Barbarian Camp"),
-    ConstructWonder("Construct Wonder"),
-    ConnectResource("Connect Resource"),
-    GreatPerson("Acquire Great Person"),
-    ConquerCityState("Conquer City State"),
-    FindPlayer("Find Player"),
-    FindNaturalWonder("Find Natural Wonder"),
-    GiveGold("Give Gold"),
-    PledgeToProtect("Pledge to Protect"),
-    ContestCulture("Contest Culture"),
-    ContestFaith("Contest Faith"),
-    ContestTech("Contest Technologies"),
-    Invest("Invest"),
-    BullyCityState("Bully City State"),
-    DenounceCiv("Denounce Civilization"),
-    SpreadReligion("Spread Religion"),
-    None("")
+enum class QuestName(
+    val value: String,
+    private val implementation: IQuestImplementation
+) : IQuestImplementation by implementation {
+    None("", QuestImplementation.None()),
+    Route("Route", QuestImplementation.Route()),
+    ClearBarbarianCamp("Clear Barbarian Camp", QuestImplementation.ClearBarbarianCamp()),
+    ConstructWonder("Construct Wonder", QuestImplementation.ConstructWonder()),
+    ConnectResource("Connect Resource", QuestImplementation.ConnectResource()),
+    GreatPerson("Acquire Great Person", QuestImplementation.GreatPerson()),
+    ConquerCityState("Conquer City State", QuestImplementation.ConquerCityState()),
+    FindPlayer("Find Player", QuestImplementation.FindPlayer()),
+    FindNaturalWonder("Find Natural Wonder", QuestImplementation.FindNaturalWonder()),
+    GiveGold("Give Gold", QuestImplementation.GiveGold()),
+    PledgeToProtect("Pledge to Protect", QuestImplementation.PledgeToProtect()),
+    ContestCulture("Contest Culture", QuestImplementation.ContestCulture()),
+    ContestFaith("Contest Faith", QuestImplementation.ContestFaith()),
+    ContestTech("Contest Technologies", QuestImplementation.ContestTech()),
+    Invest("Invest", QuestImplementation.Invest()),
+    BullyCityState("Bully City State", QuestImplementation.BullyCityState()),
+    DenounceCiv("Denounce Civilization", QuestImplementation.DenounceCiv()),
+    SpreadReligion("Spread Religion", QuestImplementation.SpreadReligion()),
     ;
     companion object {
         fun find(value: String) = entries.firstOrNull { it.value == value } ?: None

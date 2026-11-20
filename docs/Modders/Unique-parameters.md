@@ -179,6 +179,17 @@ Allowed values:
 - `Great Improvement`, `Great`
 - `All Road` - for Roads & Railroads
 
+## resourceFilter
+
+For filtering tile resources.
+
+Allowed values:
+
+- resource name
+- resource type name, e.g. `Strategic`
+- a Stat listed in the resource's improvementStats
+- `any`, `all`, `All`
+
 ## populationFilter
 
 A filter determining a part of the population of a city.
@@ -199,7 +210,7 @@ For filtering specific relgions
 - `major`
 - `enhanced`
 - `your`
-- `foriegn`
+- `foreign`
 - `enemy`
 - The name of a relgion symbol
 - The name of a belief
@@ -312,28 +323,27 @@ Allowed values:
     - A [nationFilter](#nationfilter) matching the tile owner
 - Or the filter is a constant string choosing a derived test:
     - `All`, `all`
-    - `Terrain`
+    - `Terrain` (same as "all" in this context, can help making uniques more readable)
     - `Water`, `Land`
-    - `Coastal` (at least one direct neighbor is a coast)
+    - `Coastal` (_Land_ with least one direct neighbor being a coast - see ["Coastal Water"](uniques.md#terrain-uniques) unique)
     - `River` (as in all 'river on tile' contexts, it means 'adjacent to a river on at least one side')
-    - `Open terrain`, `Rough terrain` (note all terrain not having the rough unique is counted as open)
-    - `Friendly Land`, `Friendly` - land belonging to you, or other civs with open borders to you
-    - `Foreign Land` - any land that isn't friendly land
-    - `Enemy Land`, `Enemy` - any land belonging to a civ you are at war with
-    - `your` - land belonging to you
-    - `Unowned` - land that is not owned by any civ
+    - `Open terrain`, `Rough terrain` (note all terrain not having the ["Rough terrain"](uniques.md#terrain-uniques) unique is counted as open)
     - `Water resource`, `Strategic resource`, `Luxury resource`, `Bonus resource`, `resource`
     - `Natural Wonder` (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
-    - `Featureless`
-    - `Fresh Water`
+    - `Terrain Feature` (having any terrain feature)
+    - `Featureless` (having no terrain feature)
+    - `Fresh Water` ("River" filter, or adjacent to a tile with the "Fresh water" unique, like Oasis. Note the important case distinction: with "w" the filter will match the Oasis by matching the Unique, with "W" it will not match the Oasis but its neighboring tiles)
     - `non-fresh water`
-    - `Impassible`
+    - `Impassable`
+    - `Friendly Land`, `Friendly` - terrain (despite the name this includes water tiles) belonging to you, or other civs with open borders to you
+    - `Foreign Land` - any terrain that isn't friendly terrain
+    - `Enemy Land`, `Enemy` - any terrain belonging to a civ you are at war with
+    - `your` - terrain belonging to you
+    - `Unowned` - terrain that is not owned by any civ
 
 Please note all of these are _case-sensitive_.
 
 Note: Resource filters depend on whether a viewing civ is known in the context where the filter runs. Water and specific tests require a viewing civ, and if the resource needs a tech to be visible, that tech to be researched by the viewing civ. The other resource category tests can succeed without a known viewing civ only for resources not requiring any tech. So - test your mod!
-
-So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:
 
 ## tileFilter
 
@@ -359,6 +369,16 @@ Allowed values:
 - `Food`
 - `Desirable`
 - `Production`
+
+## unitTypeFilter
+
+Used when filtering Unit Types (e.g. "Mounted").
+
+Allowed values:
+
+- The type's name
+- `Land`, `Water`, `Air`
+- Any exact unique the unit type has
 
 ## countable
 
@@ -398,6 +418,8 @@ Allowed values:
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `[buildingFilter] Buildings by [civFilter] Civilizations`
     - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
+-   `[populationFilter] in [cityFilter] Cities`
+    - Example: `Only available <when number of [[Followers of this Religion] in [in all cities] Cities] is more than [0]>`
 -   `[cityFilter] Cities of [civFilter] Civilizations`
     - Example: `Only available <when number of [[in all cities] Cities of [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
@@ -408,6 +430,9 @@ Allowed values:
     - Example: `Only available <when number of [Researched [Agriculture] Technologies] is more than [0]>`
     - Counts researched matching technologies for the relevant Civilization
     - Repeatable technologies, like Future Tech, are only counted once
+-   `Known [civFilter] Civilizations` - The number of other civilizations the relevant Civilization has met
+    - Example: `Only available <when number of [Known [City-States] Civilizations] is more than [0]>`
+    - Counts only civilizations that are still alive, and never the civilization itself
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Worked [tileFilter] Tiles in this city`
@@ -418,7 +443,7 @@ Allowed values:
     - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
 -   `[tileFilter] Tiles`
     - Example: `Only available <when number of [[Desert] Tiles] is more than [0]>`
--   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
+-   Resource name - From [TileResources.json](Mod-file-structure/3-Map-related-JSON-files.md#tileresourcesjson)
     - Example: `Only available <when number of [Iron] is more than [0]>`
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.

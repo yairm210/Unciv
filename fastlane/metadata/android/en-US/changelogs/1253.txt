@@ -1,0 +1,13 @@
+Reduce RAM when saving/loading to/from files
+
+Fix rare crashes when handling events while screens are being changed
+
+Fix crash on Options re-open with force-close, e.g. toggling "Enable out-of-game turn notifications" - By SomeTroglodyte 
+
+AI does not see unexplored tiles for tile value when assessing settler locations - By ssamt 
+
+Clarify distance-based unit cycle option - By mvanhorn
+
+Population in cities countable - By PLynx01
+
+Modding: Downgrade "same name for multiple entries" to "OK", lowest level of warning, since most cases are benign

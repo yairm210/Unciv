@@ -180,7 +180,7 @@ object TradeAutomation {
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
         for (otherCiv in knownCivs.filter {
-            it.isMajorCiv() && !it.isAtWarWith(civInfo)
+            it.isMajorCiv && !it.isAtWarWith(civInfo)
                 && !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedLuxExchange)
         }) {
 
@@ -211,7 +211,7 @@ object TradeAutomation {
             .filter { resource ->
                 tradeLogic.ourAvailableOffers
                     .none { it.name == resource.name && it.type == TradeOfferType.Luxury_Resource }
-            }.sortedBy { civInfo.cities.count { city -> city.demandedResource == it.name } } // Prioritize resources that get WLTKD
+            }.sortedByDescending { civInfo.cities.count { city -> city.demandedResource == it.name } } // Prioritize resources that get WLTKD
         val trades = ArrayList<Trade>()
         for (i in 0..min(weHaveTheyDont.lastIndex, theyHaveWeDont.lastIndex)) {
             val trade = Trade()

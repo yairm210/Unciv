@@ -24,9 +24,17 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.images.ImageGetter
+import kotlin.random.Random
 
 /**
- *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
+ *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place.
+ *  * By default, it will have a map consisting of a single Tile. Use [makeHexagonalMap] or [makeRectangularMap] for more room.
+ *  * Starts with no civilizations, not even barbarians. Use [addCiv], [addBarbarianCiv] as needed. Note addCiv has two overloads, one creating a Nation and one using a G&K Nation.
+ *  * Initially, [GameInfo.currentPlayerCiv] is an uninitialized dummy and not suitable for e.g. a nextTurn.
+ *  * Helpers to modify the ruleset: [createBaseUnit], [createBelief], [createBuilding], [createPolicy], [createPolicyBranch],
+ *    [createResource], [createTileImprovement], [createUnitPromotion], [createUnitType], [createWonder]
+ *  * Helpers to modify game state: [addCity], [addDefaultMeleeUnitWithUniques], [addDefaultRangedUnitWithUniques], [addReligion], [addTileToCity], [addUnit]
+ *
  *  @param addGlobalUniques optional global uniques to add to the ruleset
  *  @param forUITesting default initializes UncivGame.Current and its settings, `true` initializes ImageGetter ruleset instead. Needed for FasterUIDevelopment.
  */
@@ -51,7 +59,6 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
                 voicesVolume = 0f
             }
         }
-        UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         if (RulesetCache.isEmpty())
@@ -76,6 +83,10 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
 
         for (baseUnit in ruleset.units.values)
             baseUnit.setRuleset(ruleset)
+
+        // This is important: Don't write it into UncivGame.Current earlier, otherwise we get a race condition in FasterUIDevelopment's
+        // click handler which delays the click sound - SoundPlayer might die on `modList.addAll(gameInfo.ruleset.mods)`
+        UncivGame.Current.gameInfo = gameInfo
     }
 
     fun setSpeed(speed: String) {
@@ -165,7 +176,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         // Add 1 tech to the player so the era is computed correctly
         civInfo.tech.addTechnology(ruleset.technologies.values.minBy { it.era() }.name)
         if (cityStateType != null) {
-            civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptySequence())
+            civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptySequence(), Random.Default)
         }
         return civInfo
     }
@@ -221,7 +232,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
     }
 
     fun addReligion(foundingCiv: Civilization): Religion {
-        val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv)
+        val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv, gameInfo.turns)
         foundingCiv.religionManager.religion = religion
         gameInfo.religions[religion.name] = religion
         return religion
@@ -266,6 +277,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
         createRulesetObject(ruleset.buildings, *uniques) { Building() }
+            .apply { ruleset = gameInfo.ruleset }
     fun createResource(vararg uniques: String) =
         createRulesetObject(ruleset.tileResources, *uniques) { TileResource() }
 

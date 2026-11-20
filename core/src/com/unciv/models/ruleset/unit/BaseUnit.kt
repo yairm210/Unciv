@@ -23,11 +23,13 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getBaseUnitCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
+import kotlin.math.min
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -94,12 +96,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
+    @Readonly fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
     override fun makeLink() = "Unit/$name"
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
-            BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> = getBaseUnitCivilopediaTextLines(ruleset)
 
     override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
     override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
@@ -132,7 +133,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civID
-        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
+        unit.id = unitId ?: civInfo.gameInfo.getNextUnitId()
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
@@ -175,12 +176,26 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else super<RulesetObject>.getMatchingTagUniques(uniqueTag, state)
     }
 
+    /** Allows unique functions (forEachMatchingUnique) to "see" uniques from the UnitType */
+    @Readonly
+    override fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter: (Unique) -> Boolean, op: (Unique) -> Unit) {
+        if (::ruleset.isInitialized) rulesetUniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+        else super<RulesetObject>.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    }
+
+    /** Allows unique functions (forEachMatchingUnique) to "see" uniques from the UnitType */
+    @Readonly
+    override fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (Unique) -> Unit) {
+        if (::ruleset.isInitialized) rulesetUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
+        else super<RulesetObject>.forEachMatchingUnique(uniqueType, gameContext, op)
+    }
+
     override fun getProductionCost(civInfo: Civilization, city: City?): Int  = costFunctions.getProductionCost(civInfo, city)
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(null, stat)
         if (hasUnique(UniqueType.CannotBePurchased)) return false
-        if (getRejectionReasons(city.cityConstructions).any { it.type != RejectionReasonType.Unbuildable  })
+        if (getRejectionReasons(city.cityConstructions, city.cityConstructions.queueWithoutOneOf(name)).any { it.type != RejectionReasonType.Unbuildable  })
             return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
         return super.canBePurchasedWithStat(city, stat)
@@ -196,8 +211,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     @Readonly fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo, null).toInt() / 20
 
-    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        val rejectionReasons = getRejectionReasons(cityConstructions)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions, queue: List<String>): Boolean {
+        val rejectionReasons = getRejectionReasons(cityConstructions, queue)
 
         if (hasUnique(UniqueType.ShowsWhenUnbuilable, cityConstructions.city.state) &&
             rejectionReasons.none { it.isNeverVisible() })
@@ -209,14 +224,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return false
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> =
-        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city)
+    override fun getRejectionReasons(cityConstructions: CityConstructions, ownQueue: List<String>): Sequence<RejectionReason> =
+        getRejectionReasons(cityConstructions.city.civ, cityConstructions.city, ownQueue = ownQueue)
 
+    /** @param ownQueue What counts as [city]'s own queue for [UniqueType.MaxNumberBuildable], see [INonPerpetualConstruction.getRejectionReasons];
+     *  `null` means the city's current queue (or no queue if there is no [city]). */
     @Readonly
     fun getRejectionReasons(
         civ: Civilization,
         city: City? = null,
-        additionalResources: Counter<String> = Counter.ZERO
+        additionalResources: Counter<String> = Counter.ZERO,
+        ownQueue: List<String>? = null
     ): Sequence<RejectionReason> = sequence {
 
         val stateForConditionals = city?.state ?: civ.state
@@ -251,7 +269,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (isUnavailableBySettings(civ.gameInfo))
+        if (civ.gameInfo.isUnavailableBySettingsCached(this@BaseUnit))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
@@ -261,7 +279,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
-                civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
+                civ.civConstructions.countConstructedObjects(this@BaseUnit, city, ownQueue) >= it.params[0].toInt()
             })
             yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
@@ -330,11 +348,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 UniqueType.ConditionalBuildingBuiltAll -> {
                     val building = civ.getEquivalentBuilding(conditional.params[0]).name
                     val cityFilter = conditional.params[1]
-                    if(civ.cities.any { it.matchesFilter(cityFilter)
-                            !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(building)
-                        }) {
+                    val missingCities = civ.cities.filter {
+                        it.matchesFilter(cityFilter)
+                        && !it.isPuppet
+                        && !it.cityConstructions.containsBuildingOrEquivalent(building)
+                    }
+                    if (missingCities.isNotEmpty()) {
                         yield(RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                            "Requires a [${building}] in all cities"))
+                            "Requires a [${building}] in all [${cityFilter}] cities",
+                            extraData = RejectionReason.RequiresBuildingInAllCitiesExtraData(building, missingCities)
+                        ))
                     }
                 }
                 else -> {
@@ -382,21 +405,21 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @Suppress("LocalVariableName")
         var XP = 0
 
-        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)) {
+        cityConstructions.city.forEachMatchingUnique(UniqueType.UnitStartingExperience) { unique ->
             if (unit.matchesFilter(unique.params[0]) && cityConstructions.city.matchesFilter(unique.params[2]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
 
-        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingPromotions)
-            .filter { cityConstructions.city.matchesFilter(it.params[1]) }) {
+        cityConstructions.city.forEachMatchingUnique(UniqueType.UnitStartingPromotions) { unique ->
+            if (!cityConstructions.city.matchesFilter(unique.params[1])) return@forEachMatchingUnique
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
             val isRelevantPromotion = filter == "relevant"
                     && civInfo.gameInfo.ruleset.unitPromotions.values
                 .any { it.name == promotion && unit.type.name in it.unitTypes }
-            
+
             if (isRelevantPromotion || unit.matchesFilter(filter)) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }
@@ -437,7 +460,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Land" -> isLandUnit
             "Water" -> isWaterUnit
             "Air" -> isAirUnit()
-            "non-air" -> !movesLikeAirUnits
+            "non-air" -> !isAirUnit()
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person" -> isGreatPerson
@@ -471,8 +494,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     @Readonly private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
-
-    val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
@@ -570,8 +591,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f
-                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
-                    -> power *= (unique.params[0].toInt() * 20f).toPercent()
+                // Extra attacks - 20% bonus per extra attack (if sufficient movement)
+                UniqueType.AdditionalAttacks -> {
+                    val additionalAttacks = unique.params[0].toInt()
+                    val limit = if (isAirUnit()) Int.MAX_VALUE else movement - 1
+                    power *= (20f * min(additionalAttacks, limit)).toPercent()
+                }
                 else -> {}
             }
         }

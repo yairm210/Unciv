@@ -17,14 +17,14 @@ internal abstract class OptionsPopupTab(
     internal val optionsPopup: OptionsPopup,
 ) : Table(skin), TabbedPager.IPageExtensions, OptionsPopupHelpers {
     override val rightWidgetMinWidth by optionsPopup::rightWidgetMinWidth
-    override val activePage get() = optionsPopup.tabs.activePage
+    override val activePage get() = OptionsPopupPages[optionsPopup.tabs.activePage]
 
     val settings by optionsPopup::settings
     val game by optionsPopup::game
 
     fun selectPage(name: String) = optionsPopup.tabs.selectPage(name)
     fun replacePage(factory: (OptionsPopup) -> OptionsPopupTab) =
-        optionsPopup.tabs.replacePage(activePage, factory(optionsPopup))
+        optionsPopup.tabs.replacePage(activePage.ordinal, factory(optionsPopup))
 
     private var isInitialized = false
 
@@ -40,4 +40,6 @@ internal abstract class OptionsPopupTab(
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         if (!isInitialized) lateInitialize()
     }
+
+    open fun subSelect(select: String?) {}
 }

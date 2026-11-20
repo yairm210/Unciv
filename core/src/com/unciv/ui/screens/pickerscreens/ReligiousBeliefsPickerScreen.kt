@@ -54,7 +54,7 @@ class ReligiousBeliefsPickerScreen (
     private var rightSelection = Selection()
 
     private val currentReligion = choosingCiv.religionManager.religion
-        ?: Religion("None", gameInfo, choosingCiv)
+        ?: Religion("None", gameInfo, choosingCiv, gameInfo.turns)
 
     init {
         leftChosenBeliefs.defaults().right().pad(10f).fillX()

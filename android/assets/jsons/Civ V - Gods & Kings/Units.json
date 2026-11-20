@@ -1580,6 +1580,7 @@
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
 		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "[+4] Sight", "Can see over obstacles"],
+		"promotions": ["Evasion"], // Not technically in Civ V, but this way new players / AI won't select this promotion which does nothing for this unit
 		"attackSound": "bombing"
 	},
 
@@ -1648,7 +1649,7 @@
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": [
-            "[+15]% Strength bonus for [Military] units within [2] tiles",
+            "[+15]% Strength bonus for [{Military} {Land}] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",

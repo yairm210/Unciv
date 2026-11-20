@@ -11,6 +11,7 @@ import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
@@ -163,8 +164,9 @@ internal class MultiplayerTab(
 
         if (mpServer.getFeatureSet().authVersion > 0) {
             val passwordTextField = UncivTextField(
-                mpSettings.getCurrentServerPassword() ?: "Password"
+                "Password", mpSettings.getCurrentServerPassword().orEmpty()
             )
+            passwordTextField.isPasswordMode = true
             val setPasswordButton = "Set password".toTextButton()
 
             serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
@@ -189,7 +191,7 @@ internal class MultiplayerTab(
                     }
 
                     Concurrency.runOnGLThread {
-                        authStatusLabel.setText(newAuthStatusText)
+                        authStatusLabel.setText(newAuthStatusText.tr())
                     }
                 }
             }

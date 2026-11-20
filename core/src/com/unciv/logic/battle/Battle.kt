@@ -1,5 +1,7 @@
 package com.unciv.logic.battle
 
+import com.unciv.models.metadata.GameSettings
+import com.unciv.view.GameView
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -16,14 +18,13 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
 import com.unciv.ui.components.UnitMovementMemoryType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.logic.map.mapunit.actions.UnitActionsPillage
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -36,7 +37,7 @@ object Battle {
      *
      * Currently not used by UI, only by automation via [BattleHelper.tryAttackNearbyEnemy][com.unciv.logic.automation.unit.BattleHelper.tryAttackNearbyEnemy]
      */
-    fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
+    fun moveAndAttack(attacker: MapUnitCombatant, attackableTile: AttackableTile) {
         if (!movePreparingAttack(attacker, attackableTile, true)) return
         attackOrNuke(attacker, attackableTile)
     }
@@ -45,9 +46,10 @@ object Battle {
      * Moves [attacker] to [attackableTile], handles siege setup and returns `true` if an attack is still possible.
      *
      * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
+     * Only relevant for [MapUnitCombatant] - cities can't move, so callers with a [CityCombatant] attacker
+     * should skip calling this and treat the attack as always still possible.
      */
-    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile, tryHealPillage: Boolean = false): Boolean {
-        if (attacker !is MapUnitCombatant) return true
+    fun movePreparingAttack(attacker: MapUnitCombatant, attackableTile: AttackableTile, tryHealPillage: Boolean = false): Boolean {
         val tilesMovedThrough = attacker.unit.movement.getDistanceToTiles().getPathToTile(attackableTile.tileToAttackFrom)
         attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
         /**
@@ -120,13 +122,15 @@ object Battle {
             if (attacker.isDefeated()) return interceptDamage
         } else interceptDamage = DamageDealt.None
 
-        if (hasWithdrawnFromMeelee(attacker, defender, attackedTile)) return DamageDealt.None
+        if (hasWithdrawnFromMelee(attacker, defender, attackedTile)) return DamageDealt.None
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
+        val extraRangedAttackDamage = tryExtraRangedAttack(attacker, defender, attackedTile)
+
         triggerCombatUniques(attacker, defender, attackedTile)
 
-        val damageDealt = takeDamage(attacker, defender)
+        val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
@@ -135,7 +139,7 @@ object Battle {
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
-        if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
+        if (defender.getCivInfo().isBarbarian && attackedTile.isBarbarianEncampment())
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
@@ -321,7 +325,7 @@ object Battle {
         }
 
         // CS friendship from killing barbarians
-        if (defeatedUnit.getCivInfo().isBarbarian && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv()) {
+        if (defeatedUnit.getCivInfo().isBarbarian && !defeatedUnit.isCivilian() && civUnit.getCivInfo().isMajorCiv) {
             for (cityState in defeatedUnit.getCivInfo().gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
@@ -344,7 +348,7 @@ object Battle {
         if (civUnit is MapUnitCombatant) {
             bonusUniques.addAll(civUnit.getMatchingUniques(UniqueType.KillUnitPlunder, gameContext, true))
         } else {
-            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(UniqueType.KillUnitPlunder, gameContext))
+            civUnit.getCivInfo().forEachMatchingUnique(UniqueType.KillUnitPlunder, gameContext) { bonusUniques.add(it) }
         }
 
         val cityWithReligion =
@@ -352,7 +356,7 @@ object Battle {
                 it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, gameContext).any()
             }?.getCity()
         if (cityWithReligion != null) {
-            bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, gameContext))
+            cityWithReligion.forEachMatchingUnique(UniqueType.KillUnitPlunderNearCity, gameContext) { bonusUniques.add(it) }
         }
         return bonusUniques
     }
@@ -371,10 +375,11 @@ object Battle {
     }
 
     internal fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
-        val attackContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
+        val attackerContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
+        val defenderContext = GameContext(defender, attacker, defender.getTile(), CombatAction.Defend)
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender)
-        val rng = attackContext.stateBasedRandom("Battle.takeDamage")
+        val rng = attackerContext.stateBasedRandom("Battle.takeDamage")
 
         val attackerHealthBefore = attacker.getHealth()
         val defenderHealthBefore = defender.getHealth()
@@ -403,26 +408,60 @@ object Battle {
         val defenderDamageDealt = attackerHealthBefore - attacker.getHealth()
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
-        if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= defenderDamageDealt }) {
-                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
-                    defender.unit
-                else attacker.unit
-                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
-            }
-
-        if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= attackerDamageDealt }) {
-                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
-                attacker.unit
-                else defender.unit
-                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
-            }
+        triggerLosingHPUniques(attacker, attackerContext, attackerDamageDealt, defender, defenderContext, defenderDamageDealt)
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
+    }
+
+    private fun triggerLosingHPUniques(
+        attacker: ICombatant,
+        attackerContext: GameContext,
+        attackerDamageDealt: Int,
+        defender: ICombatant,
+        defenderContext: GameContext,
+        defenderDamageDealt: Int
+    ) {
+        fun triggerUnique(
+            combatant: ICombatant,
+            unique: Unique,
+            action: CombatAction
+        ) {
+            val triggerText =
+                if (action == CombatAction.Attack) "due to losing [$defenderDamageDealt] HP"
+                else "due to losing [$attackerDamageDealt] HP"
+            when (combatant) {
+                is MapUnitCombatant -> UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    combatant.unit,
+                    triggerNotificationText = triggerText
+                )
+
+                is CityCombatant -> UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    combatant.city,
+                    triggerNotificationText = triggerText
+                )
+            }
+        }
+
+        for (unique in attacker.getTriggeredUniques(
+            UniqueType.TriggerUponLosingHealth,
+            attackerContext
+        )
+        { it.params[0].toInt() <= defenderDamageDealt }) {
+            val combatant = if (unique.params[0] == Constants.targetUnit) defender else attacker
+            triggerUnique(combatant, unique, CombatAction.Attack)
+        }
+
+        for (unique in defender.getTriggeredUniques(
+            UniqueType.TriggerUponLosingHealth,
+            defenderContext
+        )
+        { it.params[0].toInt() <= attackerDamageDealt }) {
+            val combatant = if (unique.params[0] == Constants.targetUnit) attacker else defender
+            triggerUnique(combatant, unique, CombatAction.Defend)
+        }
     }
 
     private fun plunderFromDamage(
@@ -466,7 +505,7 @@ object Battle {
             if (plunderedAmount == 0) continue
             civ.addStat(key, plunderedAmount)
             civ.addNotification(
-                "${plunderingUnit.getNotificationDisplay("your ")} plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
+                "${plunderingUnit.getNotificationDisplay("Your ")} plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
                 NotificationCategory.War,
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
@@ -483,7 +522,7 @@ object Battle {
         damageDealt: DamageDealt? = null
     ) {
         if (attacker.getCivInfo() == defender.getCivInfo()) return
-        
+
         // If what happened was that a civilian unit was captured, that's dealt with in the captureCivilianUnit function
         val (battleActionIcon, battleActionString) = when {
             attacker !is CityCombatant && attacker.isDefeated() ->
@@ -503,8 +542,8 @@ object Battle {
 
         val defenderString =
                 if (defender.isCity())
-                    if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
-                    else " [" + defender.getName() + "]"
+                    if (defender.isDefeated() && attacker.isRanged()) "the defence of [" + defender.getName() + "]"
+                    else "[" + defender.getName() + "]"
                 else defender.getNotificationDisplay("our ")
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
@@ -512,7 +551,7 @@ object Battle {
         val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
-        
+
         val locations = LocationAction(attackedTile.position, attackerTile?.position)
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }
@@ -520,7 +559,7 @@ object Battle {
     private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker !is MapUnitCombatant) return
         
-        for (unique in attacker.unit.getMatchingUniques(UniqueType.HealsAfterKilling, checkCivInfoUniques = true)) {
+        attacker.unit.forEachMatchingUnique(UniqueType.HealsAfterKilling, checkCivInfoUniques = true) { unique ->
             val amountToHeal = unique.params[0].toInt()
             attacker.unit.healBy(amountToHeal)
         }
@@ -585,7 +624,7 @@ object Battle {
         val xpGained = (baseXP * xpModifier).toInt()
         promotions.XP += xpGained
 
-        if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
+        if (!otherIsBarbarian && civ.isMajorCiv) { // Can't get great generals from Barbarians
             var greatGeneralUnits = civ.gameInfo.ruleset.greatGeneralUnits
                 .filter { it.hasUnique(UniqueType.GreatPersonFromCombat, gameContext) &&
                         // Check if the unit is allowed for the Civ, ignoring build constrants
@@ -611,7 +650,11 @@ object Battle {
             }
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
+        // Post-battle auto-promote is never valid here: attackers have attacked,
+        // defenders are not on their turn. TurnManager handles auto-promote instead.
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()
+            && UncivGame.Current.settings.automaticPromotions != GameSettings.AutomaticPromotions.ForAllUnits
+        ) {
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
                 listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
                 NotificationCategory.Units, thisCombatant.unit.name)
@@ -637,7 +680,7 @@ object Battle {
             // if it was a melee attack, and we won, then the unit ALREADY got movement points deducted,
             // for the movement to the enemy's tile!
             // and if it's an air unit, it only has 1 movement anyway, so...
-            if (!attacker.unit.baseUnit.movesLikeAirUnits && !(attacker.isMelee() && defender.isDefeated()))
+            if (!attacker.unit.baseUnit.isAirUnit() && !(attacker.isMelee() && defender.isDefeated()))
                 unit.useMovementPoints(1f)
         } else unit.currentMovement = 0f
         
@@ -695,7 +738,7 @@ object Battle {
     private fun automateCityConquer(civInfo: Civilization, city: City) {
         if (!city.hasDiplomaticMarriage()) {
             val foundingCiv = city.foundingCivObject!!
-            var valueAlliance = NextTurnAutomation.valueCityStateAlliance(civInfo, foundingCiv)
+            var valueAlliance = NextTurnAutomation.valueCityStateAlliance(GameView(civInfo.gameInfo, civInfo).civView, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
             if (foundingCiv.isCityState && city.civ != civInfo && foundingCiv != civInfo
@@ -732,7 +775,7 @@ object Battle {
         }
     }
     
-    private fun hasWithdrawnFromMeelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
+    private fun hasWithdrawnFromMelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
         return (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
                 && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
             civInfo = defender.getCivInfo(),
@@ -800,6 +843,46 @@ object Battle {
                 LocationAction(attackedTile.position, attacker.getTile().position),
                 NotificationCategory.War, attacker.unit.baseUnit.name,
                 NotificationIcon.War)
+        }
+    }
+
+    private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+        if (attacker !is MapUnitCombatant) return DamageDealt.None
+        if (defender !is MapUnitCombatant) return DamageDealt.None
+        if (defender.isCivilian()) return DamageDealt.None
+
+        var damageDealt = DamageDealt.None
+        for (fakeAttacker in getExtraRangedAttackFakeUnits(attacker)) {
+            damageDealt += takeDamage(fakeAttacker, defender)
+        }
+        return damageDealt
+    }
+
+    /** One [FakeUnitForExtraRangedAttack] per [UniqueType.ExtraRangedAttack] unique on [attacker] - shared between
+     *  actually performing the extra attack ([tryExtraRangedAttack]) and previewing its damage ([BattleDamage.getExtraRangedAttackBonusDamage]). */
+    @Readonly
+    internal fun getExtraRangedAttackFakeUnits(attacker: MapUnitCombatant): List<FakeUnitForExtraRangedAttack> =
+        attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack).map { unique ->
+            val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength *
+                unique.params[0].toFloat() / 100).toInt()
+            FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
+        }.toList()
+
+    /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
+     *  **except** for [isRanged] and [getAttackingStrength]
+     */
+    internal class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant by mapUnitCombatant {
+        override fun getAttackingStrength(defender: ICombatant?): Int {
+            val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
+            var extraStrength = 0
+            mapUnitCombatant.unit.forEachMatchingUnique(UniqueType.StrengthAmount, state) {
+                extraStrength += it.params[0].toInt()
+            }
+            return baseRangedStrength + extraStrength // Is always ranged
+        }
+
+        override fun isRanged(): Boolean {
+            return true
         }
     }
 }

@@ -19,7 +19,6 @@ import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
-import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
@@ -27,13 +26,16 @@ import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
+import java.io.InputStream
 import java.io.Writer
 
-private const val SAVE_FILES_FOLDER = "SaveFiles"
+const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
+private const val TEMP_FILE_EXTENSION = "tmp"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+const val EXCLUDED_MOD_AUTHORS_FILE_NAME = "ExcludedModAuthors.txt"
 
 class UncivFiles(
     /**
@@ -77,20 +79,20 @@ class UncivFiles(
             gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
         val location = "${saveFolder}/$gameName"
         val localFile = getLocalFile(location)
-        val externalFile = files.external(location)
+        val externalFile = if (files.isExternalStorageAvailable) files.external(location) else null
 
-        val toReturn = if (files.isExternalStorageAvailable && (
+        val toReturn = if (externalFile != null && (
                 externalFile.exists() && !localFile.exists() || // external file is only valid choice
                 preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
             if (externalFile.isDirectory) externalFile.deleteDirectory() // fix for #13113
-            externalFile.parent().mkdirs()
             externalFile
         } else {
             localFile
         }
 
-        debug("Save found: %s", toReturn.file().absolutePath)
+        toReturn.parent().mkdirs()
+        debug("Save found: %s", toReturn.path())
         return toReturn
     }
 
@@ -132,9 +134,10 @@ class UncivFiles(
         }
 
         debug("Local files: %s, external files: %s",
-            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) },
-            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) })
-        return localFiles + externalFiles
+            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) },
+            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) })
+        // Skip leftovers of interrupted atomic writes, they may be truncated
+        return (localFiles + externalFiles).filter { it.extension() != TEMP_FILE_EXTENSION }
     }
 
     /**
@@ -176,8 +179,8 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            val string = gameInfoToString(game)
-            file.writeString(string, false, Charsets.UTF_8.name())
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+            FileConversions.writeJson(file, game, saveZipped)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -224,7 +227,7 @@ class UncivFiles(
         try {
             val data = gameInfoToString(game)
             debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
-            saverLoader.saveGame(data, saveLocation,
+            saverLoader.saveGame(data, saveZipped, saveLocation,
                 { location ->
                     game.customSaveLocation = location
                     Concurrency.runOnGLThread { onSaved() }
@@ -246,15 +249,28 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString(Charsets.UTF_8.name())
-        if (gameData.isNullOrBlank()) {
-            throw emptyFile(gameFile)
+        if (gameFile.length() == 0L) throw emptyFile(gameFile)
+
+        val gameInfo = try {
+            FileConversions.readJson(gameFile, GameInfo::class.java)
+        } catch (outOfMemory: OutOfMemoryError) {
+            throw UncivShowableException("Not enough memory on phone to load game!", outOfMemory)
+        } catch (ex: Exception) {
+            Log.error("Exception while deserializing GameInfo JSON", ex)
+            val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!
+            throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+        } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+        if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+            // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+            throw IncompatibleGameInfoVersionException(gameInfo.version)
         }
-        return gameInfoFromString(gameData)
+        gameInfo.setTransients()
+        return gameInfo
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = FileConversions.readJson(gameFile, GameInfoPreview::class.java)
             ?: throw emptyFile(gameFile)
         preview.migrateCivID()
         return preview
@@ -367,6 +383,18 @@ class UncivFiles(
         }
     }
 
+    fun loadExcludedModAuthors(): Iterable<String> {
+        val file = files.internal(EXCLUDED_MOD_AUTHORS_FILE_NAME).takeIf { it.exists() } // First look inside packaged assets
+            ?: getLocalFile(EXCLUDED_MOD_AUTHORS_FILE_NAME) // Then locally for runs from source
+        if (!file.exists()) return emptyList()
+        try {
+            return file.reader().readLines()
+        } catch (ex: Exception) {
+            Log.error("Error loading mod author exclusion list", ex)
+            return emptyList()
+        }
+    }
+
 
     //endregion
 
@@ -407,8 +435,8 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
-                Gzip.unzip(fixedData)
-            } catch (ex: Exception) {
+                FileConversions.unzip(fixedData)
+            } catch (_: Exception) {
                 fixedData
             }
             val gameInfo = try {
@@ -428,13 +456,30 @@ class UncivFiles(
         }
 
         /**
-         * Parses [gameData] as gzipped serialization of a [GameInfoPreview]
-         * @throws SerializationException
+         * Streams the stream from [openInput] into a [GameInfo] without buffering the full text.
+         * [openInput] is called again if parsing fails, to read only the version for an [IncompatibleGameInfoVersionException] -
+         * a stream can't be rewound once consumed.
+         * @throws IncompatibleGameInfoVersionException if the data was created by a version of this game that is incompatible with the current one.
          */
-        fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
-            preview.migrateCivID()
-            return preview
+        fun gameInfoFromStream(openInput: () -> InputStream): GameInfo {
+            val gameInfo = try {
+                FileConversions.readJson(openInput(), GameInfo::class.java)
+            } catch (ex: Exception) {
+                Log.error("Exception while deserializing GameInfo JSON", ex)
+                // NOTE: To accomodate "minimize RAM spikes by streaming" this means that if we fail with the json parse 
+                //  we need to download the whole thing again for the version
+                // I don't have a better solution, and I prefer paying on failure vs paying every successful download
+                // (Alternatively we could forgo the "get version" entirely since it's really not very often the problem)
+                val onlyVersion = FileConversions.readJson(openInput(), GameInfoSerializationVersion::class.java)!!
+                throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+            } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+            if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+                // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+                throw IncompatibleGameInfoVersionException(gameInfo.version)
+            }
+            gameInfo.setTransients()
+            return gameInfo
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
@@ -444,12 +489,12 @@ class UncivFiles(
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
 
-            return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
+            return if (forceZip ?: saveZipped) FileConversions.zip(plainJson) else plainJson
         }
 
         /** Returns gzipped serialization of preview [game] */
         fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
+            return FileConversions.zip(json().toJson(game))
         }
 
         private val charsForbiddenInFileNames = setOf('\\', '/', ':')
@@ -503,10 +548,16 @@ class Autosaves(val files: UncivFiles) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
 
+        // Write to a temp file first and move it over the real one when complete,
+        // so a thread dying mid-save can't leave a truncated Autosave behind
+        val autosaveFile = files.getSave(AUTOSAVE_FILE_NAME)
+        val tempFile = autosaveFile.sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
         try {
-            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
+            files.saveGame(gameInfo, tempFile)
+            tempFile.moveTo(autosaveFile)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
+            tempFile.delete()
             return  // not much we can do here
         }
 
@@ -521,6 +572,10 @@ class Autosaves(val files: UncivFiles) {
     }
 
     private fun purgeOldAutosaves(maxAutosavesStored: Int) {
+        // Leftover of an interrupted autosave - getSaves hides these, so delete explicitly
+        val tempFile = files.getSave(AUTOSAVE_FILE_NAME).sibling("$AUTOSAVE_FILE_NAME.$TEMP_FILE_EXTENSION")
+        if (tempFile.exists()) tempFile.delete()
+
         // Since the latest numbered autosave is a copy of the un-numbered autosave file,
         // we add 1 so `maxAutosavesStored` numbered files AND the un-numbered one are kept (see #12790).
         val oldAutoSaves = files.getSaves()

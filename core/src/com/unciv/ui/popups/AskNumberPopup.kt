@@ -1,20 +1,22 @@
 package com.unciv.ui.popups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
-import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.components.widgets.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Simple class for showing a prompt for a positive integer to the user
- * @param screen The previous screen the user was on
+ * @param stageToShowOn The stage of the previous screen the user was on
  * @param label A line of text shown to the user
  * @param icon Icon at the top, should have size 80f
  * @param defaultValue The number that should be in the prompt at the start
@@ -26,39 +28,23 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  */
 
 class AskNumberPopup(
-    screen: BaseScreen,
-    label: String = "Please enter a number",
-    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
+    stageToShowOn: Stage,
+    label: String,
+    icon: IconCircleGroup<Image> = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = ImageGetter.CHARCOAL }.surroundWithCircle(80f),
     defaultValue: Int? = null,
     amountButtons: List<Int> = listOf(),
     bounds: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
     errorText: String = "Invalid input! Please enter a valid number.",
     validate: (input: Int) -> Boolean = { true },
     actionOnOk: (input: Int) -> Unit = { },
-): Popup(screen) {
+): Popup(stageToShowOn) {
     init {
         val wrapper = Table()
         wrapper.add(icon).padRight(10f)
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
 
-        val nameField = UncivTextField.Integer(label, defaultValue)
-
-        fun clampInBounds(input: Int?): Int? {
-            if (input == null) return null
-
-            if (bounds.first > input) {
-                return bounds.first
-            }
-            if (bounds.last < input)
-                return bounds.last
-
-            return input
-        }
-
-        nameField.onChange {
-            nameField.intValue = clampInBounds(nameField.intValue)
-        }
+        val valueField = UncivTextField.Integer(label, defaultValue)
 
         val centerTable = Table(skin)
 
@@ -69,8 +55,8 @@ class AskNumberPopup(
                     skin
                 ).apply {
                     onClick {
-                        val value = nameField.intValue ?: return@onClick
-                        nameField.intValue = clampInBounds(value + delta)
+                        val value = valueField.intValue ?: return@onClick
+                        valueField.intValue = (value + delta).coerceIn(bounds)
                     }
                 }
             ).pad(5f)
@@ -80,7 +66,7 @@ class AskNumberPopup(
             addValueButton(-value)
         }
 
-        centerTable.add(nameField).growX().pad(10f)
+        centerTable.add(valueField).growX().pad(10f)
 
         add(centerTable).colspan(2).row()
 
@@ -92,17 +78,21 @@ class AskNumberPopup(
         errorLabel.color = Color.RED
 
         addCloseButton()
-        addOKButton(
+        val okButton = addOKButton(
             validate = {
-                val errorFound = nameField.intValue?.let { validate(it) } != true
+                val errorFound = valueField.intValue?.let { validate(it) } != true
                 if (errorFound) add(errorLabel).colspan(2).center()
                 !errorFound
             }
         ) {
-            actionOnOk(nameField.intValue!!)
-        }
+            actionOnOk(valueField.intValue!!)
+        }.actor
         equalizeLastTwoButtonWidths()
 
-        keyboardFocus = nameField
+        valueField.onChange {
+            okButton.isEnabled = valueField.intValue?.let { it in bounds } == true
+        }
+
+        keyboardFocus = valueField
     }
 }

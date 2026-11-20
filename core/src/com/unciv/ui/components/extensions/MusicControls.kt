@@ -44,9 +44,10 @@ interface MusicControls {
             settings.citySoundsVolume = it
         }
 
-    fun Table.addVoicesVolumeSlider(settings: GameSettings) =
+    fun Table.addVoicesVolumeSlider(settings: GameSettings, music: MusicController) =
         addVolumeSlider("Leader voices volume", settings.voicesVolume) {
             settings.voicesVolume = it
+            music.setOverlayVolume(it)
         }
 
     fun Table.addMusicVolumeSlider(settings: GameSettings, music: MusicController) =
@@ -95,11 +96,13 @@ interface MusicControls {
     }
 
     fun Table.addMusicCurrentlyPlaying(music: MusicController) {
-        val label = WrappableLabel("", width - 10f, Color(0xffd0afff.toInt()), 16)
+        val expectedWidth = if (width == 0f) prefWidth else width
+        val label = WrappableLabel("", expectedWidth - 10f, Color(0xffd0afff.toInt()), 16, true)
         label.wrap = true
         add(label).padTop(20f).colspan(2).fillX().row()
         music.onChange {
             label.setText("Currently playing: [$it]".tr())
+            label.optimizePrefWidth()
         }
         firstAscendant(Popup::class.java)?.run {
             closeListeners.add { music.onChange(null) }

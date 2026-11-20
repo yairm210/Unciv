@@ -24,7 +24,6 @@ internal class ActorAttachments private constructor(actor: Actor) {
     var activationActions: ActivationActionMap? = null
     private var activationListener: ActivationListener? = null
 
-    
     /**
      *  Keyboard dispatcher for the [actor] this is attached to.
      *
@@ -48,7 +47,8 @@ internal class ActorAttachments private constructor(actor: Actor) {
         sound: UncivSound = UncivSound.Click,
         noEquivalence: Boolean = false,
         action: ActivationAction,
-        allowEventPropagation: Boolean = true
+        allowEventPropagation: Boolean = true,
+        halfTapSquareSize: Float
     ) {
         var actions: ActivationActionMap? = this.activationActions
         if (actions == null) {
@@ -65,7 +65,7 @@ internal class ActorAttachments private constructor(actor: Actor) {
         actions.add(type, sound, noEquivalence, action)
 
         if (!type.isGesture || activationListener != null) return
-        activationListener = if (allowEventPropagation) ActivationListener() else SuppressiveActivationListener()
+        activationListener = if (allowEventPropagation) ActivationListener(halfTapSquareSize) else SuppressiveActivationListener(halfTapSquareSize)
         actor.addListener(activationListener)
     }
 
@@ -75,5 +75,9 @@ internal class ActorAttachments private constructor(actor: Actor) {
         if (activationListener == null || actions.isNotEmpty()) return
         actor.removeListener(activationListener)
         activationListener = null
+    }
+
+    fun reloadSettings() {
+        activationListener?.reloadSettings()
     }
 }

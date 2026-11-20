@@ -73,6 +73,7 @@ com_crashlytics_export_strings.xml
 /desktop/build/
 /server/build/
 /html/build/
+/web/build/
 /ios/build/
 /ios-moe/build/
 /buildSrc/build
@@ -135,16 +136,13 @@ android/release/android.aab
 android/release/android.aab.sig
 android/release/android-release.aab
 tests/build/
-desktop/packr/
-desktop/packrCache/
-server/packr/
-server/packrCache/
 deploy/
 android/release/
 
 # Transient Unciv files
 android/assets/GameSettings.json
-/android/assets/ModListCache.json
+android/assets/FasterUIDevSettings.json
+android/assets/ModListCache.json
 android/assets/lasterror.txt
 android/assets/fonts/
 android/assets/maps/
@@ -192,3 +190,11 @@ detekt/reports.html
 /buildSrc/.kotlin/errors/*
 /buildSrc/.kotlin/sessions/*
 /.claude/
+
+# Used by the desktop:packr<platform> tasks and intentionally not included in a 'clean':
+/desktop/.jre-cache/
+
+/.github/workflows/unciv.msi
+/.github/workflows/unciv.wixpdb
+/.github/workflows/wix-msi-files/
+/desktop/packr/*

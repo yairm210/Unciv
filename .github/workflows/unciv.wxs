@@ -5,17 +5,33 @@
     <Package Language="1033"
              Manufacturer="Yair Morgenstern"
              Name="$(var.Name)"
-             Version="$(env.UNCIV_VERSION).0"
-            UpgradeCode="74d42802-054a-4869-a703-658c361fe94c">
-             <!-- MSI versions require a 4-part, so we add a ".0" to the end of every version -->
+             Version="$(env.UNCIV_VERSION)"
+             UpgradeCode="74d42802-054a-4869-a703-658c361fe94c">
+             <!-- MSI versions require a 4-part version, but wix accepts 3 -->
         <Icon Id="icon.ico" SourceFile="extraImages/Icons/Unciv.ico"/>
-        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." Schedule="afterInstallInitialize" />
+        <Upgrade Id="74d42802-054a-4869-a703-658c361fe94c">
+          <!-- any installed version, including the mangled ones where the "-patch" string led to the high bit set: remove it -->
+          <UpgradeVersion Property="UNCIV_ANY"
+                          Minimum="0.0.0" IncludeMinimum="yes" />
+          <!-- genuinely newer (major <= 127): detect only -->
+          <UpgradeVersion Property="UNCIV_NEWER" OnlyDetect="yes"
+                          Minimum="$(env.UNCIV_VERSION)" IncludeMinimum="no"
+                          Maximum="127.255.65535" IncludeMaximum="yes" />
+        </Upgrade>
+        <!-- We're not setting an Id on Package, so each new version has a new ProductCode, so "Installed" is _not_ set for a normal upgrade, but allows maintenance mode -->
+        <Launch Condition="Installed OR NOT UNCIV_NEWER OR ALLOWDOWNGRADE=1"
+                Message="A newer version of [ProductName] is already installed. Uninstall it first, or run the installer with ALLOWDOWNGRADE=1." />
+
+        <InstallExecuteSequence>
+          <FindRelatedProducts Before="LaunchConditions" />
+          <RemoveExistingProducts After="InstallInitialize" Condition="NOT Installed" />
+        </InstallExecuteSequence>
 
         <!-- Pack all the files into the MSI instead of spreading this over .cab files -->
         <MediaTemplate CompressionLevel="high" EmbedCab="yes" />
 
         <DirectoryRef Id="INSTALLFOLDER">
-          <Component Id="Unciv" Guid="70aab056-7fbd-4a7a-9cbb-2275ee064f06">
+          <Component Id="Unciv" Guid="59f8e1f6-0aaa-4cb5-9d22-53aeb82b9dc8">
             <File Id="UncivExe"
                   KeyPath="yes"
                   Checksum="yes"
@@ -25,13 +41,13 @@
             </File>
           </Component>
         </DirectoryRef>
-    
+
         <ComponentGroup Id="UncivFiles" Directory="INSTALLFOLDER">
             <!-- But THIS source is relative to the exs file location!!! -->
             <Files Include="wix-msi-files\**" />
         </ComponentGroup>
 
-        <Component Id="UncivShortcuts" Directory="INSTALLFOLDER" Guid="0eac8b63-1cab-4645-b0cb-ad7535f0e9ce">
+        <Component Id="UncivShortcuts" Directory="INSTALLFOLDER" Guid="8e806e5d-f502-4067-9a6e-ef78b718472a">
           <Shortcut Id="StartMenuShortcut"
                     Name="$(var.Name)"
                     Target="[#UncivExe]"
@@ -42,20 +58,21 @@
           <RemoveFolder Id="CleanupStartMenuShortcut"
                         Directory="ApplicationProgramsFolder"
                         On="uninstall" />
+          <!-- Will only remove empty folders, meaning it's only cleaned when Unciv was never started -->>
           <RemoveFolder Id="CleanupAppData"
                         Directory="APPDATAFOLDER"
                         On="uninstall" />
           <RegistryValue Root="HKCU" Key="Software\YairMorgenstern\Unciv" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
         </Component>
-    
+
         <Feature Id="ProductFeature" Title="$(var.Name)" Level="1" ConfigurableDirectory="INSTALLFOLDER">
             <ComponentGroupRef Id="UncivFiles" />
             <ComponentRef Id="Unciv" />
             <ComponentRef Id="UncivShortcuts" />
         </Feature>
-    
 
-        <StandardDirectory Id="ProgramFilesFolder">
+
+        <StandardDirectory Id="ProgramFiles64Folder">
             <Directory Id="INSTALLFOLDER" Name="$(var.Name)" />
         </StandardDirectory>
 

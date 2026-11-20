@@ -1,11 +1,14 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.unciv.Constants
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.json
+import com.unciv.logic.BackwardCompatibility.migrateCivID
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.UncivKtor
+import com.unciv.logic.files.FileConversions
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
 import io.ktor.client.request.*
@@ -162,8 +165,7 @@ class MultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = fileStorage().loadFileData(gameId)
-        val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
+        val gameInfo = UncivFiles.gameInfoFromStream { fileStorage().loadFileData(gameId) }
         gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.getServer()
         return gameInfo
     }
@@ -184,7 +186,9 @@ class MultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
-        return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
+        val preview = FileConversions.readJson(fileStorage().loadFileData("${gameId}_Preview"), GameInfoPreview::class.java)
+            ?: throw SerializationException("Empty game preview for $gameId")
+        preview.migrateCivID()
+        return preview
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -14,9 +15,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.addInTable
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ScalingTableWrapper
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
@@ -67,9 +70,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         improvementsImageButton
     )
 
-    private fun rebuildIfSizeChanged(civInfo: Civilization) {
+    private fun rebuildIfStale(civInfo: Civilization) {
         // For Spectator should not restrict minimap
-        val civ: Civilization? = civInfo.takeUnless { GUI.getViewingPlayer().isSpectator() }
+        val civ: Civilization? = civInfo.takeUnless { worldScreen.selectedGameView.spectatorMode }
         val newMinimapSize = worldScreen.game.settings.minimapSize
         val cutoutSetting = worldScreen.game.settings.androidCutout
         if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return
@@ -99,9 +102,11 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     private fun rebuildAndUpdateMap(civInfo: Civilization?) {
-        rebuild(civInfo) // re-create views
-        civInfo?.let { minimap.update(it) } // update map
-        minimap.mapHolder.onViewportChanged() // update scroll position
+        InputDisabling.withInputDisabled {
+            rebuild(civInfo) // re-create views
+            civInfo?.let { minimap.update(it) } // update map
+            minimap.mapHolder.onViewportChanged() // update scroll position
+        }
     }
 
     private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
@@ -171,23 +176,24 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     /** @return Layout table for the little green map overlay toggle buttons, show to the left of the minimap. */
-    private fun getToggleIcons(minimapHeight: Float): Table {
-        val toggleIconTable = Table()
+    private fun getToggleIcons(minimapHeight: Float): Group {
+        val toggleIconTable = ScalingTableWrapper()
 
         val availableForPadding = minimapHeight - buttons.sumOf { it.height.toDouble() }.toFloat()
         val paddingBetweenElements = (availableForPadding/3).coerceIn(0f, 5f)
 
-        toggleIconTable.defaults().padTop(paddingBetweenElements)
+        toggleIconTable.defaults().space(paddingBetweenElements)
 
         for (button in buttons) {
             toggleIconTable.add(button).row()
         }
 
+        toggleIconTable.scaleToHeight(minimapHeight)
         return toggleIconTable
     }
 
     fun update(civInfo: Civilization) {
-        rebuildIfSizeChanged(civInfo)
+        rebuildIfStale(civInfo)
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
@@ -208,7 +214,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
                 return
             dragged = true
             val targetSize = Vector2(stage.width - event.stageX, event.stageY)
-            minimapSize = minimap.getClosestMinimapSize(targetSize)
+            val newMinimapSize = minimap.getClosestMinimapSize(targetSize) 
+            if (newMinimapSize == minimapSize) return
+            
+            minimapSize = newMinimapSize
             rebuildAndUpdateMap(civInfo)
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {

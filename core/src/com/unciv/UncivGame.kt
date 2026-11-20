@@ -1,11 +1,10 @@
 package com.unciv
 
 import com.badlogic.gdx.*
-import com.unciv.UncivGame.Companion.Current
-import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.Version
+import com.unciv.logic.automation.Timers
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
@@ -18,7 +17,8 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.InputDisabling
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -106,20 +106,24 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - SpriteBatch (hence BaseScreen.recreateBatch())
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
+        BaseScreen.recreateBatch() // old one belonged to a lost GL context
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
+        InputDisabling.disableInput() // We just set the game start screen, avoid ANRs until we actually load the main menu
+
+        Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
 
         onlineMultiplayer = Multiplayer()
 
-        Concurrency.run {
+        if (supportsOnlineMultiplayer) Concurrency.run {
             // Check if the server is available in case the feature set has changed
             try {
                 onlineMultiplayer.multiplayerServer.checkServerStatus()
@@ -127,19 +131,35 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 debug("Couldn't connect to server: " + ex.message)
             }
         }
-
+        
+        /** To understand this you need to know a few things
+         * - Initial ImageGetter.reloadImages() is heavy - includes loading image atlases and creating the font, takes ~1s on my computer
+         * - LibGDX calls create() first and then sets up the render() loop meaning first pixels are drawn after create() finishes
+         * - The loop (e.g. in Lwjgl3Window.java) gathers all Runnables sent via postRunnable, then runs them all, then renders
+         * Therefore:
+         *   - If we send something in postRunnable in create(), it'll be run after create()...but still before render()
+         *   - But this also means that runnables posted within a runnable, will only be run on the *next* render call
+         *   - So if we want to "render quickly" so the user gets immediate feedback, we can post a runnable that posts a runnable - 
+         *     the first will run in the first update() call, posting the second to be run in the second update() call, which is after render!
+        */
+        Concurrency.runOnGLThread { Concurrency.runOnGLThread { initialize() } }
+    }
+    
+    private fun initialize() {
+        FontRulesetIcons.reset()  // Recreate GL resources
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
-        
-        Gdx.graphics.isContinuousRendering = settings.continuousRendering
+
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
-            translations.tryReadTranslationForCurrentLanguage()
-            translations.loadPercentageCompleteOfLanguages()
-            TileSetCache.loadTileSetConfigs()
+            Concurrency.parallelize(listOf(
+                { translations.tryReadTranslationForCurrentLanguage() },
+                { translations.loadPercentageCompleteOfLanguages() },
+                { TileSetCache.loadTileSetConfigs() },
+                { SkinCache.loadSkinConfigs() }
+            ))
 
-            SkinCache.loadSkinConfigs()
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
@@ -147,10 +167,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 settings.multiplayer.setUserId(UUID.randomUUID().toString())
                 settings.save()
             }
-
-            // Loading available fonts can take a long time on Android phones.
-            // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
@@ -181,8 +197,12 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
      *
      * Sets the returned `WorldScreen` as the only active screen.
      * @param autoPlay pass in the old WorldScreen AutoPlay to retain the state throughout turns. Otherwise leave it is the default.
+     * @param skipPlayerReadyScreen don't show the hotseat "Are you ready?" screen, e.g. when the same player continues after a reload
      */
-    suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
+    suspend fun loadGame(newGameInfo: GameInfo, autoPlay: AutoPlay = AutoPlay(settings.autoPlay), callFromLoadScreen: Boolean = false, skipPlayerReadyScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
+        if (newGameInfo.gameParameters.isOnlineMultiplayer && !supportsOnlineMultiplayer)
+            throw UncivShowableException("Online multiplayer is unavailable in this browser preview.")
+
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
@@ -196,7 +216,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         initializeResources(newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
-        val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
+        // Don't restore when the viewing player changes (hotseat) - the old selection would point at the previous player's civ
+        val isSameViewingCiv = isLoadingSameGame && worldScreen!!.viewingCiv.civID == newGameInfo.getPlayerToViewAs().civID
+        val worldScreenRestoreState = if (!callFromLoadScreen && isSameViewingCiv) worldScreen!!.getRestoreState() else null
 
         lateinit var loadingScreen: LoadingScreen
 
@@ -218,7 +240,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
             val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer
-            val screenToShow = if (moreThanOnePlayer && isSingleplayer) {
+            val screenToShow = if (moreThanOnePlayer && isSingleplayer && !skipPlayerReadyScreen) {
                 PlayerReadyScreen(newWorldScreen)
             } else {
                 newWorldScreen
@@ -247,7 +269,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         if (curWorldScreen == null || curGameInfo == null) return
 
-        loadGame(curGameInfo)
+        loadGame(curGameInfo, skipPlayerReadyScreen = true)
     }
 
     /**
@@ -277,10 +299,19 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         screenStack.addLast(root)
         setScreen(root)
     }
-    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
-    fun pushScreen(newScreen: BaseScreen) {
-        screenStack.addLast(newScreen)
-        setScreen(newScreen)
+    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen]
+     * @param onScreenCreated optional callback invoked with the new screen once it's created and pushed - e.g. to show a Popup on it, since the screen isn't available synchronously */
+    fun <T: BaseScreen> pushScreen(onScreenCreated: (T) -> Unit = {}, getScreen: () -> T) {
+        InputDisabling.disableInput()
+        // Immediately return, so the *current* input doesn't timeout causing ANR.
+        // Input is disabled so we can wait for the new screen to be created and set without risk of further inputs.
+        // We still need to create the new table on the GL thread though.
+        Concurrency.runOnGLThread {
+            val newScreen = getScreen()
+            screenStack.addLast(newScreen)
+            setScreen(newScreen)
+            onScreenCreated(newScreen)
+        }
     }
 
     /**
@@ -314,21 +345,29 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val newScreen = screenStack.last()
         setScreen(newScreen)
         newScreen.resume()
-        oldScreen.dispose()
+        // Disposing the old screen's stage must not happen while we're still inside its own touch event
+        // dispatch (e.g. this was called from a button's click listener) - see #15420/#15434: disposing
+        // the stage synchronously can crash with an NPE inside Gdx's ActorGestureListener when that
+        // in-flight dispatch resumes.
+        Concurrency.runOnGLThread { oldScreen.dispose() }
         return newScreen
     }
 
     /** Replaces the current screen with a new one. Automatically [disposes][BaseScreen.dispose] the old screen. */
-    fun replaceCurrentScreen(newScreen: BaseScreen) {
+    fun <T: BaseScreen> replaceCurrentScreen(getScreen: () -> T): T {
+        InputDisabling.disableInput()
+        val newScreen = getScreen()
         val oldScreen = screenStack.removeLast()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
-        oldScreen.dispose()
+        Concurrency.runOnGLThread { oldScreen.dispose() }
+        return newScreen
     }
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
     fun resetToWorldScreen(): WorldScreen {
-        for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
+        val screensToDispose = screenStack.filter { it !is WorldScreen }
+        Concurrency.runOnGLThread { for (screen in screensToDispose) screen.dispose() }
         screenStack.removeAll { it !is WorldScreen }
         val worldScreen = screenStack.last() as WorldScreen
 
@@ -369,8 +408,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             onlineMultiplayer.downloadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
             launchOnGLThread {
-                val mainMenu = MainMenuScreen()
-                replaceCurrentScreen(mainMenu)
+                val mainMenu = replaceCurrentScreen { MainMenuScreen() }
                 val popup = Popup(mainMenu)
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 popup.addGoodSizedLabel(message)
@@ -402,6 +440,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
         if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
+        Timers.singleton.endTiming()
         super.pause()
     }
 
@@ -418,29 +457,29 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
-        val curGameInfo = gameInfo
-        if (curGameInfo != null) {
+        // Desktop has no ANRs, so wait for the in-progress autosave (written to a temp file, then moved over Autosave)
+        //  - otherwise closing the window mid-match leaves only a partial Autosave.tmp
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val autoSaveJob = files.autosaves.autoSaveJob
-            if (autoSaveJob != null && autoSaveJob.isActive) {
-                // auto save is already in progress (e.g. started by onPause() event)
-                // let's allow it to finish and do not try to autosave second time
-                Concurrency.runBlocking {
-                    autoSaveJob.join()
-                }
-            } else {
-                files.autosaves.autoSave(curGameInfo)      // NO new thread
-            }
+            if (autoSaveJob != null && autoSaveJob.isActive)
+                Concurrency.runBlocking { autoSaveJob.join() }
         }
-        settings.save()
-        Concurrency.stopThreadPools()
+        Concurrency.stopThreadPools() // Stops new tasks, not running ones
 
-        // On desktop this should only be this one and "DestroyJavaVM"
+        // On desktop this should only be this one and "DestroyJavaVM" and possibly autosave... that requires more explaination
+
+        // On Android - the source of ANRs - onPause() always precedes dispose(), so an autosave started by onPause() may still be running here.
+        // We don't wait for it: autosave writes to a temp file and only replaces Autosave when complete,
+        //   so the JVM exiting and killing the (daemon) save thread can't corrupt the existing autosave.
+        //.Thus the autosave thread may still be running
+        // The alternative is "wait for autosave to finish" which caused a lot of ANRs, and it's not worth it -
+        //.  ANRs, even on dispose(), are logged in Google Play and cause the game to be less promoted than it could be
         logRunningThreads()
 
         // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
-    private fun logRunningThreads() {
+private fun logRunningThreads() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
@@ -455,21 +494,19 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         return if (screen == worldScreen) worldScreen else null
     }
 
-    fun goToMainMenu(): MainMenuScreen {
+    fun goToMainMenu(onScreenCreated: (MainMenuScreen) -> Unit = {}) {
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
             files.autosaves.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
-        val mainMenuScreen = MainMenuScreen()
-        pushScreen(mainMenuScreen)
-        return mainMenuScreen
+        pushScreen(onScreenCreated) { MainMenuScreen() }
     }
 
-    override fun getGcCount(): Int = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
+    override fun getGcCount(): Int? = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.20.8-patch1", 1221)
+        val VERSION = Version("5.0.1", 1286)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

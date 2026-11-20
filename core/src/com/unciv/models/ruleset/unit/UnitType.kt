@@ -38,7 +38,7 @@ class UnitType() : RulesetObject() {
             "Land" -> isLandUnit()
             "Water" -> isWaterUnit()
             "Air" -> isAirUnit()
-            else -> hasTagUnique(filter)
+            else -> filter == name || hasTagUnique(filter)
         }
     }
 

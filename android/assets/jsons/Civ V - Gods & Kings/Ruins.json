@@ -28,6 +28,7 @@
         "notification": "An ancient tribe trained us in their ways of combat!",
         "uniques": [
             "[This Unit] gains [10] XP", "Only available <after turn number [10]>",
+            "Unavailable <for [Civilian] units>",
             "Play [promote] sound"
         ]
     },

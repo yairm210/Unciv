@@ -1,20 +1,17 @@
 package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.Belief as BaseBelief
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType as BaseUnitType
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyboardBinding
 import yairm210.purity.annotations.Readonly
 
 /** Enum used as keys for Civilopedia "pages" (categories).
  *
- *  Note names are singular on purpose - a "link" allows both key and label
- *  Order of values determines ordering of the categories in the Civilopedia top bar
+ *  * Note names are singular on purpose - a "link" allows both key and label
+ *  * **Order of values determines ordering of the categories in the Civilopedia top bar**
  *
  * @param label Translatable caption for the Civilopedia button
  */
@@ -72,6 +69,13 @@ enum class CivilopediaCategories (
         KeyboardBinding.PediaNations,
         "OtherIcons/Nations",
         { ruleset, _ -> ruleset.nations.values.filter { !it.isSpectator } }
+    ),
+    Personality("Personalities",
+        getImage = null,
+        KeyboardBinding.None,
+        "OtherIcons/Personality",
+        // The Personalities file contains unused chaff
+        { ruleset, _ -> ruleset.personalities.values.filter { personality -> ruleset.nations.values.any { it.personality == personality.name } } }
     ),
     Technology ("Technologies",
         CivilopediaImageGetters.technology,
