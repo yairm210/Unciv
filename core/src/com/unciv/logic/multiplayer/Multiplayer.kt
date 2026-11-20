@@ -62,6 +62,7 @@ class Multiplayer {
             while (true) {
                 delay(500)
                 if (!currentCoroutineContext().isActive) return@flow
+                if (UncivGame.Current.multiplayerStorage?.isConnected == false) continue
                 val multiplayerSettings: GameSettings.GameSettingsMultiplayer
                 try { // Fails in unknown cases - cannot debug :/ This is just so it doesn't appear in GP analytics
                     multiplayerSettings = UncivGame.Current.settings.multiplayer
@@ -316,7 +317,8 @@ class Multiplayer {
     }
 
     companion object {
-        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.getServer() != Constants.dropboxMultiplayerServer
+        fun usesCustomServer() =
+            UncivGame.Current.onlineMultiplayer.multiplayerServer.getServerUrl() != Constants.dropboxMultiplayerServer
         fun usesDropbox() = !usesCustomServer()
     }
 }
