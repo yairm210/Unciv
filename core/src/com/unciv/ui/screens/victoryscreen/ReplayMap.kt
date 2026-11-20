@@ -112,8 +112,13 @@ class ReplayMap(
     }
 
     override fun calcTileSize(maxWidth: Float, maxHeight: Float): Float {
-        val height = viewingCiv.exploredRegion.getHeight().toFloat()
-        val width = viewingCiv.exploredRegion.getWidth().toFloat()
+        // A spectator explores nothing yet sees every tile: size to the whole map
+        val wholeMap = viewingCiv.isSpectator || viewingCiv.exploredRegion.isEmpty()
+        val mapSize = tileMap.mapParameters.mapSize
+        val height = if (!wholeMap) viewingCiv.exploredRegion.getHeight().toFloat()
+            else if (tileMap.mapParameters.shape == MapShape.rectangular) mapSize.height.toFloat() else mapSize.radius * 2 + 1f
+        val width = if (!wholeMap) viewingCiv.exploredRegion.getWidth().toFloat()
+            else if (tileMap.mapParameters.shape == MapShape.rectangular) mapSize.width.toFloat() else mapSize.radius * 2 + 1f
         return min (
             maxHeight / (height + 1.5f) / sqrt(3f) * 4f, // 1.5 - padding, hex height = sqrt(3) / 2 * d / 2 -> d = height / sqrt(3) * 2 * 2
             maxWidth / (width + 0.5f) / 0.75f // 0.5 - padding, hex width = 0.75 * d -> d = width / 0.75
