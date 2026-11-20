@@ -19,6 +19,8 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.ZoomGestureListener
 import com.unciv.ui.components.input.KeyboardPanningListener
+import kotlin.math.abs
+import kotlin.math.pow
 
 
 open class ZoomableScrollPane(
@@ -214,12 +216,13 @@ open class ZoomableScrollPane(
 
             if (zoomAction != null) {
                 zoomAction!!.startingZoom = zoomAction!!.currentZoom
-                zoomAction!!.finishingZoom *= zoomMultiplier
+                zoomAction!!.finishingZoom = (zoomAction!!.finishingZoom * zoomMultiplier).coerceIn(minZoom, maxZoom)
                 zoomAction!!.restart()
             } else {
                 zoomAction = ZoomAction()
                 zoomAction!!.startingZoom = scaleX
-                zoomAction!!.finishingZoom = scaleX * zoomMultiplier
+                zoomAction!!.currentZoom = scaleX
+                zoomAction!!.finishingZoom = (scaleX * zoomMultiplier).coerceIn(minZoom, maxZoom)
                 addAction(zoomAction)
             }
         }
@@ -233,12 +236,13 @@ open class ZoomableScrollPane(
 
             if (zoomAction != null) {
                 zoomAction!!.startingZoom = zoomAction!!.currentZoom
-                zoomAction!!.finishingZoom /= zoomMultiplier
+                zoomAction!!.finishingZoom = (zoomAction!!.finishingZoom / zoomMultiplier).coerceIn(minZoom, maxZoom)
                 zoomAction!!.restart()
             } else {
                 zoomAction = ZoomAction()
                 zoomAction!!.startingZoom = scaleX
-                zoomAction!!.finishingZoom = scaleX / zoomMultiplier
+                zoomAction!!.currentZoom = scaleX
+                zoomAction!!.finishingZoom = (scaleX / zoomMultiplier).coerceIn(minZoom, maxZoom)
                 addAction(zoomAction)
             }
         }
@@ -262,10 +266,11 @@ open class ZoomableScrollPane(
         }
 
         override fun scrolled(amountX: Float, amountY: Float): Boolean {
-            if (amountX > 0 || amountY > 0)
-                zoomOut()
-            else
-                zoomIn()
+            // Trackpads send fractional, often diagonal scroll events. Horizontal drift
+            // must not reverse vertical zoom, and tiny movements must stay tiny.
+            if (!amountY.isFinite() || amountY == 0f) return false
+            val multiplier = 0.82f.pow(abs(amountY).coerceAtMost(4f))
+            if (amountY > 0) zoomOut(multiplier) else zoomIn(multiplier)
             return true
         }
     }
