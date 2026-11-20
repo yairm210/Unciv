@@ -38,7 +38,10 @@ object WebFontRasterizer {
             const ctx = root.__uncivFontCanvas.getContext('2d', { willReadFrequently: true });
             if (!ctx) throw new Error('Could not create a 2D canvas context for font metrics');
             ctx.font = fontSize + 'px ' + fontFamily;
-            const m = ctx.measureText('Hgjpqy ÅÖÉéß Ĥắçİ ΩЖ עברית العربية 中あア한 😀🎉');
+            const m = ctx.measureText('Hgjpqy ÅÖÉéß Ĥắçİ ΩЖ עברית العربية 中あア한 😀🎉 ' +
+                'हिन्दी ऑ क्षि श्रृ द्ध ट्ठु ' +
+                'বাংলা ঁ র্খি শ্রী ক্ষৈ ঋ ' +
+                'ไทย ปี้ ฟิ้ ผู้ ญ ฐู ฎุ ฬ ฤ');
             const rawAscent = Number.isFinite(m.fontBoundingBoxAscent)
                 ? Math.max(m.fontBoundingBoxAscent, m.actualBoundingBoxAscent)
                 : m.actualBoundingBoxAscent;
@@ -54,6 +57,22 @@ object WebFontRasterizer {
             return [ascent, descent, height, leading];
         """
     )
+    /** Shared metrics for all glyphs of a font, so every rasterized glyph gets the same
+        baseline and height and lines up when drawn together.
+        - The sample string mixes scripts so the result covers the tallest and deepest glyphs we
+          expect: Latin descenders (gjpqy), accented capitals (ÅÖÉ), stacked Vietnamese (ắ),
+          Greek/Cyrillic, Hebrew, Arabic, CJK and emoji.
+        - fontBoundingBox* gives the font-wide extent; it is max'ed with actualBoundingBox* of the
+          sample because fallback fonts may exceed the primary font's box.
+          Browsers without fontBoundingBox* support fall back to the sample's actual bounds.
+        - Math.ceil avoids clipping from sub-pixel rounding.
+        - leading is 0: the canvas has no line gap, and the baseline is derived from ascent alone.
+        - Devanagari: chandra ऑ and tall signs ि ी ै above, ु ू ृ below, stacked conjuncts द्ध ट्ठु.
+        - Bangla: ঁ and reph র্ above, ্র and ু ূ ৃ below, tall independent vowels ঐ ঔ ঋ.
+        - Thai: ปี้ ฟิ้ (ascender + upper vowel + tone mark, the tallest stack), ผู้, descenders ญ ฐ.
+
+        The sample cannot cover every possible text, therefore [rasterizeGlyphAligned] tolerates overflow.
+    */
     external fun measureMetrics(fontSize: Int, fontFamily: String): FloatArray
 
     @JvmStatic
@@ -79,8 +98,14 @@ object WebFontRasterizer {
             const width = Math.max(1, Math.ceil(right - left));
             const baseline = Math.ceil(ascent + leading);
             height = Math.max(1, Math.ceil(height));
-            if (baseline < m.actualBoundingBoxAscent || baseline + m.actualBoundingBoxDescent > height)
-                throw new Error('Glyph bounds exceed the shared browser font metrics for ' + text);
+            if (baseline < m.actualBoundingBoxAscent || baseline + m.actualBoundingBoxDescent > height) {
+                const warned = root.__uncivFontClipWarnings || 0;
+                if (warned < 10) {
+                    root.__uncivFontClipWarnings = warned + 1;
+                    console.warn('Glyph exceeds shared browser font metrics and will be clipped: ' + text
+                        + (warned === 9 ? ' (further warnings suppressed)' : ''));
+                }
+            }
             canvas.width = width;
             canvas.height = height;
             ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -99,6 +124,14 @@ object WebFontRasterizer {
             return out;
         """
     )
+    /**
+     * Renders text on a shared canvas using the metrics from measureMetrics.
+     *
+     *  A glyph overflowing those metrics is NOT an error: the canvas clips the overflowing pixels
+     *  at its top/bottom edge, which is cosmetic only. A console warning is emitted for the first
+     *  10 such glyphs (to avoid log spam), and the last one notes that further warnings are
+     *  suppressed.
+     */
     external fun rasterizeGlyphAligned(
         text: String,
         fontSize: Int,
