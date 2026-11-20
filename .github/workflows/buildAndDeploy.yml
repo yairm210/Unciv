@@ -15,6 +15,9 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
 jobs:
   get-release-body:
     runs-on: ubuntu-latest
@@ -23,7 +26,9 @@ jobs:
       release_body: ${{ steps.read_release.outputs.release_body }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
@@ -49,21 +54,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: 'temurin'
           java-version: 21
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@v4.0.4
         with:
           # The legacy 'tools' package was pulled from Google's SDK repository; only platform-tools is needed here
           packages: 'platform-tools'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -82,7 +89,7 @@ jobs:
 
       - name: Upload JAR
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: UncivJar
           path: |
@@ -90,7 +97,7 @@ jobs:
 
       - name: Upload linux files
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: UncivLinuxFiles
           path: |
@@ -103,7 +110,7 @@ jobs:
 
       - name: Upload Server
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
@@ -113,21 +120,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-release-body
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: 'temurin'
           java-version: 21
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@v4.0.4
         with:
           # The legacy 'tools' package was pulled from Google's SDK repository; only platform-tools is needed here
           packages: 'platform-tools'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         shell: bash
@@ -183,7 +192,7 @@ jobs:
           mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk Unciv-signed.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: UncivAPK
           path: Unciv-signed.apk
@@ -193,18 +202,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-jar
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: 'temurin'
           java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Download JAR
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         # See 'Upload JAR' step in 'build' job
         with:
           name: UncivJar
@@ -220,7 +231,7 @@ jobs:
           ./gradlew desktop:zipWindows64
 
       - name: Upload packed zips
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: UncivDeploymentZips
           path: |
@@ -233,15 +244,17 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v5 # For the icon
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Download packed zips
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: UncivDeploymentZips
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v2.0.0
 
       - name: Unzip unciv file
         run: |
@@ -284,7 +297,7 @@ jobs:
           dir .github/workflows/wix-msi-files
 
       - name: Upload MSI
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: Unciv-MSI
           path: .github/workflows/Unciv.msi
@@ -297,7 +310,7 @@ jobs:
     steps:
 
       - name: Download packed zips
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: UncivDeploymentZips
 
@@ -315,10 +328,12 @@ jobs:
   upload-github-release-and-post-to-discord:
     needs: [get-release-body, android-build, packr-build, build-msi]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload-release-action creates the release and uploads the files
     steps:
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
 
       - name: consolidate deploy folder
         run: |
@@ -340,7 +355,7 @@ jobs:
 
       - name: Upload binaries to Github release
         continue-on-error: true
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: deploy/*
