@@ -46,6 +46,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -818,8 +819,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             ?: ruleset.difficulties.values.maxByOrNull { it.estimateDifficulty() }
             ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Difficulty]")
         speed = ruleset.speeds[gameParameters.speed]
-            ?: ruleset.speeds.values.maxByOrNull { it.modifier }
-            ?: throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Speed]")
+            ?: when {
+                ruleset.speeds.isEmpty() ->
+                    throw UncivShowableException("Invalid game: Specifies a ruleset with no entries for [Speed]")
+                gameParameters.isOnlineMultiplayer -> {
+                    // Save-file speed is untrusted; keep the shown name bounded.
+                    val reportedSpeed = gameParameters.speed.take(64)
+                    throw UncivShowableException(
+                        "Game speed [$reportedSpeed] is missing from your local ruleset. Please check your ruleset or mod version before retrying."
+                    )
+                }
+                // Single-player: fall back to the middle-of-the-pack speed, the one whose general modifier is closest to 1
+                else ->
+                    ruleset.speeds.values.minBy { abs(it.modifier - 1f) }
+            }
 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
