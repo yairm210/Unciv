@@ -845,6 +845,13 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun cityStateDestroyed(attacker: Civilization) {
         if (!civInfo.isCityState) return // What are we doing here?
 
+        // If this City-State is later liberated, it should remember
+        // We hates it forever* (*forever not guaranteed) 
+        val destroyedInfluence = -120f
+        val attackerDiplomacy = civInfo.getDiplomacyManager(attacker)
+        if (attackerDiplomacy != null && attackerDiplomacy.influence > destroyedInfluence)
+            attackerDiplomacy.setInfluenceWithoutSideEffects(destroyedInfluence)
+        
         for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
             if (!protector.knows(attacker)) // Who?
                 continue
