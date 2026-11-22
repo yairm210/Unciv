@@ -27,7 +27,8 @@ object TranslationFileReader {
             if (line.isCommentLine()) return@forEachLine
             val splitLine = line.split(keyValueSeparator, limit = 2)
             if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
-                val value = splitLine[1].replace("\\n","\n")
+                // A literal "" means the translation is intentionally the empty string
+                val value = if (splitLine[1] == "\"\"") "" else splitLine[1].replace("\\n","\n")
                 val key = splitLine[0].replace("\\n","\n")
                 translations[key] = value
             }
