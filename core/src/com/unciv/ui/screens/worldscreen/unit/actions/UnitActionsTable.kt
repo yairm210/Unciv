@@ -216,6 +216,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
         // overlay, since the user definitely wants to interact with the new unit.
         worldScreen.mapHolder.removeUnitActionOverlay()
+        // Skip always moves on to the next unit, regardless of the "Auto Unit Cycle" setting
+        if (unitAction.uiType == UiUnitActionType.Skip && !unit.due) {
+            worldScreen.switchToNextUnit()
+            return
+        }
         if (!UncivGame.Current.settings.autoUnitCycle) return
         if (unit.isDestroyed() || 
             unitAction.uiType.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))

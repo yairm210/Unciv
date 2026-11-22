@@ -2,8 +2,6 @@ package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.view.isAirUnit
 import com.unciv.view.GameView
-import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
@@ -136,17 +134,6 @@ object UnitActions {
         // Air units cannot escort
         if (unit.baseUnit.isAirUnit()) return
 
-        val worldScreen = GUI.getWorldScreen()
-        val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
-        if (selectedUnits.size == 2) {
-            // We can still create a formation in the case that we have two units selected
-            // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
-            val tile = selectedUnits.first().getTile()
-            if (selectedUnits.last().getTile() != tile) return
-            if (selectedUnits.any { it.isAirUnit() }) return
-        } else if (selectedUnits.size != 1) {
-            return
-        }
         if (unit.getOtherEscortUnit() == null) return
         if (!unit.isEscorting()) {
             yield(UnitAction(
@@ -280,10 +267,6 @@ object UnitActions {
             type = UnitActionType.Skip,
             action = {
                 unit.due = !unit.due
-                // If it's on, skips to next unit due to worldScreen.switchToNextUnit() in activateAction
-                // We don't want to switch twice since then we skip units :)
-                if (!unit.due && !UncivGame.Current.settings.autoUnitCycle)
-                    GUI.getWorldScreen().switchToNextUnit()
             }.takeIf { unit.hasMovement() },
             isCurrentAction = !unit.due
         ))
