@@ -1235,15 +1235,5 @@
         ],
         "requiredTech": "Radio",
         "quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
-    },
-    {
-        "name": "Roman Pyramid",
-        "replaces": "Shrine",
-        "uniqueTo": "Rome",
-        "faith": 1,
-        "cost": 40,
-        "maintenance": 1,
-        "requiredTech": "Pottery",
-        "uniques": ["Only available <when religion is enabled>", "[+2 Production] from [Forest] tiles [in this city]"]
-    },
+    }
 ]
