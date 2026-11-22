@@ -126,6 +126,9 @@ class CityView(city: City,
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
     @Readonly fun getCityResourcesAvailableToCity(): ResourceSupplyList = CityResources.getCityResourcesAvailableToCity(city)
     @Readonly fun getGreatPersonPointsBreakdown(): GreatPersonPointsBreakdown = GreatPersonPointsBreakdown(city)
+    @Readonly fun getGreatPersonPoints(name: String): Int =
+        if (city.civ.greatPeople.isPooledAtCivLevel(name)) city.civ.greatPeople.greatPersonPointsCounter[name]
+        else city.greatPersonPointsCounter[name]
     @Readonly fun getRuleset(): Ruleset = city.getRuleset()
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 

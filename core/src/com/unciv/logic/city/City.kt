@@ -100,6 +100,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     var resourceStockpiles = Counter<String>()
 
+    /** Points towards each Great Person earned by this city, as in Civ V; the threshold stays civ-wide */
+    var greatPersonPointsCounter = Counter<String>()
+
     /** All tiles that this city controls */
     var tiles = HashSet<HexCoord>()
 
@@ -197,6 +200,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.hasSoldBuildingThisTurn = hasSoldBuildingThisTurn

@@ -198,19 +198,29 @@ class StatsOverviewTab(
         greatPeopleIcon.color = Color.ROYAL
         greatPeopleHeader.add(greatPeopleIcon).padRight(1f).size(Constants.headingFontSize.toFloat())
         greatPeopleHeader.add("Great person points".toLabel(fontSize = Constants.headingFontSize))
-        add(greatPeopleHeader).colspan(3).row()
+        add(greatPeopleHeader).colspan(4).row()
         addSeparator()
+        add()
         add()
         add("Current points".toLabel())
         add("Points per turn".toLabel()).row()
 
-        val greatPersonPoints = viewingPlayer.getGreatPersonPointsCounter()
         val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
-        for ((greatPerson, points) in greatPersonPoints) {
+        for ((greatPerson, points) in viewingPlayer.getGreatPersonPointsCounter()) {
             val pointsToGreatPerson = viewingPlayer.getPointsRequiredForGreatPerson(greatPerson)
             add(greatPerson.toLabel()).left()
+            add()
             add("$points/$pointsToGreatPerson".toLabel())
             add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()
+        }
+        // The others are kept per city: show the city closest to each
+        for ((greatPerson, cityAndPoints) in viewingPlayer.getBestCityGreatPersonPoints()) {
+            val (city, points) = cityAndPoints
+            val pointsToGreatPerson = viewingPlayer.getPointsRequiredForGreatPerson(greatPerson)
+            add(greatPerson.toLabel()).left()
+            add(city.name.toLabel(hideIcons = true)).left().padLeft(5f)
+            add("$points/$pointsToGreatPerson".toLabel())
+            add(city.getGreatPersonPointsBreakdown().sum()[greatPerson].toLabel()).right().row()
         }
 
         val greatGeneralPoints = viewingPlayer.getGreatGeneralPointsCounter()
@@ -218,6 +228,7 @@ class StatsOverviewTab(
         for ((unit, points) in greatGeneralPoints) {
             val pointsToGreatGeneral = pointsForNextGreatGeneral[unit]
             add(unit.toLabel()).left()
+            add()
             add("$points/$pointsToGreatGeneral".toLabel()).row()
         }
 

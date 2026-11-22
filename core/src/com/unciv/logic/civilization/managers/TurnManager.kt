@@ -51,8 +51,8 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             var greatPerson = civInfo.greatPeople.getNewGreatPerson()
             while (greatPerson != null) {
-                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
-                    civInfo.units.addUnit(greatPerson)
+                if (civInfo.gameInfo.ruleset.units.containsKey(greatPerson.first))
+                    civInfo.units.addUnit(greatPerson.first, greatPerson.second)
                 greatPerson = civInfo.greatPeople.getNewGreatPerson()
             }
             civInfo.religionManager.startTurn()

@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer] via [gameView]. */
@@ -46,9 +47,14 @@ class CivView(civ: Civilization,
 
     @Readonly fun hasUnique(type: UniqueType): Boolean = civ.hasUnique(type)
     @Readonly fun isReligionEnabled(): Boolean = civ.gameInfo.isReligionEnabled()
-    @Readonly fun getGreatPersonPoints(name: String): Int = civ.greatPeople.greatPersonPointsCounter[name]
     @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
     @Readonly fun getGreatPersonPointsCounter(): Counter<String> = civ.greatPeople.greatPersonPointsCounter
+    @Readonly fun getBestCityGreatPersonPoints(): Map<String, Pair<CityView, Int>> {
+        @LocalState val best = LinkedHashMap<String, Pair<CityView, Int>>()
+        for ((greatPerson, cityAndPoints) in civ.greatPeople.getBestCityGreatPersonPoints())
+            best[greatPerson] = gameView.getCityView(cityAndPoints.first) to cityAndPoints.second
+        return best
+    }
     @Readonly fun getGreatPersonPointsForNextTurn(): Counter<String> = civ.greatPeople.getGreatPersonPointsForNextTurn()
     @Readonly fun getGreatGeneralPointsCounter(): Counter<String> = civ.greatPeople.greatGeneralPointsCounter
     @Readonly fun getPointsForNextGreatGeneralCounter(): Counter<String> = civ.greatPeople.pointsForNextGreatGeneralCounter

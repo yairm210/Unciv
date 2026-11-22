@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -9,6 +10,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.MayaCalendar
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 
@@ -26,6 +28,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     var pointsForNextGreatGeneral = 200
     var pointsForNextGreatGeneralCounter = Counter<String>() // Initial values assigned when needed
 
+    /** Civ-wide points, only for the Great People pooled at civ level ([isPooledAtCivLevel]); the others count per city
+     *  ([City.greatPersonPointsCounter]), and older saves holding them here are migrated on load */
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
@@ -64,7 +68,18 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return (pointsForNextGreatPersonCounter[key] * civInfo.gameInfo.speed.modifier).toInt()
     }
 
-    fun getNewGreatPerson(): String? {
+    /** Great Prophets, Generals and Admirals ("Great Person - [Faith]" or "[War]") pool their points civ-wide,
+     *  as in Civ V where they come from faith and combat; every other Great Person counts per city */
+    @Readonly
+    fun isPooledAtCivLevel(greatPerson: String): Boolean {
+        val unit = civInfo.gameInfo.ruleset.units[greatPerson] ?: return true
+        return unit.isGreatPersonOfType("Faith") || unit.isGreatPersonOfType("War")
+    }
+
+    /** Returns the next Great Person due and the city it is born in (`null`: any city, for civ-pooled ones).
+     *  As in Civ V (CvCityCitizens::DoSpecialists), each city fills its own counter, the first city to reach the
+     *  civ-wide threshold gets the Great Person, and that city's counter for it restarts at zero. */
+    fun getNewGreatPerson(): Pair<String, City?>? {
         for ((unit, value) in greatGeneralPointsCounter) {
             if (pointsForNextGreatGeneralCounter[unit] == 0) {
                 pointsForNextGreatGeneralCounter[unit] = 200
@@ -73,7 +88,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             if (value >= requiredPoints) {
                 greatGeneralPointsCounter[unit] -= requiredPoints
                 pointsForNextGreatGeneralCounter[unit] += 50
-                return unit
+                return unit to null
             }
         }
 
@@ -82,20 +97,46 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(greatPerson, -requiredPoints)
                 pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
-                return greatPerson
+                return greatPerson to null
+            }
+        }
+
+        for (city in civInfo.cities) {
+            for ((greatPerson, value) in city.greatPersonPointsCounter) {
+                val requiredPoints = getPointsRequiredForGreatPerson(greatPerson)
+                if (value >= requiredPoints) {
+                    city.greatPersonPointsCounter.remove(greatPerson)
+                    pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
+                    return greatPerson to city
+                }
             }
         }
         return null
     }
 
-    /** Add [toAdd] points, defaults to [getGreatPersonPointsForNextTurn] */
-    fun addGreatPersonPoints(toAdd: Counter<String> = getGreatPersonPointsForNextTurn()) {
-        greatPersonPointsCounter.add(toAdd)
+    fun addGreatPersonPoints() {
+        for (city in civInfo.cities)
+            for ((greatPerson, points) in city.getGreatPersonPoints()) {
+                if (isPooledAtCivLevel(greatPerson)) greatPersonPointsCounter.add(greatPerson, points)
+                else city.greatPersonPointsCounter.add(greatPerson, points)
+            }
     }
 
-    /** Add [amount] points for [name] (used in dev console) */
-    fun addGreatPersonPoints(name: String, amount: Int) =
-        addGreatPersonPoints(Counter<String>().apply { this[name] = amount })
+    /** For each Great Person, the city with the most points towards it */
+    @Readonly
+    fun getBestCityGreatPersonPoints(): Map<String, Pair<City, Int>> {
+        @LocalState val best = LinkedHashMap<String, Pair<City, Int>>()
+        for (city in civInfo.cities)
+            for ((greatPerson, points) in city.greatPersonPointsCounter)
+                if (points > (best[greatPerson]?.second ?: 0)) best[greatPerson] = city to points
+        return best
+    }
+
+    /** Add [amount] points for [name] (used in dev console): to the civ pool, or to the capital for per-city ones */
+    fun addGreatPersonPoints(name: String, amount: Int) {
+        if (isPooledAtCivLevel(name)) greatPersonPointsCounter.add(name, amount)
+        else (civInfo.getCapital() ?: civInfo.cities.firstOrNull())?.greatPersonPointsCounter?.add(name, amount)
+    }
 
     fun triggerMayanGreatPerson() {
         if (civInfo.isSpectator) return

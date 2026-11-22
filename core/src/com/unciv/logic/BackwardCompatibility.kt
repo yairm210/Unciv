@@ -65,6 +65,33 @@ object BackwardCompatibility {
         }
     }
 
+    /** Saves from before Great Person points were kept per city hold one civ-wide total per Great Person:
+     *  share each one not pooled at civ level among the civ's cities by what each earns of it per turn,
+     *  all to the capital if none does. */
+    fun GameInfo.migrateGreatPersonPointsToCities() {
+        for (civ in civilizations) {
+            val civTotals = civ.greatPeople.greatPersonPointsCounter
+            if (civ.cities.isEmpty()) continue
+            val pointsPerTurn by lazy { civ.cities.associateWith { it.getGreatPersonPoints() } }
+            for ((greatPerson, total) in civTotals.toList()) {
+                if (civ.greatPeople.isPooledAtCivLevel(greatPerson)) continue
+                civTotals.remove(greatPerson)
+                val earners = pointsPerTurn.filterValues { it[greatPerson] > 0 }.mapValues { it.value[greatPerson].toLong() }
+                val perTurnSum = earners.values.sum()
+                if (perTurnSum == 0L) {
+                    (civ.getCapital() ?: civ.cities.first()).greatPersonPointsCounter.add(greatPerson, total)
+                    continue
+                }
+                // Largest remainder, so the cities' shares add up to the civ total exactly
+                val shares = earners.mapValues { (total * it.value / perTurnSum).toInt() }.toMutableMap()
+                val leftOver = total - shares.values.sum()
+                for (city in earners.keys.sortedByDescending { (total * earners[it]!!) % perTurnSum }.take(leftOver))
+                    shares[city] = shares[city]!! + 1
+                for ((city, share) in shares) city.greatPersonPointsCounter.add(greatPerson, share)
+            }
+        }
+    }
+
     private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
             for (unit in tile.getUnits().toList()) {
@@ -86,6 +113,10 @@ object BackwardCompatibility {
             for (key in civ.greatPeople.greatPersonPointsCounter.keys.toList())
                 if (!ruleset.units.containsKey(key))
                     civ.greatPeople.greatPersonPointsCounter.remove(key)
+            for (city in civ.cities)
+                for (key in city.greatPersonPointsCounter.keys.toList())
+                    if (!ruleset.units.containsKey(key))
+                        city.greatPersonPointsCounter.remove(key)
         }
     }
 

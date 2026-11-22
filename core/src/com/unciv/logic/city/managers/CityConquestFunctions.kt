@@ -323,6 +323,8 @@ class CityConquestFunctions(val city: City) {
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
         city.previousOwner = oldCiv.civID
+        // As in Civ V (CvPlayer::acquireCity builds a new city), Great Person progress does not pass to the new owner
+        city.greatPersonPointsCounter.clear()
 
         // now that the tiles have changed, we need to reassign population
         for (tile in city.getWorkedTiles().filter { it.position !in city.tiles }.toList()) {

@@ -8,6 +8,7 @@ import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.ensureUnitIds
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
+import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPointsToCities
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfoPreview.Companion.randomGameId
@@ -809,6 +810,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         migrateToTileHistory()
         migrateGreatGeneralPools()
+        migrateGreatPersonPointsToCities()
         ensureUnitIds()
     }
 
