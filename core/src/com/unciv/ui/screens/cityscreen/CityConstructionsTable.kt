@@ -379,6 +379,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             when {
                                 dto.construction.isWonder -> buildableWonders += constructionButton
                                 dto.construction.isNationalWonder -> buildableNationalWonders += constructionButton
+                                dto.construction.isInternationalProject -> buildableInternationalProjects += constructionButton
                                 else -> buildableBuildings += constructionButton
                             }
                         }
@@ -394,6 +395,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     addCategory("Buildings", buildableBuildings, maxButtonWidth, KeyboardBinding.BuildBuildings)
                     addCategory("Wonders", buildableWonders, maxButtonWidth, KeyboardBinding.BuildWonders)
                     addCategory("National Wonders", buildableNationalWonders, maxButtonWidth, KeyboardBinding.BuildNationalWonders)
+                    addCategory("International Projects", buildableInternationalProjects, maxButtonWidth, KeyboardBinding.BuildInternationalProjects)
                     addCategory("Other", specialConstructions, maxButtonWidth, KeyboardBinding.BuildOther)
                     addCategory("Disabled", blacklisted, maxButtonWidth, KeyboardBinding.BuildDisabled, startsOutOpened = false)
                     pack()
