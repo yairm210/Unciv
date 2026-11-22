@@ -581,7 +581,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (modifiers.containsKey("Military near City-State"))
                 potentialDreadFromMilitary += modifiers["Military near City-State"]!!.toFloat()
             
-            modifiers["From Uniques"] = (potentialDreadFromMilitary * dreadfulMilitaryModifier).toInt()
+            modifiers["Intimidation bonus"] = (potentialDreadFromMilitary * dreadfulMilitaryModifier).toInt()
         }
 
         return modifiers
