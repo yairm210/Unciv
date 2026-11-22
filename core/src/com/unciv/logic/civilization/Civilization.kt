@@ -638,6 +638,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
         yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
+        yieldAll(gameInfo.internationalProjects.filter { it.value.isConstructed() == true }.flatMap { it.value.projectUniqueMap.getMatchingUniques(uniqueType, gameContext) })
     }
 
     @Readonly
@@ -653,6 +654,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
         civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
         gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
+        gameInfo.internationalProjects.values.forEach { it.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
     }
 
     @Readonly
@@ -672,6 +674,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getAllUniques())
         yieldAll(getEra().uniqueMap.getAllUniques())
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.internationalProjects.values.asSequence().filter { it.isClaimed }.flatMap { it.projectUniqueMap.getAllUniques() })
     }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
         .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }
