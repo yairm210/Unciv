@@ -18,7 +18,7 @@ class GameInfoCloneTests {
     private val notCloned = setOf("version", "checksum")
 
     /** Structured state with a `clone()` of its own (or shared by design): compared by serialized form only, not mutated here. */
-    private val structured = setOf("civilizations", "barbarians", "religions", "tileMap", "gameParameters")
+    private val structured = setOf("civilizations", "barbarians", "religions", "internationalProjects", "tileMap", "gameParameters")
 
     private fun serializedFields(): List<Field> = GameInfo::class.java.declaredFields
         .filter { !Modifier.isStatic(it.modifiers) && !Modifier.isTransient(it.modifiers) && !it.isSynthetic }

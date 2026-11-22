@@ -127,6 +127,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int {
+        // International projects have a different cost calculation
+        if (isInternationalProject) {
+            // https://civilization.fandom.com/wiki/International_Project_(Civ5)#Strategy
+            return civInfo.gameInfo.internationalProjects[name]?.getCost() ?: 0
+        }
+        
         var productionCost = cost.toFloat()
         val stateForConditionals = city?.state ?: civInfo.state
 
@@ -404,6 +410,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 yield(RejectionReasonType.NationalWonderAlreadyBuilt.toInstance())
         }
 
+        // International Projects
+        if (isInternationalProject) {
+            // Only reject if completed
+            val project = civ.gameInfo.internationalProjects[name]
+            if (project?.isConstructed() ?: false && project.isClaimed)
+                yield(RejectionReasonType.InternationalProjectAlreadyBuilt.toInstance())
+        }
+
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
@@ -529,6 +543,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             "Wonder", "Wonders" -> isAnyWonder()
             "National Wonder", "National" -> isNationalWonder
             "World Wonder", "World" -> isWonder
+            "International Project", "International" -> isInternationalProject
             else -> {
                 if (filter == name) return true
                 if (filter == replaces) return true

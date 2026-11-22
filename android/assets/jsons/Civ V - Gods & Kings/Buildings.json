@@ -1233,7 +1233,7 @@
             "Free Social Policy <if contribution is above [33]%>",
             "Gain [+500] [Golden Age points] <if contribution is above [16]%>"
         ],
-        "requiredTech": "Radio",
+        "requiredTech": "Agriculture",
         "quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
     }
 ]

@@ -36,6 +36,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.logic.files.FileConversions
+import com.unciv.models.InternationalProject
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
@@ -107,6 +108,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var civilizations = ArrayList<Civilization>()
     var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
+    var internationalProjects: HashMap<String, InternationalProject> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
@@ -205,6 +207,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
+        toReturn.internationalProjects.putAll(internationalProjects.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -787,6 +790,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         } else currentPlayerCiv = getCivilization(currentPlayer)
 
         for (religion in religions.values) religion.setTransients(this)
+
+        for (internationalProject in internationalProjects.values) internationalProject.setTransients(this)
 
 
         for (civInfo in civilizations) civInfo.setTransients()
