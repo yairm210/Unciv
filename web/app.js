@@ -15874,7 +15874,7 @@ cu_UncivGame__clinit_ = () => {
         cu_UncivGame_Companion = new cu_UncivGame$Companion;
         var$1 = new cul_Version;
         var$2 = $rt_s(149);
-        var$3 = 1286;
+        var$3 = 1287;
         $ptr = 1;
     case 1:
         cul_Version__init_(var$1, var$2, var$3);
@@ -659270,11 +659270,11 @@ culcd_CityStateFunctions_triggerProtectorCivs = ($this, $attacker) => {
     $rt_nativeThread().push($this, $attacker, $protectorDiplomacy, var$3, var$4, $protector, $protector_0, var$7, var$8, var$9, var$10, var$11, var$12, var$13, $ptr);
 },
 culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
-    let $protectorDiplomacy, $element$iv, var$4, $protector, $$this$forEach$iv, $protectorDiplomacy_0, var$8, var$9, var$10, var$11, var$12, var$13, $ptr, $tmp;
+    let $protectorDiplomacy, $destroyedInfluence, $attackerDiplomacy, $$this$forEach$iv, var$6, $protector, $protectorDiplomacy_0, var$9, $element$iv, var$11, var$12, var$13, var$14, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$13 = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();$protectorDiplomacy_0 = $thread.pop();$$this$forEach$iv = $thread.pop();$protector = $thread.pop();var$4 = $thread.pop();$element$iv = $thread.pop();$protectorDiplomacy = $thread.pop();$attacker = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$14 = $thread.pop();var$13 = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();$element$iv = $thread.pop();var$9 = $thread.pop();$protectorDiplomacy_0 = $thread.pop();$protector = $thread.pop();var$6 = $thread.pop();$$this$forEach$iv = $thread.pop();$attackerDiplomacy = $thread.pop();$destroyedInfluence = $thread.pop();$protectorDiplomacy = $thread.pop();$attacker = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -659287,50 +659287,52 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
         }
         $protectorDiplomacy = $rt_nullCheck($this.$civInfo);
         if ($protectorDiplomacy.$isCityState1) {
-            $protectorDiplomacy = $rt_nullCheck($protectorDiplomacy.$cityStateFunctions);
+            $destroyedInfluence = (-120.0);
             $ptr = 2;
             continue main;
         }
         return;
     case 2:
+        $tmp = culc_Civilization_getDiplomacyManager($protectorDiplomacy, $attacker);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $attackerDiplomacy = $tmp;
+        if ($attackerDiplomacy !== null && $attackerDiplomacy.$influence > $destroyedInfluence)
+            $attackerDiplomacy.$influence = $destroyedInfluence;
+        $protectorDiplomacy = $rt_nullCheck(($rt_nullCheck($this.$civInfo)).$cityStateFunctions);
+        $ptr = 3;
+    case 3:
         $tmp = culcd_CityStateFunctions_getProtectorCivs($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = $tmp;
         $protectorDiplomacy = $rt_nullCheck($protectorDiplomacy);
-        $ptr = 3;
-    case 3:
+        $ptr = 4;
+    case 4:
         $tmp = $protectorDiplomacy.$iterator();
         if ($rt_suspending()) {
             break main;
         }
-        $element$iv = $tmp;
-        $element$iv = $rt_nullCheck($element$iv);
-        $ptr = 4;
-    case 4:
-        $tmp = $element$iv.$hasNext();
+        $$this$forEach$iv = $tmp;
+        $$this$forEach$iv = $rt_nullCheck($$this$forEach$iv);
+        $ptr = 5;
+    case 5:
+        $tmp = $$this$forEach$iv.$hasNext();
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $tmp;
-        if (!var$4) {
+        var$6 = $tmp;
+        if (!var$6) {
             $protectorDiplomacy = $rt_nullCheck($this.$civInfo);
-            $ptr = 5;
+            $ptr = 6;
             continue main;
         }
-        $ptr = 8;
+        $ptr = 9;
         continue main;
-    case 5:
-        $tmp = culc_Civilization_getGameInfo($protectorDiplomacy);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $protectorDiplomacy = $tmp;
-        $protectorDiplomacy = $rt_nullCheck($protectorDiplomacy);
-        $ptr = 6;
     case 6:
-        $tmp = cul_GameInfo_getAliveCityStates($protectorDiplomacy);
+        $tmp = culc_Civilization_getGameInfo($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
@@ -659338,86 +659340,94 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
         $protectorDiplomacy = $rt_nullCheck($protectorDiplomacy);
         $ptr = 7;
     case 7:
+        $tmp = cul_GameInfo_getAliveCityStates($protectorDiplomacy);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $protectorDiplomacy = $tmp;
+        $protectorDiplomacy = $rt_nullCheck($protectorDiplomacy);
+        $ptr = 8;
+    case 8:
         $tmp = ju_AbstractList_iterator($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = $tmp;
         $protector = $rt_nullCheck($protectorDiplomacy);
-        $ptr = 10;
+        $ptr = 11;
         continue main;
-    case 8:
-        $tmp = $element$iv.$next();
+    case 9:
+        $tmp = $$this$forEach$iv.$next();
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = $tmp;
         $protector = $rt_nullCheck($rt_castToClass($protectorDiplomacy, culc_Civilization));
-        $ptr = 9;
-    case 9:
+        $ptr = 10;
+    case 10:
         $tmp = culc_Civilization_knows($protector, $attacker);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $tmp;
-        if (!var$4) {
-            $element$iv = $rt_nullCheck($element$iv);
-            $ptr = 4;
+        var$6 = $tmp;
+        if (!var$6) {
+            $$this$forEach$iv = $rt_nullCheck($$this$forEach$iv);
+            $ptr = 5;
             continue main;
         }
-        $ptr = 11;
+        $ptr = 12;
         continue main;
-    case 10:
+    case 11:
         $tmp = ju_AbstractList$1_hasNext($protector);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $tmp;
-        if (var$4) {
-            $ptr = 15;
+        var$6 = $tmp;
+        if (var$6) {
+            $ptr = 16;
             continue main;
         }
         return;
-    case 11:
+    case 12:
         $tmp = culc_Civilization_getDiplomacyManager($protector, $attacker);
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = $tmp;
-        $ptr = 12;
-    case 12:
+        $ptr = 13;
+    case 13:
         kji_Intrinsics_checkNotNull($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 13;
-    case 13:
+        $ptr = 14;
+    case 14:
         culcd_DiplomaticModifiers_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEach$iv = culcd_DiplomaticModifiers_DestroyedProtectedMinor;
+        $attackerDiplomacy = culcd_DiplomaticModifiers_DestroyedProtectedMinor;
         $protectorDiplomacy_0 = $rt_nullCheck($protectorDiplomacy);
-        $ptr = 14;
-    case 14:
-        $tmp = culcd_DiplomacyManager_hasModifier($protectorDiplomacy_0, $$this$forEach$iv);
+        $ptr = 15;
+    case 15:
+        $tmp = culcd_DiplomacyManager_hasModifier($protectorDiplomacy_0, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $tmp;
-        if (var$4) {
+        var$6 = $tmp;
+        if (var$6) {
             $protectorDiplomacy = culcd_DiplomaticModifiers_DestroyedProtectedMinor;
-            var$8 = (-10.0);
-            $$this$forEach$iv = jl_Float_valueOf((-100.0));
-            $ptr = 23;
+            $destroyedInfluence = (-10.0);
+            $attackerDiplomacy = jl_Float_valueOf((-100.0));
+            $ptr = 24;
             continue main;
         }
         $protectorDiplomacy = culcd_DiplomaticModifiers_DestroyedProtectedMinor;
         var$9 = (-40.0);
-        $$this$forEach$iv = jl_Float_valueOf((-100.0));
-        $ptr = 22;
+        $attackerDiplomacy = jl_Float_valueOf((-100.0));
+        $ptr = 23;
         continue main;
-    case 15:
+    case 16:
         $tmp = ju_AbstractList$1_next($protector);
         if ($rt_suspending()) {
             break main;
@@ -659426,101 +659436,101 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
         $protectorDiplomacy_0 = ($rt_nullCheck($rt_castToClass($element$iv, culc_Civilization))).$questManager;
         $protectorDiplomacy = $this.$civInfo;
         $protectorDiplomacy_0 = $rt_nullCheck($protectorDiplomacy_0);
-        $$this$forEach$iv = $rt_s(5841);
-        $ptr = 16;
-    case 16:
-        kji_Intrinsics_checkNotNullParameter($protectorDiplomacy, $$this$forEach$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$forEach$iv = $rt_s(5705);
+        $attackerDiplomacy = $rt_s(5841);
         $ptr = 17;
     case 17:
-        kji_Intrinsics_checkNotNullParameter($attacker, $$this$forEach$iv);
+        kji_Intrinsics_checkNotNullParameter($protectorDiplomacy, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
+        $attackerDiplomacy = $rt_s(5705);
         $ptr = 18;
     case 18:
+        kji_Intrinsics_checkNotNullParameter($attacker, $attackerDiplomacy);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 19;
+    case 19:
         cumr_QuestName_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEach$iv = cumr_QuestName_ConquerCityState;
-        $ptr = 19;
-    case 19:
-        $tmp = culcmq_QuestManager_getAssignedQuestsOfName($protectorDiplomacy_0, $$this$forEach$iv);
+        $attackerDiplomacy = cumr_QuestName_ConquerCityState;
+        $ptr = 20;
+    case 20:
+        $tmp = culcmq_QuestManager_getAssignedQuestsOfName($protectorDiplomacy_0, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEach$iv = $tmp;
-        $element$iv = new culcmq_QuestManager$cityStateConquered$lambda$_41_0;
-        $element$iv.$_0968 = $protectorDiplomacy;
-        $element$iv.$_1363 = $attacker;
-        $ptr = 20;
-    case 20:
-        $tmp = ks_SequencesKt___SequencesKt_filter($$this$forEach$iv, $element$iv);
+        $attackerDiplomacy = $tmp;
+        $$this$forEach$iv = new culcmq_QuestManager$cityStateConquered$lambda$_41_0;
+        $$this$forEach$iv.$_0968 = $protectorDiplomacy;
+        $$this$forEach$iv.$_1363 = $attacker;
+        $ptr = 21;
+    case 21:
+        $tmp = ks_SequencesKt___SequencesKt_filter($attackerDiplomacy, $$this$forEach$iv);
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = $tmp;
-        $$this$forEach$iv = $rt_nullCheck($protectorDiplomacy);
-        $ptr = 21;
-    case 21:
-        $tmp = ks_FilteringSequence_iterator($$this$forEach$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$forEach$iv = $tmp;
-        $element$iv = $rt_nullCheck($$this$forEach$iv);
-        $ptr = 24;
-        continue main;
+        $attackerDiplomacy = $rt_nullCheck($protectorDiplomacy);
+        $ptr = 22;
     case 22:
-        culcd_DiplomacyManager_addModifier($protectorDiplomacy_0, $protectorDiplomacy, var$9, $$this$forEach$iv);
+        $tmp = ks_FilteringSequence_iterator($attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
+        $attackerDiplomacy = $tmp;
+        $$this$forEach$iv = $rt_nullCheck($attackerDiplomacy);
         $ptr = 25;
         continue main;
     case 23:
-        culcd_DiplomacyManager_addModifier($protectorDiplomacy_0, $protectorDiplomacy, var$8, $$this$forEach$iv);
+        culcd_DiplomacyManager_addModifier($protectorDiplomacy_0, $protectorDiplomacy, var$9, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 25;
+        $ptr = 26;
         continue main;
     case 24:
-        $tmp = ks_FilteringSequence$iterator$1_hasNext($element$iv);
+        culcd_DiplomacyManager_addModifier($protectorDiplomacy_0, $protectorDiplomacy, $destroyedInfluence, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $tmp;
-        if (!var$4) {
-            $protectorDiplomacy_0 = $protectorDiplomacy_0.$assignedQuests;
-            $ptr = 28;
-            continue main;
-        }
-        $ptr = 29;
+        $ptr = 26;
         continue main;
     case 25:
+        $tmp = ks_FilteringSequence$iterator$1_hasNext($$this$forEach$iv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$6 = $tmp;
+        if (!var$6) {
+            $protectorDiplomacy_0 = $protectorDiplomacy_0.$assignedQuests;
+            $ptr = 29;
+            continue main;
+        }
+        $ptr = 30;
+        continue main;
+    case 26:
         culcd_DiplomacyFlags_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = culcd_DiplomacyFlags_RememberDestroyedProtectedMinor;
-        var$10 = 125;
-        var$11 = 0;
-        var$4 = 4;
-        $$this$forEach$iv = null;
-        $ptr = 26;
-    case 26:
-        culcd_DiplomacyManager_setFlag$default($protectorDiplomacy_0, $protectorDiplomacy, var$10, var$11, var$4, $$this$forEach$iv);
+        var$11 = 125;
+        var$12 = 0;
+        var$6 = 4;
+        $attackerDiplomacy = null;
+        $ptr = 27;
+    case 27:
+        culcd_DiplomacyManager_setFlag$default($protectorDiplomacy_0, $protectorDiplomacy, var$11, var$12, var$6, $attackerDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy_0 = $protector.$playerType;
-        $ptr = 27;
-    case 27:
+        $ptr = 28;
+    case 28:
         culc_PlayerType_$callClinit();
         if ($rt_suspending()) {
             break main;
@@ -659534,7 +659544,7 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
             jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5848));
             jl_AbstractStringBuilder_append($protectorDiplomacy, ($rt_nullCheck($this.$civInfo)).$civName);
             jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5849));
-            $ptr = 34;
+            $ptr = 35;
             continue main;
         }
         $protectorDiplomacy = new jl_StringBuilder;
@@ -659544,51 +659554,51 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
         jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5850));
         jl_AbstractStringBuilder_append($protectorDiplomacy, ($rt_nullCheck($this.$civInfo)).$civName);
         jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5851));
-        $ptr = 31;
+        $ptr = 32;
         continue main;
-    case 28:
+    case 29:
         kc_CollectionsKt__MutableCollectionsKt_removeAll0($protectorDiplomacy_0, $protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 10;
+        $ptr = 11;
         continue main;
-    case 29:
-        $tmp = ks_FilteringSequence$iterator$1_next($element$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$forEach$iv = $tmp;
-        $$this$forEach$iv = $rt_castToClass($$this$forEach$iv, culcmq_AssignedQuest);
-        $ptr = 30;
     case 30:
-        culcmq_QuestManager_giveReward($protectorDiplomacy_0, $$this$forEach$iv);
+        $tmp = ks_FilteringSequence$iterator$1_next($$this$forEach$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 24;
-        continue main;
+        $attackerDiplomacy = $tmp;
+        $attackerDiplomacy = $rt_castToClass($attackerDiplomacy, culcmq_AssignedQuest);
+        $ptr = 31;
     case 31:
+        culcmq_QuestManager_giveReward($protectorDiplomacy_0, $attackerDiplomacy);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 25;
+        continue main;
+    case 32:
         $tmp = jl_AbstractStringBuilder_toString($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEach$iv = $tmp;
-        $ptr = 32;
-    case 32:
+        $attackerDiplomacy = $tmp;
+        $ptr = 33;
+    case 33:
         culc_Notification$NotificationCategory_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = culc_Notification$NotificationCategory_Diplomacy;
-        var$12 = $rt_createArray(jl_String, 2);
-        var$13 = var$12.data;
-        var$13[0] = $rt_s(5709);
-        var$13[1] = $protector.$civName;
+        var$13 = $rt_createArray(jl_String, 2);
+        var$14 = var$13.data;
+        var$14[0] = $rt_s(5709);
+        var$14[1] = $protector.$civName;
         $attacker = $rt_nullCheck($attacker);
-        $ptr = 33;
-    case 33:
-        culc_Civilization_addNotification($attacker, $$this$forEach$iv, $protectorDiplomacy, var$12);
+        $ptr = 34;
+    case 34:
+        culc_Civilization_addNotification($attacker, $attackerDiplomacy, $protectorDiplomacy, var$13);
         if ($rt_suspending()) {
             break main;
         }
@@ -659600,37 +659610,37 @@ culcd_CityStateFunctions_cityStateDestroyed = ($this, $attacker) => {
         jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5848));
         jl_AbstractStringBuilder_append($protectorDiplomacy, ($rt_nullCheck($this.$civInfo)).$civName);
         jl_AbstractStringBuilder_append($protectorDiplomacy, $rt_s(5849));
-        $ptr = 34;
-    case 34:
+        $ptr = 35;
+    case 35:
         $tmp = jl_AbstractStringBuilder_toString($protectorDiplomacy);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEach$iv = $tmp;
-        $ptr = 35;
-    case 35:
+        $attackerDiplomacy = $tmp;
+        $ptr = 36;
+    case 36:
         culc_Notification$NotificationCategory_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $protectorDiplomacy = culc_Notification$NotificationCategory_Diplomacy;
-        var$12 = $rt_createArray(jl_String, 3);
-        var$13 = var$12.data;
-        var$13[0] = $attacker.$civName;
-        var$13[1] = $rt_s(4824);
-        var$13[2] = ($rt_nullCheck($this.$civInfo)).$civName;
-        $ptr = 36;
-    case 36:
-        culc_Civilization_addNotification($protector, $$this$forEach$iv, $protectorDiplomacy, var$12);
+        var$13 = $rt_createArray(jl_String, 3);
+        var$14 = var$13.data;
+        var$14[0] = $attacker.$civName;
+        var$14[1] = $rt_s(4824);
+        var$14[2] = ($rt_nullCheck($this.$civInfo)).$civName;
+        $ptr = 37;
+    case 37:
+        culc_Civilization_addNotification($protector, $attackerDiplomacy, $protectorDiplomacy, var$13);
         if ($rt_suspending()) {
             break main;
         }
-        $element$iv = $rt_nullCheck($element$iv);
-        $ptr = 4;
+        $$this$forEach$iv = $rt_nullCheck($$this$forEach$iv);
+        $ptr = 5;
         continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $attacker, $protectorDiplomacy, $element$iv, var$4, $protector, $$this$forEach$iv, $protectorDiplomacy_0, var$8, var$9, var$10, var$11, var$12, var$13, $ptr);
+    $rt_nativeThread().push($this, $attacker, $protectorDiplomacy, $destroyedInfluence, $attackerDiplomacy, $$this$forEach$iv, var$6, $protector, $protectorDiplomacy_0, var$9, $element$iv, var$11, var$12, var$13, var$14, $ptr);
 },
 culcd_CityStateFunctions_askForUnitGifts = ($this, $attacker) => {
     let $thirdCiv, $attacker_0, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, $ptr, $tmp;
@@ -821909,69 +821919,128 @@ cuuct_TileSetStrings_tryGetUnitImageLocation = ($this, $unit) => {
     }}
     $rt_nativeThread().push($this, $unit, $baseUnitIconLocation, var$3, var$4, var$5, $unit_0, $civView, $civView_0, $style, $civName, $imageAttempter, var$12, $unitSpecificEmbarkedUnitLocation, $replaces, $ptr);
 },
-cuuct_TileSetStrings_tryGetOwnedTileImageLocation = ($this, $baseLocation, $owner) => {
-    let $owner_0, $ownersStyle, var$5, var$6, var$7, var$8, $ptr, $tmp;
+cuuct_TileSetStrings_getOwnedTileImageLocation = ($this, $imageLocation, $owner) => {
+    let $owner_0, var$4, var$5, var$6, $imageKey, $currentImageMapping, $imageLocation_0, var$10, var$11, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$ownersStyle = $thread.pop();$owner_0 = $thread.pop();$owner = $thread.pop();$baseLocation = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();$imageLocation_0 = $thread.pop();$currentImageMapping = $thread.pop();$imageKey = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$owner_0 = $thread.pop();$owner = $thread.pop();$imageLocation = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $owner_0 = $rt_nullCheck($owner);
+        $owner_0 = $rt_s(7378);
         $ptr = 1;
     case 1:
+        kji_Intrinsics_checkNotNullParameter($imageLocation, $owner_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $owner_0 = $rt_s(4885);
+        $ptr = 2;
+    case 2:
+        kji_Intrinsics_checkNotNullParameter($owner, $owner_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        var$4 = $rt_createArray(jl_String, 5);
+        var$5 = var$4.data;
+        var$5[0] = $imageLocation;
+        var$5[1] = $this.$tag;
+        $owner_0 = $rt_nullCheck($owner);
+        var$5[2] = ($rt_nullCheck(cuv_ForeignCivView_getEra($owner_0))).$name1;
+        var$5[3] = $this.$tag;
+        var$6 = 4;
+        $ptr = 3;
+    case 3:
         $tmp = cuv_ForeignCivView_getStyleOrCivName($owner_0);
         if ($rt_suspending()) {
             break main;
         }
-        $ownersStyle = $tmp;
-        var$5 = new cuui_ImageAttempter;
-        $ptr = 2;
-    case 2:
-        cuui_ImageAttempter__init_(var$5, $baseLocation);
+        $owner = $tmp;
+        var$5[var$6] = $owner;
+        $ptr = 4;
+    case 4:
+        $tmp = cuuct_TileSetStrings_getString($this, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = 0;
-        var$7 = 16;
-        $owner = null;
-        $ptr = 3;
-    case 3:
-        $tmp = cuui_ImageAttempter_tryEraImage$default(var$5, $owner_0, $baseLocation, $ownersStyle, $this, var$6, var$7, $owner);
+        $imageKey = $tmp;
+        $owner = $rt_nullCheck($this.$imageParamsToImageLocation);
+        $ptr = 5;
+    case 5:
+        $tmp = ju_HashMap_get($owner, $imageKey);
         if ($rt_suspending()) {
             break main;
         }
         $owner = $tmp;
-        var$5 = null;
-        var$6 = 0;
-        var$7 = 16;
-        var$8 = null;
-        $ptr = 4;
-    case 4:
-        $tmp = cuui_ImageAttempter_tryEraImage$default($owner, $owner_0, $baseLocation, var$5, $this, var$6, var$7, var$8);
+        $currentImageMapping = $rt_castToClass($owner, jl_String);
+        if ($currentImageMapping === null) {
+            $ptr = 6;
+            continue main;
+        }
+        return $currentImageMapping;
+    case 6:
+        $tmp = cuv_ForeignCivView_getStyleOrCivName($owner_0);
         if ($rt_suspending()) {
             break main;
         }
-        $owner_0 = $tmp;
-        var$6 = 0;
-        $owner = new cuuct_TileSetStrings$tryGetOwnedTileImageLocation$lambda$_37_0;
-        $owner.$_01639 = $this;
-        $owner.$_1591 = $baseLocation;
-        $owner.$_2228 = $ownersStyle;
-        var$7 = 1;
-        $baseLocation = null;
-        $ptr = 5;
-    case 5:
-        $tmp = cuui_ImageAttempter_tryImage$default($owner_0, var$6, $owner, var$7, $baseLocation);
+        $currentImageMapping = $tmp;
+        $imageLocation_0 = new cuui_ImageAttempter;
+        $ptr = 7;
+    case 7:
+        cuui_ImageAttempter__init_($imageLocation_0, $imageLocation);
         if ($rt_suspending()) {
             break main;
         }
-        $baseLocation = $tmp;
-        return cuui_ImageAttempter_getPathOrNull($rt_nullCheck($baseLocation));
+        var$6 = 0;
+        var$10 = 16;
+        $owner = null;
+        $ptr = 8;
+    case 8:
+        $tmp = cuui_ImageAttempter_tryEraImage$default($imageLocation_0, $owner_0, $imageLocation, $currentImageMapping, $this, var$6, var$10, $owner);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $owner = $tmp;
+        $imageLocation_0 = null;
+        var$6 = 0;
+        var$10 = 16;
+        var$11 = null;
+        $ptr = 9;
+    case 9:
+        $tmp = cuui_ImageAttempter_tryEraImage$default($owner, $owner_0, $imageLocation, $imageLocation_0, $this, var$6, var$10, var$11);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $owner = $tmp;
+        var$6 = 0;
+        $imageLocation_0 = new cuuct_TileSetStrings$tryGetOwnedTileImageLocation$lambda$_37_0;
+        $imageLocation_0.$_01639 = $this;
+        $imageLocation_0.$_1591 = $imageLocation;
+        $imageLocation_0.$_2228 = $currentImageMapping;
+        var$10 = 1;
+        $owner_0 = null;
+        $ptr = 10;
+    case 10:
+        $tmp = cuui_ImageAttempter_tryImage$default($owner, var$6, $imageLocation_0, var$10, $owner_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $owner = $tmp;
+        $imageLocation_0 = cuui_ImageAttempter_getPathOrNull($rt_nullCheck($owner));
+        if ($imageLocation_0 !== null)
+            $imageLocation = $imageLocation_0;
+        $owner = $rt_nullCheck($this.$imageParamsToImageLocation);
+        $ptr = 11;
+    case 11:
+        ju_HashMap_putImpl($owner, $imageKey, $imageLocation);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return $imageLocation;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $baseLocation, $owner, $owner_0, $ownersStyle, var$5, var$6, var$7, var$8, $ptr);
+    $rt_nativeThread().push($this, $imageLocation, $owner, $owner_0, var$4, var$5, var$6, $imageKey, $currentImageMapping, $imageLocation_0, var$10, var$11, $ptr);
 },
 cuusc_CivilopediaImageGetters = $rt_classWithoutFields(),
 cuusc_CivilopediaImageGetters_INSTANCE = null,
@@ -824336,7 +824405,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_None = var$1;
         var$1 = new cuuci_KeyboardBinding$Category;
-        var$2 = $rt_s(7378);
+        var$2 = $rt_s(7379);
         var$3 = 1;
         $ptr = 2;
     case 2:
@@ -824346,7 +824415,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_MainMenu = var$1;
         var$1 = new cuuci_KeyboardBinding$Category$WorldScreen;
-        var$2 = $rt_s(7379);
+        var$2 = $rt_s(7380);
         var$3 = 2;
         var$4 = null;
         $ptr = 3;
@@ -824366,10 +824435,10 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$label263 = $rt_s(7380);
+        var$1.$label263 = $rt_s(7381);
         cuuci_KeyboardBinding$Category_AutoPlayMenu = var$1;
         var$1 = new cuuci_KeyboardBinding$Category$NextTurnMenu;
-        var$2 = $rt_s(7381);
+        var$2 = $rt_s(7382);
         var$3 = 4;
         var$4 = null;
         $ptr = 5;
@@ -824378,10 +824447,10 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         if ($rt_suspending()) {
             break main;
         }
-        var$1.$label269 = $rt_s(7382);
+        var$1.$label269 = $rt_s(7383);
         cuuci_KeyboardBinding$Category_NextTurnMenu = var$1;
         var$1 = new cuuci_KeyboardBinding$Category$MapPanning;
-        var$2 = $rt_s(7383);
+        var$2 = $rt_s(7384);
         var$3 = 5;
         var$4 = null;
         $ptr = 6;
@@ -824392,7 +824461,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_MapPanning = var$1;
         var$1 = new cuuci_KeyboardBinding$Category$UnitActions;
-        var$2 = $rt_s(7384);
+        var$2 = $rt_s(7385);
         var$3 = 6;
         var$4 = null;
         $ptr = 7;
@@ -824403,7 +824472,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_UnitActions = var$1;
         var$1 = new cuuci_KeyboardBinding$Category;
-        var$2 = $rt_s(7385);
+        var$2 = $rt_s(7386);
         var$3 = 7;
         $ptr = 8;
     case 8:
@@ -824413,7 +824482,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_CityScreen = var$1;
         var$1 = new cuuci_KeyboardBinding$Category;
-        var$2 = $rt_s(7386);
+        var$2 = $rt_s(7387);
         var$3 = 8;
         $ptr = 9;
     case 9:
@@ -824433,7 +824502,7 @@ cuuci_KeyboardBinding$Category__clinit_ = () => {
         }
         cuuci_KeyboardBinding$Category_Civilopedia = var$1;
         var$1 = new cuuci_KeyboardBinding$Category;
-        var$2 = $rt_s(7387);
+        var$2 = $rt_s(7388);
         var$3 = 10;
         $ptr = 11;
     case 11:
@@ -824540,7 +824609,7 @@ cuuci_KeyboardBinding$Companion_getTranslationEntries = $this => {
             break main;
         }
         var$1 = $tmp;
-        var$2 = ks_SequencesKt__SequencesKt_sequenceOf($rt_s(7388));
+        var$2 = ks_SequencesKt__SequencesKt_sequenceOf($rt_s(7389));
         $ptr = 9;
     case 9:
         $tmp = ks_SequencesKt___SequencesKt_plus(var$1, var$2);
@@ -824742,7 +824811,7 @@ culm_TileMap$StartingLocation_toString = $this => {
     case 0:
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7389));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7390));
         var$2 = $this.$position7;
         $ptr = 1;
     case 1:
@@ -824752,9 +824821,9 @@ culm_TileMap$StartingLocation_toString = $this => {
         }
         var$1 = $tmp;
         var$3 = $rt_nullCheck(var$1);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7390));
-        jl_AbstractStringBuilder_append(var$3, $this.$nation);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7391));
+        jl_AbstractStringBuilder_append(var$3, $this.$nation);
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7392));
         var$1 = $this.$usage;
         $ptr = 2;
     case 2:
@@ -825122,7 +825191,7 @@ let cul_BackwardCompatibility$handleMissingReferencesForEachCity$lambda$_10_1_in
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_01404;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -825213,14 +825282,14 @@ cuuo_FormattedLineListBuilder_add$default = (var$1, var$2, var$3, var$4, var$5, 
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7393);
+        var$1 = $rt_s(7394);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$4, var$1);
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7394);
+        var$1 = $rt_s(7395);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$5, var$1);
@@ -825274,7 +825343,7 @@ cuuo_FormattedLineListBuilder_separator$default = (var$1, var$2, var$3, var$4, v
             continue main;
         }
         var$1 = new jl_UnsupportedOperationException;
-        var$3 = $rt_s(7395);
+        var$3 = $rt_s(7396);
         $ptr = 1;
     case 1:
         jl_Throwable__init_(var$1, var$3);
@@ -825319,7 +825388,7 @@ cuuo_FormattedLineListBuilder_addUniques$default = (var$1, var$2, var$3, var$4, 
             continue main;
         }
         var$1 = new jl_UnsupportedOperationException;
-        var$2 = $rt_s(7396);
+        var$2 = $rt_s(7397);
         $ptr = 1;
     case 1:
         jl_Throwable__init_(var$1, var$2);
@@ -825347,14 +825416,14 @@ cuuo_FormattedLineListBuilder_addUniques$default = (var$1, var$2, var$3, var$4, 
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7397);
+        var$1 = $rt_s(7398);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$3, var$1);
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7398);
+        var$1 = $rt_s(7399);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$6, var$1);
@@ -826106,7 +826175,7 @@ culct_CapitalConnectionsFinder_find = $this => {
     case 0:
         cula_Timers_$callClinit();
         $this_$iv = cula_Timers_Companion;
-        $name$iv = $rt_s(7399);
+        $name$iv = $rt_s(7400);
         $this_$iv$iv = $rt_nullCheck(cula_Timers$Companion_getSingleton($rt_nullCheck($this_$iv)));
         if (kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion)))) {
             cula_Timers$Companion_getNO_TIME_DATA($rt_nullCheck(cula_Timers_Companion));
@@ -826238,7 +826307,7 @@ culct_CapitalConnectionsFinder_find = $this => {
                 $ptr = 5;
                 continue main;
             }
-            $this_$iv = $rt_s(7400);
+            $this_$iv = $rt_s(7401);
             $ptr = 10;
             continue main;
         }
@@ -826259,7 +826328,7 @@ culct_CapitalConnectionsFinder_find = $this => {
         var$8 = $tmp;
         if (var$8) {
             $this_$iv = cula_Timers_Companion;
-            $name$iv = $rt_s(7401);
+            $name$iv = $rt_s(7402);
             $answer$iv$iv$iv = $rt_nullCheck(cula_Timers$Companion_getSingleton($rt_nullCheck($this_$iv)));
             if (kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($answer$iv$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion)))) {
                 $this_$iv$iv = cula_Timers$Companion_getNO_TIME_DATA($rt_nullCheck(cula_Timers_Companion));
@@ -826661,7 +826730,7 @@ culct_CapitalConnectionsFinder_check = ($this, $cityToConnectFrom, $transportTyp
     case 0:
         cula_Timers_$callClinit();
         $this_$iv = cula_Timers_Companion;
-        $name$iv = $rt_s(7402);
+        $name$iv = $rt_s(7403);
         $this_$iv$iv = $rt_nullCheck(cula_Timers$Companion_getSingleton($rt_nullCheck($this_$iv)));
         if (kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion)))) {
             $times$iv$iv = cula_Timers$Companion_getNO_TIME_DATA($rt_nullCheck(cula_Timers_Companion));
@@ -826834,7 +826903,7 @@ culct_CapitalConnectionsFinder_check = ($this, $cityToConnectFrom, $transportTyp
                 $ptr = 23;
                 continue main;
             }
-            $tileFilter = $rt_s(7400);
+            $tileFilter = $rt_s(7401);
             $ptr = 19;
             continue main;
         }
@@ -827181,7 +827250,7 @@ culc_Notification$NotificationCategory__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new culc_Notification$NotificationCategory;
-        var$2 = $rt_s(7403);
+        var$2 = $rt_s(7404);
         var$3 = 0;
         $ptr = 1;
     case 1:
@@ -828528,7 +828597,7 @@ culac_ConstructionAutomation_addChoice = ($this, $choices, $choice, $choiceModif
             break main;
         }
         var$19 = $tmp;
-        $choice = $rt_s(7404);
+        $choice = $rt_s(7405);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter($choice_0, $choice);
@@ -828605,7 +828674,7 @@ culac_ConstructionAutomation_chooseNextConstruction = $this => {
     case 0:
         cula_Timers_$callClinit();
         $this_$iv = cula_Timers_Companion;
-        $name$iv = $rt_s(7405);
+        $name$iv = $rt_s(7406);
         $this_$iv$iv = $rt_nullCheck(cula_Timers$Companion_getSingleton($rt_nullCheck($this_$iv)));
         if (kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion)))) {
             $times$iv$iv = cula_Timers$Companion_getNO_TIME_DATA($rt_nullCheck(cula_Timers_Companion));
@@ -829006,7 +829075,7 @@ culac_ConstructionAutomation_chooseNextConstruction = $this => {
             jl_AbstractStringBuilder__init_($name$iv);
             jl_AbstractStringBuilder_append0($name$iv, 91);
             jl_AbstractStringBuilder_append($name$iv, ($rt_nullCheck($this.$city3)).$name5);
-            jl_AbstractStringBuilder_append($name$iv, $rt_s(7406));
+            jl_AbstractStringBuilder_append($name$iv, $rt_s(7407));
             $ptr = 36;
             continue main;
         }
@@ -831568,7 +831637,7 @@ cula_Automation_rankStatsForCityWork = ($this, $stats, $city, $areWeRankingSpeci
         }
         cula_Timers_$callClinit();
         $this_$iv = cula_Timers_Companion;
-        $name$iv = $rt_s(7407);
+        $name$iv = $rt_s(7408);
         $this_$iv$iv = $rt_nullCheck(cula_Timers$Companion_getSingleton($rt_nullCheck($this_$iv)));
         if (kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion)))) {
             cula_Timers$Companion_getNO_TIME_DATA($rt_nullCheck(cula_Timers_Companion));
@@ -832195,7 +832264,7 @@ cula_Automation_chooseMilitaryUnit = ($this, $city, $availableUnits) => {
         if ($rt_suspending()) {
             break main;
         }
-        $rng = $rt_s(7408);
+        $rng = $rt_s(7409);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($availableUnits, $rng);
@@ -832204,7 +832273,7 @@ cula_Automation_chooseMilitaryUnit = ($this, $city, $availableUnits) => {
         }
         $city_0 = $rt_nullCheck($city);
         $rng = culc_City_getState($city_0);
-        $currentChoice = $rt_s(7409);
+        $currentChoice = $rt_s(7410);
         $isMissingNavalUnitsForCityDefence = 0;
         $numberOfOurConnectedCities = 2;
         $city = null;
@@ -834407,14 +834476,14 @@ cula_Automation_threatAssessment = ($this, $assessorView, $assessedView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $assessor = $rt_s(7410);
+        $assessor = $rt_s(7411);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($assessorView, $assessor);
         if ($rt_suspending()) {
             break main;
         }
-        $assessor = $rt_s(7411);
+        $assessor = $rt_s(7412);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($assessedView, $assessor);
@@ -834980,7 +835049,7 @@ let culcmq_AssignedQuest__init_ = ($this, $questName, $assigner, $assignee, $ass
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$7 = $rt_s(7412);
+        var$7 = $rt_s(7413);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($questName, var$7);
@@ -835073,7 +835142,7 @@ culcmq_AssignedQuest_getAssignerCiv = $this => {
     case 0:
         var$1 = $this.$assignerCiv;
         if (var$1 === null) {
-            var$1 = $rt_s(7413);
+            var$1 = $rt_s(7414);
             $ptr = 1;
             continue main;
         }
@@ -835099,7 +835168,7 @@ culcmq_AssignedQuest_getAssigneeCiv = $this => {
     case 0:
         var$1 = $this.$assigneeCiv;
         if (var$1 === null) {
-            var$1 = $rt_s(7414);
+            var$1 = $rt_s(7415);
             $ptr = 1;
             continue main;
         }
@@ -835593,15 +835662,15 @@ culcmq_AssignedQuest_toString = $this => {
         }
         var$1 = $tmp;
         var$3 = $rt_nullCheck(var$1);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7415));
-        jl_AbstractStringBuilder_append(var$3, $this.$assigner);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7416));
-        jl_AbstractStringBuilder_append(var$3, $this.$assignee);
+        jl_AbstractStringBuilder_append(var$3, $this.$assigner);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7417));
-        jl_AbstractStringBuilder_append(var$3, $this.$data1);
+        jl_AbstractStringBuilder_append(var$3, $this.$assignee);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7418));
-        jl_AbstractStringBuilder_append(var$3, $this.$data20);
+        jl_AbstractStringBuilder_append(var$3, $this.$data1);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7419));
+        jl_AbstractStringBuilder_append(var$3, $this.$data20);
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7420));
         jl_AbstractStringBuilder_append1(var$3, $this.$assignedOnTurn);
         jl_AbstractStringBuilder_append0(var$3, 41);
         $ptr = 3;
@@ -835776,7 +835845,7 @@ cum_Spy_setAction = ($this, $newAction, $turns) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7420);
+        var$3 = $rt_s(7421);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($newAction, var$3);
@@ -836022,7 +836091,7 @@ cum_Spy_endTurn = $this => {
             $ptr = 46;
             continue main;
         }
-        $city = $rt_s(7421);
+        $city = $rt_s(7422);
         $ptr = 33;
         continue main;
     case 17:
@@ -836161,7 +836230,7 @@ cum_Spy_endTurn = $this => {
         if ($canStealTechResult === cum_Spy$CanStealTech_NoTechsToSteal) {
             $city = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($city);
-            jl_AbstractStringBuilder_append($city, $rt_s(7422));
+            jl_AbstractStringBuilder_append($city, $rt_s(7423));
             $ptr = 40;
             continue main;
         }
@@ -836223,7 +836292,7 @@ cum_Spy_endTurn = $this => {
         }
         $canStealTechResult = $tmp;
         jl_AbstractStringBuilder_append($city, $canStealTechResult);
-        jl_AbstractStringBuilder_append($city, $rt_s(7423));
+        jl_AbstractStringBuilder_append($city, $rt_s(7424));
         $ptr = 41;
     case 41:
         $tmp = cum_Spy_getCity($this);
@@ -836247,7 +836316,7 @@ cum_Spy_endTurn = $this => {
         }
         $city = $tmp;
         $city = $rt_nullCheck($city);
-        jl_AbstractStringBuilder_append($city, $rt_s(7424));
+        jl_AbstractStringBuilder_append($city, $rt_s(7425));
         $ptr = 44;
     case 44:
         $tmp = jl_AbstractStringBuilder_toString($city);
@@ -836291,7 +836360,7 @@ cum_Spy_endTurn = $this => {
             $ptr = 51;
             continue main;
         }
-        $city = $rt_s(7421);
+        $city = $rt_s(7422);
         $ptr = 50;
         continue main;
     case 49:
@@ -836316,7 +836385,7 @@ cum_Spy_endTurn = $this => {
         $this.$rank = var$2;
         $city = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($city);
-        jl_AbstractStringBuilder_append($city, $rt_s(7425));
+        jl_AbstractStringBuilder_append($city, $rt_s(7426));
         $ptr = 52;
     case 52:
         $tmp = cum_Spy_getName($this);
@@ -836325,9 +836394,9 @@ cum_Spy_endTurn = $this => {
         }
         $canStealTechResult = $tmp;
         jl_AbstractStringBuilder_append($city, $canStealTechResult);
-        jl_AbstractStringBuilder_append($city, $rt_s(7426));
-        jl_AbstractStringBuilder_append($city, $oldSpyName);
         jl_AbstractStringBuilder_append($city, $rt_s(7427));
+        jl_AbstractStringBuilder_append($city, $oldSpyName);
+        jl_AbstractStringBuilder_append($city, $rt_s(7428));
         $ptr = 53;
     case 53:
         $tmp = jl_AbstractStringBuilder_toString($city);
@@ -836391,7 +836460,7 @@ cum_Spy_canStealTech = $this => {
             $ptr = 2;
             continue main;
         }
-        $stealableTechs = $rt_s(7421);
+        $stealableTechs = $rt_s(7422);
         $ptr = 1;
     case 1:
         kji_Intrinsics_throwUninitializedPropertyAccessException($stealableTechs);
@@ -836546,7 +836615,7 @@ cum_Spy_incrementTechStealingProgress = $this => {
             $ptr = 10;
             continue main;
         }
-        $stealableTechs = $rt_s(7421);
+        $stealableTechs = $rt_s(7422);
         $ptr = 8;
     case 8:
         kji_Intrinsics_throwUninitializedPropertyAccessException($stealableTechs);
@@ -836818,7 +836887,7 @@ cum_Spy_stealTech = $this => {
             $ptr = 5;
             continue main;
         }
-        $city = $rt_s(7421);
+        $city = $rt_s(7422);
         $ptr = 4;
     case 4:
         kji_Intrinsics_throwUninitializedPropertyAccessException($city);
@@ -837044,11 +837113,11 @@ cum_Spy_stealTech = $this => {
                     else {
                         if ($randomSeed >= 0) {
                             if ($randomSeed < 100) {
-                                $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7428))), $stolenTech)), $rt_s(7429)));
+                                $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7429))), $stolenTech)), $rt_s(7430)));
                                 $ptr = 43;
                                 continue main;
                             }
-                            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+                            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
                             $ptr = 40;
                             continue main;
                         }
@@ -837060,7 +837129,7 @@ cum_Spy_stealTech = $this => {
                             continue main;
                         }
                         if (var$12 >= 0) {
-                            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                             $ptr = 48;
                             continue main;
                         }
@@ -837072,11 +837141,11 @@ cum_Spy_stealTech = $this => {
                     continue main;
                 }
                 if ($defendingSpy === null) {
-                    $it = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+                    $it = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
                     $ptr = 37;
                     continue main;
                 }
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
                 $ptr = 33;
                 continue main;
             }
@@ -837125,11 +837194,11 @@ cum_Spy_stealTech = $this => {
             else {
                 if ($randomSeed >= 0) {
                     if ($randomSeed < 100) {
-                        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7428))), $stolenTech)), $rt_s(7429)));
+                        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7429))), $stolenTech)), $rt_s(7430)));
                         $ptr = 43;
                         continue main;
                     }
-                    $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+                    $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
                     $ptr = 40;
                     continue main;
                 }
@@ -837141,7 +837210,7 @@ cum_Spy_stealTech = $this => {
                     continue main;
                 }
                 if (var$12 >= 0) {
-                    $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                    $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                     $ptr = 48;
                     continue main;
                 }
@@ -837153,11 +837222,11 @@ cum_Spy_stealTech = $this => {
             continue main;
         }
         if ($defendingSpy === null) {
-            $it = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+            $it = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
             $ptr = 37;
             continue main;
         }
-        $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+        $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
         $ptr = 33;
     case 33:
         $tmp = cum_Spy_getCivInfo($this);
@@ -837165,7 +837234,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $it = $tmp;
-        $city = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), culc_Civilization_getCivName($rt_nullCheck($it)))), $rt_s(7431));
+        $city = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), culc_Civilization_getCivName($rt_nullCheck($it)))), $rt_s(7432));
         $ptr = 34;
     case 34:
         $tmp = cum_Spy_getName($defendingSpy);
@@ -837173,7 +837242,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $it = $tmp;
-        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7432)));
+        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7433)));
         $ptr = 35;
     case 35:
         $tmp = jl_StringBuilder_append0($city, $city_0);
@@ -837195,7 +837264,7 @@ cum_Spy_stealTech = $this => {
                 continue main;
             }
             if (var$12 >= 0) {
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                 $ptr = 48;
                 continue main;
             }
@@ -837211,7 +837280,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $city = $tmp;
-        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($it), culc_Civilization_getCivName($rt_nullCheck($city)))), $rt_s(7433)));
+        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($it), culc_Civilization_getCivName($rt_nullCheck($city)))), $rt_s(7434)));
         $ptr = 38;
     case 38:
         $tmp = jl_StringBuilder_append0($city, $city_0);
@@ -837233,7 +837302,7 @@ cum_Spy_stealTech = $this => {
                 continue main;
             }
             if (var$12 >= 0) {
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                 $ptr = 48;
                 continue main;
             }
@@ -837249,7 +837318,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $it = $tmp;
-        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), culc_Civilization_getCivName($rt_nullCheck($it)))), $rt_s(7434))), $stolenTech)), $rt_s(7429)));
+        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), culc_Civilization_getCivName($rt_nullCheck($it)))), $rt_s(7435))), $stolenTech)), $rt_s(7430)));
         $ptr = 41;
     case 41:
         $tmp = jl_StringBuilder_append0($city, $city_0);
@@ -837271,7 +837340,7 @@ cum_Spy_stealTech = $this => {
                 continue main;
             }
             if (var$12 >= 0) {
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                 $ptr = 48;
                 continue main;
             }
@@ -837301,7 +837370,7 @@ cum_Spy_stealTech = $this => {
                 continue main;
             }
             if (var$12 >= 0) {
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
                 $ptr = 48;
                 continue main;
             }
@@ -837330,7 +837399,7 @@ cum_Spy_stealTech = $this => {
             continue main;
         }
         if (var$12 >= 0) {
-            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
             $ptr = 48;
             continue main;
         }
@@ -837351,7 +837420,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $it = $tmp;
-        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7435)));
+        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7436)));
         $ptr = 49;
     case 49:
         $tmp = jl_StringBuilder_append0($city, $city_0);
@@ -837398,7 +837467,7 @@ cum_Spy_stealTech = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+        $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
         $ptr = 54;
     case 54:
         $tmp = cum_Spy_getName($this);
@@ -837406,7 +837475,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         $it = $tmp;
-        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7434))), $stolenTech)), $rt_s(7429)));
+        $city = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $it)), $rt_s(7435))), $stolenTech)), $rt_s(7430)));
         $ptr = 55;
     case 55:
         $tmp = jl_StringBuilder_append0($city, $city_0);
@@ -837438,7 +837507,7 @@ cum_Spy_stealTech = $this => {
             break main;
         }
         if (var$12 >= 0) {
-            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+            $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
             $ptr = 48;
             continue main;
         }
@@ -837793,7 +837862,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         if ($allyCiv !== null) {
-            $civ = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+            $civ = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
             $ptr = 30;
             continue main;
         }
@@ -837851,7 +837920,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $cityState = $tmp;
-        $spy = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7422));
+        $spy = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7423));
         $ptr = 25;
     case 25:
         $tmp = cum_Spy_getName($this);
@@ -837859,7 +837928,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $civ = $tmp;
-        $spy = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($spy), $civ)), $rt_s(7436))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
+        $spy = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($spy), $civ)), $rt_s(7437))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
         $ptr = 26;
     case 26:
         $tmp = jl_StringBuilder_toString($spy);
@@ -837905,7 +837974,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $cityState = $tmp;
-        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civ), culc_Civilization_getCivName($rt_nullCheck($cityState)))), $rt_s(7437))), culc_Civilization_getCivName($cityState_0))), $rt_s(7438)));
+        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civ), culc_Civilization_getCivName($rt_nullCheck($cityState)))), $rt_s(7438))), culc_Civilization_getCivName($cityState_0))), $rt_s(7439)));
         $ptr = 31;
     case 31:
         $tmp = jl_StringBuilder_toString($cityState);
@@ -837977,7 +838046,7 @@ cum_Spy_initiateCoup = $this => {
         }
         $cityState = $tmp;
         culcd_DiplomacyManager_reduceInfluence($rt_nullCheck($cityState), 20.0);
-        $cityState = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+        $cityState = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
         $ptr = 39;
     case 39:
         $tmp = cum_Spy_getCivInfo($this);
@@ -837985,7 +838054,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $spy = $tmp;
-        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($cityState), culc_Civilization_getCivName($rt_nullCheck($spy)))), $rt_s(7439))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
+        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($cityState), culc_Civilization_getCivName($rt_nullCheck($spy)))), $rt_s(7440))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
         $ptr = 40;
     case 40:
         $tmp = jl_StringBuilder_toString($cityState);
@@ -838132,7 +838201,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         var$13 = $tmp;
-        $allyCiv = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7440));
+        $allyCiv = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7441));
         $ptr = 57;
     case 57:
         $tmp = cum_Spy_getName($this);
@@ -838140,7 +838209,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $cityState = $tmp;
-        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($allyCiv), $cityState)), $rt_s(7441))), culc_Civilization_getCivName($cityState_0))), $rt_s(7438)));
+        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($allyCiv), $cityState)), $rt_s(7442))), culc_Civilization_getCivName($cityState_0))), $rt_s(7439)));
         $ptr = 58;
     case 58:
         $tmp = jl_StringBuilder_toString($cityState);
@@ -838229,7 +838298,7 @@ cum_Spy_initiateCoup = $this => {
         }
         var$1 = $tmp;
         if (!var$1) {
-            $cityState = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7430));
+            $cityState = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7431));
             $ptr = 69;
             continue main;
         }
@@ -838247,7 +838316,7 @@ cum_Spy_initiateCoup = $this => {
             break main;
         }
         $spy = $tmp;
-        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($cityState), culc_Civilization_getCivName($rt_nullCheck($spy)))), $rt_s(7436))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
+        $cityState = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($cityState), culc_Civilization_getCivName($rt_nullCheck($spy)))), $rt_s(7437))), culc_Civilization_getCivName($cityState_0))), $rt_s(5523)));
         $ptr = 70;
     case 70:
         $tmp = jl_StringBuilder_toString($cityState);
@@ -838719,7 +838788,7 @@ cum_Spy_canMoveTo = ($this, $city) => {
                 $ptr = 22;
                 continue main;
             }
-            $city = $rt_s(7421);
+            $city = $rt_s(7422);
             $ptr = 21;
             continue main;
         }
@@ -838943,13 +839012,13 @@ cum_Spy_levelUpSpy = ($this, $amount) => {
         if ($ranksToLevelUp == 1) {
             var$3 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$3);
-            jl_AbstractStringBuilder_append(var$3, $rt_s(7422));
+            jl_AbstractStringBuilder_append(var$3, $rt_s(7423));
             $ptr = 10;
             continue main;
         }
         var$3 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$3);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7422));
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7423));
         $ptr = 7;
     case 7:
         $tmp = cum_Spy_getName($this);
@@ -838958,9 +839027,9 @@ cum_Spy_levelUpSpy = ($this, $amount) => {
         }
         var$4 = $tmp;
         jl_AbstractStringBuilder_append(var$3, var$4);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7442));
-        jl_AbstractStringBuilder_append1(var$3, $ranksToLevelUp);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7443));
+        jl_AbstractStringBuilder_append1(var$3, $ranksToLevelUp);
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7444));
         $ptr = 8;
     case 8:
         $tmp = jl_AbstractStringBuilder_toString(var$3);
@@ -838983,7 +839052,7 @@ cum_Spy_levelUpSpy = ($this, $amount) => {
         }
         var$4 = $tmp;
         jl_AbstractStringBuilder_append(var$3, var$4);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7444));
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7445));
         $ptr = 11;
     case 11:
         $tmp = jl_AbstractStringBuilder_toString(var$3);
@@ -839692,7 +839761,7 @@ let culmt_TileHistory$TileHistoryState__init_0 = ($this, $owningCivName, $cityCe
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7445);
+        var$3 = $rt_s(7446);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityCenterType, var$3);
@@ -839986,7 +840055,7 @@ cumrue_Node$Countable_getErrors = ($this, $ruleset) => {
         if ($ruleset === null) {
             $ruleset = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($ruleset);
-            jl_AbstractStringBuilder_append($ruleset, $rt_s(7446));
+            jl_AbstractStringBuilder_append($ruleset, $rt_s(7447));
             jl_AbstractStringBuilder_append($ruleset, $this.$parameterText);
             $ptr = 3;
             continue main;
@@ -840021,7 +840090,7 @@ cumrue_Node$Countable_toString = $this => {
     case 0:
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7447));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7448));
         jl_AbstractStringBuilder_append(var$1, $this.$parameterText);
         jl_AbstractStringBuilder_append0(var$1, 93);
         $ptr = 1;
@@ -840870,7 +840939,7 @@ cuuci_SuppressiveActivationListener_touchDown = ($this, $event, $x, $y, $pointer
         $it = $rt_nullCheck($rt_castToClass($element$iv, cuuci_ActivationTypes));
         if ($it.$isGesture && $it.$button9 == $button) {
             var$10 = ($rt_nullCheck($event)).$listenerActor;
-            $$this$any$iv = $rt_s(7448);
+            $$this$any$iv = $rt_s(7449);
             $ptr = 6;
             continue main;
         }
@@ -841007,7 +841076,7 @@ let cumt_TileSetConfig__init_ = $this => {
         }
         var$1 = $tmp;
         $this.$fogOfWarColor = var$1;
-        $this.$fallbackTileSet = $rt_s(7449);
+        $this.$fallbackTileSet = $rt_s(7450);
         $this.$tileScale = 1.0;
         $this.$tileScales = ju_HashMap__init_();
         $this.$ruleVariants = ju_HashMap__init_();
@@ -841525,7 +841594,7 @@ let cuui_Portrait__init_0 = ($this, $type, $imageName, $size, $borderSize) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7450);
+        var$5 = $rt_s(7451);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($imageName, var$5);
@@ -841560,7 +841629,7 @@ let cuui_Portrait__init_0 = ($this, $type, $imageName, $size, $borderSize) => {
         $type = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($type);
         jl_AbstractStringBuilder_append($type, ($rt_nullCheck($this.$type15)).$directory);
-        jl_AbstractStringBuilder_append($type, $rt_s(7451));
+        jl_AbstractStringBuilder_append($type, $rt_s(7452));
         jl_AbstractStringBuilder_append($type, $this.$imageName);
         $ptr = 6;
     case 6:
@@ -841583,7 +841652,7 @@ let cuui_Portrait__init_0 = ($this, $type, $imageName, $size, $borderSize) => {
         $type = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($type);
         jl_AbstractStringBuilder_append($type, ($rt_nullCheck($this.$type15)).$directory);
-        jl_AbstractStringBuilder_append($type, $rt_s(7452));
+        jl_AbstractStringBuilder_append($type, $rt_s(7453));
         jl_AbstractStringBuilder_append($type, $this.$imageName);
         $ptr = 8;
     case 8:
@@ -842165,7 +842234,7 @@ cuui_Portrait_getMainBackground = $this => {
         $circleInner = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($circleInner);
         jl_AbstractStringBuilder_append($circleInner, ($rt_nullCheck($this.$type15)).$directory);
-        jl_AbstractStringBuilder_append($circleInner, $rt_s(7453));
+        jl_AbstractStringBuilder_append($circleInner, $rt_s(7454));
         $ptr = 19;
     case 19:
         $tmp = jl_AbstractStringBuilder_toString($circleInner);
@@ -842186,7 +842255,7 @@ cuui_Portrait_getMainBackground = $this => {
             $bg = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($bg);
             jl_AbstractStringBuilder_append($bg, ($rt_nullCheck($this.$type15)).$directory);
-            jl_AbstractStringBuilder_append($bg, $rt_s(7453));
+            jl_AbstractStringBuilder_append($bg, $rt_s(7454));
             $ptr = 21;
             continue main;
         }
@@ -842277,7 +842346,7 @@ cuui_PortraitBuilding_getCircleImage = $this => {
             break main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7454);
+        var$2 = $rt_s(7455);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -842352,7 +842421,7 @@ cuui_PortraitUnit_getCircleImage = $this => {
             break main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7454);
+        var$2 = $rt_s(7455);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -842426,7 +842495,7 @@ cuui_PortraitPromotion_getDefaultImage = $this => {
         $this.$level2 = $level;
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7455));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7456));
         jl_AbstractStringBuilder_append(var$1, $nameWithoutBrackets);
         $ptr = 2;
     case 2:
@@ -842437,7 +842506,7 @@ cuui_PortraitPromotion_getDefaultImage = $this => {
         $pathWithoutBrackets = $tmp;
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7455));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7456));
         jl_AbstractStringBuilder_append(var$1, $basePromotionName);
         $ptr = 3;
     case 3:
@@ -842449,7 +842518,7 @@ cuui_PortraitPromotion_getDefaultImage = $this => {
         $pathUnit = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($pathUnit);
         jl_AbstractStringBuilder_append($pathUnit, $rt_s(1152));
-        var$1 = $rt_s(7456);
+        var$1 = $rt_s(7457);
         $ptr = 4;
     case 4:
         $tmp = kt_StringsKt__StringsKt_removeSuffix($basePromotionName, var$1);
@@ -842803,7 +842872,7 @@ cuui_PortraitTech_getCircleImage = $this => {
             break main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7457);
+        var$2 = $rt_s(7458);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -842902,7 +842971,7 @@ cuui_PortraitNation_getDefaultImage = $this => {
         $nation = $rt_castToClass($nation, cumrn_Nation);
         if ($nation === null) {
             $isCityState = 0;
-            $pathCityState = $rt_s(7458);
+            $pathCityState = $rt_s(7459);
             $ptr = 3;
             continue main;
         }
@@ -842914,7 +842983,7 @@ cuui_PortraitNation_getDefaultImage = $this => {
         }
         $isCityState = $tmp;
         $isCityState = !$isCityState ? 0 : 1;
-        $pathCityState = $rt_s(7458);
+        $pathCityState = $rt_s(7459);
         $ptr = 3;
     case 3:
         cuui_ImageGetter_$callClinit();
@@ -843217,14 +843286,14 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$4 = $rt_s(7459);
+        var$4 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$4);
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(7460);
+        var$4 = $rt_s(7461);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileSetStrings, var$4);
@@ -843262,7 +843331,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $this.$hexagonImageOriginY = Math.sqrt(jl_Math_pow(var$5, 2.0) - jl_Math_pow($this.$hexagonImageWidth / 4.0, 2.0));
         $this.$hexagonImagePosition = k_Pair__init_(jl_Float_valueOf( -$this.$hexagonImageOriginX / 3.0), jl_Float_valueOf( -$this.$hexagonImageOriginY / 4.0));
         $tileView = new cuuctl_TileLayerTerrain;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843280,7 +843349,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $tileView.$neighborEdgeDataByNeighbor = ju_HashMap__init_();
         $this.$layerTerrain = $tileView;
         $tileView = new cuuctl_TileLayerFeatures;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 8;
     case 8:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843296,7 +843365,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $tileView.$roadImages = ju_HashMap__init_();
         $this.$layerFeatures = $tileView;
         $tileView = new cuuctl_TileLayerBorders;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843312,7 +843381,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $tileView.$borderSegments = ju_HashMap__init_();
         $this.$layerBorders = $tileView;
         $tileView = new cuuctl_TileLayerMisc;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 12;
     case 12:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843330,7 +843399,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $tileView.$startingLocationIcons = ju_ArrayList__init_();
         $this.$layerMisc = $tileView;
         $tileView = new cuuctl_TileLayerResource;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 14;
     case 14:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843346,7 +843415,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         $tileView.$resourceAmount0 = (-1);
         $this.$layerResource = $tileView;
         $tileView = new cuuctl_TileLayerImprovement;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 16;
     case 16:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843361,7 +843430,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         }
         $this.$layerImprovement = $tileView;
         $tileView = new cuuctl_TileLayerYield;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 18;
     case 18:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843376,7 +843445,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         }
         $this.$layerYield = $tileView;
         $tileView = new cuuctl_TileLayerOverlay;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 20;
     case 20:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843391,7 +843460,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         }
         $this.$layerOverlay = $tileView;
         $tileView = new cuuctl_TileLayerUnitSprite;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 22;
     case 22:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843406,7 +843475,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         }
         $this.$layerUnitArt = $tileView;
         $tileView = new cuuctl_TileLayerUnitFlag;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 24;
     case 24:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843421,7 +843490,7 @@ let cuuct_TileGroup__init_ = ($this, $tileView, $tileSetStrings, $groupSize) => 
         }
         $this.$layerUnitFlag = $tileView;
         $tileView = new cuuctl_TileLayerCityButton;
-        $tileSetStrings = $rt_s(7461);
+        $tileSetStrings = $rt_s(7462);
         $ptr = 26;
     case 26:
         kji_Intrinsics_checkNotNullParameter($this, $tileSetStrings);
@@ -843658,14 +843727,14 @@ cuuct_TileGroup_update = ($this, $viewingCiv) => {
                 if (($rt_nullCheck(var$4)).$tileMapView === $newTileMapView)
                     break a;
                 else {
-                    var$5 = $rt_s(7459);
+                    var$5 = $rt_s(7460);
                     $ptr = 4;
                     continue main;
                 }
             }
             if (cuv_TileView_getCivView($rt_nullCheck($this.$tileView)) !== null) {
                 $viewingCiv = new jl_Exception;
-                var$4 = $rt_s(7462);
+                var$4 = $rt_s(7463);
                 $ptr = 7;
                 continue main;
             }
@@ -844062,7 +844131,7 @@ cuuct_TileGroup_update$default = (var$1, var$2, var$3, var$4) => {
             continue main;
         }
         var$2 = new jl_UnsupportedOperationException;
-        var$1 = $rt_s(7463);
+        var$1 = $rt_s(7464);
         $ptr = 1;
     case 1:
         jl_Throwable__init_(var$2, var$1);
@@ -844199,7 +844268,7 @@ cuv_TileView__init_ = ($this, $tile, $tileMapView, $viewer, $spectatorMode) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7464);
+        var$5 = $rt_s(7465);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileMapView, var$5);
@@ -845026,14 +845095,14 @@ cuv_TileView_getRoadPathingMap = ($this, $viewer, $cache) => {
         var$3.$_0777 = $viewer;
         var$3.$_1291 = $this;
         $cache = $rt_nullCheck($cache);
-        $viewer = $rt_s(7465);
+        $viewer = $rt_s(7466);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($this, $viewer);
         if ($rt_suspending()) {
             break main;
         }
-        $viewer = $rt_s(7466);
+        $viewer = $rt_s(7467);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$3, $viewer);
@@ -845070,14 +845139,14 @@ cuv_TileView_getRoadPathingMap = ($this, $viewer, $cache) => {
         }
         var$5 = $tmp;
         var$4 = var$4.$tileMapView;
-        var$6 = $rt_s(7467);
+        var$6 = $rt_s(7468);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$5, var$6);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7464);
+        var$6 = $rt_s(7465);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$4, var$6);
@@ -845114,7 +845183,7 @@ cuv_TileView_getRoadPath = ($this, $destination, $cache) => {
         if ($rt_suspending()) {
             break main;
         }
-        $start = $rt_s(7468);
+        $start = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $start);
@@ -845884,7 +845953,7 @@ cuv_TileView_getImprovementBuildingProblems = ($this, $improvement, $unitView, $
         if ($rt_suspending()) {
             break main;
         }
-        $tileToCheck = $rt_s(7469);
+        $tileToCheck = $rt_s(7470);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($unitView, $tileToCheck);
@@ -846742,7 +846811,7 @@ cuusp_PickerPane$Companion_getPickerOptionButton = ($this, $icon, $label) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7393);
+        var$3 = $rt_s(7394);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($icon, var$3);
@@ -846937,7 +847006,7 @@ cuuci_KeyboardBindingKt_access$unCamelCase = $name => {
         }
         var$2 = cuuci_KeyboardBindingKt_unCamelCaseRegex;
         var$3 = $name;
-        $name = $rt_s(7470);
+        $name = $rt_s(7471);
         var$2 = $rt_nullCheck(var$2);
         $ptr = 2;
     case 2:
@@ -846961,7 +847030,7 @@ cuuci_KeyboardBindingKt__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new kt_Regex;
-        var$2 = $rt_s(7471);
+        var$2 = $rt_s(7472);
         $ptr = 1;
     case 1:
         kt_Regex__init_(var$1, var$2);
@@ -847195,14 +847264,14 @@ cuusc_FormattedLine__init_0 = ($this, $text, $link, $icon, $extraImage, $imageSi
         if ($rt_suspending()) {
             break main;
         }
-        var$15 = $rt_s(7393);
+        var$15 = $rt_s(7394);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($icon, var$15);
         if ($rt_suspending()) {
             break main;
         }
-        var$15 = $rt_s(7394);
+        var$15 = $rt_s(7395);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter($extraImage, var$15);
@@ -848066,7 +848135,7 @@ cuusc_FormattedLine_hasProtocol = ($this, $$this$hasProtocol) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7472);
+        var$2 = $rt_s(7473);
         var$3 = 0;
         var$4 = 2;
         var$5 = null;
@@ -848078,7 +848147,7 @@ cuusc_FormattedLine_hasProtocol = ($this, $$this$hasProtocol) => {
         }
         var$3 = $tmp;
         if (!var$3) {
-            var$2 = $rt_s(7473);
+            var$2 = $rt_s(7474);
             var$3 = 0;
             var$4 = 2;
             var$5 = null;
@@ -848093,7 +848162,7 @@ cuusc_FormattedLine_hasProtocol = ($this, $$this$hasProtocol) => {
         }
         var$3 = $tmp;
         if (!var$3) {
-            var$2 = $rt_s(7474);
+            var$2 = $rt_s(7475);
             var$3 = 0;
             var$4 = 2;
             var$5 = null;
@@ -848360,7 +848429,7 @@ cuusc_FormattedLine_render = ($this, $labelWidth, $iconDisplay) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $label = $rt_s(7475);
+        $label = $rt_s(7476);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($iconDisplay, $label);
@@ -848849,7 +848918,7 @@ cuusc_FormattedLine_renderExtraImage = ($this, $maxSize) => {
             break main;
         }
         $image = cuu_Log_INSTANCE;
-        var$5 = $rt_s(7476);
+        var$5 = $rt_s(7477);
         $exception = $exception;
         $image = $rt_nullCheck($image);
         $ptr = 6;
@@ -849188,16 +849257,16 @@ cuusc_FormattedLine_toString = $this => {
         }
         var$1 = $tmp;
         if (var$1)
-            var$2 = $rt_s(7477);
+            var$2 = $rt_s(7478);
         else {
             if (!$this.$separator0) {
                 if (!(($rt_nullCheck($this.$extraImage)).$nativeString.length <= 0 ? 0 : 1)) {
                     if ($this.$header2 > 0) {
                         var$2 = new jl_StringBuilder;
                         jl_AbstractStringBuilder__init_(var$2);
-                        jl_AbstractStringBuilder_append(var$2, $rt_s(7478));
-                        jl_AbstractStringBuilder_append1(var$2, $this.$header2);
                         jl_AbstractStringBuilder_append(var$2, $rt_s(7479));
+                        jl_AbstractStringBuilder_append1(var$2, $this.$header2);
+                        jl_AbstractStringBuilder_append(var$2, $rt_s(7480));
                         jl_AbstractStringBuilder_append(var$2, $this.$text3);
                         jl_AbstractStringBuilder_append0(var$2, 39);
                         $ptr = 5;
@@ -849208,13 +849277,13 @@ cuusc_FormattedLine_toString = $this => {
                 }
                 var$2 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$2);
-                jl_AbstractStringBuilder_append(var$2, $rt_s(7480));
+                jl_AbstractStringBuilder_append(var$2, $rt_s(7481));
                 jl_AbstractStringBuilder_append(var$2, $this.$extraImage);
                 jl_AbstractStringBuilder_append(var$2, $rt_s(2371));
                 $ptr = 2;
                 continue main;
             }
-            var$2 = $rt_s(7481);
+            var$2 = $rt_s(7482);
         }
         return var$2;
     case 2:
@@ -849241,7 +849310,7 @@ cuusc_FormattedLine_toString = $this => {
             jl_AbstractStringBuilder__init_(var$2);
             jl_AbstractStringBuilder_append0(var$2, 39);
             jl_AbstractStringBuilder_append(var$2, $this.$text3);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(7482));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(7483));
             jl_AbstractStringBuilder_append(var$2, $this.$link0);
             $ptr = 6;
             continue main;
@@ -849494,7 +849563,7 @@ cuusc_FormattedLine_renderExtraImage$getExtraImage = $this$0 => {
         $this$0 = $tmp;
         var$5 = $rt_nullCheck($this$0);
         $externalImage = ($rt_nullCheck(($rt_nullCheck(var$5.$region)).$texture)).$data11;
-        $this$0 = $rt_s(7483);
+        $this$0 = $rt_s(7484);
         $ptr = 8;
     case 8:
         kji_Intrinsics_checkNotNullExpressionValue($externalImage, $this$0);
@@ -849794,7 +849863,7 @@ cuusc_FormattedLine_access$isValidInternalLink = ($$this, $link) => {
         $$this = $rt_nullCheck($$this);
         $link = $link;
         var$3 = new kt_Regex;
-        $$this = $rt_s(7484);
+        $$this = $rt_s(7485);
         $ptr = 2;
     case 2:
         kt_Regex__init_(var$3, $$this);
@@ -849971,7 +850040,7 @@ cuusc_FormattedLine_access$checkExtraImage = ($$this, $$receiver, $validator, $$
             $ptr = 7;
             continue main;
         }
-        $$completion = $rt_s(7485);
+        $$completion = $rt_s(7486);
         var$6.$L$0185 = $$receiver;
         var$6.$L$1101 = $validator;
         var$6.$label78 = 1;
@@ -850046,7 +850115,7 @@ cuusc_FormattedLine_access$checkExtraImage = ($$this, $$receiver, $validator, $$
             $ptr = 12;
             continue main;
         }
-        $validator = $rt_s(7486);
+        $validator = $rt_s(7487);
         $ptr = 11;
     case 11:
         kji_Intrinsics_throwUninitializedPropertyAccessException($validator);
@@ -850070,7 +850139,7 @@ cuusc_FormattedLine_access$checkExtraImage = ($$this, $$receiver, $validator, $$
         }
         var$7 = $tmp;
         if (!var$7) {
-            $validator = $rt_s(7487);
+            $validator = $rt_s(7488);
             var$6.$L$0185 = null;
             var$6.$L$1101 = null;
             var$6.$label78 = 2;
@@ -850745,9 +850814,9 @@ cum_UnitActionType__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cum_UnitActionType;
-        var$2 = $rt_s(7488);
+        var$2 = $rt_s(7489);
         var$3 = 0;
-        var$4 = $rt_s(7489);
+        var$4 = $rt_s(7490);
         $ptr = 1;
     case 1:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850756,9 +850825,9 @@ cum_UnitActionType__clinit_ = () => {
         }
         cum_UnitActionType_StopEscortFormation = var$1;
         var$1 = new cum_UnitActionType;
-        var$2 = $rt_s(7490);
+        var$2 = $rt_s(7491);
         var$3 = 1;
-        var$4 = $rt_s(7491);
+        var$4 = $rt_s(7492);
         $ptr = 2;
     case 2:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850844,9 +850913,9 @@ cum_UnitActionType__clinit_ = () => {
         }
         cum_UnitActionType_FortifyUntilHealed = var$1;
         var$1 = new cum_UnitActionType;
-        var$2 = $rt_s(7492);
+        var$2 = $rt_s(7493);
         var$3 = 9;
-        var$4 = $rt_s(7492);
+        var$4 = $rt_s(7493);
         $ptr = 10;
     case 10:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850879,7 +850948,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7174);
         var$3 = 12;
-        var$4 = $rt_s(7493);
+        var$4 = $rt_s(7494);
         $ptr = 13;
     case 13:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850923,7 +850992,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7177);
         var$3 = 16;
-        var$4 = $rt_s(7494);
+        var$4 = $rt_s(7495);
         $ptr = 17;
     case 17:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850965,7 +851034,7 @@ cum_UnitActionType__clinit_ = () => {
         }
         cum_UnitActionType_Repair = var$1;
         var$1 = new cum_UnitActionType;
-        var$2 = $rt_s(7495);
+        var$2 = $rt_s(7496);
         var$3 = 20;
         var$4 = $rt_s(7183);
         $ptr = 21;
@@ -850978,7 +851047,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7184);
         var$3 = 21;
-        var$4 = $rt_s(7496);
+        var$4 = $rt_s(7497);
         $ptr = 22;
     case 22:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -850987,9 +851056,9 @@ cum_UnitActionType__clinit_ = () => {
         }
         cum_UnitActionType_HurryResearch = var$1;
         var$1 = new cum_UnitActionType;
-        var$2 = $rt_s(7497);
+        var$2 = $rt_s(7498);
         var$3 = 22;
-        var$4 = $rt_s(7498);
+        var$4 = $rt_s(7499);
         $ptr = 23;
     case 23:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851000,7 +851069,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7185);
         var$3 = 23;
-        var$4 = $rt_s(7499);
+        var$4 = $rt_s(7500);
         $ptr = 24;
     case 24:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851011,7 +851080,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7186);
         var$3 = 24;
-        var$4 = $rt_s(7500);
+        var$4 = $rt_s(7501);
         $ptr = 25;
     case 25:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851022,7 +851091,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7188);
         var$3 = 25;
-        var$4 = $rt_s(7501);
+        var$4 = $rt_s(7502);
         $ptr = 26;
     case 26:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851055,7 +851124,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7193);
         var$3 = 28;
-        var$4 = $rt_s(7502);
+        var$4 = $rt_s(7503);
         $ptr = 29;
     case 29:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851066,7 +851135,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7194);
         var$3 = 29;
-        var$4 = $rt_s(7503);
+        var$4 = $rt_s(7504);
         $ptr = 30;
     case 30:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851099,7 +851168,7 @@ cum_UnitActionType__clinit_ = () => {
         var$1 = new cum_UnitActionType;
         var$2 = $rt_s(7201);
         var$3 = 32;
-        var$4 = $rt_s(7504);
+        var$4 = $rt_s(7505);
         $ptr = 33;
     case 33:
         cum_UnitActionType__init_(var$1, var$2, var$3, var$4);
@@ -851557,7 +851626,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction = ($this, $unique, $civInfo, $c
         if ($rt_suspending()) {
             break main;
         }
-        $unique = $rt_s(7505);
+        $unique = $rt_s(7506);
         $timingConditional = $rt_nullCheck(cumru_Unique_getText($unique_0));
         $ptr = 8;
     case 8:
@@ -853256,7 +853325,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction = ($this, $unique, $civInfo, $c
         }
         $unique = $tmp;
         $prefix = $rt_castToClass($unique, jl_String);
-        if (kt_StringsKt__StringsJVMKt_equals($prefix, $rt_s(7506), 1))
+        if (kt_StringsKt__StringsJVMKt_equals($prefix, $rt_s(7507), 1))
             $prefix = culc_Civilization_getCivID($civInfo_0);
         $unique = cumru_Unique_getParams($unique_0);
         $count$iv = 1;
@@ -855209,7 +855278,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction = ($this, $unique, $civInfo, $c
         if ($city !== cumr_Event$Presentation_None) {
             if (cumr_Event_getPresentation($unique) !== cumr_Event$Presentation_Alert) {
                 $civInfo = new k_NotImplementedError;
-                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7507));
+                $city = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7508));
                 $unit = $rt_nullCheck($unique);
                 $ptr = 375;
                 continue main;
@@ -856083,7 +856152,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction = ($this, $unique, $civInfo, $c
             break main;
         }
         $unit = $tmp;
-        $city = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $unit)), $rt_s(7508));
+        $city = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($city), $unit)), $rt_s(7509));
         $unique = cumr_Event_getPresentation($unique);
         $city = $rt_nullCheck($city);
         $ptr = 376;
@@ -856093,7 +856162,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction = ($this, $unique, $civInfo, $c
             break main;
         }
         $unique = $tmp;
-        $unique = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($unique), $rt_s(7509)));
+        $unique = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($unique), $rt_s(7510)));
         $ptr = 377;
     case 377:
         $tmp = jl_StringBuilder_toString($unique);
@@ -857142,7 +857211,7 @@ cumru_UniqueTriggerActivation_getNotificationText = ($this, $notification, $trig
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7510);
+        var$6 = $rt_s(7511);
         var$4 = null;
         var$7 = $rt_s(4);
         $ptr = 6;
@@ -857157,7 +857226,7 @@ cumru_UniqueTriggerActivation_getNotificationText = ($this, $notification, $trig
             jl_AbstractStringBuilder__init_($notification);
             jl_AbstractStringBuilder_append0($notification, 123);
             jl_AbstractStringBuilder_append($notification, $effectNotificationText);
-            jl_AbstractStringBuilder_append($notification, $rt_s(7511));
+            jl_AbstractStringBuilder_append($notification, $rt_s(7512));
             jl_AbstractStringBuilder_append($notification, $triggerNotificationText);
             jl_AbstractStringBuilder_append0($notification, 125);
             $ptr = 8;
@@ -857167,7 +857236,7 @@ cumru_UniqueTriggerActivation_getNotificationText = ($this, $notification, $trig
         jl_AbstractStringBuilder__init_($notification);
         jl_AbstractStringBuilder_append0($notification, 123);
         jl_AbstractStringBuilder_append($notification, $triggerNotificationText);
-        jl_AbstractStringBuilder_append($notification, $rt_s(7511));
+        jl_AbstractStringBuilder_append($notification, $rt_s(7512));
         jl_AbstractStringBuilder_append($notification, $effectNotificationText);
         jl_AbstractStringBuilder_append0($notification, 125);
         $ptr = 7;
@@ -857382,12 +857451,12 @@ cumru_UniqueTriggerActivation_getTriggerFunction$placeUnits = ($actualAmount, $$
             $relevantCity$delegate = cumru_UniqueTriggerActivation_INSTANCE;
             $chosenCity = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($chosenCity);
-            jl_AbstractStringBuilder_append($chosenCity, $rt_s(7512));
+            jl_AbstractStringBuilder_append($chosenCity, $rt_s(7513));
             jl_AbstractStringBuilder_append1($chosenCity, ($rt_nullCheck($placedUnits)).$size9);
             jl_AbstractStringBuilder_append($chosenCity, $rt_s(100));
             $$tile = $rt_nullCheck($civUnit);
             jl_AbstractStringBuilder_append($chosenCity, $$tile.$name1);
-            jl_AbstractStringBuilder_append($chosenCity, $rt_s(7513));
+            jl_AbstractStringBuilder_append($chosenCity, $rt_s(7514));
             $ptr = 3;
             continue main;
         }
@@ -857751,9 +857820,9 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$36 = ($$policiesToRemove
         }
         $policy = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($policy);
-        jl_AbstractStringBuilder_append($policy, $rt_s(7514));
-        jl_AbstractStringBuilder_append($policy, ($rt_nullCheck($rt_castToClass(var$7.$key0, cumr_Policy))).$name1);
         jl_AbstractStringBuilder_append($policy, $rt_s(7515));
+        jl_AbstractStringBuilder_append($policy, ($rt_nullCheck($rt_castToClass(var$7.$key0, cumr_Policy))).$name1);
+        jl_AbstractStringBuilder_append($policy, $rt_s(7516));
         $effectNotificationText = $rt_nullCheck($rt_castToClass(var$7.$value4, jl_Number));
         $ptr = 8;
     case 8:
@@ -857763,7 +857832,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$36 = ($$policiesToRemove
         }
         var$8 = $tmp;
         jl_AbstractStringBuilder_append1($policy, var$8);
-        jl_AbstractStringBuilder_append($policy, $rt_s(7516));
+        jl_AbstractStringBuilder_append($policy, $rt_s(7517));
         $ptr = 9;
     case 9:
         $tmp = jl_AbstractStringBuilder_toString($policy);
@@ -857783,9 +857852,9 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$36 = ($$policiesToRemove
         $policy.$freePolicies = $policy.$freePolicies + 1 | 0;
         $policy = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($policy);
-        jl_AbstractStringBuilder_append($policy, $rt_s(7514));
+        jl_AbstractStringBuilder_append($policy, $rt_s(7515));
         jl_AbstractStringBuilder_append($policy, ($rt_nullCheck($rt_castToClass(var$7.$key0, cumr_Policy))).$name1);
-        jl_AbstractStringBuilder_append($policy, $rt_s(7517));
+        jl_AbstractStringBuilder_append($policy, $rt_s(7518));
         $ptr = 11;
     case 11:
         $tmp = jl_AbstractStringBuilder_toString($policy);
@@ -858223,7 +858292,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$53 = ($$unique, $$civInf
             $$unique = cumru_UniqueTriggerActivation_INSTANCE;
             $notificationText = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($notificationText);
-            jl_AbstractStringBuilder_append($notificationText, $rt_s(7512));
+            jl_AbstractStringBuilder_append($notificationText, $rt_s(7513));
             $stats = $rt_nullCheck($stats);
             $ptr = 14;
             continue main;
@@ -858239,7 +858308,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$53 = ($$unique, $$civInf
             $$unique = cumru_UniqueTriggerActivation_INSTANCE;
             $notificationText = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($notificationText);
-            jl_AbstractStringBuilder_append($notificationText, $rt_s(7512));
+            jl_AbstractStringBuilder_append($notificationText, $rt_s(7513));
             $stats = $rt_nullCheck($stats);
             $ptr = 14;
             continue main;
@@ -858299,7 +858368,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$53 = ($$unique, $$civInf
         $$unique = cumru_UniqueTriggerActivation_INSTANCE;
         $notificationText = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($notificationText);
-        jl_AbstractStringBuilder_append($notificationText, $rt_s(7512));
+        jl_AbstractStringBuilder_append($notificationText, $rt_s(7513));
         $stats = $rt_nullCheck($stats);
         $ptr = 14;
         continue main;
@@ -858455,7 +858524,7 @@ cumru_UniqueTriggerActivation_getTriggerFunction$lambda$100 = ($$tilesToTakeOver
         $otherCiv_0 = $rt_castToClass($$tilesToTakeOver, culc_Civilization);
         $$tilesToTakeOver = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($$tilesToTakeOver);
-        jl_AbstractStringBuilder_append($$tilesToTakeOver, $rt_s(7518));
+        jl_AbstractStringBuilder_append($$tilesToTakeOver, $rt_s(7519));
         $ptr = 12;
     case 12:
         $tmp = jl_StringBuilder_append0($$tilesToTakeOver, $$civInfo);
@@ -859094,7 +859163,7 @@ culct_CapitalConnectionsFinder$CapitalConnectionMedium__clinit_ = () => {
         }
         culct_CapitalConnectionsFinder$CapitalConnectionMedium_Railroad = var$1;
         var$1 = new culct_CapitalConnectionsFinder$CapitalConnectionMedium;
-        var$2 = $rt_s(7519);
+        var$2 = $rt_s(7520);
         var$3 = 4;
         var$4 = null;
         var$5 = 0;
@@ -859108,7 +859177,7 @@ culct_CapitalConnectionsFinder$CapitalConnectionMedium__clinit_ = () => {
         }
         culct_CapitalConnectionsFinder$CapitalConnectionMedium_Harbor = var$1;
         var$1 = new culct_CapitalConnectionsFinder$CapitalConnectionMedium;
-        var$2 = $rt_s(7520);
+        var$2 = $rt_s(7521);
         var$3 = 5;
         var$4 = culmt_RoadStatus_Road;
         var$5 = 0;
@@ -859122,7 +859191,7 @@ culct_CapitalConnectionsFinder$CapitalConnectionMedium__clinit_ = () => {
         }
         culct_CapitalConnectionsFinder$CapitalConnectionMedium_HarborFromRoad = var$1;
         var$1 = new culct_CapitalConnectionsFinder$CapitalConnectionMedium;
-        var$2 = $rt_s(7521);
+        var$2 = $rt_s(7522);
         var$3 = 6;
         var$4 = culmt_RoadStatus_Railroad;
         var$5 = 1;
@@ -862033,7 +862102,7 @@ cumr_Milestone_getVictoryScreenButtonHeaderText = ($this, $completed, $civInfo) 
             break main;
         }
         $completeSpaceshipParts = $tmp;
-        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7522)));
+        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7523)));
         $ptr = 46;
     case 46:
         $tmp = jl_StringBuilder_toString($civInfo);
@@ -862320,7 +862389,7 @@ cumr_Milestone_getVictoryScreenButtonHeaderText = ($this, $completed, $civInfo) 
             break main;
         }
         $completeSpaceshipParts = $tmp;
-        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7522)));
+        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7523)));
         $ptr = 72;
     case 72:
         $tmp = jl_StringBuilder_toString($civInfo);
@@ -862359,7 +862428,7 @@ cumr_Milestone_getVictoryScreenButtonHeaderText = ($this, $completed, $civInfo) 
             break main;
         }
         $completeSpaceshipParts = $tmp;
-        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7522)));
+        $civInfo = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($civInfo), $completeSpaceshipParts)), $rt_s(7523)));
         $ptr = 77;
     case 77:
         $tmp = jl_StringBuilder_toString($civInfo);
@@ -862551,7 +862620,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $headerButton = $rt_s(7523);
+        $headerButton = $rt_s(7524);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($completionStatus, $headerButton);
@@ -862890,7 +862959,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         $isKnown = $tmp;
         if (!$isKnown) {
             if ($hideCivCount) {
-                $completionStatus = $rt_s(7524);
+                $completionStatus = $rt_s(7525);
                 $hideCivCount = 0;
                 $ptr = 60;
                 continue main;
@@ -862931,7 +863000,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         $isKnown = $tmp;
         if (!$isKnown) {
             if ($hideCivCount) {
-                $completionStatus = $rt_s(7525);
+                $completionStatus = $rt_s(7526);
                 $hideCivCount = 0;
                 $ptr = 64;
                 continue main;
@@ -863260,7 +863329,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         $isKnown = $tmp;
         if (!$isKnown) {
             if ($hideCivCount) {
-                $completionStatus = $rt_s(7526);
+                $completionStatus = $rt_s(7527);
                 $hideCivCount = 0;
                 $ptr = 84;
                 continue main;
@@ -863389,7 +863458,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if (!$isKnown)
-            $civName = $rt_s(7527);
+            $civName = $rt_s(7528);
         else {
             $otherCiv = $rt_nullCheck($otherCiv);
             $civName = culc_Civilization_getCivName($otherCiv);
@@ -863428,7 +863497,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if ($isKnown) {
-            $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7528))), culc_Civilization_getCivName($civ))), 93));
+            $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7529))), culc_Civilization_getCivName($civ))), 93));
             $ptr = 92;
             continue main;
         }
@@ -863454,7 +863523,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         $isKnown = $tmp;
         if (!$isKnown) {
             if ($hideCivCount) {
-                $completionStatus = $rt_s(7529);
+                $completionStatus = $rt_s(7530);
                 $hideCivCount = 0;
                 $ptr = 101;
                 continue main;
@@ -863484,13 +863553,13 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if ($isKnown) {
-            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7530));
+            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7531));
             $civ = $rt_nullCheck($civ);
             $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($completionStatus), culc_Civilization_getCivName($civ))), 93));
             $ptr = 97;
             continue main;
         }
-        $milestoneText = $rt_s(7531);
+        $milestoneText = $rt_s(7532);
         if ($civReligion === null) {
             $milestoneMet = 0;
             $ptr = 113;
@@ -863565,11 +863634,11 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if ($isKnown) {
-            $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7528))), culc_Civilization_getCivName($civ))), 93));
+            $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7529))), culc_Civilization_getCivName($civ))), 93));
             $ptr = 92;
             continue main;
         }
-        $milestoneText = $rt_s(7532);
+        $milestoneText = $rt_s(7533);
         $ptr = 98;
         continue main;
     case 94:
@@ -863601,7 +863670,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $percent = $tmp;
         if (!($percent < 1.0) && !($percent >= 200.0)) {
-            $completionStatus = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), $civName)), $rt_s(100))), $rt_doubleToInt($percent))), $rt_s(7533)));
+            $completionStatus = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), $civName)), $rt_s(100))), $rt_doubleToInt($percent))), $rt_s(7534)));
             $ptr = 108;
             continue main;
         }
@@ -863664,7 +863733,7 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if ($isKnown) {
-            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7528));
+            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7529));
             $civ = $rt_nullCheck($civ);
             $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($completionStatus), culc_Civilization_getCivName($civ))), 93));
             $ptr = 110;
@@ -863691,11 +863760,11 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
             continue main;
         }
         if ($isKnown) {
-            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7534));
+            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7535));
             $ptr = 111;
             continue main;
         }
-        $milestoneText = $rt_s(7535);
+        $milestoneText = $rt_s(7536);
         $ptr = 120;
         continue main;
     case 106:
@@ -863714,13 +863783,13 @@ cumr_Milestone_getVictoryScreenButtons = ($this, $completionStatus, $civInfo) =>
         }
         $isKnown = $tmp;
         if ($isKnown) {
-            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7528));
+            $completionStatus = jl_StringBuilder_append(jl_StringBuilder__init_(), $rt_s(7529));
             $civ = $rt_nullCheck($civ);
             $completionStatus = $rt_nullCheck(jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($completionStatus), culc_Civilization_getCivName($civ))), 93));
             $ptr = 110;
             continue main;
         }
-        $milestoneText = $rt_s(7532);
+        $milestoneText = $rt_s(7533);
         $ptr = 117;
         continue main;
     case 108:
@@ -863939,7 +864008,7 @@ cumr_Milestone_getFormattedLine = $this => {
             case 11:
                 var$4 = new cuusc_FormattedLine;
                 var$1 = $this.$uniqueDescription;
-                var$5 = $rt_s(7536);
+                var$5 = $rt_s(7537);
                 var$6 = null;
                 var$7 = null;
                 var$8 = 0.0;
@@ -864183,9 +864252,9 @@ cumr_MilestoneType__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7537);
+        var$2 = $rt_s(7538);
         var$3 = 0;
-        var$4 = $rt_s(7538);
+        var$4 = $rt_s(7539);
         $ptr = 1;
     case 1:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864194,9 +864263,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_BuiltBuilding = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7539);
+        var$2 = $rt_s(7540);
         var$3 = 1;
-        var$4 = $rt_s(7540);
+        var$4 = $rt_s(7541);
         $ptr = 2;
     case 2:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864205,9 +864274,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_BuildingBuiltGlobally = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7541);
+        var$2 = $rt_s(7542);
         var$3 = 2;
-        var$4 = $rt_s(7542);
+        var$4 = $rt_s(7543);
         $ptr = 3;
     case 3:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864216,9 +864285,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_AddedSSPartsInCapital = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7543);
+        var$2 = $rt_s(7544);
         var$3 = 3;
-        var$4 = $rt_s(7544);
+        var$4 = $rt_s(7545);
         $ptr = 4;
     case 4:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864227,9 +864296,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_DestroyAllPlayers = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7545);
+        var$2 = $rt_s(7546);
         var$3 = 4;
-        var$4 = $rt_s(7546);
+        var$4 = $rt_s(7547);
         $ptr = 5;
     case 5:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864238,9 +864307,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_CaptureAllCapitals = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7547);
+        var$2 = $rt_s(7548);
         var$3 = 5;
-        var$4 = $rt_s(7548);
+        var$4 = $rt_s(7549);
         $ptr = 6;
     case 6:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864249,9 +864318,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_CompletePolicyBranches = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7549);
+        var$2 = $rt_s(7550);
         var$3 = 6;
-        var$4 = $rt_s(7550);
+        var$4 = $rt_s(7551);
         $ptr = 7;
     case 7:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864260,9 +864329,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_WorldReligion = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7551);
+        var$2 = $rt_s(7552);
         var$3 = 7;
-        var$4 = $rt_s(7552);
+        var$4 = $rt_s(7553);
         $ptr = 8;
     case 8:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864271,9 +864340,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_WinDiplomaticVote = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7553);
+        var$2 = $rt_s(7554);
         var$3 = 8;
-        var$4 = $rt_s(7554);
+        var$4 = $rt_s(7555);
         $ptr = 9;
     case 9:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864282,9 +864351,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_ScoreAfterTimeOut = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7555);
+        var$2 = $rt_s(7556);
         var$3 = 9;
-        var$4 = $rt_s(7556);
+        var$4 = $rt_s(7557);
         $ptr = 10;
     case 10:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864293,9 +864362,9 @@ cumr_MilestoneType__clinit_ = () => {
         }
         cumr_MilestoneType_MoreCountableThanEachPlayer = var$1;
         var$1 = new cumr_MilestoneType;
-        var$2 = $rt_s(7557);
+        var$2 = $rt_s(7558);
         var$3 = 10;
-        var$4 = $rt_s(7558);
+        var$4 = $rt_s(7559);
         $ptr = 11;
     case 11:
         cumr_MilestoneType__init_(var$1, var$2, var$3, var$4);
@@ -864367,7 +864436,7 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$5 = $rt_s(7559);
+        var$5 = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, var$5);
@@ -864449,14 +864518,14 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
         $this.$cityStatsTable = $cityView;
         var$7 = new cuusc_CityScreenTileTable;
         $cityView = $this.$cityView;
-        var$5 = $rt_s(7560);
+        var$5 = $rt_s(7561);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullParameter($this, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7559);
+        var$5 = $rt_s(7560);
         $ptr = 11;
     case 11:
         kji_Intrinsics_checkNotNullParameter($cityView, var$5);
@@ -864467,9 +864536,9 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
         var$9 = $rt_nullCheck($cityView);
         var$10 = cuv_CityView_viewingCiv(var$9);
         var$11 = $this.$isSpying;
-        $cityView = $rt_s(7561);
+        $cityView = $rt_s(7562);
         var$12 = 2.0;
-        var$5 = $rt_s(7562);
+        var$5 = $rt_s(7563);
         var$13 = null;
         var$6 = 128;
         var$14 = null;
@@ -864491,7 +864560,7 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
         }
         $this.$selectedConstructionTable = $cityView;
         var$5 = new cuusc_CityScreenCityPickerTable;
-        $cityView = $rt_s(7560);
+        $cityView = $rt_s(7561);
         $ptr = 14;
     case 14:
         kji_Intrinsics_checkNotNullParameter($this, $cityView);
@@ -864506,7 +864575,7 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
         }
         var$5.$cityScreen3 = $this;
         $this.$cityPickerTable = var$5;
-        $cityView = $rt_s(7563);
+        $cityView = $rt_s(7564);
         var$5 = null;
         var$6 = 0;
         var$11 = 3;
@@ -864648,7 +864717,7 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
         cuua_SoundPlayer_$callClinit();
         $cityView = cuua_SoundPlayer_INSTANCE;
         $initSelectedConstruction = new cum_UncivSound;
-        $initSelectedTile = $rt_s(7564);
+        $initSelectedTile = $rt_s(7565);
         $ptr = 31;
         continue main;
     case 29:
@@ -864710,7 +864779,7 @@ cuusc_CityScreen__init_0 = ($this, $cityView, $initSelectedConstruction, $initSe
             break main;
         }
         $cityView = $tmp;
-        $initSelectedConstruction = $rt_s(7565);
+        $initSelectedConstruction = $rt_s(7566);
         $cityView = $rt_nullCheck($cityView);
         $ptr = 36;
     case 36:
@@ -865086,7 +865155,7 @@ cuusc_CityScreen_updateSync$Unciv_core = $this => {
             var$5 = cuu_Concurrency_INSTANCE;
             var$1 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$1);
-            jl_AbstractStringBuilder_append(var$1, $rt_s(7566));
+            jl_AbstractStringBuilder_append(var$1, $rt_s(7567));
             jl_AbstractStringBuilder_append(var$1, cuv_ForeignCityView_getName($rt_nullCheck(cuusc_CityConstructionsTable_getCityView(var$3))));
             $ptr = 2;
             continue main;
@@ -865159,7 +865228,7 @@ cuusc_CityScreen_updateSync$Unciv_core = $this => {
         var$5 = cuu_Concurrency_INSTANCE;
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7566));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7567));
         jl_AbstractStringBuilder_append(var$1, cuv_ForeignCityView_getName($rt_nullCheck(cuusc_CityConstructionsTable_getCityView(var$3))));
         $ptr = 2;
         continue main;
@@ -865458,7 +865527,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         }
         var$4 = new cuusc_CitizenManagementTable;
         var$3 = var$2.$cityScreen2;
-        var$6 = $rt_s(7560);
+        var$6 = $rt_s(7561);
         $ptr = 8;
     case 8:
         kji_Intrinsics_checkNotNullParameter(var$3, var$6);
@@ -865498,7 +865567,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         }
         var$6 = cuuci_KeyboardBinding_CitizenManagement;
         var$7 = new cuucw_ExpanderTab;
-        var$8 = $rt_s(7567);
+        var$8 = $rt_s(7568);
         var$9 = 18;
         var$10 = null;
         var$11 = 0;
@@ -865507,7 +865576,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         var$13 = 0.0;
         var$14 = 0.0;
         var$15 = 0.0;
-        var$16 = $rt_s(7568);
+        var$16 = $rt_s(7569);
         var$17 = new cuusc_CitizenManagementTable$asExpander$lambda$_3_0;
         var$17.$_0158 = var$4;
         var$18 = 500;
@@ -865560,7 +865629,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         if (!var$9) {
             var$4 = new cuusc_SpecialistAllocationTable;
             var$3 = var$2.$cityScreen2;
-            var$6 = $rt_s(7560);
+            var$6 = $rt_s(7561);
             $ptr = 21;
             continue main;
         }
@@ -865620,7 +865689,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         var$3.$_02098 = var$2;
         var$6 = cuuci_KeyboardBinding_SpecialistDetail;
         var$7 = new cuucw_ExpanderTab;
-        var$8 = $rt_s(7569);
+        var$8 = $rt_s(7570);
         var$9 = 18;
         var$10 = null;
         var$11 = 1;
@@ -865629,7 +865698,7 @@ cuusc_CityScreen_updateCityStats = $this => {
         var$13 = 0.0;
         var$14 = 0.0;
         var$15 = 0.0;
-        var$16 = $rt_s(7570);
+        var$16 = $rt_s(7571);
         var$17 = new cuusc_SpecialistAllocationTable$asExpander$lambda$_6_0;
         var$17.$_0789 = var$4;
         var$18 = 500;
@@ -865915,7 +865984,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
             $tileGroup = $this.$cityView;
             $$this$updateTileGroups_u24lambda_u241 = $tileGroup_0.$tileView;
             $tileGroup = $rt_nullCheck($tileGroup);
-            var$6 = $rt_s(7459);
+            var$6 = $rt_s(7460);
             $ptr = 16;
             continue main;
         }
@@ -866000,7 +866069,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
         var$4 = $tmp;
         if (var$4) {
             $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($this.$fireworks);
-            $tileGroup = $rt_s(7461);
+            $tileGroup = $rt_s(7462);
             $ptr = 20;
             continue main;
         }
@@ -866065,7 +866134,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
             var$9 = ($rt_nullCheck($rt_castToClass($$this$updateTileGroups_u24lambda_u241.$second, jl_Number))).$floatValue();
             $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($tileGroup);
             $$this$updateTileGroups_u24lambda_u241.$a = var$9;
-            $tileGroup = $rt_s(7571);
+            $tileGroup = $rt_s(7572);
             $ptr = 26;
             continue main;
         }
@@ -866110,7 +866179,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
         var$9 = ($rt_nullCheck($rt_castToClass($$this$updateTileGroups_u24lambda_u241.$second, jl_Number))).$floatValue();
         $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($tileGroup);
         $$this$updateTileGroups_u24lambda_u241.$a = var$9;
-        $tileGroup = $rt_s(7571);
+        $tileGroup = $rt_s(7572);
         $ptr = 26;
     case 26:
         kji_Intrinsics_checkNotNullExpressionValue($$this$updateTileGroups_u24lambda_u241, $tileGroup);
@@ -866163,7 +866232,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
             var$9 = ($rt_nullCheck($rt_castToClass($$this$updateTileGroups_u24lambda_u241.$second, jl_Number))).$floatValue();
             $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($tileGroup);
             $$this$updateTileGroups_u24lambda_u241.$a = var$9;
-            $tileGroup = $rt_s(7571);
+            $tileGroup = $rt_s(7572);
             $ptr = 26;
             continue main;
         }
@@ -866211,7 +866280,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
         var$9 = ($rt_nullCheck($rt_castToClass($$this$updateTileGroups_u24lambda_u241.$second, jl_Number))).$floatValue();
         $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($tileGroup);
         $$this$updateTileGroups_u24lambda_u241.$a = var$9;
-        $tileGroup = $rt_s(7571);
+        $tileGroup = $rt_s(7572);
         $ptr = 26;
         continue main;
     case 33:
@@ -866227,7 +866296,7 @@ cuusc_CityScreen_updateTileGroups = $this => {
         var$9 = ($rt_nullCheck($rt_castToClass($$this$updateTileGroups_u24lambda_u241.$second, jl_Number))).$floatValue();
         $$this$updateTileGroups_u24lambda_u241 = $rt_nullCheck($tileGroup);
         $$this$updateTileGroups_u24lambda_u241.$a = var$9;
-        $tileGroup = $rt_s(7571);
+        $tileGroup = $rt_s(7572);
         $ptr = 26;
         continue main;
     default: $rt_invalidPointer();
@@ -866251,7 +866320,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             break main;
         }
         if ($this.$isWLTKday && $this.$fireworks === null) {
-            $stopRazingCityButton = $rt_s(7572);
+            $stopRazingCityButton = $rt_s(7573);
             $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_0;
             $ptr = 4;
             continue main;
@@ -866274,7 +866343,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
         $canAnnex = $tmp;
         $canAnnex = $canAnnex ? 0 : 1;
         if (cuv_ForeignCityView_isPuppet($rt_nullCheck($this.$cityView)) && $canAnnex) {
-            $stopRazingCityButton = $rt_s(7573);
+            $stopRazingCityButton = $rt_s(7574);
             $razeCityButton = null;
             $canAnnex = 0;
             var$4 = 3;
@@ -866283,7 +866352,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             continue main;
         }
         if (!cuv_ForeignCityView_isBeingRazed($rt_nullCheck($this.$cityView))) {
-            $stopRazingCityButton = $rt_s(7574);
+            $stopRazingCityButton = $rt_s(7575);
             $razeCityButton = null;
             var$4 = 0;
             var$6 = 3;
@@ -866291,7 +866360,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             $ptr = 10;
             continue main;
         }
-        $razeCityButton = $rt_s(7575);
+        $razeCityButton = $rt_s(7576);
         $annexCityButton = null;
         $canAnnex = 0;
         var$4 = 3;
@@ -866303,7 +866372,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        $stopRazingCityButton = $rt_s(7576);
+        $stopRazingCityButton = $rt_s(7577);
         $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_1;
         $ptr = 5;
     case 5:
@@ -866442,7 +866511,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             break main;
         }
         if ($this.$isWLTKday && $this.$fireworks === null) {
-            $stopRazingCityButton = $rt_s(7577);
+            $stopRazingCityButton = $rt_s(7578);
             $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_3;
             $ptr = 34;
             continue main;
@@ -866486,7 +866555,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             break main;
         }
         if ($this.$isWLTKday && $this.$fireworks === null) {
-            $stopRazingCityButton = $rt_s(7577);
+            $stopRazingCityButton = $rt_s(7578);
             $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_3;
             $ptr = 34;
             continue main;
@@ -866508,7 +866577,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
             break main;
         }
         if ($this.$isWLTKday && $this.$fireworks === null) {
-            $stopRazingCityButton = $rt_s(7577);
+            $stopRazingCityButton = $rt_s(7578);
             $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_3;
             $ptr = 34;
             continue main;
@@ -866616,7 +866685,7 @@ cuusc_CityScreen_updateAnnexAndRazeCityButton = $this => {
         }
         $stopRazingCityButton = $tmp;
         cbgssu_Cell_padLeft($rt_nullCheck($stopRazingCityButton), 10.0);
-        $stopRazingCityButton = $rt_s(7572);
+        $stopRazingCityButton = $rt_s(7573);
         $razeCityButton = new cuusc_CityScreen$updateAnnexAndRazeCityButton$lambda$_21_4;
         $ptr = 35;
     case 35:
@@ -866995,7 +867064,7 @@ cuusc_CityScreen_tileWorkedIconOnClick = ($this, $tileGroup) => {
             $tileGroup = $this.$cityView;
             var$3 = $tileGroup_0.$tileView;
             $tileGroup = $rt_nullCheck($tileGroup);
-            $tileGroup_0 = $rt_s(7459);
+            $tileGroup_0 = $rt_s(7460);
             $ptr = 4;
             continue main;
         }
@@ -867038,14 +867107,14 @@ cuusc_CityScreen_tileWorkedIconOnClick = ($this, $tileGroup) => {
             $tileGroup = $this.$cityView;
             var$3 = $tileGroup_0.$tileView;
             $tileGroup = $rt_nullCheck($tileGroup);
-            $tileGroup_0 = $rt_s(7459);
+            $tileGroup_0 = $rt_s(7460);
             $ptr = 9;
             continue main;
         }
         $tileGroup = $this.$cityView;
         var$3 = $tileGroup_0.$tileView;
         $tileGroup = $rt_nullCheck($tileGroup);
-        $tileGroup_0 = $rt_s(7459);
+        $tileGroup_0 = $rt_s(7460);
         $ptr = 4;
         continue main;
     case 7:
@@ -867117,7 +867186,7 @@ cuusc_CityScreen_tileWorkedIconOnClick = ($this, $tileGroup) => {
             break main;
         }
         $tileGroup = $tmp;
-        $tileGroup_0 = $rt_s(7578);
+        $tileGroup_0 = $rt_s(7579);
         $tileGroup = $rt_nullCheck($tileGroup);
         $ptr = 16;
     case 16:
@@ -867141,7 +867210,7 @@ cuusc_CityScreen_askToBuyTile$Unciv_core = ($this, $selectedTile) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7579);
+        var$2 = $rt_s(7580);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($selectedTile, var$2);
@@ -867206,9 +867275,9 @@ cuusc_CityScreen_askToBuyTile$Unciv_core = ($this, $selectedTile) => {
         jl_AbstractStringBuilder__init_(var$7);
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_AbstractStringBuilder_append(var$4, $rt_s(7580));
-        jl_AbstractStringBuilder_append1(var$4, cuv_ForeignCivView_getGold($rt_nullCheck(cuv_CityView_viewingCiv($rt_nullCheck($this.$cityView)))));
         jl_AbstractStringBuilder_append(var$4, $rt_s(7581));
+        jl_AbstractStringBuilder_append1(var$4, cuv_ForeignCivView_getGold($rt_nullCheck(cuv_CityView_viewingCiv($rt_nullCheck($this.$cityView)))));
+        jl_AbstractStringBuilder_append(var$4, $rt_s(7582));
         $ptr = 7;
     case 7:
         $tmp = jl_AbstractStringBuilder_toString(var$4);
@@ -867228,14 +867297,14 @@ cuusc_CityScreen_askToBuyTile$Unciv_core = ($this, $selectedTile) => {
         }
         var$2 = $tmp;
         jl_AbstractStringBuilder_append(var$7, var$2);
-        jl_AbstractStringBuilder_append(var$7, $rt_s(7582));
+        jl_AbstractStringBuilder_append(var$7, $rt_s(7583));
         var$2 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$2);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(7583));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(7584));
         jl_AbstractStringBuilder_append1(var$2, $goldCostOfTile);
         jl_AbstractStringBuilder_append(var$2, $rt_s(100));
         jl_AbstractStringBuilder_append0(var$2, ($rt_nullCheck(cums_Stat_Gold)).$character);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(7585));
         $ptr = 9;
     case 9:
         $tmp = jl_AbstractStringBuilder_toString(var$2);
@@ -867263,7 +867332,7 @@ cuusc_CityScreen_askToBuyTile$Unciv_core = ($this, $selectedTile) => {
         }
         $purchasePrompt = $tmp;
         var$2 = new cuup_ConfirmPopup;
-        var$4 = $rt_s(7585);
+        var$4 = $rt_s(7586);
         $goldCostOfTile = 1;
         var$7 = new cuusc_CityScreen$askToBuyTile$Unciv_core$lambda$_25_0;
         var$7.$_01152 = $this;
@@ -867366,7 +867435,7 @@ cuusc_CityScreen_tileGroupOnClick = ($this, $tileGroup) => {
         if ($rt_suspending()) {
             break main;
         }
-        $improvement = $rt_s(7459);
+        $improvement = $rt_s(7460);
         $ptr = 7;
     case 7:
         kji_Intrinsics_checkNotNullParameter($tileInfo, $improvement);
@@ -867525,7 +867594,7 @@ cuusc_CityScreen_selectConstruction = ($this, $newConstruction) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $improvement = $rt_s(7586);
+        $improvement = $rt_s(7587);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($newConstruction, $improvement);
@@ -867659,7 +867728,7 @@ cuusc_CityScreen_startPickTileForCreatesOneImprovement = ($this, $construction, 
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7587);
+        var$6 = $rt_s(7588);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter($stat, var$6);
@@ -867680,7 +867749,7 @@ cuusc_CityScreen_startPickTileForCreatesOneImprovement = ($this, $construction, 
         $stat = new cuup_ToastPopup;
         $construction = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($construction);
-        jl_AbstractStringBuilder_append($construction, $rt_s(7588));
+        jl_AbstractStringBuilder_append($construction, $rt_s(7589));
         $improvement = $rt_nullCheck($improvement);
         $ptr = 8;
     case 8:
@@ -868281,7 +868350,7 @@ let culac_ConstructionAutomation$ConstructionChoice_toString = $this => {
     case 0:
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7589));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7590));
         var$2 = $this.$choice;
         $ptr = 1;
     case 1:
@@ -868291,11 +868360,11 @@ let culac_ConstructionAutomation$ConstructionChoice_toString = $this => {
         }
         var$1 = $tmp;
         var$1 = $rt_nullCheck(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7590));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7591));
         var$3 = $rt_nullCheck(jl_StringBuilder_append4(var$1, $this.$choiceModifier));
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7591));
-        jl_AbstractStringBuilder_append1(var$3, $this.$remainingWork);
         jl_AbstractStringBuilder_append(var$3, $rt_s(7592));
+        jl_AbstractStringBuilder_append1(var$3, $this.$remainingWork);
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7593));
         jl_AbstractStringBuilder_append1(var$3, $this.$production0);
         jl_AbstractStringBuilder_append0(var$3, 41);
         $ptr = 2;
@@ -868379,7 +868448,7 @@ let cuv_GameView__init_0 = ($this, $gameInfo, $viewer, $spectatorMode) => {
         if ($rt_suspending()) {
             break main;
         }
-        $gameInfo_0 = $rt_s(7593);
+        $gameInfo_0 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, $gameInfo_0);
@@ -868522,14 +868591,14 @@ cuv_GameView_getCityView = ($this, $city) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($this, var$5);
@@ -868633,14 +868702,14 @@ cuv_GameView_getMapUnitView = ($this, $unit) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($this, var$5);
@@ -869029,7 +869098,7 @@ culmt_TileHistory$TileHistoryState$CityCenterType__clinit_ = () => {
         }
         culmt_TileHistory$TileHistoryState$CityCenterType_None = var$1;
         var$1 = new culmt_TileHistory$TileHistoryState$CityCenterType;
-        var$2 = $rt_s(7595);
+        var$2 = $rt_s(7596);
         var$3 = 1;
         var$4 = $rt_s(2438);
         $ptr = 2;
@@ -869450,7 +869519,7 @@ cumrue_Node$FunctionCall_toString = $this => {
     case 0:
         var$1 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$1);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7596));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7597));
         jl_AbstractStringBuilder_append(var$1, ($rt_nullCheck($this.$function0)).$symbol);
         jl_AbstractStringBuilder_append0(var$1, 40);
         var$2 = $this.$arguments0;
@@ -869470,7 +869539,7 @@ cumrue_Node$FunctionCall_toString = $this => {
         }
         var$4 = $tmp;
         jl_AbstractStringBuilder_append(var$1, var$4);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7597));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7598));
         $ptr = 2;
     case 2:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -869613,7 +869682,7 @@ cuuci_ActivationActionMap$ActivationActionList_listIterator = $this => {
             break main;
         }
         var$2 = $tmp;
-        var$1 = $rt_s(7598);
+        var$1 = $rt_s(7599);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -869757,7 +869826,7 @@ cuuci_ActivationActionMap$ActivationActionList_set = ($this, $index, $element) =
             break main;
         }
         $element = $tmp;
-        var$3 = $rt_s(7599);
+        var$3 = $rt_s(7600);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullExpressionValue($element, var$3);
@@ -869987,7 +870056,7 @@ cuui_PortraitResource_getCircleImage = $this => {
             break main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7600);
+        var$2 = $rt_s(7601);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -870046,7 +870115,7 @@ cuui_PortraitResource_getDefaultInnerBackgroundTint = $this => {
             break main;
         }
         var$2 = $tmp;
-        var$1 = $rt_s(7601);
+        var$1 = $rt_s(7602);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -870217,7 +870286,7 @@ cuui_Portrait$Type__clinit_ = () => {
         var$1 = new cuui_Portrait$Type;
         var$2 = $rt_s(4604);
         var$3 = 5;
-        var$4 = $rt_s(7602);
+        var$4 = $rt_s(7603);
         $ptr = 6;
     case 6:
         cuui_Portrait$Type__init_(var$1, var$2, var$3, var$4);
@@ -870226,9 +870295,9 @@ cuui_Portrait$Type__clinit_ = () => {
         }
         cuui_Portrait$Type_Promotion = var$1;
         var$1 = new cuui_Portrait$Type;
-        var$2 = $rt_s(7603);
+        var$2 = $rt_s(7604);
         var$3 = 6;
-        var$4 = $rt_s(7603);
+        var$4 = $rt_s(7604);
         $ptr = 7;
     case 7:
         cuui_Portrait$Type__init_(var$1, var$2, var$3, var$4);
@@ -870313,7 +870382,7 @@ cuui_PortraitImprovement_getCircleImage = $this => {
             break main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7604);
+        var$2 = $rt_s(7605);
         var$3 = null;
         var$4 = 2;
         var$5 = null;
@@ -870977,7 +871046,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_7_invoke = (var$0, var$1, var$
                 continue main;
             }
             var$1 = cuui_ImageGetter_INSTANCE;
-            var$2 = $rt_s(7605);
+            var$2 = $rt_s(7606);
             var$4 = null;
             var$5 = 2;
             var$6 = null;
@@ -871012,7 +871081,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_7_invoke = (var$0, var$1, var$
                 continue main;
             }
             var$1 = cuui_ImageGetter_INSTANCE;
-            var$2 = $rt_s(7605);
+            var$2 = $rt_s(7606);
             var$4 = null;
             var$5 = 2;
             var$6 = null;
@@ -871035,7 +871104,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_7_invoke = (var$0, var$1, var$
             continue main;
         }
         var$1 = cuui_ImageGetter_INSTANCE;
-        var$2 = $rt_s(7605);
+        var$2 = $rt_s(7606);
         var$4 = null;
         var$5 = 2;
         var$6 = null;
@@ -871209,7 +871278,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_10_invoke = (var$0, var$1, var
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7606);
+        var$5 = $rt_s(7607);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$4, var$5);
@@ -871218,7 +871287,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_10_invoke = (var$0, var$1, var
         }
         var$5 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$5);
-        jl_AbstractStringBuilder_append(var$5, $rt_s(7607));
+        jl_AbstractStringBuilder_append(var$5, $rt_s(7608));
         jl_AbstractStringBuilder_append(var$5, var$1);
         $ptr = 5;
     case 5:
@@ -871237,7 +871306,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_10_invoke = (var$0, var$1, var
         if (var$6) {
             var$4 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$4);
-            jl_AbstractStringBuilder_append(var$4, $rt_s(7607));
+            jl_AbstractStringBuilder_append(var$4, $rt_s(7608));
             jl_AbstractStringBuilder_append(var$4, var$1);
             $ptr = 10;
             continue main;
@@ -871344,7 +871413,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_11_invoke = (var$0, var$1, var
             if (var$2 !== null) {
                 var$6 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$6);
-                jl_AbstractStringBuilder_append(var$6, $rt_s(7608));
+                jl_AbstractStringBuilder_append(var$6, $rt_s(7609));
                 jl_AbstractStringBuilder_append(var$6, var$2.$name2);
                 $ptr = 9;
                 continue main;
@@ -871366,7 +871435,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_11_invoke = (var$0, var$1, var
         var$6 = $rt_castToClass(var$2, cumru_UnitMovementType);
         var$7 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$7);
-        jl_AbstractStringBuilder_append(var$7, $rt_s(7609));
+        jl_AbstractStringBuilder_append(var$7, $rt_s(7610));
         jl_AbstractStringBuilder_append(var$7, ($rt_nullCheck(var$6)).$name2);
         jl_AbstractStringBuilder_append0(var$7, 93);
         $ptr = 6;
@@ -871388,7 +871457,7 @@ cuusc_CivilopediaImageGetters$_clinit_$lambda$_28_11_invoke = (var$0, var$1, var
             if (var$2 !== null) {
                 var$6 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$6);
-                jl_AbstractStringBuilder_append(var$6, $rt_s(7608));
+                jl_AbstractStringBuilder_append(var$6, $rt_s(7609));
                 jl_AbstractStringBuilder_append(var$6, var$2.$name2);
                 $ptr = 9;
                 continue main;
@@ -871486,7 +871555,7 @@ let cuuctl_TileLayer__init_ = ($this, $tileGroup, $size) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7461);
+        var$3 = $rt_s(7462);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileGroup, var$3);
@@ -871759,7 +871828,7 @@ cuuctl_TileLayer_setHexagonSize$default = (var$1, var$2, var$3, var$4, var$5, va
             continue main;
         }
         var$1 = new jl_UnsupportedOperationException;
-        var$2 = $rt_s(7610);
+        var$2 = $rt_s(7611);
         $ptr = 1;
     case 1:
         jl_Throwable__init_(var$1, var$2);
@@ -871976,6 +872045,7 @@ function cuuctl_TileLayerTerrain() {
     let a = this; cuuctl_TileLayer.call(a);
     a.$tileBaseImages = null;
     a.$tileImageIdentifiers = null;
+    a.$tileImageOwnerKey = null;
     a.$bottomRightRiverImage = null;
     a.$bottomRiverImage = null;
     a.$bottomLeftRiverImage = null;
@@ -872262,7 +872332,7 @@ cuuctl_TileLayerTerrain_usePillagedImprovementImage = ($this, $tileView) => {
         $tileView_0 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($tileView_0);
         jl_AbstractStringBuilder_append($tileView_0, $shownImprovement);
-        jl_AbstractStringBuilder_append($tileView_0, $rt_s(7611));
+        jl_AbstractStringBuilder_append($tileView_0, $rt_s(7612));
         $ptr = 6;
     case 6:
         $tmp = jl_AbstractStringBuilder_toString($tileView_0);
@@ -872854,12 +872924,12 @@ cuuctl_TileLayerTerrain_getTileBaseImageLocations = ($this, $viewingCiv) => {
     $rt_nativeThread().push($this, $viewingCiv, $shownImprovement, $isForceVisible, $tileView, $viewableResource, $resourceAndImprovementSequence, $$this$map$iv, var$8, $terrainImages, $edgeImages, $baseHexagon, var$12, $allTogether, $allTogetherLocation, $destination$iv$iv, var$16, $it, $ptr);
 },
 cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
-    let $tileBaseImageLocations, $tileBaseImageLocations_0, $mapInsertIdx, $ownedInsertIdx, $$this$all$iv, $element$iv, $i, $imageLocation, $scale, $index$iv, $baseLocation, $locationToCheck, $existingImages, $image, var$16, var$17, $tileVariant, $it, $finalLocation, $ptr, $tmp;
+    let $tileBaseImageLocations, $ownerKey, $it, $mapInsertIdx, $ownedInsertIdx, $it_0, $$this$all$iv, $element$iv, $i, $imageLocation, $baseLocation, $locationToCheck, $existingImages, $tileVariant, $index$iv, $finalLocation, $image, $scale, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$finalLocation = $thread.pop();$it = $thread.pop();$tileVariant = $thread.pop();var$17 = $thread.pop();var$16 = $thread.pop();$image = $thread.pop();$existingImages = $thread.pop();$locationToCheck = $thread.pop();$baseLocation = $thread.pop();$index$iv = $thread.pop();$scale = $thread.pop();$imageLocation = $thread.pop();$i = $thread.pop();$element$iv = $thread.pop();$$this$all$iv = $thread.pop();$ownedInsertIdx = $thread.pop();$mapInsertIdx = $thread.pop();$tileBaseImageLocations_0
-        = $thread.pop();$tileBaseImageLocations = $thread.pop();$viewingCiv = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();$scale = $thread.pop();$image = $thread.pop();$finalLocation = $thread.pop();$index$iv = $thread.pop();$tileVariant = $thread.pop();$existingImages = $thread.pop();$locationToCheck = $thread.pop();$baseLocation = $thread.pop();$imageLocation = $thread.pop();$i = $thread.pop();$element$iv = $thread.pop();$$this$all$iv = $thread.pop();$it_0 = $thread.pop();$ownedInsertIdx = $thread.pop();$mapInsertIdx = $thread.pop();$it = $thread.pop();$ownerKey = $thread.pop();$tileBaseImageLocations
+        = $thread.pop();$viewingCiv = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -872870,38 +872940,116 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
             break main;
         }
         $tileBaseImageLocations = $tmp;
-        $tileBaseImageLocations_0 = $rt_nullCheck($tileBaseImageLocations);
+        $viewingCiv = $rt_nullCheck(($rt_nullCheck($this.$tileGroup)).$tileView);
         $ptr = 2;
     case 2:
-        $tmp = $tileBaseImageLocations_0.$size();
+        $tmp = cuv_TileView_owningCity($viewingCiv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $viewingCiv = $tmp;
+        if ($viewingCiv !== null) {
+            $viewingCiv = $rt_nullCheck(($rt_nullCheck($this.$tileGroup)).$tileView);
+            $ptr = 3;
+            continue main;
+        }
+        $ownerKey = null;
+        $viewingCiv = $this.$tileImageOwnerKey;
+        $ptr = 7;
+        continue main;
+    case 3:
+        $tmp = cuv_TileView_getOwner($viewingCiv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $it = $tmp;
+        if ($it !== null) {
+            $viewingCiv = jl_StringBuilder__init_();
+            $ownerKey = $rt_nullCheck(cuv_ForeignCivView_getEra($it));
+            $ptr = 4;
+            continue main;
+        }
+        $ownerKey = null;
+        $viewingCiv = $this.$tileImageOwnerKey;
+        $ptr = 7;
+        continue main;
+    case 4:
+        $tmp = cumr_RulesetObject_getName($ownerKey);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ownerKey = $tmp;
+        $viewingCiv = jl_StringBuilder_append1($rt_nullCheck(jl_StringBuilder_append($viewingCiv, $ownerKey)), 47);
+        $ptr = 5;
+    case 5:
+        $tmp = cuv_ForeignCivView_getStyleOrCivName($it);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $it = $tmp;
+        $viewingCiv = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($viewingCiv), $it));
+        $ptr = 6;
+    case 6:
+        $tmp = jl_StringBuilder_toString($viewingCiv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ownerKey = $tmp;
+        $viewingCiv = $this.$tileImageOwnerKey;
+        $ptr = 7;
+    case 7:
+        $tmp = kji_Intrinsics_areEqual($ownerKey, $viewingCiv);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $mapInsertIdx = $tmp;
+        if (!$mapInsertIdx) {
+            $this.$tileImageIdentifiers = $tileBaseImageLocations;
+            $this.$tileImageOwnerKey = $ownerKey;
+            if ($this.$parentMapLayer === null) {
+                $mapInsertIdx = (-1);
+                $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
+                $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
+                $ptr = 18;
+                continue main;
+            }
+            $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
+            $ptr = 11;
+            continue main;
+        }
+        $tileBaseImageLocations = $rt_nullCheck($tileBaseImageLocations);
+        $ptr = 8;
+    case 8:
+        $tmp = $tileBaseImageLocations.$size();
         if ($rt_suspending()) {
             break main;
         }
         $mapInsertIdx = $tmp;
         $viewingCiv = $rt_nullCheck($this.$tileImageIdentifiers);
-        $ptr = 3;
-    case 3:
+        $ptr = 9;
+    case 9:
         $tmp = $viewingCiv.$size();
         if ($rt_suspending()) {
             break main;
         }
-        $ownedInsertIdx = $tmp;
-        if ($mapInsertIdx != $ownedInsertIdx) {
-            $this.$tileImageIdentifiers = $tileBaseImageLocations_0;
+        $it_0 = $tmp;
+        if ($mapInsertIdx != $it_0) {
+            $this.$tileImageIdentifiers = $tileBaseImageLocations;
+            $this.$tileImageOwnerKey = $ownerKey;
             if ($this.$parentMapLayer === null) {
                 $mapInsertIdx = (-1);
                 $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
                 $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                $ptr = 12;
+                $ptr = 18;
                 continue main;
             }
             $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-            $ptr = 5;
+            $ptr = 11;
             continue main;
         }
-        $viewingCiv = $tileBaseImageLocations_0;
-        $ptr = 4;
-    case 4:
+        $viewingCiv = $tileBaseImageLocations;
+        $ptr = 10;
+    case 10:
         $tmp = kc_CollectionsKt___CollectionsKt_withIndex($viewingCiv);
         if ($rt_suspending()) {
             break main;
@@ -872909,13 +873057,13 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $$this$all$iv = $tmp;
         if ($rt_isInstance($$this$all$iv, ju_Collection)) {
             $viewingCiv = $rt_nullCheck($rt_castToInterface($$this$all$iv, ju_Collection));
-            $ptr = 7;
+            $ptr = 13;
             continue main;
         }
         $viewingCiv = $rt_nullCheck($$this$all$iv);
-        $ptr = 6;
+        $ptr = 12;
         continue main;
-    case 5:
+    case 11:
         $tmp = ju_AbstractCollection_isEmpty($viewingCiv);
         if ($rt_suspending()) {
             break main;
@@ -872925,22 +873073,22 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
             $mapInsertIdx = (-1);
             $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
             $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-            $ptr = 12;
+            $ptr = 18;
             continue main;
         }
         $viewingCiv = $this.$parentMapLayer;
-        $ptr = 14;
+        $ptr = 20;
         continue main;
-    case 6:
+    case 12:
         $tmp = kc_IndexingIterable_iterator($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
-        $tileBaseImageLocations = $rt_nullCheck($viewingCiv);
-        $ptr = 8;
+        $it = $rt_nullCheck($viewingCiv);
+        $ptr = 14;
         continue main;
-    case 7:
+    case 13:
         $tmp = $viewingCiv.$isEmpty();
         if ($rt_suspending()) {
             break main;
@@ -872948,48 +873096,50 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $mapInsertIdx = $tmp;
         if ($mapInsertIdx) {
             if (!1) {
-                $this.$tileImageIdentifiers = $tileBaseImageLocations_0;
+                $this.$tileImageIdentifiers = $tileBaseImageLocations;
+                $this.$tileImageOwnerKey = $ownerKey;
                 if ($this.$parentMapLayer === null) {
                     $mapInsertIdx = (-1);
                     $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
                     $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                    $ptr = 12;
+                    $ptr = 18;
                     continue main;
                 }
                 $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                $ptr = 5;
+                $ptr = 11;
                 continue main;
             }
             return;
         }
         $viewingCiv = $rt_nullCheck($$this$all$iv);
-        $ptr = 6;
+        $ptr = 12;
         continue main;
-    case 8:
-        $tmp = kc_IndexingIterator_hasNext($tileBaseImageLocations);
+    case 14:
+        $tmp = kc_IndexingIterator_hasNext($it);
         if ($rt_suspending()) {
             break main;
         }
         $mapInsertIdx = $tmp;
         if (!$mapInsertIdx) {
             if (!1) {
-                $this.$tileImageIdentifiers = $tileBaseImageLocations_0;
+                $this.$tileImageIdentifiers = $tileBaseImageLocations;
+                $this.$tileImageOwnerKey = $ownerKey;
                 if ($this.$parentMapLayer === null) {
                     $mapInsertIdx = (-1);
                     $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
                     $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                    $ptr = 12;
+                    $ptr = 18;
                     continue main;
                 }
                 $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                $ptr = 5;
+                $ptr = 11;
                 continue main;
             }
             return;
         }
-        $ptr = 9;
-    case 9:
-        $tmp = kc_IndexingIterator_next($tileBaseImageLocations);
+        $ptr = 15;
+    case 15:
+        $tmp = kc_IndexingIterator_next($it);
         if ($rt_suspending()) {
             break main;
         }
@@ -872998,15 +873148,15 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $i = kc_IndexedValue_component1($viewingCiv);
         $imageLocation = $rt_castToClass(kc_IndexedValue_component2($viewingCiv), jl_String);
         $viewingCiv = $rt_nullCheck($this.$tileImageIdentifiers);
-        $ptr = 10;
-    case 10:
+        $ptr = 16;
+    case 16:
         $tmp = $viewingCiv.$get3($i);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
-        $ptr = 11;
-    case 11:
+        $ptr = 17;
+    case 17:
         $tmp = kji_Intrinsics_areEqual($viewingCiv, $imageLocation);
         if ($rt_suspending()) {
             break main;
@@ -873014,162 +873164,164 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $mapInsertIdx = $tmp;
         if (!$mapInsertIdx) {
             if (!0) {
-                $this.$tileImageIdentifiers = $tileBaseImageLocations_0;
+                $this.$tileImageIdentifiers = $tileBaseImageLocations;
+                $this.$tileImageOwnerKey = $ownerKey;
                 if ($this.$parentMapLayer === null) {
                     $mapInsertIdx = (-1);
                     $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
                     $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                    $ptr = 12;
+                    $ptr = 18;
                     continue main;
                 }
                 $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-                $ptr = 5;
+                $ptr = 11;
                 continue main;
             }
             return;
         }
-        $ptr = 8;
+        $ptr = 14;
         continue main;
-    case 12:
+    case 18:
         $tmp = ju_AbstractList_iterator($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
-        $tileBaseImageLocations = $rt_s(293);
-        $ptr = 13;
-    case 13:
-        kji_Intrinsics_checkNotNullExpressionValue($viewingCiv, $tileBaseImageLocations);
+        $it = $rt_s(293);
+        $ptr = 19;
+    case 19:
+        kji_Intrinsics_checkNotNullExpressionValue($viewingCiv, $it);
         if ($rt_suspending()) {
             break main;
         }
-        $scale = $rt_nullCheck($viewingCiv);
-        $ptr = 18;
+        $ownerKey = $rt_nullCheck($viewingCiv);
+        $ptr = 24;
         continue main;
-    case 14:
+    case 20:
         kji_Intrinsics_checkNotNull($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $tileBaseImageLocations = ($rt_nullCheck($viewingCiv)).$children;
+        $it = ($rt_nullCheck($viewingCiv)).$children;
         $viewingCiv = $rt_s(1465);
-        $ptr = 15;
-    case 15:
-        kji_Intrinsics_checkNotNullExpressionValue($tileBaseImageLocations, $viewingCiv);
+        $ptr = 21;
+    case 21:
+        kji_Intrinsics_checkNotNullExpressionValue($it, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $viewingCiv = $tileBaseImageLocations;
-        $tileBaseImageLocations = $this.$tileBaseImages;
-        $ptr = 16;
-    case 16:
-        $tmp = kc_CollectionsKt___CollectionsKt_first($tileBaseImageLocations);
+        $viewingCiv = $it;
+        $it = $this.$tileBaseImages;
+        $ptr = 22;
+    case 22:
+        $tmp = kc_CollectionsKt___CollectionsKt_first($it);
         if ($rt_suspending()) {
             break main;
         }
-        $tileBaseImageLocations = $tmp;
-        $ptr = 17;
-    case 17:
-        $tmp = kc_CollectionsKt___CollectionsKt_indexOf($viewingCiv, $tileBaseImageLocations);
+        $it = $tmp;
+        $ptr = 23;
+    case 23:
+        $tmp = kc_CollectionsKt___CollectionsKt_indexOf($viewingCiv, $it);
         if ($rt_suspending()) {
             break main;
         }
         $mapInsertIdx = $tmp;
         $ownedInsertIdx = $mapInsertIdx < 0 ? (-1) : 0;
         $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-        $ptr = 12;
+        $ptr = 18;
         continue main;
-    case 18:
-        $tmp = ju_AbstractList$1_hasNext($scale);
+    case 24:
+        $tmp = ju_AbstractList$1_hasNext($ownerKey);
         if ($rt_suspending()) {
             break main;
         }
-        $index$iv = $tmp;
-        if (!$index$iv) {
+        $it_0 = $tmp;
+        if (!$it_0) {
             $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-            $ptr = 19;
+            $ptr = 25;
             continue main;
         }
-        $ptr = 21;
+        $ptr = 27;
         continue main;
-    case 19:
+    case 25:
         ju_ArrayList_clear($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 20;
-    case 20:
-        $tmp = $tileBaseImageLocations_0.$iterator();
+        $tileBaseImageLocations = $rt_nullCheck($tileBaseImageLocations);
+        $ptr = 26;
+    case 26:
+        $tmp = $tileBaseImageLocations.$iterator();
         if ($rt_suspending()) {
             break main;
         }
-        $tileBaseImageLocations_0 = $tmp;
-        $tileBaseImageLocations_0 = $rt_nullCheck($tileBaseImageLocations_0);
-        $ptr = 24;
+        $it = $tmp;
+        $it = $rt_nullCheck($it);
+        $ptr = 30;
         continue main;
-    case 21:
-        $tmp = ju_AbstractList$1_next($scale);
+    case 27:
+        $tmp = ju_AbstractList$1_next($ownerKey);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
-        $tileBaseImageLocations = $rt_s(294);
-        $ptr = 22;
-    case 22:
-        kji_Intrinsics_checkNotNullExpressionValue($viewingCiv, $tileBaseImageLocations);
+        $it = $rt_s(294);
+        $ptr = 28;
+    case 28:
+        kji_Intrinsics_checkNotNullExpressionValue($viewingCiv, $it);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $rt_castToClass($viewingCiv, cbgssu_Image);
-        $ptr = 23;
-    case 23:
+        $ptr = 29;
+    case 29:
         cuuctl_TileLayer_removeOwnedActor($this, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $ptr = 18;
+        $ptr = 24;
         continue main;
-    case 24:
-        $tmp = $tileBaseImageLocations_0.$hasNext();
+    case 30:
+        $tmp = $it.$hasNext();
         if ($rt_suspending()) {
             break main;
         }
-        $index$iv = $tmp;
-        if ($index$iv) {
-            $ptr = 25;
+        $it_0 = $tmp;
+        if ($it_0) {
+            $ptr = 31;
             continue main;
         }
         return;
-    case 25:
-        $tmp = $tileBaseImageLocations_0.$next();
+    case 31:
+        $tmp = $it.$next();
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
         $baseLocation = $rt_castToClass($viewingCiv, jl_String);
-        $ptr = 26;
-    case 26:
+        $ptr = 32;
+    case 32:
         cuui_ImageGetter_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $rt_nullCheck(cuui_ImageGetter_INSTANCE);
-        $ptr = 27;
-    case 27:
+        $ptr = 33;
+    case 33:
         $tmp = cuui_ImageGetter_imageExists($viewingCiv, $baseLocation);
         if ($rt_suspending()) {
             break main;
         }
-        $index$iv = $tmp;
-        if ($index$iv) {
+        $it_0 = $tmp;
+        if ($it_0) {
             $viewingCiv = $rt_nullCheck(($rt_nullCheck($this.$tileGroup)).$tileView);
-            $ptr = 28;
+            $ptr = 34;
             continue main;
         }
-        $tileBaseImageLocations_0 = $rt_nullCheck($tileBaseImageLocations_0);
-        $ptr = 24;
+        $it = $rt_nullCheck($it);
+        $ptr = 30;
         continue main;
-    case 28:
+    case 34:
         $tmp = cuv_TileView_owningCity($viewingCiv);
         if ($rt_suspending()) {
             break main;
@@ -873178,145 +873330,89 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         if ($viewingCiv !== null) {
             $tileBaseImageLocations = $this.$strings;
             $viewingCiv = $rt_nullCheck(($rt_nullCheck($this.$tileGroup)).$tileView);
-            $ptr = 29;
+            $ptr = 35;
             continue main;
         }
         $locationToCheck = $baseLocation;
         $existingImages = ju_ArrayList__init_();
-        $ptr = 36;
+        $ptr = 38;
         continue main;
-    case 29:
+    case 35:
         $tmp = cuv_TileView_getOwner($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $image = $tmp;
-        $ptr = 30;
-    case 30:
-        kji_Intrinsics_checkNotNull($image);
+        $ownerKey = $tmp;
+        $ptr = 36;
+    case 36:
+        kji_Intrinsics_checkNotNull($ownerKey);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $rt_nullCheck($tileBaseImageLocations);
-        $tileBaseImageLocations = $rt_s(7612);
-        $ptr = 31;
-    case 31:
-        kji_Intrinsics_checkNotNullParameter($baseLocation, $tileBaseImageLocations);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tileBaseImageLocations = $rt_s(4885);
-        $ptr = 32;
-    case 32:
-        kji_Intrinsics_checkNotNullParameter($image, $tileBaseImageLocations);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$16 = $rt_createArray(jl_String, 5);
-        var$17 = var$16.data;
-        var$17[0] = $baseLocation;
-        var$17[1] = $viewingCiv.$tag;
-        $scale = $rt_nullCheck($image);
-        var$17[2] = ($rt_nullCheck(cuv_ForeignCivView_getEra($scale))).$name1;
-        var$17[3] = $viewingCiv.$tag;
-        $index$iv = 4;
-        $ptr = 33;
-    case 33:
-        $tmp = cuv_ForeignCivView_getStyleOrCivName($scale);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tileBaseImageLocations = $tmp;
-        var$17[$index$iv] = $tileBaseImageLocations;
-        $ptr = 34;
-    case 34:
-        $tmp = cuuct_TileSetStrings_getString($viewingCiv, var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tileBaseImageLocations = $tmp;
-        $image = $rt_nullCheck($viewingCiv.$imageParamsToImageLocation);
-        $ptr = 35;
-    case 35:
-        $tmp = ju_HashMap_get($image, $tileBaseImageLocations);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $image = $tmp;
-        $locationToCheck = $rt_castToClass($image, jl_String);
-        if ($locationToCheck !== null) {
-            $existingImages = ju_ArrayList__init_();
-            $ptr = 36;
-            continue main;
-        }
         $ptr = 37;
-        continue main;
-    case 36:
+    case 37:
+        $tmp = cuuct_TileSetStrings_getOwnedTileImageLocation($viewingCiv, $baseLocation, $ownerKey);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $locationToCheck = $tmp;
+        $existingImages = ju_ArrayList__init_();
+        $ptr = 38;
+    case 38:
         ju_ArrayList_add($existingImages, $locationToCheck);
         if ($rt_suspending()) {
             break main;
         }
         $i = 2;
         $viewingCiv = $rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $locationToCheck)), $i));
-        $ptr = 38;
-        continue main;
-    case 37:
-        $tmp = cuuct_TileSetStrings_tryGetOwnedTileImageLocation($viewingCiv, $baseLocation, $scale);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $locationToCheck = $tmp;
-        if ($locationToCheck === null)
-            $locationToCheck = $baseLocation;
-        $viewingCiv = $rt_nullCheck($viewingCiv.$imageParamsToImageLocation);
-        $ptr = 48;
-        continue main;
-    case 38:
+        $ptr = 39;
+    case 39:
         $tmp = jl_StringBuilder_toString($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $tileVariant = $tmp;
         $viewingCiv = $rt_nullCheck(cuui_ImageGetter_INSTANCE);
-        $ptr = 39;
-    case 39:
+        $ptr = 40;
+    case 40:
         $tmp = cuui_ImageGetter_imageExists($viewingCiv, $tileVariant);
         if ($rt_suspending()) {
             break main;
         }
-        $index$iv = $tmp;
-        if (!$index$iv) {
+        $it_0 = $tmp;
+        if (!$it_0) {
             $tileBaseImageLocations = $existingImages;
             $viewingCiv = $rt_nullCheck(cuv_TileView_position($rt_nullCheck(cuuct_TileGroup_getTileView($rt_nullCheck(cuuctl_TileLayer_getTileGroup($this))))));
-            $ptr = 40;
+            $ptr = 41;
             continue main;
         }
-        $ptr = 47;
+        $ptr = 48;
         continue main;
-    case 40:
+    case 41:
         $tmp = culm_HexCoord_hashCode($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $index$iv = $tmp;
         $locationToCheck = $rt_nullCheck($locationToCheck);
-        $ptr = 41;
-    case 41:
+        $ptr = 42;
+    case 42:
         $tmp = jl_String_hashCode($locationToCheck);
         if ($rt_suspending()) {
             break main;
         }
-        $it = $tmp;
-        $index$iv = $index$iv + $it | 0;
-        $ptr = 42;
-    case 42:
-        $tmp = kr_RandomKt_Random($index$iv);
+        $it_0 = $tmp;
+        $it_0 = $index$iv + $it_0 | 0;
+        $ptr = 43;
+    case 43:
+        $tmp = kr_RandomKt_Random($it_0);
         if ($rt_suspending()) {
             break main;
         }
         $viewingCiv = $tmp;
-        $ptr = 43;
-    case 43:
+        $ptr = 44;
+    case 44:
         $tmp = kc_CollectionsKt___CollectionsKt_random($tileBaseImageLocations, $viewingCiv);
         if ($rt_suspending()) {
             break main;
@@ -873324,59 +873420,51 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $viewingCiv = $tmp;
         $finalLocation = $rt_castToClass($viewingCiv, jl_String);
         $tileBaseImageLocations = cuui_ImageGetter_INSTANCE;
-        $image = null;
-        $index$iv = 2;
+        $ownerKey = null;
+        $it_0 = 2;
         $viewingCiv = null;
-        $ptr = 44;
-    case 44:
-        $tmp = cuui_ImageGetter_getImage$default($tileBaseImageLocations, $finalLocation, $image, $index$iv, $viewingCiv);
+        $ptr = 45;
+    case 45:
+        $tmp = cuui_ImageGetter_getImage$default($tileBaseImageLocations, $finalLocation, $ownerKey, $it_0, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $image = $tmp;
-        $tileBaseImageLocations = $image;
-        $viewingCiv = $rt_nullCheck($tileBaseImageLocations);
-        $ptr = 45;
-    case 45:
-        cbgss_Actor_setName($viewingCiv, $finalLocation);
+        $viewingCiv = $image;
+        $tileBaseImageLocations = $rt_nullCheck($viewingCiv);
+        $ptr = 46;
+    case 46:
+        cbgss_Actor_setName($tileBaseImageLocations, $finalLocation);
         if ($rt_suspending()) {
             break main;
         }
-        $viewingCiv = $rt_nullCheck($this.$tileBaseImages);
-        $ptr = 46;
-    case 46:
-        ju_ArrayList_add($viewingCiv, $image);
+        $tileBaseImageLocations = $rt_nullCheck($this.$tileBaseImages);
+        $ptr = 47;
+    case 47:
+        ju_ArrayList_add($tileBaseImageLocations, $image);
         if ($rt_suspending()) {
             break main;
         }
         if ($mapInsertIdx >= 0) {
-            $viewingCiv = cuuctl_TileLayer_getOwnedActors$Unciv_core($this);
-            $index$iv = $ownedInsertIdx + 1 | 0;
-            $viewingCiv = $rt_nullCheck($viewingCiv);
+            $tileBaseImageLocations = cuuctl_TileLayer_getOwnedActors$Unciv_core($this);
+            $it_0 = $ownedInsertIdx + 1 | 0;
+            $tileBaseImageLocations = $rt_nullCheck($tileBaseImageLocations);
             $ptr = 50;
             continue main;
         }
         $ptr = 49;
         continue main;
-    case 47:
+    case 48:
         ju_ArrayList_add($existingImages, $tileVariant);
         if ($rt_suspending()) {
             break main;
         }
         $i = $i + 1 | 0;
         $viewingCiv = $rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append(jl_StringBuilder__init_(), $locationToCheck)), $i));
-        $ptr = 38;
-        continue main;
-    case 48:
-        ju_HashMap_putImpl($viewingCiv, $tileBaseImageLocations, $locationToCheck);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $existingImages = ju_ArrayList__init_();
-        $ptr = 36;
+        $ptr = 39;
         continue main;
     case 49:
-        cuuctl_TileLayer_addOwnedActor($this, $tileBaseImageLocations);
+        cuuctl_TileLayer_addOwnedActor($this, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
@@ -873384,27 +873472,27 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $ptr = 53;
         continue main;
     case 50:
-        ju_ArrayList_add0($viewingCiv, $ownedInsertIdx, $image);
+        ju_ArrayList_add0($tileBaseImageLocations, $ownedInsertIdx, $image);
         if ($rt_suspending()) {
             break main;
         }
-        $viewingCiv = cuuctl_TileLayer_getParentMapLayer$Unciv_core($this);
+        $tileBaseImageLocations = cuuctl_TileLayer_getParentMapLayer$Unciv_core($this);
         $ptr = 51;
     case 51:
-        kji_Intrinsics_checkNotNull($viewingCiv);
+        kji_Intrinsics_checkNotNull($tileBaseImageLocations);
         if ($rt_suspending()) {
             break main;
         }
-        $it = $mapInsertIdx + 1 | 0;
-        $viewingCiv = $rt_nullCheck($viewingCiv);
+        $index$iv = $mapInsertIdx + 1 | 0;
+        $tileBaseImageLocations = $rt_nullCheck($tileBaseImageLocations);
         $ptr = 52;
     case 52:
-        cbgss_Group_addActorAt($viewingCiv, $mapInsertIdx, $tileBaseImageLocations);
+        cbgss_Group_addActorAt($tileBaseImageLocations, $mapInsertIdx, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $ownedInsertIdx = $index$iv;
-        $mapInsertIdx = $it;
+        $ownedInsertIdx = $it_0;
+        $mapInsertIdx = $index$iv;
         $viewingCiv = $rt_nullCheck(cumt_TileSetConfig_getTileScales($rt_nullCheck(cuuct_TileSetStrings_getTileSetConfig($rt_nullCheck(cuuctl_TileLayer_getStrings($this))))));
         $ptr = 53;
     case 53:
@@ -873412,35 +873500,35 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         if ($rt_suspending()) {
             break main;
         }
-        $index$iv = $tmp;
-        if ($index$iv ? 0 : 1) {
-            $viewingCiv = cumt_TileSetConfig_getTileScales($rt_nullCheck(cuuct_TileSetStrings_getTileSetConfig($rt_nullCheck(cuuctl_TileLayer_getStrings($this)))));
-            $tileBaseImageLocations = $baseLocation;
+        $it_0 = $tmp;
+        if ($it_0 ? 0 : 1) {
+            $tileBaseImageLocations = cumt_TileSetConfig_getTileScales($rt_nullCheck(cuuct_TileSetStrings_getTileSetConfig($rt_nullCheck(cuuctl_TileLayer_getStrings($this)))));
+            $viewingCiv = $baseLocation;
             $ptr = 55;
             continue main;
         }
         $tileBaseImageLocations = $this;
-        $scale = null;
-        $index$iv = 0;
-        $it = 3;
+        $ownerKey = null;
+        $it_0 = 0;
+        $index$iv = 3;
         $viewingCiv = null;
         $ptr = 54;
     case 54:
-        cuuctl_TileLayer_setHexagonSize$default($tileBaseImageLocations, $image, $scale, $index$iv, $it, $viewingCiv);
+        cuuctl_TileLayer_setHexagonSize$default($tileBaseImageLocations, $image, $ownerKey, $it_0, $index$iv, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $tileBaseImageLocations_0 = $rt_nullCheck($tileBaseImageLocations_0);
-        $ptr = 24;
+        $it = $rt_nullCheck($it);
+        $ptr = 30;
         continue main;
     case 55:
-        $tmp = kt_StringsKt__StringsKt_getLastIndex($tileBaseImageLocations);
+        $tmp = kt_StringsKt__StringsKt_getLastIndex($viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
         $index$iv = $tmp;
         if ((-1) >= $index$iv) {
-            $viewingCiv = $rt_nullCheck($viewingCiv);
+            $viewingCiv = $rt_nullCheck($tileBaseImageLocations);
             $ptr = 57;
             continue main;
         }
@@ -873451,11 +873539,11 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         if ($rt_suspending()) {
             break main;
         }
-        $it = $tmp;
-        if ($it == 47 ? 0 : 1) {
+        $it_0 = $tmp;
+        if ($it_0 == 47 ? 0 : 1) {
             $index$iv = $index$iv + (-1) | 0;
             if ((-1) >= $index$iv) {
-                $viewingCiv = $rt_nullCheck($viewingCiv);
+                $viewingCiv = $rt_nullCheck($tileBaseImageLocations);
                 $ptr = 57;
                 continue main;
             }
@@ -873463,7 +873551,7 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
             continue main;
         }
         $baseLocation = jl_String_substring0($baseLocation, $index$iv + 1 | 0);
-        $tileBaseImageLocations = $rt_s(203);
+        $viewingCiv = $rt_s(203);
         $ptr = 59;
         continue main;
     case 57:
@@ -873474,29 +873562,29 @@ cuuctl_TileLayerTerrain_updateTileImage = ($this, $viewingCiv) => {
         $viewingCiv = $tmp;
         $scale = $rt_castToClass($viewingCiv, jl_Float);
         $viewingCiv = $this;
-        $index$iv = 0;
-        $it = 2;
+        $it_0 = 0;
+        $index$iv = 2;
         $tileBaseImageLocations = null;
         $ptr = 58;
     case 58:
-        cuuctl_TileLayer_setHexagonSize$default($viewingCiv, $image, $scale, $index$iv, $it, $tileBaseImageLocations);
+        cuuctl_TileLayer_setHexagonSize$default($viewingCiv, $image, $scale, $it_0, $index$iv, $tileBaseImageLocations);
         if ($rt_suspending()) {
             break main;
         }
-        $tileBaseImageLocations_0 = $rt_nullCheck($tileBaseImageLocations_0);
-        $ptr = 24;
+        $it = $rt_nullCheck($it);
+        $ptr = 30;
         continue main;
     case 59:
-        kji_Intrinsics_checkNotNullExpressionValue($baseLocation, $tileBaseImageLocations);
+        kji_Intrinsics_checkNotNullExpressionValue($baseLocation, $viewingCiv);
         if ($rt_suspending()) {
             break main;
         }
-        $viewingCiv = $rt_nullCheck($viewingCiv);
+        $viewingCiv = $rt_nullCheck($tileBaseImageLocations);
         $ptr = 57;
         continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $viewingCiv, $tileBaseImageLocations, $tileBaseImageLocations_0, $mapInsertIdx, $ownedInsertIdx, $$this$all$iv, $element$iv, $i, $imageLocation, $scale, $index$iv, $baseLocation, $locationToCheck, $existingImages, $image, var$16, var$17, $tileVariant, $it, $finalLocation, $ptr);
+    $rt_nativeThread().push($this, $viewingCiv, $tileBaseImageLocations, $ownerKey, $it, $mapInsertIdx, $ownedInsertIdx, $it_0, $$this$all$iv, $element$iv, $i, $imageLocation, $baseLocation, $locationToCheck, $existingImages, $tileVariant, $index$iv, $finalLocation, $image, $scale, $ptr);
 },
 cuuctl_TileLayerTerrain_updateTileColor = ($this, $viewingCiv) => {
     let $isViewable, $tileView, $colorPillagedTile, var$5, $baseTerrainColor, $image, var$8, $color, $ptr, $tmp;
@@ -876323,7 +876411,7 @@ cuuctl_TileLayerMisc_updateStartingLocationIcon = ($this, $show) => {
         $ownTileView = $tmp;
         $ruleset = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck($ownTileView)));
         $ruleset.$a = 0.699999988079071;
-        $ownTileView = $rt_s(7571);
+        $ownTileView = $rt_s(7572);
         $ptr = 16;
     case 16:
         kji_Intrinsics_checkNotNullExpressionValue($ruleset, $ownTileView);
@@ -876797,7 +876885,7 @@ cuuctl_TileLayerMisc_updateStartingLocationIcon = ($this, $show) => {
         $$this$forEach$iv = $tmp;
         $nation = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck($$this$forEach$iv)));
         $nation.$a = 0.699999988079071;
-        $$this$forEach$iv = $rt_s(7571);
+        $$this$forEach$iv = $rt_s(7572);
         $ptr = 71;
     case 71:
         kji_Intrinsics_checkNotNullExpressionValue($nation, $$this$forEach$iv);
@@ -877053,7 +877141,7 @@ cuuctl_TileLayerMisc_addWorkedIcon = ($this, $icon) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $handler = $rt_s(7393);
+        $handler = $rt_s(7394);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($icon, $handler);
@@ -877327,7 +877415,7 @@ cuuctl_TileLayerMisc_overlayTerrain0 = ($this, $color, $alpha) => {
         }
         var$3 = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck($color)));
         var$3.$a = $alpha;
-        $color = $rt_s(7571);
+        $color = $rt_s(7572);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullExpressionValue(var$3, $color);
@@ -878223,7 +878311,7 @@ cuuctl_TileLayerImprovement_updateImprovementIcon = ($this, $show) => {
                 $newImprovementPlusPillagedID = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_($newImprovementPlusPillagedID);
                 jl_AbstractStringBuilder_append($newImprovementPlusPillagedID, $improvementToShow);
-                jl_AbstractStringBuilder_append($newImprovementPlusPillagedID, $rt_s(7611));
+                jl_AbstractStringBuilder_append($newImprovementPlusPillagedID, $rt_s(7612));
                 $ptr = 2;
                 continue main;
             }
@@ -879511,7 +879599,7 @@ let cuuctl_TileLayerUnitSprite_getSpriteSlot = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7469);
+        var$2 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, var$2);
@@ -880750,14 +880838,14 @@ cuuctl_TileLayerUnitFlag_selectFlag = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7469);
+        var$2 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, var$2);
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(7469);
+        var$2 = $rt_s(7470);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($unitView, var$2);
@@ -881207,7 +881295,7 @@ cuuctl_TileLayerCityButton_doUpdate = ($this, $viewingCiv) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7461);
+        var$5 = $rt_s(7462);
         $ptr = 12;
     case 12:
         kji_Intrinsics_checkNotNullParameter(var$6, var$5);
@@ -886172,7 +886260,7 @@ cuuo_FormattedLineListBuilderImpl_add3 = ($this, $extraImage, $imageSize) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7394);
+        var$3 = $rt_s(7395);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($extraImage, var$3);
@@ -886381,14 +886469,14 @@ cuuo_FormattedLineListBuilderImpl_addUniques = ($this, $uniques, $leadingSeparat
         if ($rt_suspending()) {
             break main;
         }
-        $unique = $rt_s(7397);
+        $unique = $rt_s(7398);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($leadingSeparator, $unique);
         if ($rt_suspending()) {
             break main;
         }
-        $unique = $rt_s(7398);
+        $unique = $rt_s(7399);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($exclude, $unique);
@@ -895727,7 +895815,7 @@ let culc_CityConstructions$setCurrentConstruction$lambda$_6_0_invoke = (var$0, v
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_01090;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -895945,7 +896033,7 @@ culc_Notification_addNotificationIconsTo = ($this, $table, $ruleset, $iconSize) 
         var$4 = $tmp;
         $icon = $rt_castToClass(var$4, jl_String);
         var$4 = $rt_nullCheck(culc_NotificationIcon_INSTANCE);
-        var$4 = $rt_s(7393);
+        var$4 = $rt_s(7394);
         $ptr = 8;
     case 8:
         kji_Intrinsics_checkNotNullParameter($icon, var$4);
@@ -896652,14 +896740,14 @@ let cuv_GameBasedView__init_ = ($this, $wrapped, $viewer, $spectatorMode, $gameV
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -896695,14 +896783,14 @@ cuv_OwnedView__init_ = ($this, $wrapped, $viewer, $spectatorMode, $gameView) => 
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -896762,14 +896850,14 @@ let cuv_ForeignCivView__init_ = ($this, $civ, $viewer, $spectatorMode, $gameView
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -897009,14 +897097,14 @@ cuv_ForeignCivView_getDiplomacyManagerWith = ($this, $other) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7593);
+        var$6 = $rt_s(7594);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$4, var$6);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7594);
+        var$6 = $rt_s(7595);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$3, var$6);
@@ -902849,14 +902937,14 @@ cuv_CivView__init_ = ($this, $civ, $viewer, $spectatorMode, $gameView) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -902988,7 +903076,7 @@ cuv_CivView_canSeeTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -903056,7 +903144,7 @@ cuv_CivView_canBuildImprovementOn = ($this, $improvement, $tileView) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7459);
+        var$3 = $rt_s(7460);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileView, var$3);
@@ -903247,7 +903335,7 @@ cuv_CivView_hasExplored = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -910733,7 +910821,7 @@ culb_Battle_plunderFromDamage = ($this, $plunderingUnit, $plunderedUnit, $damage
         jl_AbstractStringBuilder_append($resource, $rt_s(100));
         $key = $rt_nullCheck($key);
         jl_AbstractStringBuilder_append($resource, $key.$name2);
-        jl_AbstractStringBuilder_append($resource, $rt_s(7429));
+        jl_AbstractStringBuilder_append($resource, $rt_s(7430));
         $plunderedUnit = $rt_nullCheck($plunderedUnit);
         $ptr = 21;
     case 21:
@@ -910871,7 +910959,7 @@ culb_Battle_plunderFromDamage = ($this, $plunderingUnit, $plunderedUnit, $damage
         jl_AbstractStringBuilder_append1($plunderingUnit, $plunderedAmount);
         jl_AbstractStringBuilder_append($plunderingUnit, $rt_s(100));
         jl_AbstractStringBuilder_append($plunderingUnit, $resourceName);
-        jl_AbstractStringBuilder_append($plunderingUnit, $rt_s(7429));
+        jl_AbstractStringBuilder_append($plunderingUnit, $rt_s(7430));
         $ptr = 34;
     case 34:
         $tmp = $plunderedUnit.$getName();
@@ -916309,7 +916397,7 @@ culau_WorkerAutomation_automateWorkerAction = ($this, $unitView, $dangerousTiles
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $citiesToConnect = $rt_s(7469);
+        $citiesToConnect = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $citiesToConnect);
@@ -916323,7 +916411,7 @@ culau_WorkerAutomation_automateWorkerAction = ($this, $unitView, $dangerousTiles
         if ($rt_suspending()) {
             break main;
         }
-        $citiesToConnect = $rt_s(7468);
+        $citiesToConnect = $rt_s(7469);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($cache, $citiesToConnect);
@@ -916429,14 +916517,14 @@ culau_WorkerAutomation_automateWorkerAction = ($this, $unitView, $dangerousTiles
         }
         $currentTileIsCreatesOneImprovementMarker = $tmp;
         $$this$getOrPut$iv$iv$iv = $rt_nullCheck($this.$roadBetweenCitiesAutomation);
-        $unitView = $rt_s(7469);
+        $unitView = $rt_s(7470);
         $ptr = 9;
     case 9:
         kji_Intrinsics_checkNotNullParameter($unitView_0, $unitView);
         if ($rt_suspending()) {
             break main;
         }
-        $unitView = $rt_s(7468);
+        $unitView = $rt_s(7469);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullParameter($cache, $unitView);
@@ -919868,7 +919956,7 @@ culau_WorkerAutomation_getBasePriority = ($this, $tile, $unitView) => {
         if ($rt_suspending()) {
             break main;
         }
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -923276,7 +923364,7 @@ culau_WorkerAutomation_automateWorkBoats = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -926259,14 +926347,14 @@ let cuv_ForeignCityView__init_ = ($this, $city, $viewer, $spectatorMode, $gameVi
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -927148,7 +927236,7 @@ cuv_ForeignCityView_spyIsSetUpAtCity = ($this, $viewer) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7593);
+        var$2 = $rt_s(7594);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($viewer, var$2);
@@ -927349,7 +927437,7 @@ cuv_ForeignCityView_asCombatant = $this => {
         var$4 = var$3.$viewer0;
         var$5 = $this.$spectatorMode;
         var$6 = var$3.$gameView;
-        var$3 = $rt_s(7559);
+        var$3 = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($this, var$3);
@@ -927363,14 +927451,14 @@ cuv_ForeignCityView_asCombatant = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7593);
+        var$3 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$4, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7594);
+        var$3 = $rt_s(7595);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$6, var$3);
@@ -927858,7 +927946,7 @@ cuv_CityView_isInRange = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -927925,7 +928013,7 @@ cuv_CityView_isWorked = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -927962,7 +928050,7 @@ cuv_CityView_canBuyTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -927999,7 +928087,7 @@ let cuv_CityView_getGoldCostOfTile = ($this, $tileView, $extraTiles) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7459);
+        var$3 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$3);
@@ -928400,14 +928488,14 @@ cuv_CityView_getConstructions = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7594);
+        var$6 = $rt_s(7595);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$4, var$6);
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7593);
+        var$6 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$3, var$6);
@@ -928979,7 +929067,7 @@ cuv_CityView_tryLockTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -929088,7 +929176,7 @@ cuv_CityView_tryBuyTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -937402,7 +937490,7 @@ cumru_UnitNameGroup_getCivilopediaTextLines = ($this, $ruleset) => {
         $ruleset = new cuusc_FormattedLine;
         $$this$getCivilopediaTextLines_u24lambda_u240 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($$this$getCivilopediaTextLines_u24lambda_u240);
-        jl_AbstractStringBuilder_append($$this$getCivilopediaTextLines_u24lambda_u240, $rt_s(7473));
+        jl_AbstractStringBuilder_append($$this$getCivilopediaTextLines_u24lambda_u240, $rt_s(7474));
         jl_AbstractStringBuilder_append($$this$getCivilopediaTextLines_u24lambda_u240, $language);
         jl_AbstractStringBuilder_append($$this$getCivilopediaTextLines_u24lambda_u240, $rt_s(7943));
         var$6 = 0;
@@ -941634,7 +941722,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_46_invoke = var$0 => 
             var$3 = cumru_UniqueTriggerActivation_INSTANCE;
             var$7 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$7);
-            jl_AbstractStringBuilder_append(var$7, $rt_s(7512));
+            jl_AbstractStringBuilder_append(var$7, $rt_s(7513));
             var$16 = $rt_nullCheck(var$17);
             $ptr = 5;
             continue main;
@@ -941650,7 +941738,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_46_invoke = var$0 => 
             var$3 = cumru_UniqueTriggerActivation_INSTANCE;
             var$7 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$7);
-            jl_AbstractStringBuilder_append(var$7, $rt_s(7512));
+            jl_AbstractStringBuilder_append(var$7, $rt_s(7513));
             var$16 = $rt_nullCheck(var$17);
             $ptr = 5;
             continue main;
@@ -941710,7 +941798,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_46_invoke = var$0 => 
         var$3 = cumru_UniqueTriggerActivation_INSTANCE;
         var$7 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$7);
-        jl_AbstractStringBuilder_append(var$7, $rt_s(7512));
+        jl_AbstractStringBuilder_append(var$7, $rt_s(7513));
         var$16 = $rt_nullCheck(var$17);
         $ptr = 5;
         continue main;
@@ -943565,7 +943653,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_62_invoke = var$0 => 
         var$11 = cumru_UniqueTriggerActivation_INSTANCE;
         var$12 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$12);
-        jl_AbstractStringBuilder_append(var$12, $rt_s(7514));
+        jl_AbstractStringBuilder_append(var$12, $rt_s(7515));
         var$10 = $rt_nullCheck(var$7);
         jl_AbstractStringBuilder_append(var$12, var$10.$name1);
         jl_AbstractStringBuilder_append(var$12, $rt_s(7958));
@@ -943998,7 +944086,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_67_invoke = var$0 => 
             var$2 = $rt_nullCheck(var$2);
             var$7 = var$2.$state;
         }
-        var$8 = $rt_s(7505);
+        var$8 = $rt_s(7506);
         var$9 = 0;
         var$10 = 2;
         var$1 = null;
@@ -944729,7 +944817,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_74_invoke = var$0 => 
             jl_AbstractStringBuilder__init_(var$4);
             jl_AbstractStringBuilder_append(var$4, $rt_s(7967));
             jl_AbstractStringBuilder_append(var$4, ($rt_nullCheck(var$3)).$name1);
-            jl_AbstractStringBuilder_append(var$4, $rt_s(7513));
+            jl_AbstractStringBuilder_append(var$4, $rt_s(7514));
             $ptr = 4;
             continue main;
         }
@@ -944813,7 +944901,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_74_invoke = var$0 => 
             jl_AbstractStringBuilder__init_(var$4);
             jl_AbstractStringBuilder_append(var$4, $rt_s(7967));
             jl_AbstractStringBuilder_append(var$4, ($rt_nullCheck(var$3)).$name1);
-            jl_AbstractStringBuilder_append(var$4, $rt_s(7513));
+            jl_AbstractStringBuilder_append(var$4, $rt_s(7514));
             $ptr = 4;
             continue main;
         }
@@ -944888,7 +944976,7 @@ cumru_UniqueTriggerActivation$getTriggerFunction$lambda$_7_74_invoke = var$0 => 
             jl_AbstractStringBuilder__init_(var$4);
             jl_AbstractStringBuilder_append(var$4, $rt_s(7967));
             jl_AbstractStringBuilder_append(var$4, ($rt_nullCheck(var$3)).$name1);
-            jl_AbstractStringBuilder_append(var$4, $rt_s(7513));
+            jl_AbstractStringBuilder_append(var$4, $rt_s(7514));
             $ptr = 4;
             continue main;
         }
@@ -951033,7 +951121,7 @@ let culcm_TechManager$obsoleteOldUnits$lambda$_69_0_invoke = (var$0, var$1) => {
         var$2 = var$0.$_0477;
         var$3 = var$0.$_1180;
         var$4 = var$0.$_272;
-        var$5 = $rt_s(7392);
+        var$5 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$5);
@@ -952676,7 +952764,7 @@ culcd_DeclareWar_onWarDeclared = ($this, $diplomacyManager, $isOffensiveWar, $wa
         jl_AbstractStringBuilder__init_($civAtWarWith);
         jl_AbstractStringBuilder_append0($civAtWarWith, 91);
         jl_AbstractStringBuilder_append($civAtWarWith, ($rt_nullCheck($offer)).$name7);
-        jl_AbstractStringBuilder_append($civAtWarWith, $rt_s(7429));
+        jl_AbstractStringBuilder_append($civAtWarWith, $rt_s(7430));
         $ptr = 35;
     case 35:
         $tmp = culcd_DiplomacyManager_getOtherCiv($diplomacyManager_0);
@@ -972262,7 +972350,7 @@ culms_SimpleHttp_openStream = ($this, $method, $url, $content, $timeout, $header
             $uri = new jn_URI;
             $$this$openStream_u24lambda_u240 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($$this$openStream_u24lambda_u240);
-            jl_AbstractStringBuilder_append($$this$openStream_u24lambda_u240, $rt_s(7472));
+            jl_AbstractStringBuilder_append($$this$openStream_u24lambda_u240, $rt_s(7473));
             jl_AbstractStringBuilder_append($$this$openStream_u24lambda_u240, $url);
             $ptr = 5;
             continue main;
@@ -973725,7 +973813,7 @@ cuaw_WebFontRasterizer_measureMetrics$js_body$_3 = (var$1, var$2) => {
     const ctx = root.__uncivFontCanvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) throw new Error('Could not create a 2D canvas context for font metrics');
     ctx.font = var$1 + 'px ' + var$2;
-    const m = ctx.measureText('Hgjpqy \xc5\xd6\xc9\xe9\xdf \u0124\u1eaf\xe7\u0130 \u03a9\u0416 \u05e2\u05d1\u05e8\u05d9\u05ea \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u4e2d\u3042\u30a2\ud55c \ud83d\ude00\ud83c\udf89');
+    const m = ctx.measureText('Hgjpqy \xc5\xd6\xc9\xe9\xdf \u0124\u1eaf\xe7\u0130 \u03a9\u0416 \u05e2\u05d1\u05e8\u05d9\u05ea \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u4e2d\u3042\u30a2\ud55c \ud83d\ude00\ud83c\udf89 ' + '\u0939\u093f\u0928\u094d\u0926\u0940 \u0911 \u0915\u094d\u0937\u093f \u0936\u094d\u0930\u0943 \u0926\u094d\u0927 \u091f\u094d\u0920\u0941 ' + '\u09ac\u09be\u0982\u09b2\u09be \u0981 \u09b0\u09cd\u0996\u09bf \u09b6\u09cd\u09b0\u09c0 \u0995\u09cd\u09b7\u09c8 \u098b ' + '\u0e44\u0e17\u0e22 \u0e1b\u0e35\u0e49 \u0e1f\u0e34\u0e49 \u0e1c\u0e39\u0e49 \u0e0d \u0e10\u0e39 \u0e0e\u0e38 \u0e2c \u0e24');
     const rawAscent = Number.isFinite(m.fontBoundingBoxAscent) ? Math.max(m.fontBoundingBoxAscent, m.actualBoundingBoxAscent) : m.actualBoundingBoxAscent;
     const rawDescent = Number.isFinite(m.fontBoundingBoxDescent) ? Math.max(m.fontBoundingBoxDescent, m.actualBoundingBoxDescent) : m.actualBoundingBoxDescent;
     if (!Number.isFinite(rawAscent) || !Number.isFinite(rawDescent) || rawAscent + rawDescent <= 0) throw new Error('Browser returned invalid font metrics');
@@ -973754,7 +973842,13 @@ cuaw_WebFontRasterizer_rasterizeGlyphAligned$js_body$_4 = (var$1, var$2, var$3, 
     const width = Math.max(1, Math.ceil(right - left));
     const baseline = Math.ceil(var$4 + var$6);
     var$5 = Math.max(1, Math.ceil(var$5));
-    if (baseline < m.actualBoundingBoxAscent || baseline + m.actualBoundingBoxDescent > var$5) throw new Error('Glyph bounds exceed the shared browser font metrics for ' + var$1);
+    if (baseline < m.actualBoundingBoxAscent || baseline + m.actualBoundingBoxDescent > var$5) {
+        const warned = root.__uncivFontClipWarnings || 0;
+        if (warned < 10) {
+            root.__uncivFontClipWarnings = warned + 1;
+            console.warn('Glyph exceeds shared browser font metrics and will be clipped: ' + var$1 + (warned === 9 ? ' (further warnings suppressed)' : ''));
+        }
+    }
     canvas.width = width;
     canvas.height = var$5;
     ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -1011589,7 +1011683,7 @@ culac_NextTurnAutomation_applyPromotions$Unciv_core = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $rng = $rt_s(7469);
+        $rng = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $rng);
@@ -1012523,7 +1012617,7 @@ culac_NextTurnAutomation_getUnitPriority = ($this, $unit, $isAtWar, $cache) => {
         if ($rt_suspending()) {
             break main;
         }
-        $mapUnit = $rt_s(7468);
+        $mapUnit = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $mapUnit);
@@ -1018562,7 +1018656,7 @@ cuuctl_TileLayerTerrain$getTileBaseImageLocations$resourceAndImprovementSequence
             $$result = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($$result);
             jl_AbstractStringBuilder_append($$result, $this.$$shownImprovement);
-            jl_AbstractStringBuilder_append($$result, $rt_s(7611));
+            jl_AbstractStringBuilder_append($$result, $rt_s(7612));
             $ptr = 7;
             continue main;
         }
@@ -1032387,7 +1032481,7 @@ cuui_ImageAttempter_tryEraImage = ($this, $civView, $locationToCheck, $style, $t
         if ($rt_suspending()) {
             break main;
         }
-        $$this$sortedByDescending$iv = $rt_s(7460);
+        $$this$sortedByDescending$iv = $rt_s(7461);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($tileSetStrings, $$this$sortedByDescending$iv);
@@ -1044455,7 +1044549,7 @@ cul_HolidayDates$DateRange__init_ = ($this, $start, $endInclusive) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7465);
+        var$3 = $rt_s(7466);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($start, var$3);
@@ -1057854,14 +1057948,14 @@ let cuv_ForeignMapUnitView__init_ = ($this, $unit, $viewer, $spectatorMode, $gam
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -1058098,7 +1058192,7 @@ cuv_ForeignMapUnitView_asCombatant = $this => {
         var$4 = var$3.$viewer0;
         var$5 = $this.$spectatorMode;
         var$6 = var$3.$gameView;
-        var$3 = $rt_s(7469);
+        var$3 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($this, var$3);
@@ -1058112,14 +1058206,14 @@ cuv_ForeignMapUnitView_asCombatant = $this => {
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7593);
+        var$3 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$4, var$3);
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7594);
+        var$3 = $rt_s(7595);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$6, var$3);
@@ -1059084,11 +1059178,11 @@ cuuctc_CityButton_getUpdateKey = ($this, $isCityViewable) => {
     $rt_nativeThread().push($this, $isCityViewable, $city, $selectedCiv, $key, $selectedCiv_0, $city_0, $count$iv, $$this$count$iv, $detailedCityView, $diplomacyManager, var$11, $element$iv, $it, $constructions, $currentName, $construction, $ptr);
 },
 cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
-    let $selectedPlayer, var$3, $$this$filter$iv, $diplomacyManager, var$6, var$7, $destination$iv$iv, var$9, $visibleAirUnits, $element$iv$iv, $it, var$13, var$14, var$15, var$16, $healthBar, $ptr, $tmp;
+    let $selectedPlayer, var$3, $$this$filter$iv, $destination$iv$iv, var$6, var$7, $visibleAirUnits, var$9, $element$iv$iv, $it, var$12, var$13, var$14, var$15, $healthBar, $diplomacyManager, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$healthBar = $thread.pop();var$16 = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();var$13 = $thread.pop();$it = $thread.pop();$element$iv$iv = $thread.pop();$visibleAirUnits = $thread.pop();var$9 = $thread.pop();$destination$iv$iv = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();$diplomacyManager = $thread.pop();$$this$filter$iv = $thread.pop();var$3 = $thread.pop();$selectedPlayer = $thread.pop();$isCityViewable = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();$diplomacyManager = $thread.pop();$healthBar = $thread.pop();var$15 = $thread.pop();var$14 = $thread.pop();var$13 = $thread.pop();var$12 = $thread.pop();$it = $thread.pop();$element$iv$iv = $thread.pop();var$9 = $thread.pop();$visibleAirUnits = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();$destination$iv$iv = $thread.pop();$$this$filter$iv = $thread.pop();var$3 = $thread.pop();$selectedPlayer = $thread.pop();$isCityViewable = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1059107,14 +1059201,14 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $tmp;
+        $destination$iv$iv = $tmp;
         $$this$filter$iv = cbgss_Touchable_childrenOnly;
         var$6 = $this;
         var$7 = $rt_nullCheck(var$6);
         var$7.$touchable = $$this$filter$iv;
         $$this$filter$iv = new cuuctc_CityButton$setButtonActions$lambda$_9_0;
         $$this$filter$iv.$_02332 = $this;
-        $$this$filter$iv.$_1824 = $diplomacyManager;
+        $$this$filter$iv.$_1824 = $destination$iv$iv;
         $ptr = 3;
     case 3:
         cuuci_ActivationExtensionsKt_onClick(var$6, $$this$filter$iv);
@@ -1059122,16 +1059216,16 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
             break main;
         }
         $$this$filter$iv = null;
-        $destination$iv$iv = new cuuctc_CityButton$setButtonActions$2;
-        $destination$iv$iv.$this$0451 = $this;
-        $destination$iv$iv.$$unitTable = $diplomacyManager;
-        kji_FunctionReferenceImpl__init_($destination$iv$iv, 0, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(8757), $rt_s(8758), 0);
-        $diplomacyManager = $destination$iv$iv;
+        $visibleAirUnits = new cuuctc_CityButton$setButtonActions$2;
+        $visibleAirUnits.$this$0451 = $this;
+        $visibleAirUnits.$$unitTable = $destination$iv$iv;
+        kji_FunctionReferenceImpl__init_($visibleAirUnits, 0, $rt_cls(kji_Intrinsics$Kotlin), $rt_s(8757), $rt_s(8758), 0);
+        $destination$iv$iv = $visibleAirUnits;
         var$9 = 1;
-        $destination$iv$iv = null;
+        $visibleAirUnits = null;
         $ptr = 4;
     case 4:
-        cuuci_ActivationExtensionsKt_onRightClick$default(var$6, $$this$filter$iv, $diplomacyManager, var$9, $destination$iv$iv);
+        cuuci_ActivationExtensionsKt_onRightClick$default(var$6, $$this$filter$iv, $destination$iv$iv, var$9, $visibleAirUnits);
         if ($rt_suspending()) {
             break main;
         }
@@ -1059152,11 +1059246,11 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $tmp;
-        $diplomacyManager = $rt_nullCheck($diplomacyManager);
+        $$this$filter$iv = $tmp;
+        $$this$filter$iv = $rt_nullCheck($$this$filter$iv);
         $ptr = 7;
     case 7:
-        $tmp = $diplomacyManager.$hasNext();
+        $tmp = $$this$filter$iv.$hasNext();
         if ($rt_suspending()) {
             break main;
         }
@@ -1059169,13 +1059263,13 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
                 continue main;
             }
             $$this$filter$iv = new cuuctc_DefenceTable;
-            $diplomacyManager = $this.$foreignCityView;
+            $destination$iv$iv = $this.$foreignCityView;
             $ptr = 10;
             continue main;
         }
         $ptr = 8;
     case 8:
-        $tmp = $diplomacyManager.$next();
+        $tmp = $$this$filter$iv.$next();
         if ($rt_suspending()) {
             break main;
         }
@@ -1059189,112 +1059283,112 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
         }
         var$9 = $tmp;
         if (!var$9) {
-            $diplomacyManager = $rt_nullCheck($diplomacyManager);
+            $$this$filter$iv = $rt_nullCheck($$this$filter$iv);
             $ptr = 7;
             continue main;
         }
-        $$this$filter$iv = $rt_nullCheck($destination$iv$iv);
+        $visibleAirUnits = $rt_nullCheck($destination$iv$iv);
         $ptr = 18;
         continue main;
     case 10:
-        cuuctc_DefenceTable__init_($$this$filter$iv, $diplomacyManager, $selectedPlayer);
+        cuuctc_DefenceTable__init_($$this$filter$iv, $destination$iv$iv, $selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $$this$filter$iv;
-        $$this$filter$iv = $rt_nullCheck($this);
+        $visibleAirUnits = $$this$filter$iv;
+        $destination$iv$iv = $rt_nullCheck($this);
         $ptr = 11;
     case 11:
-        $tmp = cbgssu_Table_add($$this$filter$iv, $diplomacyManager);
+        $tmp = cbgssu_Table_add($destination$iv$iv, $visibleAirUnits);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $tmp;
-        $diplomacyManager = $rt_nullCheck($diplomacyManager);
+        $$this$filter$iv = $tmp;
+        $$this$filter$iv = $rt_nullCheck($$this$filter$iv);
         $ptr = 12;
     case 12:
-        cbgssu_Cell_row($diplomacyManager);
+        cbgssu_Cell_row($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = new cuuctc_CityTable;
-        $destination$iv$iv = $this.$foreignCityView;
-        var$9 = 0;
+        $$this$filter$iv = new cuuctc_CityTable;
+        $visibleAirUnits = $this.$foreignCityView;
+        $isCityViewable = 0;
         $ptr = 13;
     case 13:
-        cuuctc_CityTable__init_($diplomacyManager, $destination$iv$iv, var$9);
+        cuuctc_CityTable__init_($$this$filter$iv, $visibleAirUnits, $isCityViewable);
         if ($rt_suspending()) {
             break main;
         }
-        $this.$cityTable = $diplomacyManager;
-        $diplomacyManager = $diplomacyManager;
+        $this.$cityTable = $$this$filter$iv;
+        $$this$filter$iv = $$this$filter$iv;
         $ptr = 14;
     case 14:
-        $tmp = cbgssu_Table_add($$this$filter$iv, $diplomacyManager);
+        $tmp = cbgssu_Table_add($destination$iv$iv, $$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $tmp;
-        $diplomacyManager = $rt_nullCheck($diplomacyManager);
+        $$this$filter$iv = $tmp;
+        $$this$filter$iv = $rt_nullCheck($$this$filter$iv);
         $ptr = 15;
     case 15:
-        cbgssu_Cell_row($diplomacyManager);
+        cbgssu_Cell_row($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $this.$foreignCityView;
+        $$this$filter$iv = $this.$foreignCityView;
         $ptr = 16;
     case 16:
-        $tmp = cuv_ForeignCityViewKt_isCityState($diplomacyManager);
+        $tmp = cuv_ForeignCityViewKt_isCityState($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $tmp;
-        if (!var$9) {
+        $isCityViewable = $tmp;
+        if (!$isCityViewable) {
             $selectedPlayer = new cuuctc_StatusTable;
-            $diplomacyManager = $this.$foreignCityView;
-            var$13 = 18.0;
+            $$this$filter$iv = $this.$foreignCityView;
+            var$12 = 18.0;
             $ptr = 19;
             continue main;
         }
-        $diplomacyManager = $rt_nullCheck($this.$foreignCityView);
-        $ptr = 22;
+        $$this$filter$iv = $rt_nullCheck($this.$foreignCityView);
+        $ptr = 23;
         continue main;
     case 17:
         $tmp = ju_AbstractCollection_isEmpty($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        var$9 = $tmp;
-        if (var$9 ? 0 : 1) {
-            $diplomacyManager = new cuuctc_AirUnitTable;
+        $isCityViewable = $tmp;
+        if ($isCityViewable ? 0 : 1) {
+            $$this$filter$iv = new cuuctc_AirUnitTable;
             $destination$iv$iv = $this.$foreignCityView;
-            var$9 = ($rt_nullCheck($visibleAirUnits)).$size9;
-            var$13 = 14.0;
-            $ptr = 38;
+            $isCityViewable = ($rt_nullCheck($visibleAirUnits)).$size9;
+            var$12 = 14.0;
+            $ptr = 39;
             continue main;
         }
         $$this$filter$iv = new cuuctc_DefenceTable;
-        $diplomacyManager = $this.$foreignCityView;
+        $destination$iv$iv = $this.$foreignCityView;
         $ptr = 10;
         continue main;
     case 18:
-        ju_ArrayList_add($$this$filter$iv, $element$iv$iv);
+        ju_ArrayList_add($visibleAirUnits, $element$iv$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $rt_nullCheck($diplomacyManager);
+        $$this$filter$iv = $rt_nullCheck($$this$filter$iv);
         $ptr = 7;
         continue main;
     case 19:
-        cuuctc_StatusTable__init_($selectedPlayer, $diplomacyManager, var$13);
+        cuuctc_StatusTable__init_($selectedPlayer, $$this$filter$iv, var$12);
         if ($rt_suspending()) {
             break main;
         }
         $selectedPlayer = $selectedPlayer;
         $ptr = 20;
     case 20:
-        $tmp = cbgssu_Table_add($$this$filter$iv, $selectedPlayer);
+        $tmp = cbgssu_Table_add($destination$iv$iv, $selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
@@ -1059307,231 +1059401,226 @@ cuuctc_CityButton_rebuild = ($this, $isCityViewable) => {
         if ($rt_suspending()) {
             break main;
         }
-        if ($isCityViewable) {
-            var$13 = cuv_ForeignCityView_getHealth($rt_nullCheck($this.$foreignCityView));
-            $selectedPlayer = $rt_nullCheck($this.$foreignCityView);
-            $ptr = 25;
-            continue main;
-        }
-        $isCityViewable = 1;
-        $ptr = 23;
-        continue main;
+        var$12 = cuv_ForeignCityView_getHealth($rt_nullCheck($this.$foreignCityView));
+        $selectedPlayer = $rt_nullCheck($this.$foreignCityView);
+        $ptr = 22;
     case 22:
-        $tmp = cuv_ForeignCityView_civKnows($diplomacyManager, $selectedPlayer);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$9 = $tmp;
-        if (!var$9) {
-            $selectedPlayer = new cuuctc_StatusTable;
-            $diplomacyManager = $this.$foreignCityView;
-            var$13 = 18.0;
-            $ptr = 19;
-            continue main;
-        }
-        $diplomacyManager = $rt_nullCheck($this.$foreignCityView);
-        $ptr = 26;
-        continue main;
-    case 23:
-        cbgss_Actor_setOrigin(var$7, $isCityViewable);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $selectedPlayer = $this.$tileGroup0;
-        $ptr = 24;
-    case 24:
-        cuuce_Scene2dExtensionsKt_centerX(var$6, $selectedPlayer);
-        if ($rt_suspending()) {
-            break main;
-        }
-        return;
-    case 25:
         $tmp = cuv_ForeignCityView_getMaxHealth($selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
         $isCityViewable = $tmp;
-        if (!(var$13 < $isCityViewable)) {
+        if (!(var$12 < $isCityViewable)) {
             $isCityViewable = 1;
-            $ptr = 23;
+            $ptr = 24;
             continue main;
         }
-        $ptr = 33;
+        $ptr = 26;
         continue main;
+    case 23:
+        $tmp = cuv_ForeignCityView_civKnows($$this$filter$iv, $selectedPlayer);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $isCityViewable = $tmp;
+        if (!$isCityViewable) {
+            $selectedPlayer = new cuuctc_StatusTable;
+            $$this$filter$iv = $this.$foreignCityView;
+            var$12 = 18.0;
+            $ptr = 19;
+            continue main;
+        }
+        $$this$filter$iv = $rt_nullCheck($this.$foreignCityView);
+        $ptr = 31;
+        continue main;
+    case 24:
+        cbgss_Actor_setOrigin(var$7, $isCityViewable);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $selectedPlayer = $this.$tileGroup0;
+        $ptr = 25;
+    case 25:
+        cuuce_Scene2dExtensionsKt_centerX(var$6, $selectedPlayer);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return;
     case 26:
-        $tmp = cuv_ForeignCityView_getDiplomacyManagerWith($diplomacyManager, $selectedPlayer);
+        cuui_ImageGetter_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$filter$iv = cuui_ImageGetter_INSTANCE;
+        var$12 = cuv_ForeignCityView_getHealth($rt_nullCheck($this.$foreignCityView));
+        $selectedPlayer = $rt_nullCheck($this.$foreignCityView);
+        $ptr = 27;
+    case 27:
+        $tmp = cuv_ForeignCityView_getMaxHealth($selectedPlayer);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $isCityViewable = $tmp;
+        var$13 = $isCityViewable;
+        var$14 = 100.0;
+        var$15 = 3.0;
+        $selectedPlayer = $rt_nullCheck($$this$filter$iv);
+        $ptr = 28;
+    case 28:
+        $tmp = cuui_ImageGetter_getHealthBar($selectedPlayer, var$12, var$13, var$14, var$15);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $healthBar = $tmp;
+        $selectedPlayer = $healthBar;
+        $ptr = 29;
+    case 29:
+        cbgss_Group_addActor(var$3, $selectedPlayer);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $ptr = 30;
+    case 30:
+        cuuce_Scene2dExtensionsKt_center($selectedPlayer, var$6);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$filter$iv = $this.$cityTable;
+        if ($$this$filter$iv !== null) {
+            var$13 = ($rt_nullCheck($$this$filter$iv)).$y1;
+            $$this$filter$iv = $this.$cityTable;
+            if ($$this$filter$iv !== null) {
+                var$12 = var$13 + ($rt_nullCheck($$this$filter$iv)).$height4;
+                $selectedPlayer = $rt_nullCheck($selectedPlayer);
+                var$12 = var$12 - $selectedPlayer.$height4 - 1.0;
+                $ptr = 43;
+                continue main;
+            }
+            $$this$filter$iv = $rt_s(8759);
+            $ptr = 42;
+            continue main;
+        }
+        $$this$filter$iv = $rt_s(8759);
+        $ptr = 38;
+        continue main;
+    case 31:
+        $tmp = cuv_ForeignCityView_getDiplomacyManagerWith($$this$filter$iv, $selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
         $diplomacyManager = $tmp;
-        $ptr = 27;
-    case 27:
+        $ptr = 32;
+    case 32:
         kji_Intrinsics_checkNotNull($diplomacyManager);
         if ($rt_suspending()) {
             break main;
         }
         $selectedPlayer = new cuuctc_InfluenceTable;
         $diplomacyManager = $rt_nullCheck($diplomacyManager);
-        $ptr = 28;
-    case 28:
+        $ptr = 33;
+    case 33:
         $tmp = culcd_DiplomacyManager_getInfluence($diplomacyManager);
         if ($rt_suspending()) {
             break main;
         }
-        var$14 = $tmp;
-        $ptr = 29;
-    case 29:
+        var$12 = $tmp;
+        $ptr = 34;
+    case 34:
         $tmp = culcd_DiplomacyManager_relationshipLevel($diplomacyManager);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $tmp;
-        var$15 = 100.0;
+        $$this$filter$iv = $tmp;
+        var$14 = 100.0;
         var$13 = 5.0;
-        $ptr = 30;
-    case 30:
-        cuuctc_InfluenceTable__init_($selectedPlayer, var$14, $diplomacyManager, var$15, var$13);
+        $ptr = 35;
+    case 35:
+        cuuctc_InfluenceTable__init_($selectedPlayer, var$12, $$this$filter$iv, var$14, var$13);
         if ($rt_suspending()) {
             break main;
         }
         $selectedPlayer = $selectedPlayer;
-        $ptr = 31;
-    case 31:
-        $tmp = cbgssu_Table_add($$this$filter$iv, $selectedPlayer);
+        $ptr = 36;
+    case 36:
+        $tmp = cbgssu_Table_add($destination$iv$iv, $selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
         $selectedPlayer = $tmp;
         $selectedPlayer = $rt_nullCheck(cbgssu_Cell_padTop($rt_nullCheck($selectedPlayer), 1.0));
-        $ptr = 32;
-    case 32:
+        $ptr = 37;
+    case 37:
         cbgssu_Cell_row($selectedPlayer);
         if ($rt_suspending()) {
             break main;
         }
         $selectedPlayer = new cuuctc_StatusTable;
-        $diplomacyManager = $this.$foreignCityView;
-        var$13 = 18.0;
+        $$this$filter$iv = $this.$foreignCityView;
+        var$12 = 18.0;
         $ptr = 19;
         continue main;
-    case 33:
-        cuui_ImageGetter_$callClinit();
+    case 38:
+        kji_Intrinsics_throwUninitializedPropertyAccessException($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filter$iv = cuui_ImageGetter_INSTANCE;
-        var$13 = cuv_ForeignCityView_getHealth($rt_nullCheck($this.$foreignCityView));
-        $selectedPlayer = $rt_nullCheck($this.$foreignCityView);
-        $ptr = 34;
-    case 34:
-        $tmp = cuv_ForeignCityView_getMaxHealth($selectedPlayer);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $isCityViewable = $tmp;
-        var$15 = $isCityViewable;
-        var$14 = 100.0;
-        var$16 = 3.0;
-        $selectedPlayer = $rt_nullCheck($$this$filter$iv);
-        $ptr = 35;
-    case 35:
-        $tmp = cuui_ImageGetter_getHealthBar($selectedPlayer, var$13, var$15, var$14, var$16);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $healthBar = $tmp;
-        $$this$filter$iv = $healthBar;
-        $ptr = 36;
-    case 36:
-        cbgss_Group_addActor(var$3, $$this$filter$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $ptr = 37;
-    case 37:
-        cuuce_Scene2dExtensionsKt_center($$this$filter$iv, var$6);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $selectedPlayer = $this.$cityTable;
-        if ($selectedPlayer !== null) {
-            var$15 = ($rt_nullCheck($selectedPlayer)).$y1;
-            $selectedPlayer = $this.$cityTable;
-            if ($selectedPlayer !== null) {
-                var$15 = var$15 + ($rt_nullCheck($selectedPlayer)).$height4;
-                $selectedPlayer = $rt_nullCheck($$this$filter$iv);
-                var$13 = var$15 - $selectedPlayer.$height4 - 1.0;
-                $ptr = 43;
-                continue main;
-            }
-            $selectedPlayer = $rt_s(8759);
-            $ptr = 42;
+        var$13 = ($rt_nullCheck(null)).$y1;
+        $$this$filter$iv = $this.$cityTable;
+        if ($$this$filter$iv !== null) {
+            var$12 = var$13 + ($rt_nullCheck($$this$filter$iv)).$height4;
+            $selectedPlayer = $rt_nullCheck($selectedPlayer);
+            var$12 = var$12 - $selectedPlayer.$height4 - 1.0;
+            $ptr = 43;
             continue main;
         }
-        $selectedPlayer = $rt_s(8759);
-        $ptr = 41;
+        $$this$filter$iv = $rt_s(8759);
+        $ptr = 42;
         continue main;
-    case 38:
-        cuuctc_AirUnitTable__init_($diplomacyManager, $destination$iv$iv, var$9, var$13);
+    case 39:
+        cuuctc_AirUnitTable__init_($$this$filter$iv, $destination$iv$iv, $isCityViewable, var$12);
         if ($rt_suspending()) {
             break main;
         }
-        $diplomacyManager = $diplomacyManager;
-        $$this$filter$iv = $rt_nullCheck($this);
-        $ptr = 39;
-    case 39:
-        $tmp = cbgssu_Table_add($$this$filter$iv, $diplomacyManager);
+        $$this$filter$iv = $$this$filter$iv;
+        $destination$iv$iv = $rt_nullCheck($this);
+        $ptr = 40;
+    case 40:
+        $tmp = cbgssu_Table_add($destination$iv$iv, $$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
         $$this$filter$iv = $tmp;
         $$this$filter$iv = $rt_nullCheck(cbgssu_Cell_padBottom($rt_nullCheck($$this$filter$iv), 5.0));
-        $ptr = 40;
-    case 40:
+        $ptr = 41;
+    case 41:
         cbgssu_Cell_row($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
         $$this$filter$iv = new cuuctc_DefenceTable;
-        $diplomacyManager = $this.$foreignCityView;
+        $destination$iv$iv = $this.$foreignCityView;
         $ptr = 10;
         continue main;
-    case 41:
-        kji_Intrinsics_throwUninitializedPropertyAccessException($selectedPlayer);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$15 = ($rt_nullCheck(null)).$y1;
-        $selectedPlayer = $this.$cityTable;
-        if ($selectedPlayer !== null) {
-            var$15 = var$15 + ($rt_nullCheck($selectedPlayer)).$height4;
-            $selectedPlayer = $rt_nullCheck($$this$filter$iv);
-            var$13 = var$15 - $selectedPlayer.$height4 - 1.0;
-            $ptr = 43;
-            continue main;
-        }
-        $selectedPlayer = $rt_s(8759);
-        $ptr = 42;
     case 42:
-        kji_Intrinsics_throwUninitializedPropertyAccessException($selectedPlayer);
+        kji_Intrinsics_throwUninitializedPropertyAccessException($$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
-        var$15 = var$15 + ($rt_nullCheck(null)).$height4;
-        $selectedPlayer = $rt_nullCheck($$this$filter$iv);
-        var$13 = var$15 - $selectedPlayer.$height4 - 1.0;
+        var$12 = var$13 + ($rt_nullCheck(null)).$height4;
+        $selectedPlayer = $rt_nullCheck($selectedPlayer);
+        var$12 = var$12 - $selectedPlayer.$height4 - 1.0;
         $ptr = 43;
     case 43:
-        cbgss_Actor_setY($selectedPlayer, var$13);
+        cbgss_Actor_setY($selectedPlayer, var$12);
         if ($rt_suspending()) {
             break main;
         }
         $isCityViewable = 1;
-        $ptr = 23;
+        $ptr = 24;
         continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $isCityViewable, $selectedPlayer, var$3, $$this$filter$iv, $diplomacyManager, var$6, var$7, $destination$iv$iv, var$9, $visibleAirUnits, $element$iv$iv, $it, var$13, var$14, var$15, var$16, $healthBar, $ptr);
+    $rt_nativeThread().push($this, $isCityViewable, $selectedPlayer, var$3, $$this$filter$iv, $destination$iv$iv, var$6, var$7, $visibleAirUnits, var$9, $element$iv$iv, $it, var$12, var$13, var$14, var$15, $healthBar, $diplomacyManager, $ptr);
 },
 cuuctc_CityButton_updateHiddenUnitMarkers = ($this, $isCityViewable) => {
     let $marker, $direction, var$4, $neighbor, $neighbor_0, $ptr, $tmp;
@@ -1060583,7 +1060672,7 @@ cuuctc_CityButton__clinit_ = () => {
             break main;
         }
         var$1 = $tmp;
-        var$2 = $rt_s(7601);
+        var$2 = $rt_s(7602);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullExpressionValue(var$1, var$2);
@@ -1060599,7 +1060688,7 @@ cuuctc_CityButton__clinit_ = () => {
             break main;
         }
         var$1 = $tmp;
-        var$2 = $rt_s(7601);
+        var$2 = $rt_s(7602);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullExpressionValue(var$1, var$2);
@@ -1064038,7 +1064127,7 @@ let cuucw_UnitIconGroup__init_ = ($this, $unitView, $size) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7469);
+        var$3 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, var$3);
@@ -1083892,7 +1083981,7 @@ cuv_CityConstructionsView_canPlaceCreateOneImprovementOn = ($this, $improvement,
         if ($rt_suspending()) {
             break main;
         }
-        var$3 = $rt_s(7459);
+        var$3 = $rt_s(7460);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileView, var$3);
@@ -1084472,7 +1084561,7 @@ cuuctc_DefenceTable__init_ = ($this, $cityView, $selectedCiv) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $cityView_0 = $rt_s(7559);
+        $cityView_0 = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, $cityView_0);
@@ -1084735,7 +1084824,7 @@ cuuctc_CityTable__init_ = ($this, $city, $forPopup) => {
             break main;
         }
         $city = $tmp;
-        $selectedCiv = $rt_s(7601);
+        $selectedCiv = $rt_s(7602);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullExpressionValue($city, $selectedCiv);
@@ -1084777,7 +1084866,7 @@ cuuctc_CityTable__init_ = ($this, $city, $forPopup) => {
             break main;
         }
         $city = $tmp;
-        $selectedCiv = $rt_s(7601);
+        $selectedCiv = $rt_s(7602);
         $ptr = 16;
     case 16:
         kji_Intrinsics_checkNotNullExpressionValue($city, $selectedCiv);
@@ -1084799,7 +1084888,7 @@ cuuctc_CityTable__init_ = ($this, $city, $forPopup) => {
         $city = $tmp;
         $selectedCiv = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck($city)));
         $selectedCiv.$a = 0.8999999761581421;
-        $city = $rt_s(7571);
+        $city = $rt_s(7572);
         $ptr = 19;
     case 19:
         kji_Intrinsics_checkNotNullExpressionValue($selectedCiv, $city);
@@ -1085935,7 +1086024,7 @@ cuuctc_AirUnitTable__init_ = ($this, $cityView, $numberOfUnits, $size) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $aircraftImage = $rt_s(7559);
+        $aircraftImage = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, $aircraftImage);
@@ -1086096,7 +1086185,7 @@ cuuctc_StatusTable__init_ = ($this, $cityView, $iconSize) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$3 = $rt_s(7559);
+        var$3 = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, var$3);
@@ -1093655,14 +1093744,14 @@ cuusww_WorldMapHolder_addTiles$Unciv_core = $this => {
             break main;
         }
         $tileGroupsNew = $tmp;
-        $item$iv$iv = $rt_s(7459);
+        $item$iv$iv = $rt_s(7460);
         $ptr = 12;
     case 12:
         kji_Intrinsics_checkNotNullParameter($tileGroupsNew, $item$iv$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $item$iv$iv = $rt_s(7460);
+        $item$iv$iv = $rt_s(7461);
         $ptr = 13;
     case 13:
         kji_Intrinsics_checkNotNullParameter($tileSetStrings, $item$iv$iv);
@@ -1093805,7 +1093894,7 @@ cuusww_WorldMapHolder_onTileClicked = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $previousSelectedUnitViews = $rt_s(7459);
+        $previousSelectedUnitViews = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $previousSelectedUnitViews);
@@ -1094618,7 +1094707,7 @@ cuusww_WorldMapHolder_onTileClicked = ($this, $tileView) => {
         $previousSelectedUnitViews = $tmp;
         if (!($rt_nullCheck($previousSelectedUnitViews)).$singleTapMove) {
             $previousSelectedUnitViews = new cuusww_SwapWithOverlayButtonData;
-            $element$iv = $rt_s(7469);
+            $element$iv = $rt_s(7470);
             $ptr = 59;
             continue main;
         }
@@ -1094643,7 +1094732,7 @@ cuusww_WorldMapHolder_onTileClicked = ($this, $tileView) => {
         if ($rt_suspending()) {
             break main;
         }
-        $element$iv = $rt_s(7459);
+        $element$iv = $rt_s(7460);
         $ptr = 60;
     case 60:
         kji_Intrinsics_checkNotNullParameter($tileView, $element$iv);
@@ -1095565,7 +1095654,7 @@ cuusww_WorldMapHolder_swapMoveUnitToTargetTile$Unciv_core = ($this, $selectedUni
         }
         var$4 = 1;
         $selectedUnitView_0 = $rt_nullCheck($selectedUnitView);
-        $selectedUnitView = $rt_s(7459);
+        $selectedUnitView = $rt_s(7460);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($targetTileView, $selectedUnitView);
@@ -1096566,7 +1096655,7 @@ cuusww_WorldMapHolder_updateMovementOverlay$Unciv_core = ($this, $gameView, $tar
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $selectedUnit = $rt_s(7594);
+        $selectedUnit = $rt_s(7595);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($gameView, $selectedUnit);
@@ -1104669,7 +1104758,7 @@ cuuswb_BattleTable_simulateAirsweep = ($this, $attacker, $targetTileView) => {
         }
         $canAttack = $tmp;
         $defenderLabel = new cbgssu_Label;
-        $attackerNameWrapper = $rt_s(7527);
+        $attackerNameWrapper = $rt_s(7528);
         $attackerLabel = var$11.$skin;
         $ptr = 12;
     case 12:
@@ -1104750,7 +1104839,7 @@ cuuswb_BattleTable_simulateAirsweep = ($this, $attacker, $targetTileView) => {
         }
         $attacker = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($attacker);
-        jl_AbstractStringBuilder_append($attacker, $rt_s(7527));
+        jl_AbstractStringBuilder_append($attacker, $rt_s(7528));
         jl_AbstractStringBuilder_append0($attacker, $attackIcon);
         $ptr = 21;
     case 21:
@@ -1104952,7 +1105041,7 @@ cuuswb_BattleTable_simulateAirsweep = ($this, $attacker, $targetTileView) => {
         if ($rt_suspending()) {
             break main;
         }
-        $attacker = $rt_s(7494);
+        $attacker = $rt_s(7495);
         $attackerLabel = null;
         $canReach = 0;
         $attackIcon = 3;
@@ -1106834,7 +1106923,7 @@ cuucw_BasicTileInfo_shouldBeVisible = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1106917,7 +1107006,7 @@ cuuswb_TileInfoTable_shouldBeVisible = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1106971,7 +1107060,7 @@ cuuswb_TileInfoTable_addAdditionalContent = ($this, $$this$addAdditionalContent,
         if ($rt_suspending()) {
             break main;
         }
-        $imagesString = $rt_s(7459);
+        $imagesString = $rt_s(7460);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileView, $imagesString);
@@ -1118345,7 +1118434,7 @@ cuusc_MarkupRenderer_render$default = (var$1, var$2, var$3, var$4, var$5, var$6,
         if ($rt_suspending()) {
             break main;
         }
-        var$8 = $rt_s(7475);
+        var$8 = $rt_s(7476);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$5, var$8);
@@ -1118416,7 +1118505,7 @@ cuusc_MarkupRenderer_renderTo = ($this, $table, $lines, $labelWidth, $iconDispla
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7475);
+        var$6 = $rt_s(7476);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($iconDisplay, var$6);
@@ -1127494,7 +1127583,7 @@ cuuswt_WorldScreenTopBarResources__init_ = ($this, $topbar) => {
         if ($rt_suspending()) {
             break main;
         }
-        $destination$iv$iv = $rt_s(7393);
+        $destination$iv$iv = $rt_s(7394);
         $ptr = 31;
     case 31:
         kji_Intrinsics_checkNotNullParameter($resourceImage, $destination$iv$iv);
@@ -1130613,7 +1130702,7 @@ cuusw_NotificationsScroll$RestoreButton_flash = $this => {
     case 0:
         var$1 = new cuusw_NotificationsScroll$ButtonFlashAction;
         var$2 = $this.$bellIcon;
-        var$3 = $rt_s(7393);
+        var$3 = $rt_s(7394);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$2, var$3);
@@ -1131109,7 +1131198,7 @@ cuusws_NextTurnAction__clinit_ = () => {
             break main;
         }
         var$6 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 24;
     case 24:
         kji_Intrinsics_checkNotNullExpressionValue(var$6, var$5);
@@ -1131136,7 +1131225,7 @@ cuusws_NextTurnAction__clinit_ = () => {
             break main;
         }
         var$6 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 27;
     case 27:
         kji_Intrinsics_checkNotNullExpressionValue(var$6, var$5);
@@ -1131163,7 +1131252,7 @@ cuusws_NextTurnAction__clinit_ = () => {
             break main;
         }
         var$6 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 30;
     case 30:
         kji_Intrinsics_checkNotNullExpressionValue(var$6, var$5);
@@ -1131190,7 +1131279,7 @@ cuusws_NextTurnAction__clinit_ = () => {
             break main;
         }
         var$6 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 33;
     case 33:
         kji_Intrinsics_checkNotNullExpressionValue(var$6, var$5);
@@ -1131217,7 +1131306,7 @@ cuusws_NextTurnAction__clinit_ = () => {
             break main;
         }
         var$6 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 36;
     case 36:
         kji_Intrinsics_checkNotNullExpressionValue(var$6, var$5);
@@ -1140335,7 +1140424,7 @@ cuv_MapUnitView_getPathToTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$map$iv = $rt_s(7459);
+        $$this$map$iv = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $$this$map$iv);
@@ -1140444,7 +1140533,7 @@ cuv_MapUnitView_getRoadPath = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$map$iv = $rt_s(7459);
+        $$this$map$iv = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $$this$map$iv);
@@ -1140655,7 +1140744,7 @@ cuv_MapUnitView_canReach = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1140694,7 +1140783,7 @@ cuv_MapUnitView_getShortestPath = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$map$iv = $rt_s(7459);
+        $$this$map$iv = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $$this$map$iv);
@@ -1140792,7 +1140881,7 @@ cuv_MapUnitView_canSwapTo = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1140831,7 +1140920,7 @@ cuv_MapUnitView_canMoveTo = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1140875,7 +1140964,7 @@ cuv_MapUnitView_getDamageFromTerrain = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1140914,7 +1141003,7 @@ cuv_MapUnitView_isUnknownTileWeShouldAssumeToBePassable = ($this, $tileView) => 
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1140953,7 +1141042,7 @@ cuv_MapUnitView_containsAttackableEnemy = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1141598,7 +1141687,7 @@ cuv_MapUnitView_canReachInCurrentTurn = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1141876,7 +1141965,7 @@ cuv_MapUnitView_tryHeadTowards = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1141914,7 +1142003,7 @@ cuv_MapUnitView_trySwapMoveToTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1141975,7 +1142064,7 @@ cuv_MapUnitView_trySetMoveToAction = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $position = $rt_s(7459);
+        $position = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $position);
@@ -1142665,7 +1142754,7 @@ cuv_MapUnitView_tryMoveToTile = ($this, $tileView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, var$2);
@@ -1144101,7 +1144190,7 @@ cum_TutorialTrigger__clinit_ = () => {
         }
         cum_TutorialTrigger_Keyboard = var$1;
         var$1 = new cum_TutorialTrigger;
-        var$2 = $rt_s(7379);
+        var$2 = $rt_s(7380);
         var$3 = 31;
         var$4 = $rt_s(9241);
         var$5 = 0;
@@ -1170120,7 +1170209,7 @@ cuusc_CivilopediaCategories__clinit_ = () => {
         var$4 = $rt_s(7282);
         var$6 = cuusc_CivilopediaImageGetters_getUnitNameGroup($rt_nullCheck(cuusc_CivilopediaImageGetters_INSTANCE));
         var$7 = cuuci_KeyboardBinding_PediaUnitNameGroups;
-        var$5 = $rt_s(7605);
+        var$5 = $rt_s(7606);
         var$8 = cuusc_CivilopediaCategories$_clinit_$lambda$_29_15__init_();
         $ptr = 17;
     case 17:
@@ -1172562,7 +1172651,7 @@ cuusc_CivilopediaCategories$_clinit_$lambda$_29_6_invoke = (var$0, var$1, var$2)
         var$7 = new cumru_UnitType;
         var$8 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$8);
-        jl_AbstractStringBuilder_append(var$8, $rt_s(7609));
+        jl_AbstractStringBuilder_append(var$8, $rt_s(7610));
         var$2 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$8, var$2.$name2);
         jl_AbstractStringBuilder_append0(var$8, 93);
@@ -1187547,7 +1187636,7 @@ culmp_AStarPathfinder__init_ = ($this, $debugId, $debugMapType, $destination, $p
         if ($rt_suspending()) {
             break main;
         }
-        $$this$forEachSetBit$iv = $rt_s(7468);
+        $$this$forEachSetBit$iv = $rt_s(7469);
         $ptr = 11;
     case 11:
         kji_Intrinsics_checkNotNullParameter($cache, $$this$forEachSetBit$iv);
@@ -1211528,7 +1211617,7 @@ cuusw_AlertPopup_addRecapturedCivilian = $this => {
         jl_AbstractStringBuilder_append($originalOwner, $tile);
         jl_AbstractStringBuilder_append($originalOwner, $rt_s(5520));
         jl_AbstractStringBuilder_append($originalOwner, $originalOwner_0.$civName);
-        jl_AbstractStringBuilder_append($originalOwner, $rt_s(7584));
+        jl_AbstractStringBuilder_append($originalOwner, $rt_s(7585));
         $ptr = 17;
     case 17:
         $tmp = jl_AbstractStringBuilder_toString($originalOwner);
@@ -1212846,7 +1212935,7 @@ cuusw_AlertPopup_addQuestionAboutTheCity = ($this, $cityName) => {
         jl_AbstractStringBuilder__init_(var$3);
         jl_AbstractStringBuilder_append(var$3, $rt_s(9675));
         jl_AbstractStringBuilder_append(var$3, $cityName);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$3);
@@ -1225735,14 +1225824,14 @@ let cuv_AttackableTileView__init_ = ($this, $attackableTile, $viewer, $spectator
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7593);
+        var$5 = $rt_s(7594);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($viewer, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7594);
+        var$5 = $rt_s(7595);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($gameView, var$5);
@@ -1227690,7 +1227779,7 @@ cuuswua_UiUnitAction_getIcon = ($this, $size) => {
             break main;
         }
         $religionName = cuui_ImageGetter_INSTANCE;
-        $associatedUnique_0 = $rt_s(7497);
+        $associatedUnique_0 = $rt_s(7498);
         $religionName = $rt_nullCheck($religionName);
         $ptr = 25;
     case 25:
@@ -1262733,7 +1262822,7 @@ cuuswua_UiUnitActionType__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         $$this$filter$iv = new cuuswua_UiUnitActionType;
-        $destination$iv$iv = $rt_s(7488);
+        $destination$iv$iv = $rt_s(7489);
         $capacity$iv = 0;
         $ptr = 1;
     case 1:
@@ -1262757,7 +1262846,7 @@ cuuswua_UiUnitActionType__clinit_ = () => {
         }
         cuuswua_UiUnitActionType_StopEscortFormation = $$this$filter$iv;
         $$this$filter$iv = new cuuswua_UiUnitActionType;
-        $destination$iv$iv = $rt_s(7490);
+        $destination$iv$iv = $rt_s(7491);
         $capacity$iv = 1;
         $element$iv$iv = cum_UnitActionType_EscortFormation;
         $it = cuuswua_UiUnitActionKt_access$portrait($rt_s(9923));
@@ -1262915,10 +1263004,10 @@ cuuswua_UiUnitActionType__clinit_ = () => {
         }
         cuuswua_UiUnitActionType_FortifyUntilHealed = $$this$filter$iv;
         $$this$filter$iv = new cuuswua_UiUnitActionType;
-        $destination$iv$iv = $rt_s(7492);
+        $destination$iv$iv = $rt_s(7493);
         $capacity$iv = 12;
         $element$iv$iv = cum_UnitActionType_Guard;
-        $it = cuuswua_UiUnitActionKt_access$portrait($rt_s(7492));
+        $it = cuuswua_UiUnitActionKt_access$portrait($rt_s(7493));
         var$6 = 0;
         $ptr = 14;
     case 14:
@@ -1263196,7 +1263285,7 @@ cuuswua_UiUnitActionType__clinit_ = () => {
         }
         cuuswua_UiUnitActionType_Repair = $$this$filter$iv;
         $$this$filter$iv = new cuuswua_UiUnitActionType$CreateImprovement;
-        $destination$iv$iv = $rt_s(7495);
+        $destination$iv$iv = $rt_s(7496);
         $capacity$iv = 25;
         $ptr = 35;
     case 35:
@@ -1263231,10 +1263320,10 @@ cuuswua_UiUnitActionType__clinit_ = () => {
         }
         cuuswua_UiUnitActionType_HurryResearch = $$this$filter$iv;
         $$this$filter$iv = new cuuswua_UiUnitActionType;
-        $destination$iv$iv = $rt_s(7497);
+        $destination$iv$iv = $rt_s(7498);
         $capacity$iv = 27;
         $element$iv$iv = cum_UnitActionType_HurryPolicy;
-        $it = cuuswua_UiUnitActionKt_access$portrait($rt_s(7497));
+        $it = cuuswua_UiUnitActionKt_access$portrait($rt_s(7498));
         var$6 = 0;
         $$this$associateBy$iv = $rt_nullCheck(cum_UncivSound_Companion);
         $ptr = 38;
@@ -1296753,7 +1296842,7 @@ let cuucw_BasicTileInfo$getStatsTable$lambda$_11_0_invoke = var$0 => {
         var$1 = var$0.$_0713;
         var$2 = var$0.$_1271;
         var$3 = new cuucw_BasicTileInfo$StatBreakdownPopup;
-        var$4 = $rt_s(7459);
+        var$4 = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$2, var$4);
@@ -1296945,7 +1297034,7 @@ cuuo_TileDescription_toMarkup = ($this, $tileView, $hideUnits, $spyCity) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $pillageText = $rt_s(7459);
+        $pillageText = $rt_s(7460);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($tileView, $pillageText);
@@ -1298416,7 +1298505,7 @@ cuuo_TileDescription_addNeedsResearchLine = ($this, $lineList, $tileView, $viewi
         if ($rt_suspending()) {
             break main;
         }
-        $resource = $rt_s(7459);
+        $resource = $rt_s(7460);
         $ptr = 18;
     case 18:
         kji_Intrinsics_checkNotNullParameter($tileView, $resource);
@@ -1299842,7 +1299931,7 @@ culb_Nuke_addNukeNotifications = ($this, $targetTile, $attacker, $notifyDeclared
         }
         $attacker = $tmp;
         jl_AbstractStringBuilder_append($targetTile, $attacker);
-        jl_AbstractStringBuilder_append($targetTile, $rt_s(7429));
+        jl_AbstractStringBuilder_append($targetTile, $rt_s(7430));
         jl_AbstractStringBuilder_append($targetTile, $attackingCiv.$civName);
         jl_AbstractStringBuilder_append($targetTile, $rt_s(10075));
         $ptr = 39;
@@ -1327074,7 +1327163,7 @@ let cuusc_CityReligionInfoTable__init_ = ($this, $cityView, $showMajority) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $gridColor = $rt_s(7559);
+        $gridColor = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, $gridColor);
@@ -1355513,7 +1355602,7 @@ cuuo_DescriptionHelpersKt_uniquesToDescription = ($$this$uniquesToDescription, $
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(7398);
+        var$4 = $rt_s(7399);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($exclude, var$4);
@@ -1355683,7 +1355772,7 @@ cuuo_DescriptionHelpersKt_uniquesToCivilopediaTextLines$default = (var$1, var$2,
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(7398);
+        var$7 = $rt_s(7399);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$5, var$7);
@@ -1355697,7 +1355786,7 @@ cuuo_DescriptionHelpersKt_uniquesToCivilopediaTextLines$default = (var$1, var$2,
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(7398);
+        var$7 = $rt_s(7399);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$5, var$7);
@@ -1360183,7 +1360272,7 @@ culmma_UnitActionsPillage_getPillageAction$Unciv_core = ($this, $unit, $tile) =>
         jl_AbstractStringBuilder__init_(var$9);
         jl_AbstractStringBuilder_append(var$9, $rt_s(10487));
         jl_AbstractStringBuilder_append(var$9, $improvementName);
-        jl_AbstractStringBuilder_append(var$9, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$9, $rt_s(7585));
         $ptr = 12;
     case 12:
         $tmp = jl_AbstractStringBuilder_toString(var$9);
@@ -1383306,7 +1383395,7 @@ culmma_UnitActionsFromUniques_getFoundCityAction$Unciv_core = ($this, $unit, $ti
             jl_AbstractStringBuilder__init_($unit);
             jl_AbstractStringBuilder_append($unit, $rt_s(10662));
             jl_AbstractStringBuilder_append($unit, $leadersPromisedNotToSettleNear);
-            jl_AbstractStringBuilder_append($unit, $rt_s(7584));
+            jl_AbstractStringBuilder_append($unit, $rt_s(7585));
             $ptr = 31;
             continue main;
         }
@@ -1386793,7 +1386882,7 @@ culmma_UnitActionsReligion_getRemoveHeresyAction$Unciv_core = ($this, $unit, $ti
         $newStyleUnique = $rt_castToClass($unit, cumru_Unique);
         if ($newStyleUnique === null ? 0 : 1) {
             $unit = culmma_UnitActionModifiers_INSTANCE;
-            $tile = $rt_s(7503);
+            $tile = $rt_s(7504);
             $unit = $rt_nullCheck($unit);
             $ptr = 23;
             continue main;
@@ -1390455,7 +1390544,7 @@ cuuo_BaseUnitDescriptions_getUnitTypeCivilopediaTextLines$lambda$0$getUnitTypeLi
         }
         $$this$filter$iv = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($$this$filter$iv);
-        jl_AbstractStringBuilder_append($$this$filter$iv, $rt_s(7609));
+        jl_AbstractStringBuilder_append($$this$filter$iv, $rt_s(7610));
         jl_AbstractStringBuilder_append($$this$filter$iv, $it.$name2);
         jl_AbstractStringBuilder_append0($$this$filter$iv, 93);
         $ptr = 7;
@@ -1411472,7 +1411561,7 @@ cuusm_ModManagementScreen_syncSelected = ($this, $modName, $button, $modNameToDa
             break main;
         }
         $modName = $tmp;
-        $button = $rt_s(7601);
+        $button = $rt_s(7602);
         $ptr = 10;
     case 10:
         kji_Intrinsics_checkNotNullExpressionValue($modName, $button);
@@ -1416236,7 +1416325,7 @@ cuusd_ConsoleTileCommands$ConsoleRiverAction$Companion_action = ($this, $console
                 continue main;
             }
             $direction = $rt_nullCheck($console);
-            $console = $rt_s(7579);
+            $console = $rt_s(7580);
             $ptr = 5;
             continue main;
         }
@@ -1416271,7 +1416360,7 @@ cuusd_ConsoleTileCommands$ConsoleRiverAction$Companion_action = ($this, $console
             continue main;
         }
         $direction = $rt_nullCheck($console);
-        $console = $rt_s(7579);
+        $console = $rt_s(7580);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter($selectedTile, $console);
@@ -1429331,7 +1429420,7 @@ cumrv_RulesetValidator_checkTilesetSanity = ($this, $lines) => {
         }
         var$4 = $tmp;
         if (var$4 ? 0 : 1) {
-            $folderContent = $rt_wrapArray(jl_String, [$rt_s(994), $rt_s(992), $rt_s(7449)]);
+            $folderContent = $rt_wrapArray(jl_String, [$rt_s(994), $rt_s(992), $rt_s(7450)]);
             $ptr = 31;
             continue main;
         }
@@ -1429582,7 +1429671,7 @@ cumrv_RulesetValidator_checkTilesetSanity = ($this, $lines) => {
             break main;
         }
         $tilesetConfigFolder = $tmp;
-        $configTilesets = $rt_s(7449);
+        $configTilesets = $rt_s(7450);
         $ptr = 41;
     case 41:
         $tmp = kc_SetsKt___SetsKt_minus0($tilesetConfigFolder, $configTilesets);
@@ -1429701,7 +1429790,7 @@ cumrv_RulesetValidator_getTilesetNamesFromAtlases = $this => {
             $ptr = 2;
             continue main;
         }
-        $$this$map$iv = $rt_s(7486);
+        $$this$map$iv = $rt_s(7487);
         $ptr = 1;
     case 1:
         kji_Intrinsics_throwUninitializedPropertyAccessException($$this$map$iv);
@@ -1460594,11 +1460683,11 @@ cult_TradeLogic_getCurrentTrade = $this => {
     return $this.$currentTrade;
 },
 cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
-    let $offers, $otherCiv_0, $amount, $destination$iv$iv, $$this$filter$iv, var$8, $$this$filterNot$iv, $otherCivsWeKnow, $element$iv$iv, $entry, $resourceTradeOfferType, var$14, $civsWeKnowAndTheyDont, $civsWeArentAtWarWith, $thirdCivsAtWarTheyKnow, $civsWeBothKnow, $thirdCiv, $it, $city, $ptr, $tmp;
+    let $offers, $otherCiv_0, $amount, $$this$filterNot$iv, $otherCivsWeKnow, $destination$iv$iv, var$9, $$this$filter$iv, $element$iv$iv, $entry, $resourceTradeOfferType, var$14, $civsWeKnowAndTheyDont, $civsWeArentAtWarWith, $thirdCivsAtWarTheyKnow, $civsWeBothKnow, $thirdCiv, $it, $city, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$city = $thread.pop();$it = $thread.pop();$thirdCiv = $thread.pop();$civsWeBothKnow = $thread.pop();$thirdCivsAtWarTheyKnow = $thread.pop();$civsWeArentAtWarWith = $thread.pop();$civsWeKnowAndTheyDont = $thread.pop();var$14 = $thread.pop();$resourceTradeOfferType = $thread.pop();$entry = $thread.pop();$element$iv$iv = $thread.pop();$otherCivsWeKnow = $thread.pop();$$this$filterNot$iv = $thread.pop();var$8 = $thread.pop();$$this$filter$iv = $thread.pop();$destination$iv$iv = $thread.pop();$amount
+        $ptr = $thread.pop();$city = $thread.pop();$it = $thread.pop();$thirdCiv = $thread.pop();$civsWeBothKnow = $thread.pop();$thirdCivsAtWarTheyKnow = $thread.pop();$civsWeArentAtWarWith = $thread.pop();$civsWeKnowAndTheyDont = $thread.pop();var$14 = $thread.pop();$resourceTradeOfferType = $thread.pop();$entry = $thread.pop();$element$iv$iv = $thread.pop();$$this$filter$iv = $thread.pop();var$9 = $thread.pop();$destination$iv$iv = $thread.pop();$otherCivsWeKnow = $thread.pop();$$this$filterNot$iv = $thread.pop();$amount
         = $thread.pop();$otherCiv_0 = $thread.pop();$offers = $thread.pop();$otherCiv = $thread.pop();$civInfo = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
@@ -1460621,7 +1460710,7 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         $amount = $tmp;
         if ($amount) {
             $otherCiv = new cult_TradeOffer;
-            $destination$iv$iv = $rt_s(5701);
+            $$this$filterNot$iv = $rt_s(5701);
             $ptr = 3;
             continue main;
         }
@@ -1460645,28 +1460734,28 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filter$iv = cult_TradeOfferType_Treaty;
-        var$8 = 0;
+        $otherCivsWeKnow = cult_TradeOfferType_Treaty;
+        $amount = 0;
         $ptr = 4;
     case 4:
         $tmp = culc_Civilization_getGameInfo($civInfo);
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filterNot$iv = $tmp;
-        $$this$filterNot$iv = $rt_nullCheck($$this$filterNot$iv);
+        $destination$iv$iv = $tmp;
+        $destination$iv$iv = $rt_nullCheck($destination$iv$iv);
         $ptr = 5;
     case 5:
-        $tmp = cul_GameInfo_getSpeed($$this$filterNot$iv);
+        $tmp = cul_GameInfo_getSpeed($destination$iv$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $otherCivsWeKnow = $tmp;
-        $amount = 4;
-        $$this$filterNot$iv = null;
+        $destination$iv$iv = $tmp;
+        var$9 = 4;
+        $$this$filter$iv = null;
         $ptr = 6;
     case 6:
-        cult_TradeOffer__init_($otherCiv, $destination$iv$iv, $$this$filter$iv, var$8, $otherCivsWeKnow, $amount, $$this$filterNot$iv);
+        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $otherCivsWeKnow, $amount, $destination$iv$iv, var$9, $$this$filter$iv);
         if ($rt_suspending()) {
             break main;
         }
@@ -1460839,11 +1460928,11 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
             break main;
         }
         $$this$filter$iv = $tmp;
-        var$8 = 4;
+        var$9 = 4;
         $otherCivsWeKnow = null;
         $ptr = 25;
     case 25:
-        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$8, $otherCivsWeKnow);
+        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$9, $otherCivsWeKnow);
         if ($rt_suspending()) {
             break main;
         }
@@ -1460907,11 +1460996,11 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
             break main;
         }
         $$this$filter$iv = $tmp;
-        var$8 = 4;
+        var$9 = 4;
         $otherCivsWeKnow = null;
         $ptr = 32;
     case 32:
-        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$8, $otherCivsWeKnow);
+        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$9, $otherCivsWeKnow);
         if ($rt_suspending()) {
             break main;
         }
@@ -1461536,11 +1461625,11 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
             break main;
         }
         $$this$filter$iv = $tmp;
-        var$8 = 4;
+        var$9 = 4;
         $civsWeBothKnow = null;
         $ptr = 102;
     case 102:
-        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$8, $civsWeBothKnow);
+        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$9, $civsWeBothKnow);
         if ($rt_suspending()) {
             break main;
         }
@@ -1461576,15 +1461665,11 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         }
         $amount = $tmp;
         if ($amount) {
-            if (1) {
-                $otherCiv = $rt_nullCheck($otherCiv);
-                $ptr = 96;
-                continue main;
-            }
-            $$this$filterNot$iv = $rt_nullCheck($destination$iv$iv);
-            $ptr = 125;
+            $otherCiv = $rt_nullCheck($otherCiv);
+            $ptr = 96;
             continue main;
         }
+        $$this$filterNot$iv = $rt_nullCheck($destination$iv$iv);
         $ptr = 115;
         continue main;
     case 107:
@@ -1461618,7 +1461703,7 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         $$this$filterNot$iv = new cult_TradeOffer;
         $destination$iv$iv = culc_Civilization_getCivID($rt_nullCheck($thirdCiv));
         $$this$filter$iv = cult_TradeOfferType_WarDeclaration;
-        var$8 = 0;
+        var$9 = 0;
         $ptr = 110;
     case 110:
         $tmp = culc_Civilization_getGameInfo($civInfo);
@@ -1461638,7 +1461723,7 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         $otherCiv = null;
         $ptr = 112;
     case 112:
-        cult_TradeOffer__init_($$this$filterNot$iv, $destination$iv$iv, $$this$filter$iv, var$8, $otherCivsWeKnow, $amount, $otherCiv);
+        cult_TradeOffer__init_($$this$filterNot$iv, $destination$iv$iv, $$this$filter$iv, var$9, $otherCivsWeKnow, $amount, $otherCiv);
         if ($rt_suspending()) {
             break main;
         }
@@ -1461663,18 +1461748,12 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         $ptr = 76;
         continue main;
     case 115:
-        $tmp = culc_City_isInResistance($it);
+        ju_ArrayList_add($$this$filterNot$iv, $element$iv$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $amount = $tmp;
-        if ($amount ? 1 : 0) {
-            $otherCiv = $rt_nullCheck($otherCiv);
-            $ptr = 96;
-            continue main;
-        }
-        $$this$filterNot$iv = $rt_nullCheck($destination$iv$iv);
-        $ptr = 125;
+        $otherCiv = $rt_nullCheck($otherCiv);
+        $ptr = 96;
         continue main;
     case 116:
         $tmp = ju_AbstractList$1_next($civsWeBothKnow);
@@ -1461702,11 +1461781,11 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
             break main;
         }
         $$this$filter$iv = $tmp;
-        var$8 = 4;
+        var$9 = 4;
         $otherCivsWeKnow = null;
         $ptr = 119;
     case 119:
-        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$8, $otherCivsWeKnow);
+        cult_TradeOffer__init_($otherCiv, $$this$filterNot$iv, $destination$iv$iv, $amount, $$this$filter$iv, var$9, $otherCivsWeKnow);
         if ($rt_suspending()) {
             break main;
         }
@@ -1461746,17 +1461825,9 @@ cult_TradeLogic_getAvailableOffers = ($this, $civInfo, $otherCiv) => {
         }
         $ptr = 97;
         continue main;
-    case 125:
-        ju_ArrayList_add($$this$filterNot$iv, $element$iv$iv);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $otherCiv = $rt_nullCheck($otherCiv);
-        $ptr = 96;
-        continue main;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $civInfo, $otherCiv, $offers, $otherCiv_0, $amount, $destination$iv$iv, $$this$filter$iv, var$8, $$this$filterNot$iv, $otherCivsWeKnow, $element$iv$iv, $entry, $resourceTradeOfferType, var$14, $civsWeKnowAndTheyDont, $civsWeArentAtWarWith, $thirdCivsAtWarTheyKnow, $civsWeBothKnow, $thirdCiv, $it, $city, $ptr);
+    $rt_nativeThread().push($this, $civInfo, $otherCiv, $offers, $otherCiv_0, $amount, $$this$filterNot$iv, $otherCivsWeKnow, $destination$iv$iv, var$9, $$this$filter$iv, $element$iv$iv, $entry, $resourceTradeOfferType, var$14, $civsWeKnowAndTheyDont, $civsWeArentAtWarWith, $thirdCivsAtWarTheyKnow, $civsWeBothKnow, $thirdCiv, $it, $city, $ptr);
 },
 cult_TradeLogic_acceptTrade = ($this, $applyGifts) => {
     let $ourDiploManager, $theirDiploManager, $$this$any$iv, $ourDiploManager_0, $theirDiploManager_0, $$this$filterNot$iv, $destination$iv$iv, $element$iv, $ourGoldValueOfTrade, $theirGoldValueOfTrade, $isPureGift, $it, $element$iv$iv, $offer, $$this$filter$iv, $ptr, $tmp;
@@ -1466225,7 +1466296,7 @@ cuui_AtlasPreview_logMissingAtlas = ($this, $name, $ruleset, $errorList) => {
             break main;
         }
         var$10 = new ki_FileTreeWalk;
-        $name = $rt_s(7465);
+        $name = $rt_s(7466);
         $ptr = 14;
     case 14:
         kji_Intrinsics_checkNotNullParameter($pixmap, $name);
@@ -1478805,7 +1478876,7 @@ culac_ThreatManager_getDistanceToClosestEnemyUnit = ($this, $civ, $cache, $tile,
         if ($rt_suspending()) {
             break main;
         }
-        $tileData = $rt_s(7468);
+        $tileData = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $tileData);
@@ -1479117,7 +1479188,7 @@ culac_ThreatManager_getTilesWithEnemyUnitsInDistance = ($this, $civ, $cache, $ti
         if ($rt_suspending()) {
             break main;
         }
-        $cache_0 = $rt_s(7468);
+        $cache_0 = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $cache_0);
@@ -1479507,14 +1479578,14 @@ culac_ThreatManager_getDangerousTiles = ($this, $cache, $unitView, $distance) =>
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7468);
+        $civ = $rt_s(7469);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cache, $civ);
         if ($rt_suspending()) {
             break main;
         }
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -1499931,7 +1500002,7 @@ cuusmt_MapEditorEditTab_setBrush0 = ($this, $name, $icon, $handlerType, $pediaLi
         if ($rt_suspending()) {
             break main;
         }
-        $brushActor = $rt_s(7393);
+        $brushActor = $rt_s(7394);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($icon, $brushActor);
@@ -1500075,7 +1500146,7 @@ cuusmt_MapEditorEditTab_setBrush = ($this, $handlerType, $name, $icon, $pediaLin
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7393);
+        var$6 = $rt_s(7394);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($icon, var$6);
@@ -1525129,7 +1525200,7 @@ cuupo_MultiplayerTab_addMultiplayerServerOptions = ($this, $toUpdate) => {
             break main;
         }
         var$4 = $tmp;
-        $textToShowForOnlineMultiplayerAddress = !var$4 ? $rt_s(7473) : ($rt_nullCheck(cuupo_MultiplayerTab_getMpSettings($this))).$server;
+        $textToShowForOnlineMultiplayerAddress = !var$4 ? $rt_s(7474) : ($rt_nullCheck(cuupo_MultiplayerTab_getMpSettings($this))).$server;
         $multiplayerServerTextField = new cuucw_UncivTextField;
         $serverIpTable = $rt_s(11597);
         $errorTextField = null;
@@ -1533716,7 +1533787,7 @@ cuusww_WorldMapHolder$addTileOverlaysWithUnitMovement$1$1_invokeSuspend = ($this
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filter$iv = $rt_s(7459);
+        $$this$filter$iv = $rt_s(7460);
         $ptr = 19;
     case 19:
         kji_Intrinsics_checkNotNullParameter($$result, $$this$filter$iv);
@@ -1533974,14 +1534045,14 @@ cuusww_WorldMapHolder$addTileOverlaysWithUnitRoadConnecting$1$1_invoke = ($this,
         $p2 = new cuusww_ConnectRoadOverlayButtonData;
         var$3 = $p1.$$selectedUnitView2;
         var$4 = $p1.$$tileView2;
-        var$5 = $rt_s(7469);
+        var$5 = $rt_s(7470);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7459);
+        var$5 = $rt_s(7460);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$4, var$5);
@@ -1549494,7 +1549565,7 @@ cuup_AskNumberPopup__init_0 = ($this, $stageToShowOn, $label, $icon, $defaultVal
         if ($rt_suspending()) {
             break main;
         }
-        $valueField = $rt_s(7393);
+        $valueField = $rt_s(7394);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($icon, $valueField);
@@ -1557767,7 +1557838,7 @@ cuusn_NationPickerPopup__clinit_ = () => {
         var$1 = $tmp;
         var$2 = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck(var$1)));
         var$2.$a = 0.6700000166893005;
-        var$1 = $rt_s(7571);
+        var$1 = $rt_s(7572);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -1565919,7 +1565990,7 @@ cuuss_LoadOrSaveScreen$showSaveInfo$1_invokeSuspend = ($this, $$result) => {
                 break main;
             }
             $$this$filter$iv = $tmp;
-            $$result = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$result), $$this$filter$iv)), $rt_s(7419))), cul_GameInfoPreview_getTurns($game))), $rt_s(11835))), cumm_GameParameters_getBaseRuleset($rt_nullCheck(cul_GameInfoPreview_getGameParameters($game))))), $mods));
+            $$result = $rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($$result), $$this$filter$iv)), $rt_s(7420))), cul_GameInfoPreview_getTurns($game))), $rt_s(11835))), cumm_GameParameters_getBaseRuleset($rt_nullCheck(cul_GameInfoPreview_getGameParameters($game))))), $mods));
             $ptr = 21;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -1592748,14 +1592819,14 @@ cuuse_EspionageScreen_onSpyRightClicked = ($this, $spy) => {
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(7593);
+        var$7 = $rt_s(7594);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$5, var$7);
         if ($rt_suspending()) {
             break main;
         }
-        var$7 = $rt_s(7594);
+        var$7 = $rt_s(7595);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$2, var$7);
@@ -1593340,7 +1593411,7 @@ cuusp_ReligionPickerScreenCommon_getBeliefButton = ($this, $belief, $beliefType,
             break main;
         }
         $beliefType = $tmp;
-        $it = $rt_s(7601);
+        $it = $rt_s(7602);
         $ptr = 14;
     case 14:
         kji_Intrinsics_checkNotNullExpressionValue($beliefType, $it);
@@ -1597436,7 +1597507,7 @@ cuusd_DiplomacyScreen_getDeclareWarButtonText = ($this, $otherCiv) => {
         jl_AbstractStringBuilder_append($destination$iv$iv, $rt_s(6384));
         $otherCiv_0 = $rt_nullCheck($otherCiv);
         jl_AbstractStringBuilder_append($destination$iv$iv, $otherCiv_0.$civName);
-        jl_AbstractStringBuilder_append($destination$iv$iv, $rt_s(7584));
+        jl_AbstractStringBuilder_append($destination$iv$iv, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString($destination$iv$iv);
@@ -1605731,14 +1605802,14 @@ culau_UnitAutomation_automateUnitMoves = ($this, $unitView, $cache) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $this_$iv = $rt_s(7469);
+        $this_$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $this_$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $this_$iv = $rt_s(7468);
+        $this_$iv = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $this_$iv);
@@ -1606786,14 +1606857,14 @@ culau_UnitAutomation_tryExplore$Unciv_core = ($this, $unitView, $cache) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $this_$iv = $rt_s(7469);
+        $this_$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $this_$iv);
         if ($rt_suspending()) {
             break main;
         }
-        $this_$iv = $rt_s(7468);
+        $this_$iv = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $this_$iv);
@@ -1607902,7 +1607973,7 @@ culau_UnitAutomation_wander = ($this, $unitView, $stayInTerritory, $tilesToAvoid
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $unitTile = $rt_s(7469);
+        $unitTile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $unitTile);
@@ -1608040,7 +1608111,7 @@ culau_UnitAutomation_tryUpgradeUnit$Unciv_core = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $destination$iv$iv = $rt_s(7469);
+        $destination$iv$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $destination$iv$iv);
@@ -1610528,7 +1610599,7 @@ culau_UnitAutomation_tryPillageImprovement = ($this, $unitView, $onlyPillageToHe
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -1613488,14 +1613559,14 @@ culau_UnitAutomation_automatedExplore$default = (var$1, var$2, var$3, var$4, var
         if (var$4 & 2)
             var$3 = culac_AutomationCache__init_();
         var$1 = $rt_nullCheck(var$1);
-        var$5 = $rt_s(7469);
+        var$5 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$2, var$5);
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $rt_s(7468);
+        var$5 = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$3, var$5);
@@ -1613881,7 +1613952,7 @@ let cuusp_CityRenamePopup__init_ = ($this, $screen, $cityView, $actionOnClose) =
         if ($rt_suspending()) {
             break main;
         }
-        var$4 = $rt_s(7559);
+        var$4 = $rt_s(7560);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cityView, var$4);
@@ -1615136,7 +1615207,7 @@ cuusn_RandomNationPickerPopup__clinit_ = () => {
         var$1 = $tmp;
         var$2 = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck(var$1)));
         var$2.$a = 0.6700000166893005;
-        var$1 = $rt_s(7571);
+        var$1 = $rt_s(7572);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullExpressionValue(var$2, var$1);
@@ -1615718,7 +1615789,7 @@ cuusm_MultiplayerHelpers_buildDescriptionText = ($this, $multiplayerGamePreview)
             break main;
         }
         $multiplayerGamePreview = $tmp;
-        $multiplayerGamePreview = $rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($ex), $multiplayerGamePreview)), $rt_s(7419))), cul_GameInfoPreview_getTurns($preview)));
+        $multiplayerGamePreview = $rt_nullCheck(jl_StringBuilder_append2($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck($ex), $multiplayerGamePreview)), $rt_s(7420))), cul_GameInfoPreview_getTurns($preview)));
         $ptr = 46;
     case 46:
         $tmp = jl_StringBuilder_toString($multiplayerGamePreview);
@@ -1619997,7 +1620068,7 @@ cuusm_MultiplayerScreen_skipCurrentPlayerTurn = ($this, $multiplayerGamePreview,
         }
         cuu_Concurrency_$callClinit();
         var$9 = cuu_Concurrency_INSTANCE;
-        var$5 = $rt_s(7504);
+        var$5 = $rt_s(7505);
         var$6 = new cuusm_MultiplayerScreen$skipCurrentPlayerTurn$1;
         var$12 = null;
         $ptr = 5;
@@ -1627002,7 +1627073,7 @@ let cuus_UniqueTable__init_ = ($this, $isMainUnique, $ruleset, $stage, $selectTa
         cbgssu_TextField_setMessageText($initialText, $rt_s(2463));
         $this.$uniqueSearchTextField = $initialText;
         $ruleset = new cbgssu_TextField;
-        $initialText = $rt_s(7603);
+        $initialText = $rt_s(7604);
         $onUniqueChange = $rt_nullCheck(cuusb_BaseScreen_Companion);
         $ptr = 11;
     case 11:
@@ -1630251,14 +1630322,14 @@ cuuo_NationDescriptions$addUniqueUnitsText$lambda$_4_0_invoke = (var$0, var$1) =
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7393);
+        var$1 = $rt_s(7394);
         $ptr = 5;
     case 5:
         kji_Intrinsics_checkNotNullParameter(var$6, var$1);
         if ($rt_suspending()) {
             break main;
         }
-        var$1 = $rt_s(7394);
+        var$1 = $rt_s(7395);
         $ptr = 6;
     case 6:
         kji_Intrinsics_checkNotNullParameter(var$2, var$1);
@@ -1632942,7 +1633013,7 @@ let cuup_AskTextPopup__init_ = (var$0, var$1, var$2, var$3, var$4, var$5, var$6,
         if ($rt_suspending()) {
             break main;
         }
-        var$10 = $rt_s(7393);
+        var$10 = $rt_s(7394);
         $ptr = 8;
     case 8:
         kji_Intrinsics_checkNotNullParameter(var$3, var$10);
@@ -1635883,7 +1635954,7 @@ let cuusc_CityConstructionsTable__init_ = ($this, $cityScreen) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7560);
+        var$2 = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, var$2);
@@ -1640726,7 +1640797,7 @@ let cuusc_CityStatsTable__init_ = ($this, $cityScreen) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7560);
+        var$2 = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, var$2);
@@ -1643751,7 +1643822,7 @@ cuusc_CityStatsTable_addGreatPersonPointInfo = $this => {
         $bar = $tmp;
         $greatPerson = $rt_nullCheck(cbgg_Color_cpy($rt_nullCheck($bar)));
         $greatPerson.$a = 0.800000011920929;
-        $bar = $rt_s(7571);
+        $bar = $rt_s(7572);
         $ptr = 28;
     case 28:
         kji_Intrinsics_checkNotNullExpressionValue($greatPerson, $bar);
@@ -1643958,7 +1644029,7 @@ cuusc_CityScreenTileTable_addAdditionalContent = ($this, $$this$addAdditionalCon
         if ($rt_suspending()) {
             break main;
         }
-        $otherCityView = $rt_s(7459);
+        $otherCityView = $rt_s(7460);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($tileView, $otherCityView);
@@ -1644445,7 +1644516,7 @@ let cuusc_ConstructionInfoTable__init_ = ($this, $cityScreen) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7560);
+        var$2 = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, var$2);
@@ -1646461,7 +1646532,7 @@ cuua_CityAmbiencePlayer__init_ = ($this, $cityView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7559);
+        var$2 = $rt_s(7560);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityView, var$2);
@@ -1650547,7 +1650618,7 @@ let cuusd_TradeTable__init_ = ($this, $civ, $otherCivilization, $diplomacyScreen
         if ($rt_suspending()) {
             break main;
         }
-        $civ = $rt_s(7594);
+        $civ = $rt_s(7595);
         $ptr = 11;
     case 11:
         kji_Intrinsics_checkNotNullParameter(var$6, $civ);
@@ -1662933,7 +1663004,7 @@ culcd_DiplomacyTurnManager_nextTurnTrades = ($this, $$this$nextTurnTrades) => {
             break main;
         }
         $it_0 = $tmp;
-        $$this$filter$iv = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), cult_TradeOffer_getName($offer))), $rt_s(7429));
+        $$this$filter$iv = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), cult_TradeOffer_getName($offer))), $rt_s(7430));
         $ptr = 31;
     case 31:
         $tmp = culcd_DiplomacyManager_getOtherCiv($$this$nextTurnTrades_0);
@@ -1663019,7 +1663090,7 @@ culcd_DiplomacyTurnManager_nextTurnTrades = ($this, $$this$nextTurnTrades) => {
             break main;
         }
         $it = $tmp;
-        $it_0 = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), cult_TradeOffer_getName($offer))), $rt_s(7429));
+        $it_0 = jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append($rt_nullCheck(jl_StringBuilder_append1(jl_StringBuilder__init_(), 91)), cult_TradeOffer_getName($offer))), $rt_s(7430));
         $ptr = 41;
     case 41:
         $tmp = culcd_DiplomacyManager_getOtherCiv($$this$nextTurnTrades_0);
@@ -1665321,7 +1665392,7 @@ culau_CivilianUnitAutomation_automateCivilianUnit = ($this, $unit, $dangerousTil
         if ($rt_suspending()) {
             break main;
         }
-        $this_$iv = $rt_s(7468);
+        $this_$iv = $rt_s(7469);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($cache, $this_$iv);
@@ -1666867,7 +1666938,7 @@ culau_CivilianUnitAutomation_tryRunAwayIfNeccessary = ($this, $unit, $cache) => 
         if ($rt_suspending()) {
             break main;
         }
-        $$this$filter$iv = $rt_s(7468);
+        $$this$filter$iv = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $$this$filter$iv);
@@ -1667612,14 +1667683,14 @@ culau_AirUnitAutomation_automateFighter = ($this, $unitView, $cache) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $tilesWithEnemyUnitsInRange = $rt_s(7469);
+        $tilesWithEnemyUnitsInRange = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $tilesWithEnemyUnitsInRange);
         if ($rt_suspending()) {
             break main;
         }
-        $tilesWithEnemyUnitsInRange = $rt_s(7468);
+        $tilesWithEnemyUnitsInRange = $rt_s(7469);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter($cache, $tilesWithEnemyUnitsInRange);
@@ -1669067,7 +1669138,7 @@ culau_AirUnitAutomation_automateBomber = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $pathsToCities = $rt_s(7469);
+        $pathsToCities = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $pathsToCities);
@@ -1669499,7 +1669570,7 @@ culau_AirUnitAutomation_automateNukes = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $tilesInRange = $rt_s(7469);
+        $tilesInRange = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $tilesInRange);
@@ -1670774,7 +1670845,7 @@ culau_AirUnitAutomation_automateMissile = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7469);
+        var$2 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, var$2);
@@ -1671578,7 +1671649,7 @@ culau_BattleHelper_tryAttackNearbyEnemy = ($this, $unitView, $stayOnTile) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $unitView_0 = $rt_s(7469);
+        $unitView_0 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $unitView_0);
@@ -1672020,7 +1672091,7 @@ culau_BattleHelper_tryDisembarkUnitToAttackPosition = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$filter$iv = $rt_s(7469);
+        $$this$filter$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $$this$filter$iv);
@@ -1672934,7 +1673005,7 @@ culau_HeadTowardsEnemyCityAutomation_tryHeadTowardsEnemyCity = ($this, $unitView
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $this_$iv = $rt_s(7469);
+        $this_$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $this_$iv);
@@ -1673517,7 +1673588,7 @@ culau_HeadTowardsEnemyCityAutomation_getEnemyCitiesByPriority = ($this, $unitVie
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $closestEnemyCity = $rt_s(7469);
+        $closestEnemyCity = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $closestEnemyCity);
@@ -1674091,7 +1674162,7 @@ culau_HeadTowardsEnemyCityAutomation_headTowardsEnemyCity = ($this, $unitView, $
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $city = $rt_s(7469);
+        $city = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $city);
@@ -1675228,7 +1675299,7 @@ let cuusm_MultiplayerScreen$createSkipTurnButton$lambda$_11_0_invoke = var$0 => 
         jl_AbstractStringBuilder__init_(var$2);
         jl_AbstractStringBuilder_append(var$2, $rt_s(12294));
         jl_AbstractStringBuilder_append(var$2, var$3);
-        jl_AbstractStringBuilder_append(var$2, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$2, $rt_s(7585));
         $ptr = 3;
     case 3:
         $tmp = jl_AbstractStringBuilder_toString(var$2);
@@ -1679206,7 +1679277,7 @@ let cuusc_BuyButtonFactory__init_ = ($this, $cityScreen) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7560);
+        var$2 = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, var$2);
@@ -1680494,21 +1680565,21 @@ let cuusc_CityScreen$addTiles$lambda$_22_1_invoke = (var$0, var$1) => {
         var$5 = var$2.$cityView;
         var$6 = 0;
         var$7 = var$2.$isSpying;
-        var$2 = $rt_s(7559);
+        var$2 = $rt_s(7560);
         $ptr = 2;
     case 2:
         kji_Intrinsics_checkNotNullParameter(var$5, var$2);
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(7459);
+        var$2 = $rt_s(7460);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter(var$1, var$2);
         if ($rt_suspending()) {
             break main;
         }
-        var$2 = $rt_s(7460);
+        var$2 = $rt_s(7461);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$3, var$2);
@@ -1681055,7 +1681126,7 @@ cuusp_PolicyColors__clinit_ = () => {
             break main;
         }
         var$4 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 12;
     case 12:
         kji_Intrinsics_checkNotNullExpressionValue(var$4, var$5);
@@ -1681080,7 +1681151,7 @@ cuusp_PolicyColors__clinit_ = () => {
             break main;
         }
         var$4 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 15;
     case 15:
         kji_Intrinsics_checkNotNullExpressionValue(var$4, var$5);
@@ -1681214,7 +1681285,7 @@ cuusp_PolicyColors__clinit_ = () => {
             break main;
         }
         var$4 = $tmp;
-        var$5 = $rt_s(7601);
+        var$5 = $rt_s(7602);
         $ptr = 29;
     case 29:
         kji_Intrinsics_checkNotNullExpressionValue(var$4, var$5);
@@ -1692508,7 +1692579,7 @@ culau_SpecificUnitAutomation_automateGreatGeneral = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $maxAffectedTroopsTile = $rt_s(7469);
+        $maxAffectedTroopsTile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $maxAffectedTroopsTile);
@@ -1693337,7 +1693408,7 @@ culau_SpecificUnitAutomation_automateCitadelPlacer = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$any$iv = $rt_s(7469);
+        $$this$any$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $$this$any$iv);
@@ -1693756,7 +1693827,7 @@ culau_SpecificUnitAutomation_automateSettlerActions = ($this, $unitView, $danger
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $unit = $rt_s(7469);
+        $unit = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $unit);
@@ -1693770,7 +1693841,7 @@ culau_SpecificUnitAutomation_automateSettlerActions = ($this, $unitView, $danger
         if ($rt_suspending()) {
             break main;
         }
-        $unit = $rt_s(7468);
+        $unit = $rt_s(7469);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($cache, $unit);
@@ -1695655,7 +1695726,7 @@ culau_SpecificUnitAutomation_conductTradeMission = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -1695797,7 +1695868,7 @@ culau_SpecificUnitAutomation_conductTradeMission = ($this, $unitView) => {
         }
         $element$iv = $tmp;
         $tile = $rt_castToClass($element$iv, cuv_TileView);
-        $$this$sortedBy$iv = $rt_s(7459);
+        $$this$sortedBy$iv = $rt_s(7460);
         $ptr = 17;
     case 17:
         kji_Intrinsics_checkNotNullParameter($tile, $$this$sortedBy$iv);
@@ -1696980,7 +1697051,7 @@ let culau_RoadToAutomation_automateConnectRoad = ($this, $unitView, $tilesWhereW
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $currentTile = $rt_s(7469);
+        $currentTile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $currentTile);
@@ -1697458,7 +1697529,7 @@ culau_RoadToAutomation_stopAndCleanAutomation = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $tile = $rt_s(7469);
+        $tile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $tile);
@@ -1697653,7 +1697724,7 @@ culau_ReligiousUnitAutomation_automateMissionary = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -1698216,7 +1698287,7 @@ culau_ReligiousUnitAutomation_automateInquisitor = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $civ = $rt_s(7469);
+        $civ = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $civ);
@@ -1699219,7 +1699290,7 @@ culau_ReligiousUnitAutomation_foundReligion = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $unitTile = $rt_s(7469);
+        $unitTile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $unitTile);
@@ -1699442,7 +1699513,7 @@ culau_ReligiousUnitAutomation_enhanceReligion = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$2 = $rt_s(7469);
+        var$2 = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, var$2);
@@ -1699459,7 +1699530,7 @@ culau_ReligiousUnitAutomation_enhanceReligion = ($this, $unitView) => {
         $unitView = $tmp;
         if (!cuv_TileView_isCityCenter($rt_nullCheck($unitView))) {
             $unitView = $rt_nullCheck(culau_UnitAutomation_INSTANCE);
-            $unitView = $rt_s(7469);
+            $unitView = $rt_s(7470);
             $ptr = 4;
             continue main;
         }
@@ -1730496,7 +1730567,7 @@ culau_RoadBetweenCitiesAutomation_getRoadsToBuildFromCity = ($this, $cityView, $
         $roadPlans = ju_ArrayList__init_();
         var$7 = 8;
         $cache_0 = $rt_nullCheck($cache);
-        $cityView = $rt_s(7559);
+        $cityView = $rt_s(7560);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($cityView_0, $cityView);
@@ -1731675,7 +1731746,7 @@ culau_RoadBetweenCitiesAutomation_getRoadToConnectCityToCapital = ($this, $cityV
         if ($rt_suspending()) {
             break main;
         }
-        $cityTilesToSeek = $rt_s(7468);
+        $cityTilesToSeek = $rt_s(7469);
         $ptr = 22;
     case 22:
         kji_Intrinsics_checkNotNullParameter($cache, $cityTilesToSeek);
@@ -1732110,7 +1732181,7 @@ culau_RoadBetweenCitiesAutomation_tryConnectingCities$Unciv_core = ($this, $unit
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $unitStartingTile = $rt_s(7469);
+        $unitStartingTile = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $unitStartingTile);
@@ -1732124,7 +1732195,7 @@ culau_RoadBetweenCitiesAutomation_tryConnectingCities$Unciv_core = ($this, $unit
         if ($rt_suspending()) {
             break main;
         }
-        $unitStartingTile = $rt_s(7468);
+        $unitStartingTile = $rt_s(7469);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($cache, $unitStartingTile);
@@ -1748842,7 +1748913,7 @@ let cuusp_PolicyPickerScreen$getTopButton$lambda$_9_0_invoke = var$0 => {
             jl_AbstractStringBuilder__init_(var$2);
             jl_AbstractStringBuilder_append(var$2, $rt_s(12577));
             jl_AbstractStringBuilder_append(var$2, ($rt_nullCheck(var$1)).$name1);
-            jl_AbstractStringBuilder_append(var$2, $rt_s(7584));
+            jl_AbstractStringBuilder_append(var$2, $rt_s(7585));
             $ptr = 2;
             continue main;
         }
@@ -1749066,7 +1749137,7 @@ let cuusd_MajorCivDiplomacyTable$getDenounceButton$lambda$_4_0_invoke = var$0 =>
         jl_AbstractStringBuilder_append(var$1, $rt_s(12578));
         var$7 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$1, var$7.$civName);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1749721,7 +1749792,7 @@ let cuusd_CityStateDiplomacyTable$getRevokeProtectionButton$lambda$_4_0_invoke =
         jl_AbstractStringBuilder_append(var$1, $rt_s(12582));
         var$6 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$1, var$6.$civName);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1749782,7 +1749853,7 @@ let cuusd_CityStateDiplomacyTable$getPledgeToProtectButton$lambda$_5_0_invoke = 
         jl_AbstractStringBuilder_append(var$1, $rt_s(12583));
         var$6 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$1, var$6.$civName);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1749843,7 +1749914,7 @@ let cuusd_CityStateDiplomacyTable$getNegotiatePeaceCityStateButton$lambda$_6_0_i
         jl_AbstractStringBuilder_append(var$1, $rt_s(12584));
         var$6 = $rt_nullCheck(var$2);
         jl_AbstractStringBuilder_append(var$1, var$6.$civName);
-        jl_AbstractStringBuilder_append(var$1, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$1, $rt_s(7585));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString(var$1);
@@ -1750735,7 +1750806,7 @@ let culcmq_QuestManager$WinnersAndLosers__init_ = ($this, $this$0, $questName) =
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $quest = $rt_s(7412);
+        $quest = $rt_s(7413);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($questName, $quest);
@@ -1761219,7 +1761290,7 @@ let cuusc_ConstructionInfoTable$showSellButton$lambda$_8_0_invoke = var$0 => {
         }
         var$7 = $tmp;
         jl_AbstractStringBuilder_append(var$3, var$7);
-        jl_AbstractStringBuilder_append(var$3, $rt_s(7584));
+        jl_AbstractStringBuilder_append(var$3, $rt_s(7585));
         $ptr = 4;
     case 4:
         $tmp = jl_AbstractStringBuilder_toString(var$3);
@@ -1763836,7 +1763907,7 @@ let culc_CityConstructions$addToQueue$lambda$_78_0_invoke = (var$0, var$1) => {
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_086;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1763871,7 +1763942,7 @@ let culc_CityConstructions$addToQueue$lambda$_78_1_invoke = (var$0, var$1) => {
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_0108;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1763905,7 +1763976,7 @@ let culc_CityConstructions$addToQueue$lambda$_78_2_invoke = (var$0, var$1) => {
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_062;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1763940,7 +1764011,7 @@ let culc_CityConstructions$addToQueue$lambda$_78_3_invoke = (var$0, var$1) => {
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_083;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1768700,7 +1768771,7 @@ culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
                 k_ResultKt_throwOnFailure($$result);
                 $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
                 if ($repo === null) {
-                    $$this$parseUrl = $rt_s(7472);
+                    $$this$parseUrl = $rt_s(7473);
                     var$5 = 0;
                     var$9 = 2;
                     $$completion = null;
@@ -1768886,7 +1768957,7 @@ culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
         }
         var$5 = $tmp;
         if (!var$5) {
-            $$this$parseUrl = $rt_s(7473);
+            $$this$parseUrl = $rt_s(7474);
             var$5 = 0;
             var$9 = 2;
             $$completion = null;
@@ -1769030,7 +1769101,7 @@ culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
         }
         $matchRepo = $tmp;
         if ($matchRepo === null) {
-            $$this$parseUrl = $rt_s(7472);
+            $$this$parseUrl = $rt_s(7473);
             var$5 = 0;
             var$9 = 2;
             $$completion = null;
@@ -1769117,7 +1769188,7 @@ culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
         }
         var$5 = $tmp;
         if (var$5 <= 2) {
-            $$this$parseUrl = $rt_s(7472);
+            $$this$parseUrl = $rt_s(7473);
             var$5 = 0;
             var$9 = 2;
             $$completion = null;
@@ -1769215,7 +1769286,7 @@ culg_GithubAPI_parseUrl = ($this, $$this$parseUrl, $url, $$completion) => {
         if ($$result !== $$completion) {
             $repo = $rt_castToClass($$result, culg_GithubAPI$Repo);
             if ($repo === null) {
-                $$this$parseUrl = $rt_s(7472);
+                $$this$parseUrl = $rt_s(7473);
                 var$5 = 0;
                 var$9 = 2;
                 $$completion = null;
@@ -1772048,7 +1772119,7 @@ cuusc_CityScreenTileTable$addAdditionalContent$1_invoke = ($this, $p1, $p2) => {
             break main;
         }
         $p1 = $rt_nullCheck($p1);
-        var$3 = $rt_s(7459);
+        var$3 = $rt_s(7460);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($p2, var$3);
@@ -1772958,7 +1773029,7 @@ cuusv_VictoryScreenIllustrations__init_ = ($this, $parent, $worldScreen) => {
         $victory = $rt_castToClass($worldScreen, cumr_Victory);
         $worldScreen = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($worldScreen);
-        jl_AbstractStringBuilder_append($worldScreen, $rt_s(7607));
+        jl_AbstractStringBuilder_append($worldScreen, $rt_s(7608));
         $destination$iv$iv = $rt_nullCheck($victory);
         jl_AbstractStringBuilder_append($worldScreen, $destination$iv$iv.$name1);
         $ptr = 45;
@@ -1795790,7 +1795861,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
         }
         var$5 = $tmp;
         if (!var$5) {
-            $foundingCivName = $rt_s(7527);
+            $foundingCivName = $rt_s(7528);
             $religion = $this.$statsTable;
             $ptr = 35;
             continue main;
@@ -1796101,7 +1796172,7 @@ cuuso_ReligionOverviewTab_loadReligion0 = ($this, $religion) => {
             break main;
         }
         var$5 = $tmp;
-        $cityName = !var$5 ? $rt_s(7527) : $holyCity.$name5;
+        $cityName = !var$5 ? $rt_s(7528) : $holyCity.$name5;
         $foundingCivName = $this.$statsTable;
         $cell = null;
         var$6 = 0;
@@ -1807554,7 +1807625,7 @@ let cuupo_KeyBindingsTab$createGroupedWidgets$lambda$2$lambda$_14_0_invoke = (va
             break main;
         }
         var$11 = 150.0;
-        var$2 = $rt_s(7450);
+        var$2 = $rt_s(7451);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter(var$8, var$2);
@@ -1808838,7 +1808909,7 @@ cuusv_VictoryScreenCivGroup__init_0 = ($this, $civ, $separator, $additionalInfo,
         }
         var$8 = $tmp;
         if (!var$8)
-            $labelText = $rt_s(7527);
+            $labelText = $rt_s(7528);
         else {
             if (!(($rt_nullCheck($additionalInfo)).$nativeString.length ? 0 : 1)) {
                 $currentPlayer = new jl_StringBuilder;
@@ -1814874,7 +1814945,7 @@ let cuusc_DetailedStatsPopup__init_ = ($this, $cityScreen) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $scrollPane = $rt_s(7560);
+        $scrollPane = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, $scrollPane);
@@ -1818753,7 +1818824,7 @@ cuusm_MapEditorWesnothImporter_paintFromWesnothCode = ($this, $$this$paintFromWe
         }
         $matches = $rt_nullCheck($matches);
         $start = $matches.$groups;
-        $cellCode = $rt_s(7465);
+        $cellCode = $rt_s(7466);
         $ptr = 3;
     case 3:
         $tmp = ktj_RegexExtensionsJDK8Kt_get($start, $cellCode);
@@ -1821801,7 +1821872,7 @@ cuusc_GreatPersonPointsBreakdownPopup__init_ = ($this, $cityScreen, $gppBreakdow
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $gppBreakdown_0 = $rt_s(7560);
+        $gppBreakdown_0 = $rt_s(7561);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($cityScreen, $gppBreakdown_0);
@@ -1827332,7 +1827403,7 @@ cuuso_CityOverviewTabColumn__clinit_ = () => {
         }
         cuuso_CityOverviewTabColumn_Faith = var$1;
         var$1 = new cuuso_CityOverviewTabColumn$WLTK;
-        var$2 = $rt_s(7564);
+        var$2 = $rt_s(7565);
         var$3 = 12;
         var$4 = null;
         $ptr = 13;
@@ -1839587,7 +1839658,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
             $this$0 = $this;
             $cityView = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($cityView);
-            jl_AbstractStringBuilder_append($cityView, $rt_s(7580));
+            jl_AbstractStringBuilder_append($cityView, $rt_s(7581));
             jl_AbstractStringBuilder_append1($cityView, $balance);
             jl_AbstractStringBuilder_append($cityView, $rt_s(100));
             $stat_0 = $rt_nullCheck($stat);
@@ -1839612,7 +1839683,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
             $this$0 = $this;
             $cityView = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($cityView);
-            jl_AbstractStringBuilder_append($cityView, $rt_s(7580));
+            jl_AbstractStringBuilder_append($cityView, $rt_s(7581));
             jl_AbstractStringBuilder_append1($cityView, $balance);
             jl_AbstractStringBuilder_append($cityView, $rt_s(100));
             $stat_0 = $rt_nullCheck($stat);
@@ -1839671,7 +1839742,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         $this$0 = $this;
         $cityView = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($cityView);
-        jl_AbstractStringBuilder_append($cityView, $rt_s(7580));
+        jl_AbstractStringBuilder_append($cityView, $rt_s(7581));
         jl_AbstractStringBuilder_append1($cityView, $balance);
         jl_AbstractStringBuilder_append($cityView, $rt_s(100));
         $stat_0 = $rt_nullCheck($stat);
@@ -1839690,7 +1839761,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         jl_AbstractStringBuilder_append1($stat, $constructionStatBuyCost);
         jl_AbstractStringBuilder_append($stat, $rt_s(100));
         jl_AbstractStringBuilder_append0($stat, $stat_0.$character);
-        jl_AbstractStringBuilder_append($stat, $rt_s(7584));
+        jl_AbstractStringBuilder_append($stat, $rt_s(7585));
         $ptr = 15;
     case 15:
         $tmp = jl_AbstractStringBuilder_toString($stat);
@@ -1839759,7 +1839830,7 @@ let cuusc_BuyButtonFactory$ConfirmBuyPopup__init_ = ($this, $this$0, $constructi
         }
         $this$0 = $tmp;
         $confirmStyle = $rt_castToClass($this$0, cbgssu_TextButton$TextButtonStyle);
-        $construction = $rt_s(7585);
+        $construction = $rt_s(7586);
         $stat = cuuci_KeyboardBinding_Confirm;
         $cityView = $this.$this$0219;
         $this$0 = new cuusc_BuyButtonFactory$ConfirmBuyPopup$_init_$lambda$_0_1;
@@ -1839888,7 +1839959,7 @@ cuusc_BuyButtonFactory$ConfirmBuyPopup__init_$getName = $$this$_init__u24getName
             $ptr = 1;
             continue main;
         }
-        return $rt_s(7527);
+        return $rt_s(7528);
     case 1:
         $tmp = cum_Religion_getReligionDisplayName($$this$_init__u24getName);
         if ($rt_suspending()) {
@@ -1839896,7 +1839967,7 @@ cuusc_BuyButtonFactory$ConfirmBuyPopup__init_$getName = $$this$_init__u24getName
         }
         $$this$_init__u24getName = $tmp;
         if ($$this$_init__u24getName === null)
-            $$this$_init__u24getName = $rt_s(7527);
+            $$this$_init__u24getName = $rt_s(7528);
         return $$this$_init__u24getName;
     default: $rt_invalidPointer();
     }}
@@ -1844929,7 +1845000,7 @@ cuuso_CityOverviewTabColumn$WLTK_getEntryActor0 = ($this, $item, $iconSize, $act
             break main;
         }
         $item = cuui_ImageGetter_INSTANCE;
-        $actionContext = $rt_s(7576);
+        $actionContext = $rt_s(7577);
         var$4 = null;
         var$6 = 2;
         var$7 = null;
@@ -1845082,7 +1845153,7 @@ cuuso_CityOverviewTabColumn$WLTK_getHeaderActor = ($this, $iconSize) => {
             break main;
         }
         var$2 = cuuc_ISortableGridContentProvider_Companion;
-        var$3 = $rt_s(7577);
+        var$3 = $rt_s(7578);
         var$4 = cbgg_Color_TAN;
         var$5 = $rt_s(7339);
         $ptr = 2;
@@ -1847200,7 +1847271,7 @@ cuuso_UnitOverviewTabColumn$Promotions_getEntryActor = ($this, $item, $iconSize,
             break main;
         }
         var$4 = $rt_nullCheck(cuuso_UnitOverviewTabColumn_Companion);
-        var$4 = $rt_s(7469);
+        var$4 = $rt_s(7470);
         $ptr = 4;
     case 4:
         kji_Intrinsics_checkNotNullParameter($item, var$4);
@@ -1848340,7 +1848411,7 @@ cuuso_UnitOverviewTabHelpers_getUpgradeTable = ($this, $unitView, $actionContext
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $table = $rt_s(7469);
+        $table = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $table);
@@ -1848619,7 +1848690,7 @@ cuuso_UnitOverviewTabHelpers_getUpgradeSortString = ($this, $unitView) => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        $$this$firstOrNull$iv = $rt_s(7469);
+        $$this$firstOrNull$iv = $rt_s(7470);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter($unitView, $$this$firstOrNull$iv);
@@ -1848954,7 +1849025,7 @@ let cuuso_GlobalPoliticsDiagramGroup$WidgetIndex__init_ = ($this, $undefeatedCiv
             break main;
         }
         $$this$sortBy$iv = new cuuso_GlobalPoliticsDiagramGroup$WidgetEntry$Icon;
-        $civ = $rt_s(7393);
+        $civ = $rt_s(7394);
         $ptr = 20;
     case 20:
         kji_Intrinsics_checkNotNullParameter($toggleSelection, $civ);
@@ -1864407,10 +1864478,10 @@ let cuusc_CityScreenTileTable$TileBuyMenu_createContentTable = $this => {
         $button = $this.$this$065;
         var$9 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$9);
-        jl_AbstractStringBuilder_append(var$9, $rt_s(7580));
+        jl_AbstractStringBuilder_append(var$9, $rt_s(7581));
         var$10 = $rt_nullCheck($button);
         jl_AbstractStringBuilder_append1(var$9, cuv_ForeignCivView_getGold($rt_nullCheck(cuv_CityView_viewingCiv($rt_nullCheck(var$10.$cityView2)))));
-        jl_AbstractStringBuilder_append(var$9, $rt_s(7581));
+        jl_AbstractStringBuilder_append(var$9, $rt_s(7582));
         $ptr = 7;
     case 7:
         $tmp = jl_AbstractStringBuilder_toString(var$9);
@@ -1872095,7 +1872166,7 @@ let cuup_CityScreenConstructionMenu__init_ = ($this, $stage, $positionNextTo, $c
         if ($rt_suspending()) {
             break main;
         }
-        var$6 = $rt_s(7559);
+        var$6 = $rt_s(7560);
         $ptr = 3;
     case 3:
         kji_Intrinsics_checkNotNullParameter($cityView, var$6);
@@ -1879787,7 +1879858,7 @@ let culc_CityConstructions$raisePriority$lambda$_88_0_invoke = (var$0, var$1) =>
         var$1 = var$1;
         var$2 = var$0.$_01605;
         var$3 = var$0.$_1577;
-        var$4 = $rt_s(7392);
+        var$4 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$4);
@@ -1901599,7 +1901670,7 @@ cumt_TranslationFileWriter_writeLanguagePercentages = ($this, $percentages, $mod
         jl_AbstractStringBuilder__init_($$this$sortedBy$iv);
         jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(13296));
         jl_AbstractStringBuilder_append($$this$sortedBy$iv, $modFolder !== null ? $rt_s(13297) : $rt_s(13298));
-        jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(7582));
+        jl_AbstractStringBuilder_append($$this$sortedBy$iv, $rt_s(7583));
         $ptr = 1;
     case 1:
         $tmp = jl_AbstractStringBuilder_toString($$this$sortedBy$iv);
@@ -1919007,7 +1919078,7 @@ cumt_TranslationFileWriter$GenerateStringsFromJSONs__clinit_ = () => {
     main: while (true) { switch ($ptr) {
     case 0:
         cumt_TranslationFileWriter$GenerateStringsFromJSONs_Companion = new cumt_TranslationFileWriter$GenerateStringsFromJSONs$Companion;
-        var$1 = $rt_wrapArray(jl_String, [$rt_s(13358), $rt_s(13359), $rt_s(13360), $rt_s(4843), $rt_s(13361), $rt_s(13362), $rt_s(13363), $rt_s(4900), $rt_s(13364), $rt_s(13365), $rt_s(13366), $rt_s(13088), $rt_s(13367), $rt_s(13368), $rt_s(13369), $rt_s(13370), $rt_s(13371), $rt_s(13372), $rt_s(13373), $rt_s(13374), $rt_s(13375), $rt_s(13376), $rt_s(13377), $rt_s(13378), $rt_s(13379), $rt_s(13380), $rt_s(13381), $rt_s(13382), $rt_s(13383), $rt_s(1016), $rt_s(7393), $rt_s(7394), $rt_s(1151), $rt_s(13384), $rt_s(13385),
+        var$1 = $rt_wrapArray(jl_String, [$rt_s(13358), $rt_s(13359), $rt_s(13360), $rt_s(4843), $rt_s(13361), $rt_s(13362), $rt_s(13363), $rt_s(4900), $rt_s(13364), $rt_s(13365), $rt_s(13366), $rt_s(13088), $rt_s(13367), $rt_s(13368), $rt_s(13369), $rt_s(13370), $rt_s(13371), $rt_s(13372), $rt_s(13373), $rt_s(13374), $rt_s(13375), $rt_s(13376), $rt_s(13377), $rt_s(13378), $rt_s(13379), $rt_s(13380), $rt_s(13381), $rt_s(13382), $rt_s(13383), $rt_s(1016), $rt_s(7394), $rt_s(7395), $rt_s(1151), $rt_s(13384), $rt_s(13385),
         $rt_s(13386), $rt_s(13387), $rt_s(13388), $rt_s(13389), $rt_s(8137)]);
         $ptr = 1;
     case 1:
@@ -1934101,7 +1934172,7 @@ let culc_CityConstructions$moveEntryToTop$lambda$_86_0_invoke = (var$0, var$1) =
     case 0:
         var$1 = var$1;
         var$2 = var$0.$_02204;
-        var$3 = $rt_s(7392);
+        var$3 = $rt_s(7393);
         $ptr = 1;
     case 1:
         kji_Intrinsics_checkNotNullParameter(var$1, var$3);
@@ -1977441,10 +1977512,10 @@ cumru_Countables$FilteredTechnologies, [[k_Metadata$$_impl_create, 1, [2, 4, 0],
 "()Lcom/badlogic/gdx/scenes/scene2d/Group;", "ruleset", "Lcom/unciv/models/ruleset/Ruleset;", "getRuleset", "()Lcom/unciv/models/ruleset/Ruleset;", "isPortrait", "", "()Z", "setPortrait", "(Z)V", "pathPortrait", "getPathPortrait", "pathPortraitFallback", "getPathPortraitFallback", "pathPortraitFallback$delegate", "Lkotlin/Lazy;", "pathIcon", "getPathIcon", "pathIconFallback", "getPathIconFallback", "pathIconFallback$delegate", "getDefaultInnerBackgroundTint", "Lcom/badlogic/gdx/graphics/Color;", "getDefaultOuterBackgroundTint",
 "getDefaultImageTint", "getDefaultImage", "getMainImage", "getCircleImage", "getMainBackground", "Type", "Unciv:core"], "", "", 48]], cuui_PortraitImprovement, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000@\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0007\n\u0000\n\u0002\u0010\u000b\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\u0018\u00002\u00020\u0001B+\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\u0008\u001a\u00020\u0007¢\u0006\u0004\u0008\t\u0010\nJ\u0008\u0010\u000b\u001a\u00020\u000cH\u0014J\u0010\u0010\r\u001a\u00020\u000e2\u0006\u0010\u000f\u001a\u00020\u0010H\u0002J\u0008\u0010\u0011\u001a\u00020\u000eH\u0016J\u001a\u0010\u0012\u001a\u00020\u00132\u0008\u0010\u0014\u001a\u0004\u0018\u00010\u00152\u0006\u0010\u0016\u001a\u00020\u0005H\u0016¨\u0006\u0017"],
 ["Lcom/unciv/ui/images/PortraitImprovement;", "Lcom/unciv/ui/images/Portrait;", "name", "", "size", "", "dim", "", "isPillaged", "<init>", "(Ljava/lang/String;FZZ)V", "getCircleImage", "Lcom/badlogic/gdx/scenes/scene2d/ui/Image;", "getColorFromStats", "Lcom/badlogic/gdx/graphics/Color;", "stats", "Lcom/unciv/models/stats/Stats;", "getDefaultInnerBackgroundTint", "draw", "", "batch", "Lcom/badlogic/gdx/graphics/g2d/Batch;", "parentAlpha", "Unciv:core"], "", "", 48]], cuuctl_TileLayerTerrain, [[k_Metadata$$_impl_create,
-1, [2, 4, 0], [1, 0, 3], ["\u0000p\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\u0008\u0005\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0002\n\u0002\u0008\u000c\n\u0002\u0010\t\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001:\u0001;B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007J\u001c\u0010\u0014\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u000c\u0010\u0015\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0016H\u0002J\u001c\u0010\u0017\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u000c\u0010\u0018\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0016H\u0002J\u0010\u0010\u0019\u001a\u00020\u001a2\u0006\u0010\u001b\u001a\u00020\u001cH\u0002J\u0018\u0010\u001d\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u0008\u0010\u001e\u001a\u0004\u0018\u00010\u001fH\u0002J\u000e\u0010$\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0016H\u0002J\u0016\u0010%\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u0006\u0010&\u001a\u00020\"H\u0002J\u0012\u0010\'\u001a\u00020(2\u0008\u0010\u001e\u001a\u0004\u0018\u00010\u001fH\u0002J\u0012\u0010)\u001a\u00020(2\u0008\u0010\u001e\u001a\u0004\u0018\u00010\u001fH\u0002J \u0010*\u001a\u00020(2\u0006\u0010+\u001a\u00020\u001a2\u0006\u0010,\u001a\u00020\u001a2\u0006\u0010-\u001a\u00020\u001aH\u0002J$\u0010.\u001a\u0004\u0018\u00010\n2\u0008\u0010/\u001a\u0004\u0018\u00010\n2\u0006\u00100\u001a\u00020\u001a2\u0006\u00101\u001a\u00020\u0010H\u0002J\u000e\u00102\u001a\u00020(2\u0006\u00103\u001a\u00020\u0005J\u0017\u00104\u001a\u0002052\u0008\u0010\u001e\u001a\u0004\u0018\u00010\u001fH\u0014¢\u0006\u0002\u00106J\u0012\u00107\u001a\u00020(2\u0008\u0010\u001e\u001a\u0004\u0018\u00010\u001fH\u0014J\u0006\u00108\u001a\u00020(J0\u00109\u001a\u0012\u0012\u0004\u0012\u00020\u00100\tj\u0008\u0012\u0004\u0012\u00020\u0010`\u000b2\u0016\u0010:\u001a\u0012\u0012\u0004\u0012\u00020\u00100\tj\u0008\u0012\u0004\u0012\u00020\u0010`\u000bH\u0002R!\u0010\u0008\u001a\u0012\u0012\u0004\u0012\u00020\n0\tj\u0008\u0012\u0004\u0012\u00020\n`\u000b¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u000c\u0010\rR\u0014\u0010\u000e\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000fX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0011\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0012\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0013\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R*\u0010 \u001a\u001e\u0012\u0004\u0012\u00020\u001c\u0012\u0004\u0012\u00020\"0!j\u000e\u0012\u0004\u0012\u00020\u001c\u0012\u0004\u0012\u00020\"`#X\u0004¢\u0006\u0002\n\u0000¨\u0006<"],
-["Lcom/unciv/ui/components/tilegroups/layers/TileLayerTerrain;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayer;", "tileGroup", "Lcom/unciv/ui/components/tilegroups/TileGroup;", "size", "", "<init>", "(Lcom/unciv/ui/components/tilegroups/TileGroup;F)V", "tileBaseImages", "Ljava/util/ArrayList;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Image;", "Lkotlin/collections/ArrayList;", "getTileBaseImages", "()Ljava/util/ArrayList;", "tileImageIdentifiers", "", "", "bottomRightRiverImage", "bottomRiverImage", "bottomLeftRiverImage",
-"getTerrainImageLocations", "terrainSequence", "Lkotlin/sequences/Sequence;", "getImprovementAndResourceImages", "resourceAndImprovementSequence", "usePillagedImprovementImage", "", "tileView", "Lcom/unciv/view/TileView;", "getTileBaseImageLocations", "viewingCiv", "Lcom/unciv/view/CivView;", "neighborEdgeDataByNeighbor", "Ljava/util/HashMap;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayerTerrain$NeighborEdgeData;", "Lkotlin/collections/HashMap;", "getEdgeTileLocations", "getMatchingEdges", "neighborEdgeData",
-"updateTileImage", "", "updateTileColor", "updateRivers", "displayBottomRight", "displayBottom", "displayBottomLeft", "updateRiver", "currentImage", "shouldDisplay", "imageName", "dim", "brightness", "getUpdateKey", "", "(Lcom/unciv/view/CivView;)Ljava/lang/Long;", "doUpdate", "reset", "getNaturalWonderBackupImage", "baseHexagon", "NeighborEdgeData", "Unciv:core"], "", "", 48]], cuuctl_TileLayerFeatures, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000>\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0002\u0008\u0004\u0018\u00002\u00020\u0001B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007J\u0012\u0010\r\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0002J\u0017\u0010\u0011\u001a\u00020\u00122\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0014¢\u0006\u0002\u0010\u0013J\u0012\u0010\u0014\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0014J\u0006\u0010\u0015\u001a\u00020\u000eR*\u0010\u0008\u001a\u001e\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b0\tj\u000e\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b`\u000cX\u0004¢\u0006\u0002\n\u0000¨\u0006\u0016"],
+1, [2, 4, 0], [1, 0, 3], ["\u0000p\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\u0008\u0006\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0002\n\u0002\u0008\u000c\n\u0002\u0010\t\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001:\u0001<B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007J\u001c\u0010\u0015\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u000c\u0010\u0016\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0017H\u0002J\u001c\u0010\u0018\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u000c\u0010\u0019\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0017H\u0002J\u0010\u0010\u001a\u001a\u00020\u001b2\u0006\u0010\u001c\u001a\u00020\u001dH\u0002J\u0018\u0010\u001e\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u0008\u0010\u001f\u001a\u0004\u0018\u00010 H\u0002J\u000e\u0010%\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u0017H\u0002J\u0016\u0010&\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000f2\u0006\u0010\'\u001a\u00020#H\u0002J\u0012\u0010(\u001a\u00020)2\u0008\u0010\u001f\u001a\u0004\u0018\u00010 H\u0002J\u0012\u0010*\u001a\u00020)2\u0008\u0010\u001f\u001a\u0004\u0018\u00010 H\u0002J \u0010+\u001a\u00020)2\u0006\u0010,\u001a\u00020\u001b2\u0006\u0010-\u001a\u00020\u001b2\u0006\u0010.\u001a\u00020\u001bH\u0002J$\u0010/\u001a\u0004\u0018\u00010\n2\u0008\u00100\u001a\u0004\u0018\u00010\n2\u0006\u00101\u001a\u00020\u001b2\u0006\u00102\u001a\u00020\u0010H\u0002J\u000e\u00103\u001a\u00020)2\u0006\u00104\u001a\u00020\u0005J\u0017\u00105\u001a\u0002062\u0008\u0010\u001f\u001a\u0004\u0018\u00010 H\u0014¢\u0006\u0002\u00107J\u0012\u00108\u001a\u00020)2\u0008\u0010\u001f\u001a\u0004\u0018\u00010 H\u0014J\u0006\u00109\u001a\u00020)J0\u0010:\u001a\u0012\u0012\u0004\u0012\u00020\u00100\tj\u0008\u0012\u0004\u0012\u00020\u0010`\u000b2\u0016\u0010;\u001a\u0012\u0012\u0004\u0012\u00020\u00100\tj\u0008\u0012\u0004\u0012\u00020\u0010`\u000bH\u0002R!\u0010\u0008\u001a\u0012\u0012\u0004\u0012\u00020\n0\tj\u0008\u0012\u0004\u0012\u00020\n`\u000b¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u000c\u0010\rR\u0014\u0010\u000e\u001a\u0008\u0012\u0004\u0012\u00020\u00100\u000fX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0011\u001a\u0004\u0018\u00010\u0010X\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0012\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0013\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R\u0010\u0010\u0014\u001a\u0004\u0018\u00010\nX\u000e¢\u0006\u0002\n\u0000R*\u0010!\u001a\u001e\u0012\u0004\u0012\u00020\u001d\u0012\u0004\u0012\u00020#0\"j\u000e\u0012\u0004\u0012\u00020\u001d\u0012\u0004\u0012\u00020#`$X\u0004¢\u0006\u0002\n\u0000¨\u0006="],
+["Lcom/unciv/ui/components/tilegroups/layers/TileLayerTerrain;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayer;", "tileGroup", "Lcom/unciv/ui/components/tilegroups/TileGroup;", "size", "", "<init>", "(Lcom/unciv/ui/components/tilegroups/TileGroup;F)V", "tileBaseImages", "Ljava/util/ArrayList;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Image;", "Lkotlin/collections/ArrayList;", "getTileBaseImages", "()Ljava/util/ArrayList;", "tileImageIdentifiers", "", "", "tileImageOwnerKey", "bottomRightRiverImage", "bottomRiverImage",
+"bottomLeftRiverImage", "getTerrainImageLocations", "terrainSequence", "Lkotlin/sequences/Sequence;", "getImprovementAndResourceImages", "resourceAndImprovementSequence", "usePillagedImprovementImage", "", "tileView", "Lcom/unciv/view/TileView;", "getTileBaseImageLocations", "viewingCiv", "Lcom/unciv/view/CivView;", "neighborEdgeDataByNeighbor", "Ljava/util/HashMap;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayerTerrain$NeighborEdgeData;", "Lkotlin/collections/HashMap;", "getEdgeTileLocations", "getMatchingEdges",
+"neighborEdgeData", "updateTileImage", "", "updateTileColor", "updateRivers", "displayBottomRight", "displayBottom", "displayBottomLeft", "updateRiver", "currentImage", "shouldDisplay", "imageName", "dim", "brightness", "getUpdateKey", "", "(Lcom/unciv/view/CivView;)Ljava/lang/Long;", "doUpdate", "reset", "getNaturalWonderBackupImage", "baseHexagon", "NeighborEdgeData", "Unciv:core"], "", "", 48]], cuuctl_TileLayerFeatures, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000>\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0002\u0008\u0004\u0018\u00002\u00020\u0001B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007J\u0012\u0010\r\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0002J\u0017\u0010\u0011\u001a\u00020\u00122\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0014¢\u0006\u0002\u0010\u0013J\u0012\u0010\u0014\u001a\u00020\u000e2\u0008\u0010\u000f\u001a\u0004\u0018\u00010\u0010H\u0014J\u0006\u0010\u0015\u001a\u00020\u000eR*\u0010\u0008\u001a\u001e\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b0\tj\u000e\u0012\u0004\u0012\u00020\n\u0012\u0004\u0012\u00020\u000b`\u000cX\u0004¢\u0006\u0002\n\u0000¨\u0006\u0016"],
 ["Lcom/unciv/ui/components/tilegroups/layers/TileLayerFeatures;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayer;", "tileGroup", "Lcom/unciv/ui/components/tilegroups/TileGroup;", "size", "", "<init>", "(Lcom/unciv/ui/components/tilegroups/TileGroup;F)V", "roadImages", "Ljava/util/HashMap;", "Lcom/unciv/view/TileView;", "Lcom/unciv/ui/components/tilegroups/layers/RoadImage;", "Lkotlin/collections/HashMap;", "updateRoadImages", "", "viewingCiv", "Lcom/unciv/view/CivView;", "getUpdateKey", "", "(Lcom/unciv/view/CivView;)Ljava/lang/Long;",
 "doUpdate", "dim", "Unciv:core"], "", "", 48]], cuuctl_TileLayerBorders, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000F\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\u0008\u0002\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0004\u0018\u00002\u00020\u0001:\u0001\u0018B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005¢\u0006\u0004\u0008\u0006\u0010\u0007J\u0006\u0010\u000f\u001a\u00020\u0010J\u0008\u0010\u0011\u001a\u00020\u0010H\u0002J\u0017\u0010\u0012\u001a\u00020\u00132\u0008\u0010\u0014\u001a\u0004\u0018\u00010\u0015H\u0014¢\u0006\u0002\u0010\u0016J\u0012\u0010\u0017\u001a\u00020\u00102\u0008\u0010\u0014\u001a\u0004\u0018\u00010\u0015H\u0014R\u0010\u0010\u0008\u001a\u0004\u0018\u00010\tX\u000e¢\u0006\u0002\n\u0000R*\u0010\n\u001a\u001e\u0012\u0004\u0012\u00020\u000c\u0012\u0004\u0012\u00020\r0\u000bj\u000e\u0012\u0004\u0012\u00020\u000c\u0012\u0004\u0012\u00020\r`\u000eX\u0004¢\u0006\u0002\n\u0000¨\u0006\u0019"],
 ["Lcom/unciv/ui/components/tilegroups/layers/TileLayerBorders;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayer;", "tileGroup", "Lcom/unciv/ui/components/tilegroups/TileGroup;", "size", "", "<init>", "(Lcom/unciv/ui/components/tilegroups/TileGroup;F)V", "previousTileOwner", "Lcom/unciv/view/ForeignCivView;", "borderSegments", "Ljava/util/HashMap;", "Lcom/unciv/view/TileView;", "Lcom/unciv/ui/components/tilegroups/layers/TileLayerBorders$BorderSegment;", "Lkotlin/collections/HashMap;", "reset", "", "updateBorders",
@@ -1977789,7 +1977860,7 @@ culc_PolicyAction, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000
 [[kcji_DebugMetadata$$_impl_create, 2, "Multiplayer.kt", [73], [], [], [], "invokeSuspend", "com.unciv.logic.multiplayer.Multiplayer$1$3", [-1]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u0006\n\u0000\n\u0002\u0010\u0000\u0010\u0000\u001a\u00020\u0001H\n"], ["<anonymous>", ""], "", "", 1328]], culm_Multiplayer$1$6, [[kcji_DebugMetadata$$_impl_create, 2, "Multiplayer.kt", [77], [], [], [], "invokeSuspend", "com.unciv.logic.multiplayer.Multiplayer$1$6", [-1]], [k_Metadata$$_impl_create, 3,
 [2, 4, 0], [1, 0, 3], ["\u0000\u0006\n\u0000\n\u0002\u0010\u0002\u0010\u0000\u001a\u00020\u0001H\n"], ["<anonymous>", ""], "", "", 1328]], kcs_DefaultIoScheduler, [[k_Metadata$$_impl_create, 1, [2, 2, 0], [1, 0, 3], ["\u0000B\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0008\n\u0000\n\u0002\u0010\u000e\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0004\u0008À\u0002\u0018\u00002\u00020\u00012\u00020\u0002B\t\u0008\u0002¢\u0006\u0004\u0008\u0003\u0010\u0004J\u0010\u0010\n\u001a\u00020\u000b2\u0006\u0010\u000c\u001a\u00020\rH\u0016J\u001a\u0010\u000e\u001a\u00020\u00062\u0006\u0010\u000f\u001a\u00020\u00102\u0008\u0010\u0011\u001a\u0004\u0018\u00010\u0012H\u0016J\u001c\u0010\u0013\u001a\u00020\u000b2\u0006\u0010\u0014\u001a\u00020\u00152\n\u0010\u0016\u001a\u00060\rj\u0002`\u0017H\u0016J\u001c\u0010\u0018\u001a\u00020\u000b2\u0006\u0010\u0014\u001a\u00020\u00152\n\u0010\u0016\u001a\u00060\rj\u0002`\u0017H\u0017J\u0008\u0010\u0019\u001a\u00020\u000bH\u0016J\u0008\u0010\u001a\u001a\u00020\u0012H\u0016R\u000e\u0010\u0005\u001a\u00020\u0006X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\u0007\u001a\u00020\u00028VX\u0004¢\u0006\u0006\u001a\u0004\u0008\u0008\u0010\t¨\u0006\u001b"],
 ["Lkotlinx/coroutines/scheduling/DefaultIoScheduler;", "Lkotlinx/coroutines/ExecutorCoroutineDispatcher;", "Ljava/util/concurrent/Executor;", "<init>", "()V", "default", "Lkotlinx/coroutines/CoroutineDispatcher;", "executor", "getExecutor", "()Ljava/util/concurrent/Executor;", "execute", "", "command", "Ljava/lang/Runnable;", "limitedParallelism", "parallelism", "", "name", "", "dispatch", "context", "Lkotlin/coroutines/CoroutineContext;", "block", "Lkotlinx/coroutines/Runnable;", "dispatchYield", "close", "toString",
-"kotlinx-coroutines-core"], "", "", 48]], cuuctl_TileLayerTerrain$getTileBaseImageLocations$resourceAndImprovementSequence$1, [[kcji_DebugMetadata$$_impl_create, 2, "TileLayerTerrain.kt", [64, 67, 68], ["$this$sequence", "$this$sequence", "$this$sequence"], ["L$0", "L$0", "L$0"], [0, 1, 2], "invokeSuspend", "com.unciv.ui.components.tilegroups.layers.TileLayerTerrain$getTileBaseImageLocations$resourceAndImprovementSequence$1", [65, 68, 70]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
+"kotlinx-coroutines-core"], "", "", 48]], cuuctl_TileLayerTerrain$getTileBaseImageLocations$resourceAndImprovementSequence$1, [[kcji_DebugMetadata$$_impl_create, 2, "TileLayerTerrain.kt", [66, 69, 70], ["$this$sequence", "$this$sequence", "$this$sequence"], ["L$0", "L$0", "L$0"], [0, 1, 2], "invokeSuspend", "com.unciv.ui.components.tilegroups.layers.TileLayerTerrain$getTileBaseImageLocations$resourceAndImprovementSequence$1", [67, 70, 72]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
 ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", ""], "", "", 1328]], cuup_ToastPopup, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000<\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\t\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\u0008\u0004\n\u0002\u0010\u000b\n\u0002\u0008\u0002\u0018\u00002\u00020\u0001B!\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007¢\u0006\u0004\u0008\u0008\u0010\tB#\u0008\u0016\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\n\u001a\u00020\u000b\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007¢\u0006\u0004\u0008\u0008\u0010\u000cJ\u0008\u0010\u0011\u001a\u00020\u0012H\u0002J\u0008\u0010\u0013\u001a\u00020\u0012H\u0002J\u0008\u0010\u0014\u001a\u00020\u0012H\u0016J\u0010\u0010\u0015\u001a\u00020\u00122\u0006\u0010\u0016\u001a\u00020\u0017H\u0016J\u0008\u0010\u0018\u001a\u00020\u0012H\u0002R\u0011\u0010\u0006\u001a\u00020\u0007¢\u0006\u0008\n\u0000\u001a\u0004\u0008\r\u0010\u000eR\u0010\u0010\u000f\u001a\u0004\u0018\u00010\u0010X\u000e¢\u0006\u0002\n\u0000¨\u0006\u0019"],
 ["Lcom/unciv/ui/popups/ToastPopup;", "Lcom/unciv/ui/popups/Popup;", "message", "", "stageToShowOn", "Lcom/badlogic/gdx/scenes/scene2d/Stage;", "time", "", "<init>", "(Ljava/lang/String;Lcom/badlogic/gdx/scenes/scene2d/Stage;J)V", "screen", "Lcom/unciv/ui/screens/basescreen/BaseScreen;", "(Ljava/lang/String;Lcom/unciv/ui/screens/basescreen/BaseScreen;J)V", "getTime", "()J", "timerJob", "Lkotlinx/coroutines/Job;", "startTimer", "", "stopTimer", "close", "setVisible", "visible", "", "stayVisible", "Unciv:core"],
 "", "", 48]], cumm_GameSetupInfo$Companion, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\u0008\u0003\u0018\u00002\u00020\u0001B\t\u0008\u0002¢\u0006\u0004\u0008\u0002\u0010\u0003J\u0012\u0010\u0004\u001a\u00020\u00052\n\u0008\u0002\u0010\u0006\u001a\u0004\u0018\u00010\u0007¨\u0006\u0008"], ["Lcom/unciv/models/metadata/GameSetupInfo$Companion;", "", "<init>", "()V", "fromSettings",
@@ -1979677,7 +1979748,7 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "Failed to load mod font ", "; using the browser sans font", " values; expected 4", "toString(...)", "Canvas font metrics were invalid: ", "symbolString", "Canvas glyph rasterizer returned ", "Canvas glyph rasterizer returned invalid dimensions ", "Canvas glyph rasterizer returned no dimensions for \'", "metrics", " for \'", " values for ", " glyph \'", "tag", "msg", "params", "debug", "debug(Lcom/unciv/utils/Tag;Ljava/lang/String;Ljava/lang/String;)V", "throwable", "error", "error(Lcom/unciv/utils/Tag;Ljava/lang/String;Ljava/lang/String;)V",
 "noLog", "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions,RoadBetweenCitiesAutomation,StageMouseOverDebug,DiplomacyAutomation", "onlyLog", "curThreadName", "] [", "] ", "] [ERROR] ", "\nNote: browser privacy settings may alter or hide some of these values.", "java.runtime.name", "userAgent", "os.name", "Linux", "no OS", "OS X", "Windows", "showLogs=", ".html", "baseUrl=", "index.html", "index-wasm.html", "index-debug.html", ", maxMultiDownloadCount=", "pagehide", "resize", "%cFatal Error: ",
 "%cException ", "gdx.wasm.js", "howler.js", "WEB_SCRIPT_PATH", "WEB_ASSET_PATH", "musicController", "onlineMultiplayer", "files", "banner.png", "/music/thatched-villagers.mp3", "/", "synchronizedMap(...)", "music/Thatched Villagers - Ambient.mp3", "Super calls with default arguments not supported in this target, function: loadGame", "autoPlaySettings", "call to \'resume\' before \'invoke\' with coroutine", "Setting new screen: %s, screenStack: %s", "onScreenCreated", "getScreen", "Super calls with default arguments not supported in this target, function: pushScreen",
-"Super calls with default arguments not supported in this target, function: popScreen", "Do you want to exit the game?", "Exit", "null cannot be cast to non-null type com.unciv.ui.screens.worldscreen.WorldScreen", "clazz", "LoadDeepLinkedGame", "DestroyJavaVM", "Thread %s still running in UncivGame.dispose().", "5.0.1", "object", "function", "string", "number", "undefined", "symbol", "bigint", "boolean", "Don\'t know how to spread ", "civInfo", "{A new b\'ak\'tun has just begun!}\n{A Great Person joins you!}",
+"Super calls with default arguments not supported in this target, function: popScreen", "Do you want to exit the game?", "Exit", "null cannot be cast to non-null type com.unciv.ui.screens.worldscreen.WorldScreen", "clazz", "LoadDeepLinkedGame", "DestroyJavaVM", "Thread %s still running in UncivGame.dispose().", "5.0.2", "object", "function", "string", "number", "undefined", "symbol", "bigint", "boolean", "Don\'t know how to spread ", "civInfo", "{A new b\'ak\'tun has just begun!}\n{A Great Person joins you!}",
 "MayaCalendar/Maya", "previousScreen", "MayaCalendar", "The Mayan Long Count", "DARK_GRAY", "Your scientists and theologians have devised a systematic approach to measuring long time spans - the Long Count. During the festivities whenever the current b\'ak\'tun ends, a Great Person will join you.", "AD", "BC", "While the rest of the world calls the current year [", "], in the Maya Calendar that is:", "] b\'ak\'tun, [", "] k\'atun, [", "] tun", ", ", "pair", "singletonMap(...)", "builder", "<this>", "null cannot be cast to non-null type kotlin.collections.Map<K of kotlin.collections.MapsKt__MapsKt.emptyMap, V of kotlin.collections.MapsKt__MapsKt.emptyMap>",
 "pairs", "Key ", " is missing in the map.", "with(...)", "destination", "Either src or dest is null", "java.version", "21", "TeaVM", "file.separator", "path.separator", ":", "line.separator", "\n", "java.io.tmpdir", "/tmp", "java.vm.version", "user.home", "|", "marginPrefix", "newIndent", "marginPrefix must be non-blank string.", "null cannot be cast to non-null type java.lang.String", "substring(...)", "indent", "input", "Invalid number format: \'", "replace(...)", "oldValue", "newValue", "replacement", "End index (",
 ") is less than start index (", ").", "append(...)", "prefix", "suffix", "other", "Count \'n\' must be non-negative, but was ", "chars", "range", "missingDelimiterValue", "delimiter", "Limit must be non-negative, but was ", "delimiters", "(this Collection)", "singletonList(...)", "array", "values", "elements", "Index overflow has happened.", "Count overflow has happened.", "comparator", "predicate", "List is empty.", "null cannot be cast to non-null type kotlin.collections.MutableIterable<T of kotlin.collections.CollectionsKt__MutableCollectionsKt.filterInPlace>",
@@ -1979969,7 +1980040,7 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "incompatible version", "Improvements", "objectToCount", "Wonder/", "Building/", "Building.getStats", "The religion of TheLegend27", "religionName", "] was converted to [", "Empty sequence can\'t be reduced.", "You gained [", "] as your religion was spread to an unknown city", "] as your religion was spread to [", "Peace", "Protector", "War", "DefensivePact", "OtherIcons/Score", "OtherIcons/Hexagon", "UnitPromotionIcons/Scouting", "gameParameters", "foundingCivName", "_foundingCiv", "foundingCiv", "startingEra",
 "usedMajorCivs", "requestedEra", "TurnsTillCityStateElection", "Your spy lost the election in [", "OtherIcons/Spy", "Your spy successfully rigged the election in [", "The election in [", "] was rigged by [", "CityStateFunctions.turnsForGreatPersonFromCityState", "receivingCiv", "CityStateFunctions.giveGreatPersonToPatron", "random(...)", "] gave us a [", "] as a gift!", "] as gift near [", "donorCiv", "You can only gain influence with City-States!", "We have allied with [", "We have lost our alliance with [",
 "We have married into the ruling family of [", "], bringing them under our control.", "] has married into the ruling family of [", "], bringing them under their control.", "We have bought the City-State of [", "], bringing them under our control!", "] has bought the City-State of [", "demandingCiv", "Major Civ", "No Cities", "Base value", "Has Ally", "Demanding a Worker", "Has Protector", "Demanding a Worker from small City-State", "Very recently paid tribute", "Influence below -30", "Recently paid tribute",
-"Military Rank", "Military near City-State", "From Uniques", "You can only demand gold from City-States!", "You can only demand workers from City-States!", "CityStateFunctions.tributeWorker", "statType", "] is grateful that you killed a Barbarian that was threatening them!", "cityState", "bully", "] is upset that you demanded tribute from [", "], whom they have pledged to protect!", "] cancelled the quests they had given you because you demanded tribute from them.", "CityStateFunctions.makeOtherCityStatesWaryOfAttacker",
+"Military Rank", "Military near City-State", "Intimidation bonus", "You can only demand gold from City-States!", "You can only demand workers from City-States!", "CityStateFunctions.tributeWorker", "statType", "] is grateful that you killed a Barbarian that was threatening them!", "cityState", "bully", "] is upset that you demanded tribute from [", "], whom they have pledged to protect!", "] cancelled the quests they had given you because you demanded tribute from them.", "CityStateFunctions.makeOtherCityStatesWaryOfAttacker",
 "target", "] has destroyed [", "], whom you had pledged to protect!", "] is outraged that you destroyed [", "], whom they had pledged to protect!", "] is being attacked by [", "] and asks all major civilizations to help them out by gifting them military units.", "OtherIcons/Present", "Convert production to [", "] at a rate of [rate] to 1", "\r\n", "/⏳", "updateSightAndResources", "We have encountered [", "CivInfoTransientCache.updateOurTiles", "tiles", "We have discovered [", "We have received [", "] for discovering [",
 "CivInfoTransientCache.updateCitiesConnectedToCapital", "] has been connected to your capital!", "] has been disconnected from your capital!", "CivInfoTransientCache.updateCivResources", "cityStateType", "relationshipLevel", "DeclaredWarOnUs", "You declared war on us!", "WarMongerer", "Your warmongering ways are unacceptable to us.", "CapturedOurCities", "You have captured our cities!", "DeclaredFriendshipWithOurEnemies", "You have declared friendship with our enemies!", "BetrayedDeclarationOfFriendship", "Your so-called \'friendship\' is worth nothing.",
 "SignedDefensivePactWithOurEnemies", "You have signed a defensive pact with our enemy!", "BetrayedDefensivePact", "Your so-called \'defensive pact\' is worth nothing.", "Denunciation", "You have publicly denounced us!", "DenouncedOurAllies", "You have denounced our allies", "RefusedToNotSettleCitiesNearUs", "You refused to stop settling cities near us", "RefusedToNotSpreadReligionToUs", "You refused to stop spreading religion to us", "RefusedToNotSendingSpiesToUs", "You refused to stop spying on us", "RefusedToPromiseNotToAttackUs",
@@ -1980052,10 +1980123,10 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "PediaImprovements", "PediaUnits", "PediaUnitTypes", "Unit types", "PediaNations", "PediaTechnologies", "PediaPromotions", "Promotions", "PediaPolicies", "PediaBeliefs", "Religions and Beliefs", "PediaUnitNameGroups", "Unit Names", "PediaTutorials", "PediaVictoryTypes", "Victory Types", "PediaDifficulties", "Difficulty levels", "PediaEras", "PediaSpeeds", "PediaBack", "Back in history", "PediaHistory", "Show history", "PediaSearch", "Open the Search Dialog", "Confirm", "Confirm Dialog", "Cancel", "Cancel Dialog",
 "UpgradeAll", "Failed to parse Github response as json - ", "repo", "modFolder", "preview.jpg", "preview.png", "jsons/ModOptions.json", "https://github.com/", "Save avatar", "^Fortify\\s+(\\d+)([\\w\\s]*)", "missingMods", "Missing mods: [", "winningCivObject", "VictoryData(winningCiv=", ", victoryType=", ", victoryTurn=", "Do things to win!", "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!", "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!",
 "Victory/", "VictoryIllustrations/", "/Won", "Unmatched ", " parenthesis", "NaturalWonder", "padTop(...)", "CLEAR_WHITE", "BLUE", "NAVY", "SLATE", "SKY", "TEAL", "GREEN", "CHARTREUSE", "LIME", "FOREST", "OLIVE", "GOLD", "GOLDENROD", "TAN", "FIREBRICK", "SCARLET", "CORAL", "SALMON", "PINK", "MAGENTA", "PURPLE", "VIOLET", "MAROON", "ruleSetMods", "INTERNAL", "jsons/TileSets", "Config", "jsons/Skins", "Exception loading SkinConfig \'%s\':", "  %s", "  (Source file %s line %s)", "SkinConfig loaded successfully: %s",
-"Exception loading Skin \'%s/jsons/Skins/%s\':", "Skin loaded successfully: %s", "ShortcutAction(shortcut=", ", action=", "null cannot be cast to non-null type com.unciv.ui.components.widgets.AutoScrollPane", "SkinAndMod(skin=", ", mod=", "tileSet", "TileSets/", "Tiles/NaturalWonder", "Tiles/", "Edges/", "Units/", "Borders/", "EmbarkedUnit-Military", "EmbarkedUnit-Civilian", "borderShapeString", "innerOrOuter", "fallbackImage", "EmbarkedUnit-", "MainMenu", "WorldScreen", "AutoPlay menu", "NextTurnMenu", "NextTurn menu",
-"MapPanning", "UnitActions", "CityScreen", "CityScreenConstructionMenu", "Popups", "[stat] Focus", "StartingLocation(position=", ", nation=", ", usage=", "$this$editQueue", "icon", "extraImage", "Super calls with default arguments not supported in this target, function: separator", "Super calls with default arguments not supported in this target, function: addUniques", "leadingSeparator", "exclude", "CapitalConnectionsFinder.find", "newCitiesToCheck", "CapitalConnectionsFinder.checkHarbor", "CapitalConnectionsFinder.check",
-"General", "choice", "ConstructionAutomation.chooseNextConstruction", "] has started working on [", "Automation.rankStatsForCityWork", "availableUnits", "Automation.chooseMilitaryUnit", "assessorView", "assessedView", "questName", "assignerCiv", "assigneeCiv", ", assigner=", ", assignee=", ", d1=", ", d2=", ", ⏳", "newAction", "espionageManager", "Your spy [", "] cannot steal any more techs from [", "] as we\'ve already researched all the technology they know!", "We have recruited a new spy name [", "] after [",
-"] was killed.", "An unidentified spy stole the Technology [", "] from [", "A spy from [", "] was found and killed by [", "] trying to steal Technology in [", "] was found and killed trying to steal Technology in [", "] stole the Technology [", "] was killed trying to steal Technology in [", "] successfully staged a coup in [", "] failed to stage a coup in our ally [", "] and was killed!", "] successfully staged a coup in our former ally [", "Our spy [", "] failed to stage a coup in [", "] has leveled up [",
+"Exception loading Skin \'%s/jsons/Skins/%s\':", "Skin loaded successfully: %s", "ShortcutAction(shortcut=", ", action=", "null cannot be cast to non-null type com.unciv.ui.components.widgets.AutoScrollPane", "SkinAndMod(skin=", ", mod=", "tileSet", "TileSets/", "Tiles/NaturalWonder", "Tiles/", "Edges/", "Units/", "Borders/", "EmbarkedUnit-Military", "EmbarkedUnit-Civilian", "borderShapeString", "innerOrOuter", "fallbackImage", "EmbarkedUnit-", "baseLocation", "MainMenu", "WorldScreen", "AutoPlay menu", "NextTurnMenu",
+"NextTurn menu", "MapPanning", "UnitActions", "CityScreen", "CityScreenConstructionMenu", "Popups", "[stat] Focus", "StartingLocation(position=", ", nation=", ", usage=", "$this$editQueue", "icon", "extraImage", "Super calls with default arguments not supported in this target, function: separator", "Super calls with default arguments not supported in this target, function: addUniques", "leadingSeparator", "exclude", "CapitalConnectionsFinder.find", "newCitiesToCheck", "CapitalConnectionsFinder.checkHarbor",
+"CapitalConnectionsFinder.check", "General", "choice", "ConstructionAutomation.chooseNextConstruction", "] has started working on [", "Automation.rankStatsForCityWork", "availableUnits", "Automation.chooseMilitaryUnit", "assessorView", "assessedView", "questName", "assignerCiv", "assigneeCiv", ", assigner=", ", assignee=", ", d1=", ", d2=", ", ⏳", "newAction", "espionageManager", "Your spy [", "] cannot steal any more techs from [", "] as we\'ve already researched all the technology they know!", "We have recruited a new spy name [",
+"] after [", "] was killed.", "An unidentified spy stole the Technology [", "] from [", "A spy from [", "] was found and killed by [", "] trying to steal Technology in [", "] was found and killed trying to steal Technology in [", "] stole the Technology [", "] was killed trying to steal Technology in [", "] successfully staged a coup in [", "] failed to stage a coup in our ally [", "] and was killed!", "] successfully staged a coup in our former ally [", "Our spy [", "] failed to stage a coup in [", "] has leveled up [",
 "] times!", "] has leveled up!", "cityCenterType", "Unknown countable: ", "[Countable: ", "getListenerActor(...)", "FantasyHex", "imageName", "Portraits/", "Icons/", "Portraits/Background", "OtherIcons/ConstructionCircle", "UnitPromotionIcons/", " ability", "TechIcons/Circle", "NationIcons/CityState", "tileView", "tileSetStrings", "tileGroup", "Shouldn\'t be able to get from civ-view to null-view - civ-view is for games, null-view is for map editor and single-tile visualization!", "Super calls with default arguments not supported in this target, function: update",
 "tileMapView", "start", "create", "pathingMap", "cache", "unitView", "$1$4 $2$3$5", "([A-Z])([A-Z])([a-z])|([a-z])([A-Z])", "http://", "https://", "mailto:", "iconDisplay", "Exception while rendering civilopedia text", "(empty)", "(header=", ")\'", "(extraImage=\'", "(separator)", "\'->", "getTextureData(...)", "^[^/]+/[^/]+$", "extraImage and other options except imageSize are incompatible", "textureNamesCache", "extraImage not found as either atlas texture or in ExtraImages folder", "StopEscortFormation",
 "Stop Escort formation", "EscortFormation", "Escort formation", "Guard", "Upgrade to [unitType] ([goldCost] gold)", "Air Sweep", "CreateImprovement", "{Hurry Research} (☠)", "HurryPolicy", "{Hurry Policy} (☠)", "{Hurry Wonder} (☠)", "{Hurry Construction} (☠)", "{Conduct Trade Mission} (☠)", "Spread [religionName]", "Remove Heresy", "Skip turn", "UniqueTriggerActivation.getTriggerFunction", "this civ", "Event ", " has presentation type ", " which is not implemented for use via TriggerEvent", "EffectBeforeCause",
@@ -1980063,11 +1980134,11 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "BuildingBuiltGlobally", "Anyone should build [building]", "AddedSSPartsInCapital", "Add all [comment] in capital", "DestroyAllPlayers", "Destroy all players", "CaptureAllCapitals", "Capture all capitals", "CompletePolicyBranches", "Complete [amount] Policy branches", "WorldReligion", "Become the world religion", "WinDiplomaticVote", "Win diplomatic vote", "ScoreAfterTimeOut", "Have highest score after max turns", "MoreCountableThanEachPlayer", "Have more [countable] than each player\'s [countable]", "HaveCountable",
 "Have at least [amount] [countable]", "cityView", "cityScreen", "CityScreen/CityScreenTileTable/InnerTable", "CityScreen/CityScreenTileTable/Background", "Exit city", "WLTK", "Enter city screen", "Construction info gathering - ", "{Citizen Management}", "CityStatsTable.CitizenManagement", "{Specialists}:", "CityStatsTable.Specialists", "apply(...)", "OtherIcons/WLTK LR", "Annex city", "Raze city", "Stop razing city", "OtherIcons/WLTK 1", "OtherIcons/WLTK 2", "Reassign worked tiles", "selectedTile", "Currently you have [",
 "] [Gold].", "\n\n", "Would you like to purchase [Tile] for [", "]?", "Purchase", "newConstruction", "buyStat", "Please select a tile for this building\'s [", "ConstructionChoice(choice=", ", choiceModifier=", ", remainingWork=", ", production=", "viewer", "gameView", "Regular", "[FunctionCall: ", ")]", "listIterator(...)", "set(...)", "ResourceIcons/Circle", "valueOf(...)", "UnitPromotion", "Unique", "ImprovementIcons/Circle", "OtherIcons/UnitNameGroups", "tint", "VictoryTypeIcons/", "UnitTypeIcons/Domain",
-"Domain: [", "Super calls with default arguments not supported in this target, function: setHexagonSize", "-Pillaged", "baseLocation", "images", "Concave", "Convex", "ConvexConcave", "ConcaveConvex", "This shouldn\'t happen?", "Generic", "OtherIcons/HexagonOutline", "WorldScreen/AirUnitTable", "OtherIcons/Aircraft", "foreignCityView", "textField", "actor cannot be the Container.", "Use Container#setActor.", "OtherIcons/Loading", "loadingColor", "idleIconColor", "circleImageName", "idleImageName", "loadingImageName",
-"$this$selectiveRemove", "newLines", "Resources/", "#F42", "seeAlso", "debugId", "debugMapType", "getCurrentCacheKey", "passThroughPredicate", "moveToPredicate", "endTurnDamage", "cost", "tileRoadCost", "#clear explicitly dumping caches for ", "latestKey", "#fetchCache() reusing existing ", " cache ", " because keys are unchanged", "#fetchCache() dumping cache ", " because ", " does not match", "#fetchCache() retrying cache fetch due to data race initializing cache ", "#fetchCache() initialized new cache ",
-"PathingMap.getShortestPath", "#getShortestPath returning startingPoint cache.key.startingPoint for ", "#getShortestPath emulating no-movement-pathing bug to ", "#getShortestPath returning no path to ", "#getShortestPath(", ") calculating for ", "#getShortestPath returning ", "copyOf(this, newSize)", "#getMovementToTilesAtPosition returning cached tilesSameTurn[len=", "] for ", "#getMovementToTilesAtPosition calculating for ", "] which was calculated by another thread for ", "#getMovementToTilesAtPosition calculcated tilesSameTurn=",
-"[debugMapType=", " debugId=", " key=", "defender", "] has joined us!", "] has captured our [", "Can\'t capture our own unit!", "] has destroyed our [", "capturedUnit", "capturingCiv", "terrainTarget", "Feature", "Base", "Filter", "CityStateType/", "} ({", "Personality/", "]\'s personality", "Productive", "Prolific", "Greedy", "Rational", "Cultured", "Hedonistic", "Militaristic", "Aggressive", "Pushy", "DeclareWar", "Warmonger", "Commerce", "Trader", "Negotiator", "Loyal", "Stalwart", "Expansion", "Expansionistic",
-"DenounceWillingness", "Denouncer", "icons", "circleImage", "Portraits/Fallback", "Icons/Fallback", "TopRight", "BottomRight", "Bottom", "BottomLeft", "TopLeft", "Top", "originTileFilter", "destinationTileFilter", "edgeType", "EdgeTileImage(fileName=", ", originTileFilter=", ", destinationTileFilter=", ", edgeType=", "HardwareKeyboard", "OnscreenKeyboard", "MultitouchScreen", "Accelerometer", "Compass", "Vibrator", "HapticFeedback", "Gyroscope", "RotationVector", "Pressure", "IndexedValue(index=", "null cannot be cast to non-null type java.util.BitSet",
+"Domain: [", "Super calls with default arguments not supported in this target, function: setHexagonSize", "-Pillaged", "images", "Concave", "Convex", "ConvexConcave", "ConcaveConvex", "This shouldn\'t happen?", "Generic", "OtherIcons/HexagonOutline", "WorldScreen/AirUnitTable", "OtherIcons/Aircraft", "foreignCityView", "textField", "actor cannot be the Container.", "Use Container#setActor.", "OtherIcons/Loading", "loadingColor", "idleIconColor", "circleImageName", "idleImageName", "loadingImageName", "$this$selectiveRemove",
+"newLines", "Resources/", "#F42", "seeAlso", "debugId", "debugMapType", "getCurrentCacheKey", "passThroughPredicate", "moveToPredicate", "endTurnDamage", "cost", "tileRoadCost", "#clear explicitly dumping caches for ", "latestKey", "#fetchCache() reusing existing ", " cache ", " because keys are unchanged", "#fetchCache() dumping cache ", " because ", " does not match", "#fetchCache() retrying cache fetch due to data race initializing cache ", "#fetchCache() initialized new cache ", "PathingMap.getShortestPath",
+"#getShortestPath returning startingPoint cache.key.startingPoint for ", "#getShortestPath emulating no-movement-pathing bug to ", "#getShortestPath returning no path to ", "#getShortestPath(", ") calculating for ", "#getShortestPath returning ", "copyOf(this, newSize)", "#getMovementToTilesAtPosition returning cached tilesSameTurn[len=", "] for ", "#getMovementToTilesAtPosition calculating for ", "] which was calculated by another thread for ", "#getMovementToTilesAtPosition calculcated tilesSameTurn=", "[debugMapType=",
+" debugId=", " key=", "defender", "] has joined us!", "] has captured our [", "Can\'t capture our own unit!", "] has destroyed our [", "capturedUnit", "capturingCiv", "terrainTarget", "Feature", "Base", "Filter", "CityStateType/", "} ({", "Personality/", "]\'s personality", "Productive", "Prolific", "Greedy", "Rational", "Cultured", "Hedonistic", "Militaristic", "Aggressive", "Pushy", "DeclareWar", "Warmonger", "Commerce", "Trader", "Negotiator", "Loyal", "Stalwart", "Expansion", "Expansionistic", "DenounceWillingness",
+"Denouncer", "icons", "circleImage", "Portraits/Fallback", "Icons/Fallback", "TopRight", "BottomRight", "Bottom", "BottomLeft", "TopLeft", "Top", "originTileFilter", "destinationTileFilter", "edgeType", "EdgeTileImage(fileName=", ", originTileFilter=", ", destinationTileFilter=", ", edgeType=", "HardwareKeyboard", "OnscreenKeyboard", "MultitouchScreen", "Accelerometer", "Compass", "Vibrator", "HapticFeedback", "Gyroscope", "RotationVector", "Pressure", "IndexedValue(index=", "null cannot be cast to non-null type java.util.BitSet",
 "update", "[key=", " nodesNeedingNeighbors=", " addedNeighborNodes=", " routeNodes=", " tilesSameTurn=", "TerrainImpassable", "BoatCannotGoOnLand", "CannotEnterForeignLand", "CannotEnterCityCenter", "EscortCannotMove", "TileIsNotEmpty", "NoAirUnitTransport", "locations", "Assign", "Reassign", "Ensure", "BranchStart", "Member", "BranchComplete", "Replaced", "WrongCiv", "MissingTech", "ConditionallyUnbuildable", "NotJustOutsideBorders", "OutsideBorders", "UnmetConditional", "Obsolete", "MissingResources", "Showing",
 "Shown", "Hiding", "iteratorFactory", "createUnitPathingMapNoZoc", "createUnitPathingMap", "createUnitPathingMapNoEscort", "createLandAttackPathingMap", "createRoadPathingMap", "assignedQuest", "Route", "ClearBarbarianCamp", "Clear Barbarian Camp", "ConstructWonder", "Construct Wonder", "ConnectResource", "Connect Resource", "Acquire Great Person", "ConquerCityState", "Conquer City State", "FindPlayer", "Find Player", "FindNaturalWonder", "Find Natural Wonder", "GiveGold", "Give Gold", "PledgeToProtect", "Pledge to Protect",
 "ContestCulture", "Contest Culture", "ContestFaith", "Contest Faith", "ContestTech", "Contest Technologies", "Invest", "BullyCityState", "Bully City State", "DenounceCiv", "Denounce Civilization", "Spread Religion", "attackableTile", "%s %s attacked %s %s", "Barbarians raided [", "] and stole [", "] Gold from your treasury!", "We have destroyed the city of [", "due to ", "our ", " defeating a [", " damaging a [", " being damaged by a [", "ourUnit", " being defeated by a [", "Battle.takeDamage", "Your ", " plundered [",
@@ -1980357,11 +1980428,11 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 "i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1",
 "i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1",
 "i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/translations/Ukrainian.properties:687895:1", "i:b:/jsons/translations/Rusyn.properties:451245:1", "i:b:/jsons/translations/German.properties:556017:1",
-"i:b:/jsons/translations/Toki_Pona.properties:472970:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67631:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Navajo.properties:407745:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Belarusian.properties:427114:1",
-"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Hungarian.properties:562445:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Spanish.properties:538311:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
-"i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539367:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1",
-"i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Turkish.properties:535890:1", "i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Italian.properties:544425:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/French.properties:556557:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Indonesian.properties:539647:1", "i:b:/jsons/translations/Romanian.properties:443222:1",
-"i:b:/jsons/translations/Russian.properties:710622:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/Latin.properties:461608:1", "i:b:/jsons/translations/completionPercentages.properties:828:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1",
+"i:b:/jsons/translations/Toki_Pona.properties:472970:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67653:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Navajo.properties:407745:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Belarusian.properties:427114:1",
+"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Hungarian.properties:562833:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Spanish.properties:538747:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
+"i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539729:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1",
+"i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Turkish.properties:535993:1", "i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Italian.properties:544778:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/French.properties:556905:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Indonesian.properties:539953:1", "i:b:/jsons/translations/Romanian.properties:443222:1",
+"i:b:/jsons/translations/Russian.properties:711149:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/Latin.properties:461608:1", "i:b:/jsons/translations/completionPercentages.properties:834:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1",
 "i:b:/jsons/translations/Finnish.properties:411445:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1", "i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1",
 "i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1",
 "i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1",
