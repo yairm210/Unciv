@@ -164,7 +164,8 @@ class CityStateFunctions(val civInfo: Civilization) {
                 } }
                 .toList().randomOrNull(rng)
 
-        val militaryUnit = giftableUniqueUnit() // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
+        // As in Civ V (CvMinorCivAI::DoSpawnUnit), only the ally gets the unique unit; friends get an ordinary one
+        val militaryUnit = giftableUniqueUnit()?.takeIf { civInfo.allyCiv == receivingCiv } // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
             ?: randomGiftableUnit() // Otherwise pick at random
             ?: return  // That filter _can_ result in no candidates, if so, quit silently
 
