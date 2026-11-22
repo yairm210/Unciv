@@ -1101403,11 +1101403,11 @@ cuuswua_UnitActionsTable_activateAction = ($this, $unitAction, $unit) => {
     $rt_nativeThread().push($this, $unitAction, $unit, $unitAction_0, $confirmation, var$5, var$6, var$7, var$8, var$9, var$10, $ptr);
 },
 cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
-    let $unitAction_0, var$4, var$5, $ptr, $tmp;
+    let $unitAction_0, var$4, var$5, var$6, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$unitAction_0 = $thread.pop();$unit = $thread.pop();$unitAction = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();var$4 = $thread.pop();$unitAction_0 = $thread.pop();$unit = $thread.pop();$unitAction = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1101435,23 +1101435,41 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
         if ($rt_suspending()) {
             break main;
         }
+        var$4 = $unitAction_0.$uiType;
         $ptr = 4;
     case 4:
+        cuuswua_UiUnitActionType_$callClinit();
+        if ($rt_suspending()) {
+            break main;
+        }
+        if (var$4 === cuuswua_UiUnitActionType_Skip) {
+            $unit = $rt_nullCheck($unit);
+            if (!cuv_MapUnitView_getDue($unit)) {
+                $unitAction = $this.$worldScreen8;
+                var$5 = 0;
+                var$6 = 1;
+                $unit = null;
+                $ptr = 8;
+                continue main;
+            }
+        }
+        $ptr = 5;
+    case 5:
         cu_UncivGame_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
         $unitAction = $rt_nullCheck(cu_UncivGame_Companion);
-        $ptr = 5;
-    case 5:
+        $ptr = 6;
+    case 6:
         $tmp = cu_UncivGame$Companion_getCurrent($unitAction);
         if ($rt_suspending()) {
             break main;
         }
         $unitAction = $tmp;
         $unitAction = $rt_nullCheck($unitAction);
-        $ptr = 6;
-    case 6:
+        $ptr = 7;
+    case 7:
         $tmp = cu_UncivGame_getSettings($unitAction);
         if ($rt_suspending()) {
             break main;
@@ -1101461,27 +1101479,33 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
             $unit = $rt_nullCheck($unit);
             if (!cuv_MapUnitView_isDestroyed($unit)) {
                 if (($rt_nullCheck($unitAction_0.$uiType)).$isSkippingToNextUnit) {
-                    $ptr = 8;
+                    $ptr = 10;
                     continue main;
                 }
                 ($rt_nullCheck(($rt_nullCheck($this.$worldScreen8)).$bottomUnitTable)).$shouldUpdate0 = 1;
                 return;
             }
             $unit = $this.$worldScreen8;
-            var$4 = 0;
+            var$6 = 0;
             var$5 = 1;
             $unitAction = null;
-            $ptr = 7;
+            $ptr = 9;
             continue main;
         }
         return;
-    case 7:
-        cuusw_WorldScreen_switchToNextUnit$default($unit, var$4, var$5, $unitAction);
+    case 8:
+        cuusw_WorldScreen_switchToNextUnit$default($unitAction, var$5, var$6, $unit);
         if ($rt_suspending()) {
             break main;
         }
         return;
-    case 8:
+    case 9:
+        cuusw_WorldScreen_switchToNextUnit$default($unit, var$6, var$5, $unitAction);
+        if ($rt_suspending()) {
+            break main;
+        }
+        return;
+    case 10:
         $tmp = cuv_MapUnitViewKt_isMoving($unit);
         if ($rt_suspending()) {
             break main;
@@ -1101489,15 +1101513,15 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
         var$5 = $tmp;
         if (!var$5) {
             $unit = $this.$worldScreen8;
-            var$4 = 0;
+            var$6 = 0;
             var$5 = 1;
             $unitAction = null;
-            $ptr = 7;
+            $ptr = 9;
             continue main;
         }
         $unitAction = $unit;
-        $ptr = 9;
-    case 9:
+        $ptr = 11;
+    case 11:
         $tmp = cuv_ForeignMapUnitViewKt_hasMovement($unitAction);
         if ($rt_suspending()) {
             break main;
@@ -1101505,17 +1101529,17 @@ cuuswua_UnitActionsTable_invokeAction = ($this, $unitAction, $unit) => {
         var$5 = $tmp;
         if (!var$5) {
             $unit = $this.$worldScreen8;
-            var$4 = 0;
+            var$6 = 0;
             var$5 = 1;
             $unitAction = null;
-            $ptr = 7;
+            $ptr = 9;
             continue main;
         }
         ($rt_nullCheck(($rt_nullCheck($this.$worldScreen8)).$bottomUnitTable)).$shouldUpdate0 = 1;
         return;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $unitAction, $unit, $unitAction_0, var$4, var$5, $ptr);
+    $rt_nativeThread().push($this, $unitAction, $unit, $unitAction_0, var$4, var$5, var$6, $ptr);
 },
 cuuswua_UnitActionsTable_animateButton = ($this, $button, $delay) => {
     let var$3, var$4, var$5, $ptr, $tmp;
@@ -1306379,11 +1306403,11 @@ culmma_UnitActions_addUnmappedUnitActions = ($this, $$this$addUnmappedUnitAction
     $rt_nativeThread().push($this, $$this$addUnmappedUnitActions, $unit, $$completion, $$continuation, var$5, $$result, var$7, $tile, $unit_0, var$10, var$11, var$12, var$13, var$14, var$15, $ptr);
 },
 culmma_UnitActions_addEscortAction = ($this, $$this$addEscortAction, $unit, $$completion) => {
-    let $unit_0, var$5, $worldScreen, $selectedUnits, var$8, $tile, $$this$any$iv, $it, $element$iv, $ptr, $tmp;
+    let $unit_0, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$element$iv = $thread.pop();$it = $thread.pop();$$this$any$iv = $thread.pop();$tile = $thread.pop();var$8 = $thread.pop();$selectedUnits = $thread.pop();$worldScreen = $thread.pop();var$5 = $thread.pop();$unit_0 = $thread.pop();$$completion = $thread.pop();$unit = $thread.pop();$$this$addEscortAction = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();var$12 = $thread.pop();var$11 = $thread.pop();var$10 = $thread.pop();var$9 = $thread.pop();var$8 = $thread.pop();var$7 = $thread.pop();var$6 = $thread.pop();var$5 = $thread.pop();$unit_0 = $thread.pop();$$completion = $thread.pop();$unit = $thread.pop();$$this$addEscortAction = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1306404,87 +1306428,22 @@ culmma_UnitActions_addEscortAction = ($this, $$this$addEscortAction, $unit, $$co
         }
         var$5 = $tmp;
         if (!var$5) {
-            $unit = $rt_nullCheck(cu_GUI_INSTANCE);
             $ptr = 3;
             continue main;
         }
         return k_Unit_INSTANCE;
     case 3:
-        $tmp = cu_GUI_getWorldScreen($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $worldScreen = $tmp;
-        $selectedUnits = cuuswu_UnitTable_getSelectedUnits($rt_nullCheck(($rt_nullCheck($worldScreen)).$bottomUnitTable));
-        var$8 = ($rt_nullCheck($selectedUnits)).$size9;
-        if (var$8 != 2) {
-            if (var$8 == 1) {
-                $ptr = 9;
-                continue main;
-            }
-            return k_Unit_INSTANCE;
-        }
-        $ptr = 4;
-    case 4:
-        $tmp = kc_CollectionsKt___CollectionsKt_first($selectedUnits);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $unit = $rt_nullCheck($rt_castToClass($unit, cuv_MapUnitView));
-        $ptr = 5;
-    case 5:
-        $tmp = cuv_ForeignMapUnitView_getTile($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $tile = $tmp;
-        $ptr = 6;
-    case 6:
-        $tmp = kc_CollectionsKt___CollectionsKt_last($selectedUnits);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $unit = $rt_nullCheck($rt_castToClass($unit, cuv_MapUnitView));
-        $ptr = 7;
-    case 7:
-        $tmp = cuv_ForeignMapUnitView_getTile($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $ptr = 8;
-    case 8:
-        $tmp = kji_Intrinsics_areEqual($unit, $tile);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            $$this$any$iv = $selectedUnits;
-            if ($rt_isInstance($$this$any$iv, ju_Collection)) {
-                $unit = $rt_nullCheck($$this$any$iv);
-                $ptr = 12;
-                continue main;
-            }
-            $unit = $rt_nullCheck($$this$any$iv);
-            $ptr = 11;
-            continue main;
-        }
-        return k_Unit_INSTANCE;
-    case 9:
         $tmp = culmm_MapUnit_getOtherEscortUnit($unit_0);
         if ($rt_suspending()) {
             break main;
         }
         $unit = $tmp;
         if ($unit !== null) {
-            $ptr = 10;
+            $ptr = 4;
             continue main;
         }
         return k_Unit_INSTANCE;
-    case 10:
+    case 4:
         $tmp = culmm_MapUnit_isEscorting($unit_0);
         if ($rt_suspending()) {
             break main;
@@ -1306492,107 +1306451,42 @@ culmma_UnitActions_addEscortAction = ($this, $$this$addEscortAction, $unit, $$co
         var$5 = $tmp;
         if (!var$5) {
             $unit = new cum_UnitAction;
-            $ptr = 17;
+            $ptr = 9;
             continue main;
         }
-        $$this$any$iv = new cum_UnitAction;
-        $ptr = 13;
-        continue main;
-    case 11:
-        $tmp = ju_AbstractList_iterator($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        $worldScreen = $rt_nullCheck($unit);
-        $ptr = 21;
-        continue main;
-    case 12:
-        $tmp = ju_AbstractCollection_isEmpty($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            if (!0) {
-                $ptr = 9;
-                continue main;
-            }
-            return k_Unit_INSTANCE;
-        }
-        $unit = $rt_nullCheck($$this$any$iv);
-        $ptr = 11;
-        continue main;
-    case 13:
+        $unit = new cum_UnitAction;
+        $ptr = 5;
+    case 5:
         cum_UnitActionType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        $unit = cum_UnitActionType_StopEscortFormation;
-        $worldScreen = null;
+        var$6 = cum_UnitActionType_StopEscortFormation;
+        var$7 = null;
         var$5 = 0;
-        $selectedUnits = null;
-        $tile = null;
-        $it = null;
-        $element$iv = new culmma_UnitActions$addEscortAction$lambda$_6_0;
-        $element$iv.$_0410 = $unit_0;
-        var$8 = 62;
+        var$8 = null;
+        var$9 = null;
+        var$10 = null;
+        var$11 = new culmma_UnitActions$addEscortAction$lambda$_6_0;
+        var$11.$_0410 = $unit_0;
+        var$12 = 62;
         $unit_0 = null;
-        $ptr = 14;
-    case 14:
-        cum_UnitAction__init_($$this$any$iv, $unit, $worldScreen, var$5, $selectedUnits, $tile, $it, $element$iv, var$8, $unit_0);
+        $ptr = 6;
+    case 6:
+        cum_UnitAction__init_($unit, var$6, var$7, var$5, var$8, var$9, var$10, var$11, var$12, $unit_0);
         if ($rt_suspending()) {
             break main;
         }
         $$this$addEscortAction = $rt_nullCheck($$this$addEscortAction);
-        $ptr = 15;
-    case 15:
-        $tmp = ks_SequenceBuilderIterator_yield($$this$addEscortAction, $$this$any$iv, $$completion);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$addEscortAction = $tmp;
-        $ptr = 16;
-    case 16:
-        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $unit = $tmp;
-        if ($$this$addEscortAction !== $unit)
-            return k_Unit_INSTANCE;
-        return $$this$addEscortAction;
-    case 17:
-        cum_UnitActionType_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        $worldScreen = cum_UnitActionType_EscortFormation;
-        $selectedUnits = null;
-        var$5 = 0;
-        $tile = null;
-        $$this$any$iv = null;
-        $element$iv = null;
-        $it = new culmma_UnitActions$addEscortAction$lambda$_6_1;
-        $it.$_0446 = $unit_0;
-        var$8 = 62;
-        $unit_0 = null;
-        $ptr = 18;
-    case 18:
-        cum_UnitAction__init_($unit, $worldScreen, $selectedUnits, var$5, $tile, $$this$any$iv, $element$iv, $it, var$8, $unit_0);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $$this$addEscortAction = $rt_nullCheck($$this$addEscortAction);
-        $ptr = 19;
-    case 19:
+        $ptr = 7;
+    case 7:
         $tmp = ks_SequenceBuilderIterator_yield($$this$addEscortAction, $unit, $$completion);
         if ($rt_suspending()) {
             break main;
         }
         $$this$addEscortAction = $tmp;
-        $ptr = 20;
-    case 20:
+        $ptr = 8;
+    case 8:
         $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
         if ($rt_suspending()) {
             break main;
@@ -1306601,46 +1306495,48 @@ culmma_UnitActions_addEscortAction = ($this, $$this$addEscortAction, $unit, $$co
         if ($$this$addEscortAction !== $unit)
             return k_Unit_INSTANCE;
         return $$this$addEscortAction;
-    case 21:
-        $tmp = ju_AbstractList$1_hasNext($worldScreen);
+    case 9:
+        cum_UnitActionType_$callClinit();
         if ($rt_suspending()) {
             break main;
         }
-        var$5 = $tmp;
-        if (!var$5) {
-            if (!0) {
-                $ptr = 9;
-                continue main;
-            }
+        var$6 = cum_UnitActionType_EscortFormation;
+        var$7 = null;
+        var$5 = 0;
+        var$10 = null;
+        var$11 = null;
+        var$8 = null;
+        var$9 = new culmma_UnitActions$addEscortAction$lambda$_6_1;
+        var$9.$_0446 = $unit_0;
+        var$12 = 62;
+        $unit_0 = null;
+        $ptr = 10;
+    case 10:
+        cum_UnitAction__init_($unit, var$6, var$7, var$5, var$10, var$11, var$8, var$9, var$12, $unit_0);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$addEscortAction = $rt_nullCheck($$this$addEscortAction);
+        $ptr = 11;
+    case 11:
+        $tmp = ks_SequenceBuilderIterator_yield($$this$addEscortAction, $unit, $$completion);
+        if ($rt_suspending()) {
+            break main;
+        }
+        $$this$addEscortAction = $tmp;
+        $ptr = 12;
+    case 12:
+        $tmp = kci_IntrinsicsKt__IntrinsicsKt_getCOROUTINE_SUSPENDED();
+        if ($rt_suspending()) {
+            break main;
+        }
+        $unit = $tmp;
+        if ($$this$addEscortAction !== $unit)
             return k_Unit_INSTANCE;
-        }
-        $ptr = 22;
-    case 22:
-        $tmp = ju_AbstractList$1_next($worldScreen);
-        if ($rt_suspending()) {
-            break main;
-        }
-        $element$iv = $tmp;
-        $unit = $rt_castToClass($element$iv, cuv_MapUnitView);
-        $ptr = 23;
-    case 23:
-        $tmp = cuv_ForeignMapUnitViewKt_isAirUnit($unit);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$5 = $tmp;
-        if (var$5) {
-            if (!1) {
-                $ptr = 9;
-                continue main;
-            }
-            return k_Unit_INSTANCE;
-        }
-        $ptr = 21;
-        continue main;
+        return $$this$addEscortAction;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $$this$addEscortAction, $unit, $$completion, $unit_0, var$5, $worldScreen, $selectedUnits, var$8, $tile, $$this$any$iv, $it, $element$iv, $ptr);
+    $rt_nativeThread().push($this, $$this$addEscortAction, $unit, $$completion, $unit_0, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $ptr);
 },
 culmma_UnitActions_addExplorationActions = ($this, $$this$addExplorationActions, $unit, $$completion) => {
     let $unit_0, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, $ptr, $tmp;
@@ -1568255,11 +1568151,11 @@ function culmma_UnitActions$addSkipAction$lambda$_12_0() {
     this.$_0497 = null;
 }
 let culmma_UnitActions$addSkipAction$lambda$_12_0_invoke = var$0 => {
-    let var$1, var$2, var$3, var$4, $ptr, $tmp;
+    let var$1, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();var$4 = $thread.pop();var$3 = $thread.pop();var$2 = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
+        $ptr = $thread.pop();var$1 = $thread.pop();var$0 = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -1568271,59 +1568167,11 @@ let culmma_UnitActions$addSkipAction$lambda$_12_0_invoke = var$0 => {
             break main;
         }
         var$1 = $rt_nullCheck(var$1);
-        var$2 = var$1.$due ? 0 : 1;
-        var$1.$due = var$2;
-        if (!var$2) {
-            $ptr = 2;
-            continue main;
-        }
-        return k_Unit_INSTANCE;
-    case 2:
-        cu_UncivGame_$callClinit();
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $rt_nullCheck(cu_UncivGame_Companion);
-        $ptr = 3;
-    case 3:
-        $tmp = cu_UncivGame$Companion_getCurrent(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        var$1 = $rt_nullCheck(var$1);
-        $ptr = 4;
-    case 4:
-        $tmp = cu_UncivGame_getSettings(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$1 = $tmp;
-        if (!($rt_nullCheck(var$1)).$autoUnitCycle) {
-            var$1 = $rt_nullCheck(cu_GUI_INSTANCE);
-            $ptr = 5;
-            continue main;
-        }
-        return k_Unit_INSTANCE;
-    case 5:
-        $tmp = cu_GUI_getWorldScreen(var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
-        var$3 = $tmp;
-        var$4 = 0;
-        var$2 = 1;
-        var$1 = null;
-        $ptr = 6;
-    case 6:
-        cuusw_WorldScreen_switchToNextUnit$default(var$3, var$4, var$2, var$1);
-        if ($rt_suspending()) {
-            break main;
-        }
+        var$1.$due = var$1.$due ? 0 : 1;
         return k_Unit_INSTANCE;
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push(var$0, var$1, var$2, var$3, var$4, $ptr);
+    $rt_nativeThread().push(var$0, var$1, $ptr);
 };
 function culmma_UnitActions$addExplorationActions$lambda$_7_0() {
     jl_Object.call(this);
@@ -1978590,7 +1978438,7 @@ cuusm_MapEditorScreen, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u
 ["Lcom/unciv/ui/screens/worldscreen/unit/actions/UiUnitActionType$Companion;", "", "<init>", "()V", "byType", "", "Lcom/unciv/models/UnitActionType;", "Lcom/unciv/ui/screens/worldscreen/unit/actions/UiUnitActionType;", "forType", "type", "Lyairm210/purity/annotations/Readonly;", "of", "Unciv:core"], "", "", 48]], culmma_UnitActions, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000V\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0008\n\u0008Æ\u0002\u0018\u00002\u00020\u0001B\t\u0008\u0002¢\u0006\u0004\u0008\u0002\u0010\u0003J\"\u0010\u0004\u001a\u00020\u00052\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\t2\n\u0008\u0002\u0010\n\u001a\u0004\u0018\u00010\u000bJ\u0014\u0010\u000c\u001a\u0008\u0012\u0004\u0012\u00020\u000e0\r2\u0006\u0010\u0006\u001a\u00020\u0007J\u001c\u0010\u000c\u001a\u0008\u0012\u0004\u0012\u00020\u000e0\r2\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0008\u001a\u00020\tJ \u0010\u0018\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bJ \u0010\u001c\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bJ \u0010\u001d\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bJ \u0010\u001e\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bJ(\u0010\u001f\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0015\u001a\u00020\u0014H@¢\u0006\u0002\u0010 J\u001a\u0010!\u001a\u0004\u0018\u00010\u000e2\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0015\u001a\u00020\u0014H\u0002J \u0010\"\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bJ \u0010#\u001a\u00020\u0019*\u0008\u0012\u0004\u0012\u00020\u000e0\u001a2\u0006\u0010\u0006\u001a\u00020\u0007H@¢\u0006\u0002\u0010\u001bR\u0001\u0010\u000f\u001a\u0001\u0012\u0004\u0012\u00020\t\u00126\u00124\u0012\u0013\u0012\u00110\u0007¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0006\u0012\u0013\u0012\u00110\u0014¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0015\u0012\u0006\u0012\u0004\u0018\u00010\u000e0\u00110\u0010j@\u0012\u0004\u0012\u00020\t\u00126\u00124\u0012\u0013\u0012\u00110\u0007¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0006\u0012\u0013\u0012\u00110\u0014¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0015\u0012\u0006\u0012\u0004\u0018\u00010\u000e0\u0011`\u0016X\u0004¢\u0006\u0002\n\u0000R\u0001\u0010\u0017\u001a\u0001\u0012\u0004\u0012\u00020\t\u0012:\u00128\u0012\u0013\u0012\u00110\u0007¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0006\u0012\u0013\u0012\u00110\u0014¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0015\u0012\n\u0012\u0008\u0012\u0004\u0012\u00020\u000e0\r0\u00110\u0010jD\u0012\u0004\u0012\u00020\t\u0012:\u00128\u0012\u0013\u0012\u00110\u0007¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0006\u0012\u0013\u0012\u00110\u0014¢\u0006\u000c\u0008\u0012\u0012\u0008\u0008\u0013\u0012\u0004\u0008\u0008(\u0015\u0012\n\u0012\u0008\u0012\u0004\u0012\u00020\u000e0\r0\u0011`\u0016X\u0004¢\u0006\u0002\n\u0000¨\u0006$"],
 ["Lcom/unciv/logic/map/mapunit/actions/UnitActions;", "", "<init>", "()V", "invokeUnitAction", "", "unit", "Lcom/unciv/logic/map/mapunit/MapUnit;", "unitActionType", "Lcom/unciv/models/UnitActionType;", "id", "", "getUnitActions", "Lkotlin/sequences/Sequence;", "Lcom/unciv/models/UnitAction;", "actionTypeToSingleFunctions", "Ljava/util/LinkedHashMap;", "Lkotlin/Function2;", "Lkotlin/ParameterName;", "name", "Lcom/unciv/logic/map/tile/Tile;", "tile", "Lkotlin/collections/LinkedHashMap;", "actionTypeToMultiFunctions",
 "addUnmappedUnitActions", "", "Lkotlin/sequences/SequenceScope;", "(Lkotlin/sequences/SequenceScope;Lcom/unciv/logic/map/mapunit/MapUnit;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "addEscortAction", "addExplorationActions", "addFortifyActions", "addSleepActions", "(Lkotlin/sequences/SequenceScope;Lcom/unciv/logic/map/mapunit/MapUnit;Lcom/unciv/logic/map/tile/Tile;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "getGiftAction", "addAutomateActions", "addSkipAction", "Unciv:core"], "", "", 48]],
-culmma_UnitActions$getUnitActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [53, 55, 58], ["$this$sequence", "tile", "getActionFunction", "it", "$this$sequence", "tile", "getActionsFunction", "$this$sequence", "tile"], ["L$0", "L$1", "L$3", "L$4", "L$0", "L$1", "L$3", "L$0", "L$1"], [0, 0, 0, 0, 1, 1, 1, 2, 2], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActions$getUnitActions$1", [53, 58, 59]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
+culmma_UnitActions$getUnitActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [51, 53, 56], ["$this$sequence", "tile", "getActionFunction", "it", "$this$sequence", "tile", "getActionsFunction", "$this$sequence", "tile"], ["L$0", "L$1", "L$3", "L$4", "L$0", "L$1", "L$3", "L$0", "L$1"], [0, 0, 0, 0, 1, 1, 1, 2, 2], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActions$getUnitActions$1", [51, 56, 57]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
 ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/models/UnitAction;"], "", "", 1328]], cum_UnitActionConfirmation, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u000e\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001B\u0017\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0003¢\u0006\u0004\u0008\u0005\u0010\u0006R\u0011\u0010\u0002\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0007\u0010\u0008R\u0011\u0010\u0004\u001a\u00020\u0003¢\u0006\u0008\n\u0000\u001a\u0004\u0008\t\u0010\u0008¨\u0006\n"],
 ["Lcom/unciv/models/UnitActionConfirmation;", "", "question", "", "confirmText", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V", "getQuestion", "()Ljava/lang/String;", "getConfirmText", "Unciv:core"], "", "", 48]], cuucw_WrappableLabel, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u00002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0007\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0008\n\u0000\n\u0002\u0010\u000b\n\u0002\u0008\u0005\n\u0002\u0010\u0002\n\u0002\u0008\u0007\u0018\u00002\u00020\u0001B5\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0008\u0008\u0002\u0010\u0006\u001a\u00020\u0007\u0012\u0008\u0008\u0002\u0010\u0008\u001a\u00020\t\u0012\u0008\u0008\u0002\u0010\n\u001a\u00020\u000b¢\u0006\u0004\u0008\u000c\u0010\rJ\u0010\u0010\u0010\u001a\u00020\u00112\u0006\u0010\u0012\u001a\u00020\u000bH\u0016J\u0008\u0010\u0013\u001a\u00020\u0005H\u0002J\u0008\u0010\u0014\u001a\u00020\u0005H\u0016J\u0008\u0010\u0015\u001a\u00020\u0005H\u0016J\u0008\u0010\u0016\u001a\u00020\u0005H\u0016J\u0006\u0010\u0017\u001a\u00020\u0005R\u000e\u0010\u0004\u001a\u00020\u0005X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0008\u001a\u00020\tX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u000e\u001a\u00020\u0005X\u000e¢\u0006\u0002\n\u0000R\u000e\u0010\u000f\u001a\u00020\u0005X\u000e¢\u0006\u0002\n\u0000¨\u0006\u0018"],
 ["Lcom/unciv/ui/components/widgets/WrappableLabel;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Label;", "text", "", "expectedWidth", "", "fontColor", "Lcom/badlogic/gdx/graphics/Color;", "fontSize", "", "hideIcons", "", "<init>", "(Ljava/lang/String;FLcom/badlogic/gdx/graphics/Color;IZ)V", "_measuredWidth", "optimizedWidth", "setWrap", "", "wrap", "getMeasuredWidth", "getMinWidth", "getPrefWidth", "getMaxWidth", "optimizePrefWidth", "Unciv:core"], "", "", 48]], culm_TileMap$getTilesInRectangle$1, [[kcji_DebugMetadata$$_impl_create,
@@ -1979060,9 +1978908,9 @@ cuupo_MultiplayerSelectBoxHelpers, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1,
 ["Lcom/unciv/ui/screens/worldscreen/bottombar/BattleTableHelpers$AttackAnimationAction;", "Lcom/badlogic/gdx/scenes/scene2d/actions/SequenceAction;", "attacker", "Lcom/unciv/view/CombatantView;", "defenderActors", "", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "currentTileSetStrings", "Lcom/unciv/ui/components/tilegroups/TileSetStrings;", "<init>", "(Lcom/unciv/view/CombatantView;Ljava/util/List;Lcom/unciv/ui/components/tilegroups/TileSetStrings;)V", "getAttackAnimationLocation", "", "Unciv:core"], "", "", 48]],
 cuuswb_BattleTableHelpers$FlashRedAction, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000*\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0007\n\u0002\u0008\u0002\n\u0002\u0010$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u0002\n\u0002\u0008\u0003\u0018\u00002\u00020\u0001B+\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0003\u0012\u0012\u0010\u0005\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00080\u0006¢\u0006\u0004\u0008\t\u0010\nJ\u0010\u0010\u000b\u001a\u00020\u000c2\u0006\u0010\r\u001a\u00020\u0003H\u0002J\u0010\u0010\u000e\u001a\u00020\u000c2\u0006\u0010\r\u001a\u00020\u0003H\u0014R\u001a\u0010\u0005\u001a\u000e\u0012\u0004\u0012\u00020\u0007\u0012\u0004\u0012\u00020\u00080\u0006X\u0004¢\u0006\u0002\n\u0000¨\u0006\u000f"],
 ["Lcom/unciv/ui/screens/worldscreen/bottombar/BattleTableHelpers$FlashRedAction;", "Lcom/badlogic/gdx/scenes/scene2d/actions/FloatAction;", "start", "", "end", "actorsToOriginalColors", "", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "Lcom/badlogic/gdx/graphics/Color;", "<init>", "(FFLjava/util/Map;)V", "updateRedPercent", "", "percent", "update", "Unciv:core"], "", "", 48]], iku_CryptoKt__CryptoJvmKt$generateNonceLong$1, [[kcji_DebugMetadata$$_impl_create, 1, "CryptoJvm.kt", [110], ["initial", "$this$generateNonceLong_u24lambda_u240",
-"length", "$i$a$-buildString-CryptoKt__CryptoJvmKt$generateNonceLong$2"], ["L$0", "L$2", "I$0", "I$1"], [0, 0, 0, 0], "generateNonceLong$CryptoKt__CryptoJvmKt", "io.ktor.util.CryptoKt__CryptoJvmKt", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], culmma_UnitActions$addUnmappedUnitActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [112, 114, 116, 118, 123, 125, 126, 128, 130, 132], ["$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions",
+"length", "$i$a$-buildString-CryptoKt__CryptoJvmKt$generateNonceLong$2"], ["L$0", "L$2", "I$0", "I$1"], [0, 0, 0, 0], "generateNonceLong$CryptoKt__CryptoJvmKt", "io.ktor.util.CryptoKt__CryptoJvmKt", []], [k_Metadata$$_impl_create, 3, [2, 3, 0], [1, 0, 3], [], [], "", "", 48]], culmma_UnitActions$addUnmappedUnitActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [110, 112, 114, 116, 121, 123, 124, 126, 128, 130], ["$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions",
 "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile", "$this$addUnmappedUnitActions", "unit", "tile"], ["L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0",
-"L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9], "addUnmappedUnitActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [113, 115, 117, 123, 125, 126, 128, 130, 132, 133]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuusc_FormattedLine$checkExtraImage$1, [[kcji_DebugMetadata$$_impl_create, 2, "FormattedLine.kt", [157, 162], ["$this$checkExtraImage",
+"L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9], "addUnmappedUnitActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [111, 113, 115, 121, 123, 124, 126, 128, 130, 131]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], cuusc_FormattedLine$checkExtraImage$1, [[kcji_DebugMetadata$$_impl_create, 2, "FormattedLine.kt", [157, 162], ["$this$checkExtraImage",
 "validator", "$this$checkExtraImage", "validator"], ["L$0", "L$1", "L$0", "L$1"], [0, 0, 1, 1], "checkExtraImage", "com.unciv.ui.screens.civilopediascreen.FormattedLine", [159, 163]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culb_AirInterception$airSweep$potentialInterceptors$1, [[kcji_DebugMetadata$$_impl_create, 2, "AirInterception.kt", [], [], [], [], "invokeSuspend", "com.unciv.logic.battle.AirInterception$airSweep$potentialInterceptors$1", []], [k_Metadata$$_impl_create,
 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/logic/map/mapunit/MapUnit;"], "", "", 1328]], cuusd_ConsoleErrorException, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000\u0016\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0002\u0008\u0005\u0008\u0010\u0018\u00002\u00060\u0001j\u0002`\u0002B\u000f\u0012\u0006\u0010\u0003\u001a\u00020\u0004¢\u0006\u0004\u0008\u0005\u0010\u0006R\u0011\u0010\u0003\u001a\u00020\u0004¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0007\u0010\u0008¨\u0006\t"],
 ["Lcom/unciv/ui/screens/devconsole/ConsoleErrorException;", "Ljava/lang/Exception;", "Lkotlin/Exception;", "error", "", "<init>", "(Ljava/lang/String;)V", "getError", "()Ljava/lang/String;", "Unciv:core"], "", "", 48]], cuusm_FriendPickerList, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u00006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0002\u0010\u0002\n\u0002\u0008\u0003\n\u0002\u0010%\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010!\n\u0002\u0018\u0002\n\u0002\u0008\u0003\u0018\u00002\u00020\u0001B#\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0012\u0010\u0004\u001a\u000e\u0012\u0004\u0012\u00020\u0006\u0012\u0004\u0012\u00020\u00070\u0005¢\u0006\u0004\u0008\u0008\u0010\tJ$\u0010\u0010\u001a\u00020\u00072\u0006\u0010\u0011\u001a\u00020\u000f2\u0012\u0010\u0004\u001a\u000e\u0012\u0004\u0012\u00020\u0006\u0012\u0004\u0012\u00020\u00070\u0005H\u0002R\u001a\u0010\n\u001a\u000e\u0012\u0004\u0012\u00020\u0006\u0012\u0004\u0012\u00020\u000c0\u000bX\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\r\u001a\u0008\u0012\u0004\u0012\u00020\u000f0\u000eX\u000e¢\u0006\u0002\n\u0000¨\u0006\u0012"],
@@ -1979080,9 +1978928,9 @@ cuuswb_BattleTableHelpers$FlashRedAction, [[k_Metadata$$_impl_create, 1, [2, 4, 
 ["Lcom/unciv/ui/screens/mapeditorscreen/tabs/MapEditorOptionsTab$TileMatchFuzziness;", "", "label", "", "<init>", "(Ljava/lang/String;ILjava/lang/String;)V", "getLabel", "()Ljava/lang/String;", "CompleteMatch", "NoImprovement", "BaseAndFeatures", "BaseTerrain", "LandOrWater", "Unciv:core"], "", "", 48]], kci_UndeliveredElementException, [[k_Metadata$$_impl_create, 1, [2, 2, 0], [1, 0, 3], ["\u0000\u001c\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0003\n\u0002\u0008\u0003\u0008\u0000\u0018\u00002\u00060\u0001j\u0002`\u0002B\u0017\u0012\u0006\u0010\u0003\u001a\u00020\u0004\u0012\u0006\u0010\u0005\u001a\u00020\u0006¢\u0006\u0004\u0008\u0007\u0010\u0008¨\u0006\t"],
 ["Lkotlinx/coroutines/internal/UndeliveredElementException;", "Ljava/lang/RuntimeException;", "Lkotlin/RuntimeException;", "message", "", "cause", "", "<init>", "(Ljava/lang/String;Ljava/lang/Throwable;)V", "kotlinx-coroutines-core"], "", "", 48]], kcs_TrySelectDetailedResult, [[k_Metadata$$_impl_create, 1, [2, 2, 0], [1, 0, 3], ["\u0000\u000c\n\u0002\u0018\u0002\n\u0002\u0010\u0010\n\u0002\u0008\u0007\u0008\u0002\u0018\u00002\u0008\u0012\u0004\u0012\u00020\u00000\u0001B\t\u0008\u0002¢\u0006\u0004\u0008\u0002\u0010\u0003j\u0002\u0008\u0004j\u0002\u0008\u0005j\u0002\u0008\u0006j\u0002\u0008\u0007¨\u0006\u0008"],
 ["Lkotlinx/coroutines/selects/TrySelectDetailedResult;", "", "<init>", "(Ljava/lang/String;I)V", "SUCCESSFUL", "REREGISTER", "CANCELLED", "ALREADY_SELECTED", "kotlinx-coroutines-core"], "", "", 48]], cuuswb_BattleTableHelpers$battleAnimation$getMapActorsForCombatant$1, [[kcji_DebugMetadata$$_impl_create, 2, "BattleTableHelpers.kt", [166, 169], ["$this$sequence", "tileGroup", "icon", "$this$sequence", "tileGroup", "slot"], ["L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0, 0, 1, 1, 1], "invokeSuspend", "com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers$battleAnimation$getMapActorsForCombatant$1",
-[167, 171]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/badlogic/gdx/scenes/scene2d/Actor;"], "", "", 1328]], culmma_UnitActions$addFortifyActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [177, 189, 194], ["$this$addFortifyActions", "unit", "$this$addFortifyActions",
-"unit", "$this$addFortifyActions", "unit"], ["L$0", "L$1", "L$0", "L$1", "L$0", "L$1"], [0, 0, 1, 1, 2, 2], "addFortifyActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [184, 193, 198]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culmma_UnitActions$addSleepActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [204, 209], ["$this$addSleepActions", "unit", "tile", "$this$addSleepActions", "unit", "tile"], ["L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0,
-0, 1, 1, 1], "addSleepActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [208, 213]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culmma_UnitActionsUpgrade$getUpgradeActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActionsUpgrade.kt", [18], ["$this$sequence", "upgrade"], ["L$0", "L$2"], [0, 0], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade$getUpgradeActions$1", [26]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
+[167, 171]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/badlogic/gdx/scenes/scene2d/Actor;"], "", "", 1328]], culmma_UnitActions$addFortifyActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [164, 176, 181], ["$this$addFortifyActions", "unit", "$this$addFortifyActions",
+"unit", "$this$addFortifyActions", "unit"], ["L$0", "L$1", "L$0", "L$1", "L$0", "L$1"], [0, 0, 1, 1, 2, 2], "addFortifyActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [171, 180, 185]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culmma_UnitActions$addSleepActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActions.kt", [191, 196], ["$this$addSleepActions", "unit", "tile", "$this$addSleepActions", "unit", "tile"], ["L$0", "L$1", "L$2", "L$0", "L$1", "L$2"], [0, 0,
+0, 1, 1, 1], "addSleepActions", "com.unciv.logic.map.mapunit.actions.UnitActions", [195, 200]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], [], [], "", "", 560]], culmma_UnitActionsUpgrade$getUpgradeActions$1, [[kcji_DebugMetadata$$_impl_create, 2, "UnitActionsUpgrade.kt", [18], ["$this$sequence", "upgrade"], ["L$0", "L$2"], [0, 0], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActionsUpgrade$getUpgradeActions$1", [26]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"],
 ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/models/UnitAction;"], "", "", 1328]], cuusm_GameDisplay, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000d\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000f\n\u0000\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0003\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u000b\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0007\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0005\n\u0002\u0010\u000b\n\u0002\u0008\u0004\n\u0002\u0010\u0008\n\u0002\u0008\u0002\n\u0002\u0010\u0000\n\u0002\u0008\u0002\u0008\u0002\u0018\u00002\u00020\u00012\u0008\u0012\u0004\u0012\u00020\u00000\u0002B7\u0012\u0006\u0010\u0003\u001a\u00020\u0004\u0012\u0008\u0010\u0005\u001a\u0004\u0018\u00010\u0006\u0012\u0008\u0010\u0007\u001a\u0004\u0018\u00010\u0008\u0012\u0012\u0010\t\u001a\u000e\u0012\u0004\u0012\u00020\u0004\u0012\u0004\u0012\u00020\u000b0\n¢\u0006\u0004\u0008\u000c\u0010\rJ\u0008\u0010*\u001a\u00020\u000bH\u0002J\u0010\u0010+\u001a\u00020\u000b2\u0006\u0010,\u001a\u00020-H\u0002J\u0010\u0010.\u001a\u00020\u001b2\u0006\u0010/\u001a\u00020\u0004H\u0002J\u0006\u00100\u001a\u00020-J\u0012\u00101\u001a\u0002022\u0006\u00103\u001a\u00020\u0000H\u0004J\u0014\u00104\u001a\u00020-2\u0008\u00103\u001a\u0004\u0018\u000105H\u0004J\n\u00106\u001a\u000202H\u0004R\u001c\u0010\u0005\u001a\u0004\u0018\u00010\u0006X\u000e¢\u0006\u000e\n\u0000\u001a\u0004\u0008\u000e\u0010\u000f\"\u0004\u0008\u0010\u0010\u0011R\u001a\u0010\t\u001a\u000e\u0012\u0004\u0012\u00020\u0004\u0012\u0004\u0012\u00020\u000b0\nX\u0004¢\u0006\u0002\n\u0000R\u001e\u0010\u0013\u001a\u00020\u00042\u0006\u0010\u0012\u001a\u00020\u0004@BX\u000e¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0014\u0010\u0015R\u0011\u0010\u0016\u001a\u00020\u0017¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u0018\u0010\u0019R\u0011\u0010\u001a\u001a\u00020\u001b¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001c\u0010\u001dR\u0011\u0010\u001e\u001a\u00020\u001b¢\u0006\u0008\n\u0000\u001a\u0004\u0008\u001f\u0010\u001dR\u0011\u0010 \u001a\u00020\u001b¢\u0006\u0008\n\u0000\u001a\u0004\u0008!\u0010\u001dR\u0011\u0010\"\u001a\u00020#¢\u0006\u0008\n\u0000\u001a\u0004\u0008$\u0010%R\u0011\u0010&\u001a\u00020\'¢\u0006\u0008\n\u0000\u001a\u0004\u0008(\u0010)¨\u00067"],
 ["Lcom/unciv/ui/screens/multiplayerscreens/GameDisplay;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "", "multiplayerGameName", "", "preview", "Lcom/unciv/logic/GameInfoPreview;", "error", "", "onSelected", "Lkotlin/Function1;", "", "<init>", "(Ljava/lang/String;Lcom/unciv/logic/GameInfoPreview;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function1;)V", "getPreview", "()Lcom/unciv/logic/GameInfoPreview;", "setPreview", "(Lcom/unciv/logic/GameInfoPreview;)V", "value", "gameName", "getGameName", "()Ljava/lang/String;",
 "gameButton", "Lcom/badlogic/gdx/scenes/scene2d/ui/TextButton;", "getGameButton", "()Lcom/badlogic/gdx/scenes/scene2d/ui/TextButton;", "turnIndicator", "Lcom/badlogic/gdx/scenes/scene2d/Actor;", "getTurnIndicator", "()Lcom/badlogic/gdx/scenes/scene2d/Actor;", "errorIndicator", "getErrorIndicator", "refreshIndicator", "getRefreshIndicator", "statusIndicators", "Lcom/badlogic/gdx/scenes/scene2d/ui/HorizontalGroup;", "getStatusIndicators", "()Lcom/badlogic/gdx/scenes/scene2d/ui/HorizontalGroup;", "events", "Lcom/unciv/logic/event/EventBus$EventReceiver;",
@@ -1979256,7 +1979104,7 @@ cuusc_CityScreenTileTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], 
 "Lcom/unciv/ui/screens/diplomacyscreen/OfferColumnsTable;", "getOfferColumnsTable$Unciv_core", "()Lcom/unciv/ui/screens/diplomacyscreen/OfferColumnsTable;", "offerColumnsTableWrapper", "offerTradeText", "", "getOfferTradeText", "()Ljava/lang/String;", "offerButton", "Lcom/badlogic/gdx/scenes/scene2d/ui/TextButton;", "retractOffer", "", "onChange", "enableOfferButton", "isEnabled", "", "Unciv:core"], "", "", 48]], cuusd_OfferColumnsTable, [[k_Metadata$$_impl_create, 1, [2, 4, 0], [1, 0, 3], ["\u0000N\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0010\u000b\n\u0002\u0008\u0004\n\u0002\u0018\u0002\n\u0002\u0008\u0007\n\u0002\u0010\u0008\n\u0000\u0018\u00002\u00020\u0001B5\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\u0006\u0010\u0008\u001a\u00020\u0007\u0012\u000c\u0010\t\u001a\u0008\u0012\u0004\u0012\u00020\u000b0\n¢\u0006\u0004\u0008\u000c\u0010\rJ\u001e\u0010\u000e\u001a\u00020\u000b2\u0006\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\u00122\u0006\u0010\u0013\u001a\u00020\u0012J0\u0010\u0014\u001a\u00020\u000b2\u0006\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0015\u001a\u00020\u00162\u0006\u0010\u0017\u001a\u00020\u00122\u0006\u0010\u0018\u001a\u00020\u00122\u0006\u0010\u0019\u001a\u00020\u0007H\u0002J\u0006\u0010\u001f\u001a\u00020\u000bJ \u0010 \u001a\u00020\u000b2\u0006\u0010\u000f\u001a\u00020\u00102\u0006\u0010!\u001a\u00020\u00122\u0006\u0010\"\u001a\u00020#H\u0002R\u000e\u0010\u0002\u001a\u00020\u0003X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u0008\u001a\u00020\u0007X\u0004¢\u0006\u0002\n\u0000R\u0014\u0010\t\u001a\u0008\u0012\u0004\u0012\u00020\u000b0\nX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u001a\u001a\u00020\u001bX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u001c\u001a\u00020\u001bX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u001d\u001a\u00020\u001bX\u0004¢\u0006\u0002\n\u0000R\u000e\u0010\u001e\u001a\u00020\u001bX\u0004¢\u0006\u0002\n\u0000¨\u0006$"],
 ["Lcom/unciv/ui/screens/diplomacyscreen/OfferColumnsTable;", "Lcom/badlogic/gdx/scenes/scene2d/ui/Table;", "tradeView", "Lcom/unciv/view/TradeView;", "screen", "Lcom/unciv/ui/screens/diplomacyscreen/DiplomacyScreen;", "ourCiv", "Lcom/unciv/view/ForeignCivView;", "theirCiv", "onChange", "Lkotlin/Function0;", "", "<init>", "(Lcom/unciv/view/TradeView;Lcom/unciv/ui/screens/diplomacyscreen/DiplomacyScreen;Lcom/unciv/view/ForeignCivView;Lcom/unciv/view/ForeignCivView;Lkotlin/jvm/functions/Function0;)V", "addOffer",
 "offer", "Lcom/unciv/logic/trade/TradeOffer;", "offerList", "Lcom/unciv/logic/trade/TradeOffersList;", "correspondingOfferList", "offerClickImplementation", "invert", "", "list", "counterList", "civ", "ourAvailableOffersTable", "Lcom/unciv/ui/screens/diplomacyscreen/OffersListScroll;", "ourOffersTable", "theirOffersTable", "theirAvailableOffersTable", "update", "openGoldSelectionPopup", "ourOffers", "maxGold", "", "Unciv:core"], "", "", 48]], culmma_UnitActions$getUnitActions$2, [[kcji_DebugMetadata$$_impl_create,
-2, "UnitActions.kt", [74], ["$this$sequence"], ["L$0"], [0], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActions$getUnitActions$2", [75]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/models/UnitAction;"], "", "", 1328]], cuuo_BaseUnitDescriptions$getDifferences$1,
+2, "UnitActions.kt", [72], ["$this$sequence"], ["L$0"], [0], "invokeSuspend", "com.unciv.logic.map.mapunit.actions.UnitActions$getUnitActions$2", [73]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u0008\u0012\u0004\u0012\u00020\u00030\u0002H\n"], ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lcom/unciv/models/UnitAction;"], "", "", 1328]], cuuo_BaseUnitDescriptions$getDifferences$1,
 [[kcji_DebugMetadata$$_impl_create, 2, "BaseUnitDescriptions.kt", [266, 269, 271, 274, 276, 280, 284, 291, 295, 301, 306], ["$this$sequence", "$this$sequence", "$this$sequence", "$this$sequence", "$this$sequence", "$this$sequence", "$this$sequence", "resource", "$this$sequence", "$this$sequence", "newAbilityPredicate", "unique", "$this$sequence", "lostAbilityPredicate", "unique", "$this$sequence", "lostAbilityPredicate", "promotionName", "promotion", "effects"], ["L$0", "L$0", "L$0", "L$0", "L$0", "L$0", "L$0",
 "L$2", "L$0", "L$0", "L$1", "L$3", "L$0", "L$1", "L$3", "L$0", "L$1", "L$3", "L$4", "L$5"], [0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 10, 10], "invokeSuspend", "com.unciv.ui.objectdescriptions.BaseUnitDescriptions$getDifferences$1", [268, 270, 273, 275, 279, 282, 290, 293, 298, 303, 308]], [k_Metadata$$_impl_create, 3, [2, 4, 0], [1, 0, 3], ["\u0000\u0012\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000e\u0010\u0000\u001a\u00020\u0001*\u0016\u0012\u0012\u0012\u0010\u0012\u0004\u0012\u00020\u0004\u0012\u0006\u0012\u0004\u0018\u00010\u00040\u00030\u0002H\n"],
 ["<anonymous>", "", "Lkotlin/sequences/SequenceScope;", "Lkotlin/Pair;", ""], "", "", 1328]], cuuo_ImprovementDescriptions$getShortDescription$1, [[kcji_DebugMetadata$$_impl_create, 2, "ImprovementDescriptions.kt", [176, 186], ["$this$sequence", "$this$forEach$iv", "element$iv", "it", "$this$sequence", "unique"], ["L$0", "L$1", "L$3", "L$4", "L$0", "L$2"], [0, 0, 0, 0, 1, 1], "invokeSuspend", "com.unciv.ui.objectdescriptions.ImprovementDescriptions$getShortDescription$1", [182, 188]], [k_Metadata$$_impl_create,
@@ -1980446,25 +1980294,25 @@ $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Shoul
 ".\n                Please refer to SerialDescriptor documentation for additional information.\n            ", "selectedFriend", "iRulesetObject", "Nothing found!", "#f53", "Length out of bounds: ", "Offset out of bounds: ", "Pushback buffer full", "Could not export map", "handle", "DisposeHandlersOnCancel[", "Error displaying map \"", "Error loading map!", "{This map has errors:}\n\n", "\n\n{The incompatible elements have been removed.}", "Error loading map \"", "{Error loading map!}", "\n{", "jsonsFolder",
 "fileFilter", "Translation writer took %sms for %s", "filePath", "resultStrings", "getFields(...)", "# This is an empty line  ", "aiFreeTechs", "aiFreeUnits", "attackSound", "cannotBeBuiltWith", "cultureBuildings", "excludedDifficulties", "improvingTech", "obsoleteTech", "occursOn", "promotions", "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities", "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires", "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
 "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo", "RuinReward.uniques", "TerrainType.name", "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques", "Era.citySound", "keyShortcut", "BeliefType", "Promotion.name", "milestones", "FormattedLine.text", "/search/topics", "order", "asc", "unciv-mod repositories:>1", "translationKey", "hashMapKey", "ParsedLine(raw=", ", isTranslatable=", ", translationKey=", ", hashMapKey=", ", defaultValue=", "UnitNameGroups", "getType(...)", "getSuperclass(...)",
-"i:b:/PolicyIcons.atlas:6929:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/slider.mp3:2996:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/fire.mp3:149277:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/construction.mp3:7083:1", "i:b:/sounds/wagon.mp3:30093:1", "i:b:/sounds/arrow.mp3:8976:1", "i:b:/sounds/nonmetalhit.mp3:3168:1",
-"i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/click.mp3:2763:1",
-"i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/cityRenaissance.ogg:176251:1",
-"i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/cityInformation.ogg:138114:1", "i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/cityIndustrial.ogg:162433:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Icons.atlas:27878:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1",
-"i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1",
-"i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/Skin.png:5795:1", "i:b:/Skin.atlas:1753:1", "i:b:/EasterEggs.png:175142:1", "i:b:/ConstructionIcons.atlas:39142:1",
-"i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Tilesets.png:976061:1", "i:b:/Atlases.json:132:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "i:b:/Tech.atlas:9607:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1",
-"i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1",
-"i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1",
-"i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1",
-"i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1",
-"i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1",
-"i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Turkish.properties:535993:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/completionPercentages.properties:834:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Rusyn.properties:451245:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
-"i:b:/jsons/translations/template.properties:67653:1", "i:b:/jsons/translations/Romanian.properties:443222:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/German.properties:556017:1",
-"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Spanish.properties:538747:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Russian.properties:711149:1", "i:b:/jsons/translations/French.properties:556905:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Finnish.properties:411445:1", "i:b:/jsons/translations/Navajo.properties:407745:1",
-"i:b:/jsons/translations/Ukrainian.properties:687895:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539729:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Indonesian.properties:539953:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Latin.properties:461608:1",
-"i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Hungarian.properties:562833:1", "i:b:/jsons/translations/Belarusian.properties:427114:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Italian.properties:544778:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Toki_Pona.properties:472970:1",
-"i:b:/jsons/Tutorials.json:67128:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Flags.atlas:5544:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/Flags.png:314468:1", "i:b:/UnitPromotionIcons.atlas:6074:1", "i:b:/NationIcons.png:205494:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1",
-"c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
+"i:b:/Icons.atlas:27878:1", "i:b:/EasterEggs.png:175142:1", "i:b:/NationIcons.atlas:5769:1", "i:b:/UnitPromotionIcons.atlas:6074:1", "i:b:/NationIcons.png:205494:1", "i:b:/ExcludedModAuthors.txt:16:1", "i:b:/Skin.json:11757:1", "i:b:/ReligionIcons.png:59511:1", "i:b:/Tilesets.atlas:134113:1", "i:b:/jsons/TileSets/Minimal.json:435:1", "i:b:/jsons/TileSets/HexaRealm.json:61577:1", "i:b:/jsons/TileSets/FantasyHex.json:6560:1", "i:b:/jsons/Tutorials.json:67128:1", "i:b:/jsons/Civ V - Gods & Kings/Policies.json:24544:1",
+"i:b:/jsons/Civ V - Gods & Kings/Personalities.json:26296:1", "i:b:/jsons/Civ V - Gods & Kings/Units.json:49220:1", "i:b:/jsons/Civ V - Gods & Kings/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Gods & Kings/Ruins.json:4003:1", "i:b:/jsons/Civ V - Gods & Kings/Terrains.json:23600:1", "i:b:/jsons/Civ V - Gods & Kings/TileImprovements.json:11244:1", "i:b:/jsons/Civ V - Gods & Kings/Eras.json:11135:1", "i:b:/jsons/Civ V - Gods & Kings/Nations.json:105386:1", "i:b:/jsons/Civ V - Gods & Kings/Specialists.json:444:1",
+"i:b:/jsons/Civ V - Gods & Kings/UnitPromotions.json:22291:1", "i:b:/jsons/Civ V - Gods & Kings/Difficulties.json:7410:1", "i:b:/jsons/Civ V - Gods & Kings/Religions.json:184:1", "i:b:/jsons/Civ V - Gods & Kings/CityStateTypes.json:2098:1", "i:b:/jsons/Civ V - Gods & Kings/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Gods & Kings/GlobalUniques.json:1347:1", "i:b:/jsons/Civ V - Gods & Kings/TileResources.json:21862:1", "i:b:/jsons/Civ V - Gods & Kings/Quests.json:5524:1", "i:b:/jsons/Civ V - Gods & Kings/Speeds.json:5154:1",
+"i:b:/jsons/Civ V - Gods & Kings/Events.json:8067:1", "i:b:/jsons/Civ V - Gods & Kings/Techs.json:25554:1", "i:b:/jsons/Civ V - Gods & Kings/Beliefs.json:10643:1", "i:b:/jsons/Civ V - Gods & Kings/Buildings.json:40149:1", "i:b:/jsons/Civ V - Gods & Kings/UnitNameGroups.json:7077:1", "i:b:/jsons/Civ V - Gods & Kings/ModOptions.json:30:1", "i:b:/jsons/ModCategories.json:1067:1", "i:b:/jsons/translations/Ukrainian.properties:687895:1", "i:b:/jsons/translations/Rusyn.properties:451245:1", "i:b:/jsons/translations/German.properties:556017:1",
+"i:b:/jsons/translations/Toki_Pona.properties:472970:1", "i:b:/jsons/translations/Croatian instructions.md:16366:1", "i:b:/jsons/translations/template.properties:67653:1", "i:b:/jsons/translations/Norwegian.properties:415791:1", "i:b:/jsons/translations/Navajo.properties:407745:1", "i:b:/jsons/translations/Bosnian.properties:408057:1", "i:b:/jsons/translations/Bulgarian.properties:475778:1", "i:b:/jsons/translations/Simplified_Chinese.properties:506675:1", "i:b:/jsons/translations/Belarusian.properties:427114:1",
+"i:b:/jsons/translations/Japanese.properties:537092:1", "i:b:/jsons/translations/Filipino.properties:467829:1", "i:b:/jsons/translations/Hungarian.properties:562833:1", "i:b:/jsons/translations/Czech.properties:457344:1", "i:b:/jsons/translations/Lithuanian.properties:455148:1", "i:b:/jsons/translations/Traditional_Chinese.properties:503856:1", "i:b:/jsons/translations/Maltese.properties:535345:1", "i:b:/jsons/translations/Spanish.properties:538747:1", "i:b:/jsons/translations/Persian instructions.txt:2622:1",
+"i:b:/jsons/translations/Thai.properties:426407:1", "i:b:/jsons/translations/Persian_(Pinglish-UN).properties:412286:1", "i:b:/jsons/translations/Vietnamese.properties:615838:1", "i:b:/jsons/translations/Zulu.properties:408995:1", "i:b:/jsons/translations/Afrikaans.properties:408480:1", "i:b:/jsons/translations/Hindi.properties:426841:1", "i:b:/jsons/translations/Brazilian_Portuguese.properties:539729:1", "i:b:/jsons/translations/Esperanto.properties:517298:1", "i:b:/jsons/translations/Persian_(Pinglish-DIN).properties:410791:1",
+"i:b:/jsons/translations/Dutch.properties:531608:1", "i:b:/jsons/translations/Turkish.properties:535993:1", "i:b:/jsons/translations/Portuguese.properties:530962:1", "i:b:/jsons/translations/Italian.properties:544778:1", "i:b:/jsons/translations/Bangla.properties:457256:1", "i:b:/jsons/translations/French.properties:556905:1", "i:b:/jsons/translations/Korean.properties:495282:1", "i:b:/jsons/translations/Swedish.properties:522442:1", "i:b:/jsons/translations/Indonesian.properties:539953:1", "i:b:/jsons/translations/Romanian.properties:443222:1",
+"i:b:/jsons/translations/Russian.properties:711149:1", "i:b:/jsons/translations/English.properties:405962:1", "i:b:/jsons/translations/Croatian.properties:518778:1", "i:b:/jsons/translations/Latin.properties:461608:1", "i:b:/jsons/translations/completionPercentages.properties:834:1", "i:b:/jsons/translations/Galician.properties:530919:1", "i:b:/jsons/translations/Catalan.properties:543624:1", "i:b:/jsons/translations/Malay.properties:405049:1", "i:b:/jsons/translations/Greek.properties:416950:1", "i:b:/jsons/translations/Polish.properties:536712:1",
+"i:b:/jsons/translations/Finnish.properties:411445:1", "i:b:/jsons/WesnothImportMappings.json:3309:1", "i:b:/jsons/Civ V - Vanilla/Policies.json:22205:1", "i:b:/jsons/Civ V - Vanilla/Units.json:38551:1", "i:b:/jsons/Civ V - Vanilla/VictoryTypes.json:3469:1", "i:b:/jsons/Civ V - Vanilla/Ruins.json:2667:1", "i:b:/jsons/Civ V - Vanilla/Terrains.json:21484:1", "i:b:/jsons/Civ V - Vanilla/TileImprovements.json:10903:1", "i:b:/jsons/Civ V - Vanilla/Eras.json:8678:1", "i:b:/jsons/Civ V - Vanilla/Nations.json:73053:1",
+"i:b:/jsons/Civ V - Vanilla/Specialists.json:444:1", "i:b:/jsons/Civ V - Vanilla/UnitPromotions.json:17798:1", "i:b:/jsons/Civ V - Vanilla/Difficulties.json:7408:1", "i:b:/jsons/Civ V - Vanilla/CityStateTypes.json:2097:1", "i:b:/jsons/Civ V - Vanilla/UnitTypes.json:2808:1", "i:b:/jsons/Civ V - Vanilla/GlobalUniques.json:1274:1", "i:b:/jsons/Civ V - Vanilla/TileResources.json:18616:1", "i:b:/jsons/Civ V - Vanilla/Quests.json:6026:1", "i:b:/jsons/Civ V - Vanilla/Speeds.json:4121:1", "i:b:/jsons/Civ V - Vanilla/Techs.json:20439:1",
+"i:b:/jsons/Civ V - Vanilla/Buildings.json:31136:1", "i:b:/jsons/Civ V - Vanilla/ModOptions.json:67:1", "i:b:/ConstructionIcons.png:933335:1", "i:b:/ExtraImages/Icons/Unciv32.png:16724:1", "i:b:/ExtraImages/Icons/Unciv128.png:16724:1", "i:b:/ExtraImages/World_Screen.png:3431256:1", "i:b:/ExtraImages/Tutorials/Pick technology.png:20252:1", "i:b:/ExtraImages/Tutorials/Open the options table.png:12634:1", "i:b:/ExtraImages/Tutorials/Pass a turn.png:24578:1", "i:b:/ExtraImages/Tutorials/Move an air unit.png:50207:1",
+"i:b:/ExtraImages/Tutorials/Construct an improvement.png:31525:1", "i:b:/ExtraImages/Tutorials/Conquer a city.png:25418:1", "i:b:/ExtraImages/Tutorials/Enter city screen.png:43562:1", "i:b:/ExtraImages/Tutorials/Found city.png:9976:1", "i:b:/ExtraImages/Tutorials/Reassign worked tiles.png:30800:1", "i:b:/ExtraImages/Tutorials/Move unit.png:6814:1", "i:b:/ExtraImages/Tutorials/Create a trade route.png:38279:1", "i:b:/ExtraImages/Tutorials/Meet another civilization.jpg:26512:1", "i:b:/ExtraImages/Tutorials/See your stats breakdown.png:16293:1",
+"i:b:/ExtraImages/Tutorials/Pick construction.png:10366:1", "i:b:/ExtraImages/banner.png:133064:1", "i:b:/Tech.atlas:9607:1", "i:b:/Flags.atlas:5544:1", "i:b:/ConstructionIcons.atlas:39142:1", "i:b:/UnitActionIcons.atlas:3617:1", "i:b:/PolicyIcons.png:85805:1", "i:b:/effects/fireworks.p:31708:1", "i:b:/Flags.png:314468:1", "i:b:/sounds/coin.mp3:15792:1", "i:b:/sounds/nonmetalhit.mp3:3168:1", "i:b:/sounds/whoosh.mp3:4632:1", "i:b:/sounds/WLTK.ogg:34496:1", "i:b:/sounds/cityAtomic.ogg:146521:1", "i:b:/sounds/arrow.mp3:8976:1",
+"i:b:/sounds/throw.mp3:3912:1", "i:b:/sounds/nuke.mp3:84234:1", "i:b:/sounds/cityFuture.ogg:132824:1", "i:b:/sounds/construction.mp3:7083:1", "i:b:/sounds/promote.mp3:7272:1", "i:b:/sounds/shipCannonVolley.mp3:103704:1", "i:b:/sounds/notification1.mp3:8949:1", "i:b:/sounds/jetgun.mp3:19464:1", "i:b:/sounds/fortify.mp3:22536:1", "i:b:/sounds/cavalry.mp3:13824:1", "i:b:/sounds/missile.mp3:26946:1", "i:b:/sounds/crossbow.mp3:16754:1", "i:b:/sounds/bombard.mp3:36447:1", "i:b:/sounds/artillery.mp3:15600:1", "i:b:/sounds/fire.mp3:149277:1",
+"i:b:/sounds/machinegun.mp3:7680:1", "i:b:/sounds/gdrAttack.mp3:18834:1", "i:b:/sounds/setup.mp3:5328:1", "i:b:/sounds/wagon.mp3:30093:1", "i:b:/sounds/elephant.mp3:6048:1", "i:b:/sounds/horse.mp3:13584:1", "i:b:/sounds/cityRenaissance.ogg:176251:1", "i:b:/sounds/cityMedieval.ogg:176251:1", "i:b:/sounds/click.mp3:2763:1", "i:b:/sounds/notification2.mp3:6504:1", "i:b:/sounds/nuke_long.mp3:308769:1", "i:b:/sounds/paper.mp3:5499:1", "i:b:/sounds/policy.mp3:9720:1", "i:b:/sounds/torpedo.mp3:15792:1", "i:b:/sounds/cityInformation.ogg:138114:1",
+"i:b:/sounds/cannon.mp3:14736:1", "i:b:/sounds/cityModern.ogg:159677:1", "i:b:/sounds/slider.mp3:2996:1", "i:b:/sounds/cityClassical.ogg:103654:1", "i:b:/sounds/choir.mp3:27288:1", "i:b:/sounds/chimes.mp3:29520:1", "i:b:/sounds/swap.mp3:3816:1", "i:b:/sounds/metalhit.mp3:6586:1", "i:b:/sounds/tankshot.mp3:13752:1", "i:b:/sounds/cityAncient.ogg:169030:1", "i:b:/sounds/shipguns.mp3:20688:1", "i:b:/sounds/shot.mp3:3600:1", "i:b:/sounds/upgrade.mp3:8621:1", "i:b:/sounds/bombing.mp3:18312:1", "i:b:/sounds/cityIndustrial.ogg:162433:1",
+"i:b:/Atlases.json:132:1", "i:b:/PolicyIcons.atlas:6929:1", "i:b:/Skin.atlas:1753:1", "i:b:/EasterEggs.atlas:5996:1", "i:b:/Tilesets.png:976061:1", "i:b:/AbsoluteUnits.png:480453:1", "i:b:/ReligionIcons.atlas:2255:1", "i:b:/UnitPromotionIcons.png:55627:1", "i:b:/Skin.png:5795:1", "i:b:/AbsoluteUnits.atlas:62730:1", "i:b:/Icons.png:611377:1", "i:b:/Tech.png:210775:1", "c:b:/com/badlogic/gdx/utils/lsans-15.fnt:17711:1", "c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1", "c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.fragment.glsl:820:1",
+"c:b:/com/badlogic/gdx/graphics/g3d/particles/particles.vertex.glsl:2886:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:5874:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:9096:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.fragment.glsl:869:1", "c:b:/com/badlogic/gdx/graphics/g3d/shaders/depth.vertex.glsl:2931:1", "Error from UncivServer during authentication: %s", "Error from UncivServer during password set: %s", "filterOtherBuilding", "getBuildingCivilopediaTextLines$lambda$0$filterOtherBuilding(Lcom/unciv/models/ruleset/Building;Lcom/unciv/models/ruleset/Building;)Z",
 "Downloading", "Finishing", "initialName", "initialID", "Please input a name for your friend!", "Paste player ID from clipboard", "Please input a player ID for your friend!", "Friend name", "Player ID", "Player ID is incorrect", "friendName", "Friend name is already in your friends list!", "Player ID is already in your friends list!", "You have to write a name for your friend!", "You have to write an ID for your friend!", "You cannot add your own player ID in your friend list!", "Player name already used!",
 "Player ID already used!", "provinces.png", "That is not an Open Doctrines map - it has no provinces.png", "provinces.json", "That map\'s provinces.png is empty", "is_sea", "a TileMap with no tiles", "That map\'s declared size [", "] does not match its [", "] tiles - [", "] were found on the grid", "That map is all water - there is nothing to export", "{\"name\":", ",\"description\":\"Exported from Unciv\",\"author\":\"Unciv\",\"map_date\":\"January 2000 AD\",\"license\":\"\",\"has_scripts\":false}", "land_sea.png",
 "countries.json", "metadata.json", "#%02X%02X%02X", "Map exported as [", "Could not save map!", "Could not load the missing mods!", "Downloaded ", "Downloading unupdated mods - ", "Updating mods: ", "Downloading unupdated mods - 0/", "ring buffer filled size: ", " cannot be larger than the buffer size: ", "ring buffer filled size should not be negative but it is ", "n shouldn\'t be negative but it is ", "n shouldn\'t be greater than the buffer size: n = ", ", size = ", "$this$getOrNull", "raw.githubusercontent.com",
