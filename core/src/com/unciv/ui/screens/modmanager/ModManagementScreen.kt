@@ -53,6 +53,7 @@ import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
@@ -478,14 +479,17 @@ class ModManagementScreen private constructor(
             else "Download [${cleanModName(repo.name)}]"
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
-        rightSideButton.onClick {
-            rightSideButton.setStartingDownload()
-            downloadMod(repo, { state, progress ->
-                rightSideButton.setText(state.message(progress).tr())
-            }) {
-                rightSideButton.setFinishedDownload()
+        if (PlatformSpecific.current.canDownloadFromUrl)
+            rightSideButton.onClick {
+                rightSideButton.setStartingDownload()
+                downloadMod(repo, { state, progress ->
+                    rightSideButton.setText(state.message(progress).tr())
+                }) {
+                    rightSideButton.setFinishedDownload()
+                }
             }
-        }
+        else
+            rightSideButton.disable()
 
         selectedMod = repo
         modActionTable.update(repo)
@@ -723,7 +727,8 @@ class ModManagementScreen private constructor(
         onlineExpanderTab?.setText(newHeaderText)
 
         onlineModsTable.clear()
-        onlineModsTable.add(getDownloadFromUrlButton()).row()
+        if (PlatformSpecific.current.canDownloadFromUrl)
+            onlineModsTable.add(getDownloadFromUrlButton()).row()
 
         val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
