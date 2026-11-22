@@ -11,7 +11,6 @@ import com.unciv.logic.multiplayer.apiv2.VersionResponse
 import com.unciv.utils.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -74,7 +73,7 @@ enum class ApiVersion {
             val fixedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
             // This client instance should be used during the API detection
-            val client = HttpClient(CIO) {
+            val client = HttpClient {
                 install(ContentNegotiation) {
                     json(Json {
                         prettyPrint = true

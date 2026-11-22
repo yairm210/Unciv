@@ -51,10 +51,10 @@ class MapGenTileData(val tile: Tile, val region: Region?, ruleset: Ruleset) {
             ?: tile.terrainFeatureObjects.first()
 
         // Add all applicable qualities
-        for (unique in terrainToCheck.getMatchingUniques(
+        terrainToCheck.forEachMatchingUnique(
             UniqueType.HasQuality,
             GameContext(region = region)
-        )) {
+        ) { unique ->
             when (unique.params[0]) {
                 "Food" -> isFood = true
                 "Desirable" -> isGood = true

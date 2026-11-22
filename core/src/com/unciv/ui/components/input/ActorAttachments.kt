@@ -47,7 +47,8 @@ internal class ActorAttachments private constructor(actor: Actor) {
         sound: UncivSound = UncivSound.Click,
         noEquivalence: Boolean = false,
         action: ActivationAction,
-        allowEventPropagation: Boolean = true
+        allowEventPropagation: Boolean = true,
+        halfTapSquareSize: Float
     ) {
         var actions: ActivationActionMap? = this.activationActions
         if (actions == null) {
@@ -64,7 +65,7 @@ internal class ActorAttachments private constructor(actor: Actor) {
         actions.add(type, sound, noEquivalence, action)
 
         if (!type.isGesture || activationListener != null) return
-        activationListener = if (allowEventPropagation) ActivationListener() else SuppressiveActivationListener()
+        activationListener = if (allowEventPropagation) ActivationListener(halfTapSquareSize) else SuppressiveActivationListener(halfTapSquareSize)
         actor.addListener(activationListener)
     }
 

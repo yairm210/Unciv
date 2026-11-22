@@ -1,3 +1,465 @@
+## 5.0.1
+
+Avoid ANR when opening empire overview screen from top bar
+
+Add counterintelligence modifier uniques - By SeventhM
+
+Naval AI: path to water attack stations instead of city centers - By DavidZal
+
+By ibrahim-iqbal:
+- Add the battle notification templates where only the city lost HP 
+- Charge "Costs [amount] [stat] per turn" for improvements that are not roads 
+- Fix divide by zero in the trades overview when the viewer is the first civ 
+
+Seed the browser font fixture on the game origin - By YosefLm
+
+By SomeTroglodyte:
+- Language UI shows native names, fix off-by-two in completion percentages
+- Web version: Fix broken quoted parameters in dev console
+- Web version: Suppress double handling of Ctrl-keys by game and browser
+- Prettify web port a bit
+
+## 5.0.0
+
+Web version of Unciv! - By YosefLm
+
+skip "player ready" screen for hotseat when changing options
+
+Automated Settlers can think a tile is good but it's actually unsettleable, if so, explore for a different tile
+
+By mvanhorn:
+- Keep marble wonder production bonuses local to the owning city 
+- Prevent carrier healing moves from failing during payload placement 
+
+Research agreement trade is only valid while the offerer can pay - By Qualia-Li
+
+New CS bullying uniques for BNW's Gunboat Diplomacy - By HungLTL
+
+Do not match "in cities following our religion" when neither side has a religion - By ibrahim-iqbal
+
+## 4.22.19
+
+Preparations for web version :)
+
+By ibrahim-iqbal: 
+- Add an "Off" label for the automatic promotions setting 
+
+By Qualia-Li:
+- Fix loading screenshots darkening the map between turns 
+- Exclude foreign ships from AI naval defence counts 
+- Resolve reachable movement when approaching enemy cities 
+
+Fix GreatPerson quest completion conditions - By TinyClayMan
+
+## 4.22.18
+
+CPU performance improvements
+
+Avoid ANRs in edgecases
+
+Coastal oil placed regularly
+
+Civ-specific tile filters work in console
+
+Construction queue: MaxNumberBuildable counting and thread-safe queue access - By JoshKirk800
+
+"Estimated time until turn" improvements - By unciv-loof  
+
+Translate the Natural Wonder bonus notification - By ibrahim-iqbal
+
+New Hostile Takeover unit unique - By HungLTL
+
+## 4.22.17
+
+Reduced memory when downloading games from multiplayer server
+
+Nuke targets are scrollable, so too many targets don't make the "nuke" button go off-screen
+
+Citybutton clicks show units again
+
+Added search for saved games
+
+Many small LLM fixes - By JoshKirk800 (new contributor!)
+
+Clarify nuclear death exclusions for combat uniques - By mvanhorn
+
+Harden minimap for empty explored region - By SomeTroglodyte
+
+Fix "Off" promotion-automation option being untranslatable - By ibrahim-iqbal
+
+## 4.22.16
+
+Multiple "automate promotions" options - "for automated units". "for all units", "for no units"
+
+Rendering performance improvements
+
+Show available specialist slots in building list - By neolabs120-mobile
+
+Sort pending trades by turn order - By unciv-loof
+
+Keep Civilopedia entry names visible when selecting entries - By Kilo-cy
+
+## 4.22.15
+
+Performance improvements on map refresh
+
+Change alternativeRendering to default to true for Mali-G68 GPUs
+
+Adjust thresholds for modifier colors in diplomacy screen - By unciv-loof
+
+Auto-choose unit promotions for player units - By DavidZal (new contributor!)
+
+By SomeTroglodyte:
+- Civilopedia navigation history
+- Add a button to help finding those cities missing a required building
+- Avoid overlay toggle buttons pushing TileInfoTable up above the Minimap top edge
+
+By ibrahim-iqbal:
+- Fix Citadel attack notification missing the minus on damage
+- Fix "new categories" result not being translated
+
+
+## 4.22.14
+
+Fixed black flash when changing screens
+
+Fix map mirroring discrepancies
+
+Fixed "enter city button on click" problems
+
+Font icons no longer disappear on onPause
+
+Fix diplomacy access from cities with established spies - By Kilo-cy 
+
+More flexible diplomatic modifier math - By unciv-loof
+
+By ibrahim-iqbal:
+- Fix ConditionalBuildingBuiltAll ignoring its city filter 
+- Fix untranslatable Privateer plunder notification 
+
+Validate assembled uniques in the unique builder - By mvanhorn
+
+By SomeTroglodyte:
+- Allow keyboard-building improvements even if it needs a removal first
+- Add the forgotten console parameter type "tileFilter"
+- Fix Citadel notifications: Translatability, HP
+- Fix ruleset technology merge with unit tests
+
+## 4.22.13
+
+Correct civ for hotseat "player ready" screen
+
+Fixed cancelling "leave mapeditor" popup, allowing to to leave later without warning popup
+
+By SomeTroglodyte:
+- Tile info on city screen looks and behaves like the world screen one 
+- Allow `[]` / `<>` nesting to support typical UniqueType.Comment usecase 
+- Author exclusion file read correct on Android 
+
+Resigning clears turn time data - By unciv-loof
+
+Fix startup NPE in FasterUIDevelopment - By Kilo-cy
+
+## 4.22.12
+
+Fix city status layout when city resources are shown - by kilo-cy (New contributor!)
+
+By unciv-loof:
+- Sort modifiers in diplomacy screen by their impact on relationship - 
+- Sort pantheons and religions in overview tab by founding turn
+
+Fix "Check this mod" button not selecting the tab and mod in the OptionsPopup on Android - By SomeTroglodyte
+
+## 4.22.11
+
+Added "Auto" screen size setting
+
+Spaceship parts buildable again
+
+Selecting random map after custom no longer generates land-only
+
+MP preview displays number of players and estimated time until player's turn - By unciv-loof
+
+By SomeTroglodyte:
+- Improve espionage screen and spy movement handling via map 
+- Fix broken keyboard binding for "Create [improvement]" 
+- Extension Mods allow more removals via ModOptions 
+- Fix loading games with invalid speed or difficulty entry crashes
+
+## 4.22.10
+
+Allow removing all forms of starting locations in map editor
+
+Disable "pick improvement" when selecting an unpickable improvement
+
+Make multiplayer check worker work with specific game ids again
+
+"Popup confirm" unit actions correctly move to next unit, refresh UI, etc
+
+More detailed color coding of diplomacy modifiers - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix a few console quirks 
+- Allow using Unique Builder for console activatetrigger 
+
+## 4.22.9
+
+Made new rendering opt-in, added FPS measure for comparison
+
+Add "autosize" experimental button + text
+
+By SomeTroglodyte:
+- UI: Make menu button and city stats collapse arrow easier to hit 
+
+By unciv-loof:
+- Use actual bombard range to classify long range units 
+
+fix: restore promotion modifier order in battle preview - By SomSamantray
+
+## 4.22.8
+
+Liberated city states make peace with anyone they were at war with pre-liberation
+
+When loading a game that causes Out Of Memory, show error message instead of crashing
+
+Added "Only the first available choice is offered" event unique, for switch/case style options
+
+By SomeTroglodyte:
+- Add science income without a research target to overflow, so it's not lost 
+- Allow finer control of the value for "snapping" Sliders (not only for Android) 
+- Fix locale-dependent number formatting messing up some numbers
+
+Resolved "doesn't work on Java 8", hopefully for future changes as well
+
+Update multiplayer game preview as players turns change, even if turn number is the same
+
+## 4.22.7
+
+Sharper text on Android - By finalpatch
+
+game ends with no alive major civ - By ssamt
+
+Block tile improvements when the stockpiled resource cost is unpaid - By mvanhorn
+
+Adjust happiness threshold for AI valuation - By EmperorPinguin
+
+Desktop: fix fallback-font glyphs being clipped on the right - By xysggol
+
+By SomeTroglodyte:
+- Improve numeric text fields localized formatting and parsing
+- Add missing translation templates for battle notifications
+- Add flag for the Navajo language
+- Replace sort arrows across all translation files
+
+## 4.22.6
+
+Fixed F6 crashes
+
+By dangdinhbaohoang12:
+- Prioritize roads when connecting new cities 
+- Prevent attacks with units after ownership change 
+
+By SomeTroglodyte: 
+- Fix Minimap derailing when passed an AI observing civ
+- Fix the debug tile coordinates shown on/for tiles 
+
+Keep the world screen tutorial task card on screen and scrollable - By JN0V
+
+## 4.22.5
+
+Faster tech screen 
+
+By dangdinhbaohoang12:
+- Better movement logic when discovering hidden units
+
+Prevent displacement captures and stale unit automation - By mvanhorn
+
+Only alive major civs for time victory - By ssamt
+
+Added default promotion entry to tutorial.json - By Emandac
+
+## 4.22.4
+
+Fixed error on cityscreen update when screen has already been replaced
+
+Fixed victory screen number-formatting bug
+
+Fix Java 9+ specific method use crashing NextTurn on Java 8 - By SomeTroglodyte: 
+
+Fix overview screen column visibility - By dangdinhbaohoang12
+
+Fix Units that are intended to lose promotions regaining them on turn start - By SeventhM
+
+## 4.22.3
+
+Massive rendering lag improvement!!
+
+ANRs reduction when switching screens
+
+By SomeTroglodyte:
+- Disallow spectators to rename units
+- Allow unit rename to "reset" to base unit name
+
+## 4.22.2
+
+Spectator deselect sets UI correctly
+.
+Fix defensive pact count motivation clamp - By Angais
+
+By SomeTroglodyte:
+- Fix layout for GPP table  
+- Crash fix for UI race conditions 
+
+fix: discover natural wonders when revealing the entire map - By mvanhorn
+
+Fix mod fonts missing from Font family selection - By ethanstoner
+
+AStar puts correct movement in PathsToTilesWithinTurn - By Ambeco
+
+## 4.22.1
+
+Fixed crash on "ID from clipboard" when clipboard not set
+
+Scrollable events show scrollbars
+
+Allow modders to specify modOptions.constants.maxRiverLength as 0 to avoid river generation entirely
+
+Tweaked auto map size - By O-spin
+
+Performance improvements - By Ambeco
+
+Add map generator settings clipboard actions - By LouisDeconinck
+
+## 4.22.0
+
+Invisible units no longer invisible to their own civ
+
+Remember last civilopedia position
+
+New game screen: Start fresh if the latest game start is erroring
+
+When selecting custom maps, don't overwrite the ruleset if the current mods are a superset of the map's required mods
+
+By unciv-loof:
+- Automation setting for specialist control in new cities 
+- Set default max coast extension to 3 instead of 2 
+
+By JN0V:
+- Add countable "Known [civFilter] Civilizations" 
+- Victories can carry uniques, and decide who may achieve them 
+- Add victory milestone "Have at least [amount] [countable]" 
+- Fix possible crash when scrolling to the selected construction queue entry 
+
+By LouisDeconinck:
+- Fix terrain changes from gifted improvements 
+- Fix health of units recruited from encampments 
+
+fix: prevent owned roads from being charged as neutral roads - By mvanhorn
+
+fix mod translation not enabled in restored new game screen - By finalpatch
+
+AStar correctly paths around allies - By Ambeco
+
+## 4.21.19
+
+Prevent mod archives from overwriting saves and settings - By Angais
+
+Improve desktop font rendering with mipmaps and preserve glyph contrast - By finalpatch (new contributor!)
+
+When changing rulesets, clamp number of city states available to match new ruleset
+
+Show stat icons in civilopedia when displaying stats
+
+Fix altas generation fuzziness errors
+
+Hide unit table "summary" for civs with no units (e.g. Spectator)
+
+Unify "extra ranged attack" logic - extra attacks no longer trigger regular attack effects (XP, on-kill uniques, on-damage uniques) separately from existing triggers
+
+Solved crash when city screen update happens parallel to screen change
+
+## 4.21.18
+
+Avoid ANRs from multiple sources
+
+Avoid game load crashes for unit/tile neighbor adjacency conditionals
+
+Adds auto map size - By O-spin
+
+By Angais: 
+- Apply warmonger penalties to alliance motivation 
+- Apply city filters to spy effectiveness 
+
+By varchasgopalaswamy (new contributor!):
+- Fix bug where unplacable great people will disappear 
+- Fix movement history perspective 
+
+By SomeTroglodyte:
+- Font fallback for missing glyphs 
+- Translation generation preserves existing data for mods, can backup 
+
+## 4.21.17
+
+Decrease initial startup time
+
+By Angais:
+- AI: Keep inquisitor conversion targets in owned cities 
+- Retain lost data when saving games 
+- Fixed trade evaluation error  
+
+By varchasgopalaswamy:
+- Fixed tile info update bug when changing perspective in spectator 
+- fixed city selection bug bug 
+
+## 4.21.16
+
+Fixed visual flash when entering a city
+
+Don't allow removing features for improvements, if it requires an unresearched tech
+
+Decrease time-to-first-pixels for better user experience
+
+AI doesn't accept trades to declare war against multiple civs
+
+Better multiplayer UUID handling - By dangdinhbaohoang12
+
+Correct numeric localization and stat icon suppression - By mvanhorn
+
+Increase luxury diversity - By O-spin
+
+## 4.21.15
+
+Avoid ANRs in multiple places
+
+Performance improvements
+
+Remove initial Android screen orientation restriction for "user landscape" - now takes whatever orientation is set for the device
+
+Air unit list visible on carriers
+
+Resolved map bounds restrictions on spectator-as-civ by removing restrictions entirely
+
+UI doesn't crash if construction list changed while we try and select a queue entry that no longer exists
+
+Better use of multiple slot types on carriers - By SomeTroglodyte
+
+## 4.21.14
+
+Fixed minimap problems when spectating-as-civ
+
+Avoid future ANRs from screen-switching
+
+reject ruleset objects that replace themselves - By mvanhorn
+
+Record client version of latest turn submitted by each civ in Multiplayer - By unciv-loof
+
+By SomeTroglodyte:
+- Fix "Connect road" with A-Star pathing enabled
+- Allow assigning "key" mappings to extra mouse buttons
+- More screens support the "F1" binding to Civilopedia
+- Prevent double terrain damage from healing
+- Fix equalizeColumns for empty lower tables
+
 ## 4.21.13
 
 Massive Application Not Responding cleanup for Android
@@ -3144,13 +3606,13 @@ Fixed uniques of marble - By woo1127
 
 ## 4.10.21
 
-Fixed ruleset-dependant building filter activating *when initializing ruleset*
+Fixed ruleset-dependent building filter activating *when initializing ruleset*
 
 Fixed endless loop when unit tries to reach a tile it can pillage, but can't
 
 Fixed rare crash on city-state diplomatic relationship update
 
-Fix loop when improvement is unbuildable and removements feature  - By SeventhM
+Fix loop when improvement is unbuildable and removes feature  - By SeventhM
 
 ## 4.10.20
 

@@ -32,6 +32,76 @@ class RulesetValidatorTests {
         }
     }
 
+    private fun hasSelfReplacementError(game: TestGame, objectName: String): Boolean {
+        return game.ruleset.getErrorList().any {
+            it.errorSeverityToReport == RulesetErrorSeverity.Error
+                && it.text == "$objectName replaces itself!"
+        }
+    }
+
+    @Test
+    fun `ruleset validator rejects building that replaces itself`() {
+        val game = TestGame()
+        val building = game.createBuilding().apply { uniqueTo = "Test nation" }
+        building.replaces = building.name
+
+        assertTrue(hasSelfReplacementError(game, building.name))
+    }
+
+    @Test
+    fun `ruleset validator accepts building that replaces another building`() {
+        val game = TestGame()
+        val replacedBuilding = game.createBuilding()
+        val replacementBuilding = game.createBuilding().apply {
+            replaces = replacedBuilding.name
+            uniqueTo = "Test nation"
+        }
+
+        assertFalse(hasSelfReplacementError(game, replacementBuilding.name))
+    }
+
+    @Test
+    fun `ruleset validator rejects unit that replaces itself`() {
+        val game = TestGame()
+        val unit = game.createBaseUnit().apply { uniqueTo = "Test nation" }
+        unit.replaces = unit.name
+
+        assertTrue(hasSelfReplacementError(game, unit.name))
+    }
+
+    @Test
+    fun `ruleset validator accepts unit that replaces another unit`() {
+        val game = TestGame()
+        val replacedUnit = game.createBaseUnit()
+        val replacementUnit = game.createBaseUnit().apply {
+            replaces = replacedUnit.name
+            uniqueTo = "Test nation"
+        }
+
+        assertFalse(hasSelfReplacementError(game, replacementUnit.name))
+    }
+
+    @Test
+    fun `ruleset validator rejects tile improvement that replaces itself`() {
+        val game = TestGame()
+        val improvement = game.createTileImprovement().apply { uniqueTo = "Test nation" }
+        improvement.replaces = improvement.name
+
+        assertTrue(hasSelfReplacementError(game, improvement.name))
+    }
+
+    @Test
+    fun `ruleset validator accepts tile improvement that replaces another improvement`() {
+        val game = TestGame()
+        val replacedImprovement = game.createTileImprovement()
+        val replacementImprovement = game.createTileImprovement().apply {
+            replaces = replacedImprovement.name
+            uniqueTo = "Test nation"
+        }
+
+        assertFalse(hasSelfReplacementError(game, replacementImprovement.name))
+    }
+
     @Test
     fun `ruleset validator warns about spy name collision with ruleset object`() {
         val game = TestGame()

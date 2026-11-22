@@ -16,4 +16,7 @@ interface IFasterUITester {
 
     /** Optional code to execute after your testing container is on the stage */
     fun testAfterAdd() {}
+
+    /** If we want to launch any Unciv screen directly, provide this one and a dummy `Actor()` from [testCreateExample] */
+    val testLaunchScreen: (() -> BaseScreen)? get() = null
 }

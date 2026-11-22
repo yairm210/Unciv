@@ -98,10 +98,7 @@ object DropBox: FileStorage {
         )!!
     }
 
-    override fun loadFileData(fileName: String): String {
-        val inputStream = downloadFile(getLocalGameLocation(fileName))
-        return BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8)).readText()
-    }
+    override fun loadFileData(fileName: String): InputStream = downloadFile(getLocalGameLocation(fileName))
 
     override fun authenticate(userId: String, password: String): Boolean {
         throw NotImplementedError()

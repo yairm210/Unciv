@@ -22,7 +22,7 @@ class VictoryScreenCivRankings(
         defaults().pad(10f)
 
         val majorCivs = worldScreen.gameInfo.civilizations
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .filter { targetCiv -> VictoryScreen.canViewCivStats(worldScreen.gameInfo, worldScreen.selectedGameView.civView.getCiv(), targetCiv) }
 
         for (category in RankingType.filteredEntries(worldScreen.gameInfo.gameParameters)) {

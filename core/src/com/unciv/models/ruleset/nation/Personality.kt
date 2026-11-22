@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextHeaderImpl
-import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextLinesImpl
+import com.unciv.ui.objectdescriptions.NationDescriptions.getPersonalityCivilopediaTextLines
 import com.unciv.ui.objectdescriptions.NationDescriptions.getShortDescription
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -115,7 +115,7 @@ class Personality : RulesetObject() {
     }
     override fun getIconName() = ""
     override fun getCivilopediaTextHeader() = getCivilopediaTextHeaderImpl()
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = getCivilopediaTextLinesImpl(ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getPersonalityCivilopediaTextLines(ruleset)
     /** Used in Nation Civilopedia UI */
     override fun toString() = getShortDescription()
 }

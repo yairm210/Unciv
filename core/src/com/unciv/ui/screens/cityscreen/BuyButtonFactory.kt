@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.view.getCurrentConstruction
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
@@ -12,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.isEnabled
@@ -21,6 +23,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.view.TileView
 
 /**
@@ -121,7 +124,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             val cityView = cityScreen.cityView
             val balance = cityView.getStatReserve(stat)
             val majorityReligion = cityView.getMajorityReligion()
-            val yourReligion = cityView.getYourReligion()
+            val yourReligion = cityView.viewingCiv().getReligion()
             val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit)
                 && !construction.hasUnique(UniqueType.TakeReligionOverBirthCity)
                 && majorityReligion != yourReligion
@@ -140,7 +143,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             }
             addGoodSizedLabel("Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?").row()
 
-            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.update() }
+            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.updateAsync() }
             val confirmStyle = BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java)
             addOKButton("Purchase", KeyboardBinding.Confirm, confirmStyle) {
                 purchaseConstruction(construction, stat, tile)
@@ -165,25 +168,34 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val cityView = cityScreen.cityView
-        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, stat, tile)) {
-            Popup(cityScreen).apply {
-                add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
-                addCloseButton()
-                open()
-            }
-            return
-        }
-        if (cityScreen.selectedQueueEntry>=0 || cityScreen.selectedConstruction?.let { cityView.constructions.isBuildable(it) } != true) {
-            cityScreen.selectedQueueEntry = -1
-            cityScreen.clearSelection()
 
-            if (cityView.constructions.currentConstructionName().isNotEmpty()) {
-                val newConstruction = cityView.constructions.getCurrentConstruction()
-                if (newConstruction is INonPerpetualConstruction)
-                    cityScreen.selectConstruction(newConstruction)
+        val inputProcessor = InputDisabling.disableInput()
+        Concurrency.run {
+            val purchased = cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, stat, tile)
+            Concurrency.runOnGLThread {
+                InputDisabling.setInputProcessor(inputProcessor)
+                if (!purchased) {
+                    Popup(cityScreen).apply {
+                        add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
+                        addCloseButton()
+                        open()
+                    }
+                    return@runOnGLThread
+                }
+                if (cityScreen.selectedQueueEntry>=0 || cityScreen.selectedConstruction?.let { cityView.constructions.isBuildable(it) } != true) {
+                    cityScreen.selectedQueueEntry = -1
+                    cityScreen.clearSelection()
+
+                    val newName = cityView.constructions.currentConstructionName() // Once: the queue can change between two reads
+                    if (newName.isNotEmpty()) {
+                        val newConstruction = cityView.constructions.getConstruction(newName)
+                        if (newConstruction is INonPerpetualConstruction)
+                            cityScreen.selectConstruction(newConstruction)
+                    }
+                }
+                cityScreen.updateAsync()
             }
         }
-        cityScreen.update()
     }
 
 }

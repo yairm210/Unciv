@@ -1,5 +1,8 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.GameInfo
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -30,7 +33,44 @@ class MapGenerationTests {
             }
         }
     }
-    
+
+    @Test
+    fun testSizeForAuto() {
+        RulesetCache.loadRulesets(noMods = true)
+        ruleSet = RulesetCache.getVanillaRuleset()
+        val mapGenerator = MapGenerator(ruleSet)
+        val mapParameters = MapParameters()
+
+        val majorNations = ruleSet.nations.values.filter { it.isMajorCiv }.take(4)
+        val gameInfo = GameInfo()
+        gameInfo.ruleset = ruleSet
+        for (nation in majorNations) {
+            val civ = Civilization(nation)
+            civ.gameInfo = gameInfo
+            gameInfo.civilizations.add(civ)
+        }
+
+        mapParameters.mapSize = MapSize(MapSize.auto)
+        //mapParameters.mapSize = MapSize(MapSize.custom)
+        //mapParameters.mapSize.radius = 52
+
+        var results: List<Double> = emptyList()
+        for (it in 1..10) {
+            mapParameters.seed += 1
+            val tileMap = mapGenerator.generateMap(mapParameters, gameInfo = gameInfo)
+
+            val startingCoords = tileMap.startingLocations.map { it.position }
+            val minDistances = startingCoords.map { pos ->
+                startingCoords.filter { it != pos }
+                    .minOf { otherPos -> getDistance(pos,otherPos) }
+            }
+            val avgMinDistance = minDistances.average()
+            results+=avgMinDistance
+        }
+        assertApproximately((results.sum()/results.size).toInt(), 13,1.25)
+        //java.io.File("map_gen_distances_average.txt").writeText((results.sum()/results.size.toDouble()).toString())
+    }
+
     @Test
     fun terrainTileCountsReasonableForHexMaps() {
         RulesetCache.loadRulesets(noMods = true)

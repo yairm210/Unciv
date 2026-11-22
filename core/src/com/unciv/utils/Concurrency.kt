@@ -56,7 +56,7 @@ object Concurrency {
     }
     
     fun parallelize(
-        functions: List<() -> Unit>,
+        functions: List<() -> Any?>,
         parallelize: Boolean = true
     ){
         if (parallelize)

@@ -21,5 +21,9 @@ fun String.toUUIDOrNull(): UUID? = try {
 fun String.isUUID(): Boolean = toUUIDOrNull() != null
 
 /** Determines if we're running from a jar, given an instance of any Unciv-specific class.
- *  (Not a String extension, but as long as we don't have a 'generic' extension file...) */
+ *  - Only meaningful on Desktop! Test that separately.
+ *  - This actually tests against the `manifest` in our `desktop:dist` gradle task - so it's `false` on Android.
+ *  - (Not a String extension, but as long as we don't have a 'generic' extension file...)
+ *  @param obj Any instance of any Unciv class or object - NOT a system library one. `buildString { isRunFromJar(this) }` will fail!
+ */
 fun isRunFromJar(obj: Any): Boolean = obj::class.java.`package`.specificationVersion != null

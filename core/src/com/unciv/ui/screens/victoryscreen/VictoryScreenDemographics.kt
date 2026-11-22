@@ -19,14 +19,14 @@ class VictoryScreenDemographics(
 
     init {
         defaults().pad(5f)
-        val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv }
 
         buildDemographicsHeaders()
 
         for (rankLabel in RankLabels.entries)   {
             if (rankLabel == RankLabels.Value) {
                 // playerCiv is not necessarily alive nor major, and the `first` below would throw
-                if (playerCiv.isDefeated() || !playerCiv.isMajorCiv()) continue
+                if (playerCiv.isDefeated() || !playerCiv.isMajorCiv) continue
             }
             row()
             add(rankLabel.name.toLabel())

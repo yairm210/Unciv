@@ -10,7 +10,6 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 
 abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
 
-    val tile: Tile get() = tileGroup.tileView.getTile()
     val strings: TileSetStrings = tileGroup.tileSetStrings
 
     /** Absolute X of the tile origin in the parent TileMapLayer. 0 until attachTo() is called. */
@@ -79,10 +78,22 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         return this
     }
 
-    fun isViewable(viewingCiv: CivView) = tileGroup.isViewable(viewingCiv)
+    fun isViewable(viewingCiv: CivView?) = viewingCiv == null || tileGroup.isViewable(viewingCiv)
+
+    /** Hash of everything [doUpdate] reads. If it is unchanged since the last update, [doUpdate] is skipped.
+     *  `null` means "unknown" - always update. Must cover ALL inputs of [doUpdate], or the layer will go stale. */
+    protected open fun getUpdateKey(viewingCiv: CivView?): Long? = null
+    private var lastUpdateKey: Long? = null
+
+    /** Forces the next [update] to run [doUpdate], e.g. after something mutated our actors outside of [doUpdate] */
+    fun invalidate() { lastUpdateKey = null }
 
     fun update(viewingCiv: CivView?) {
-        doUpdate(viewingCiv)
+        val key = getUpdateKey(viewingCiv)
+        if (key == null || key != lastUpdateKey) {
+            doUpdate(viewingCiv)
+            lastUpdateKey = key
+        }
         determineVisibility()
     }
 

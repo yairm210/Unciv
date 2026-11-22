@@ -1,0 +1,11 @@
+Made new rendering opt-in, added FPS measure for comparison
+
+Add "autosize" experimental button + text
+
+By SomeTroglodyte:
+- UI: Make menu button and city stats collapse arrow easier to hit 
+
+By unciv-loof:
+- Use actual bombard range to classify long range units 
+
+fix: restore promotion modifier order in battle preview - By SomSamantray

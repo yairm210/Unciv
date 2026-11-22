@@ -139,7 +139,7 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
         }
 
 
-    private object Helpers {
+    object Helpers {
         fun addIndicator(actor: Group, indicatorMinSizeRelative: Float) {
             val setting = UncivGame.Current.settings.showLongPressIndicators
             if (setting == LongPressIndicatorSetting.Off) return

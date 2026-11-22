@@ -151,11 +151,8 @@ class Terrain : RulesetStatsObject() {
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")
 
         val seeAlso = (ruleset.buildings.values.asSequence() + ruleset.units.values.asSequence())
-            .filter {
-                construction -> construction.uniqueObjects.any {
-                    unique -> unique.params.any { it == name }
-                }
-            }.map { FormattedLine(it.name, it.makeLink(), indent=1) } +
+            .filter { construction -> construction.hasUniquesMentioning(name) }
+            .map { FormattedLine(it.name, it.makeLink(), indent=1) } +
             Belief.getCivilopediaTextMatching(name, ruleset, false)
         if (seeAlso.any()) {
             textList += FormattedLine()

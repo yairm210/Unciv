@@ -60,13 +60,14 @@ class UnitOverviewTab(
     //todo the comments and todo below are copied verbatim from CityOverviewTab - synergies?
     private val grid = SortableGrid(
         columns = UnitOverviewTabColumn.entries.asIterable(),
-        data = viewingPlayer.getCiv().units.getCivUnits().asIterable(),
+        data = viewingPlayer.getUnits().asIterable(),
         actionContext = this,
         sortState = persistableData,
         iconSize = 20f,
         paddingVert = 5f,
         paddingHorz = 8f,
-        separateHeader = true
+        separateHeader = true,
+        viewingPlayer = viewingPlayer
     ) { header, details, totals ->
         // Notes: header.parent is the LinkedScrollPane of TabbedPager. Its linked twin is details.parent.parent.parent however!
         // horizontal "slack" if available width > content width is taken up between SortableGrid and CityOverviewTab for the details,
@@ -101,7 +102,7 @@ class UnitOverviewTab(
     }
 
     internal fun update(unitsChanged: Boolean = false) {
-        if (unitsChanged) grid.update(viewingPlayer.getCiv().units.getCivUnits().asIterable())
+        if (unitsChanged) grid.update(viewingPlayer.getUnits().asIterable())
         grid.update()
     }
 

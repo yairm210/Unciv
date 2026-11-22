@@ -62,7 +62,7 @@ class MapFileSelectTable(
     private val miniMapWrapper = Container<Group?>()
     private var mapPreviewJob: Job? = null
     private var preselectedName = mapParameters.name
-    private val descriptionLabel = "".toLabel()
+    private val descriptionLabel = "".toLabel().apply { setWrap(true) }
     private val descriptionLabelCell: Cell<Label>
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
@@ -100,7 +100,7 @@ class MapFileSelectTable(
         useNationsButtonCell = add().pad(0f)
         row()
 
-        descriptionLabelCell = add(descriptionLabel)
+        descriptionLabelCell = add(descriptionLabel).width(columnWidth - 20f)
         descriptionLabelCell.height(0f).row()
 
         add(miniMapWrapper)
@@ -112,14 +112,16 @@ class MapFileSelectTable(
 
     }
 
-    private fun getMapFilesSequence() = sequence<FileHandle> {
+    private fun getUnsortedMapFilesSequence() = sequence<FileHandle> {
         yieldAll(MapSaver.getMaps().asSequence())
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val mapsFolder = modFolder.child(MapSaver.mapsFolder)
             if (mapsFolder.exists())
                 yieldAll(mapsFolder.list().asSequence())
         }
-    }.sortedByDescending { it.lastModified() }
+    }
+
+    private fun getMapFilesSequence() = getUnsortedMapFilesSequence().sortedByDescending { it.lastModified() }
 
     private fun addMapWrappersAsync() {
         val mapFilesFlow = getMapFilesSequence().asFlow().map {
@@ -175,19 +177,9 @@ class MapFileSelectTable(
         }
     }
 
-    private val firstMap: FileHandle? by lazy {
-        getMapFilesSequence().firstOrNull {
-            try {
-                MapSaver.loadMapParameters(it)
-                true
-            } catch (_: Exception) {
-                false
-            }
-        }
-    }
-
     private fun FileHandle.isRecentlyModified() = lastModified() > System.currentTimeMillis() - 900000 // 900s = quarter hour
-    fun isNotEmpty() = firstMap != null
+    /** Only lists files, no parsing - a folder holding only unreadable maps still counts as non-empty */
+    fun isNotEmpty() = getUnsortedMapFilesSequence().any()
 
     fun activateCustomMaps() {
         if (isActivated) {
@@ -256,12 +248,23 @@ class MapFileSelectTable(
         if (mapFileSelectBox.selection.isEmpty) return
         val selection = mapFileSelectBox.selected
 
-        val mapMods = selection.mapPreview.mapParameters.mods
+        val (baseRulesets, mapRequiredMods) = selection.mapPreview.mapParameters.mods
             .partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
-        newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
+        val mapBaseRuleset = baseRulesets.firstOrNull()
             ?: selection.mapPreview.mapParameters.baseRuleset
-        val success = newGameScreen.tryUpdateRuleset(updateUI = true)
+        
+        val gameParameters = newGameScreen.gameSetupInfo.gameParameters
+        // If the currently selected ruleset already satisfies the map's requirements, keep it
+        // instead of clobbering the user's mod selection (e.g. when switching between maps of the same base ruleset)
+        val currentRulesetIsCompatible = gameParameters.baseRuleset == mapBaseRuleset
+            && gameParameters.mods.containsAll(mapRequiredMods)
+
+        val success = if (currentRulesetIsCompatible) true
+        else {
+            gameParameters.mods = LinkedHashSet(mapRequiredMods)
+            gameParameters.baseRuleset = mapBaseRuleset
+            newGameScreen.tryUpdateRuleset(updateUI = true)
+        }
         val rng = GameContext().stateBasedRandom("MapFileSelectTable.onFileSelectBoxChange", System.currentTimeMillis().toInt())
 
         if (success) {
@@ -346,6 +349,7 @@ class MapFileSelectTable(
 
     private fun showDescription(text: String) {
         descriptionLabel.setText(text)
+        descriptionLabel.width = columnWidth - 20f
         descriptionLabelCell
             .height(if (text.isEmpty()) 0f else descriptionLabel.prefHeight)
             .padTop(if (text.isEmpty()) 0f else 10f)

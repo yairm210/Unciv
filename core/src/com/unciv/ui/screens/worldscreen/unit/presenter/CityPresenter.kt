@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.unciv.logic.city.City
+import com.unciv.view.location
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.onClick
@@ -15,7 +15,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
     override val position: HexCoord?
         get() = selectedCity?.location
 
-    fun selectCity(city: City): Boolean {
+    fun selectCity(city: ForeignCityView): Boolean {
         // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
         unitPresenter.apply {
             if (selectedUnitIsConnectingRoad) {
@@ -25,8 +25,8 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
                 selectUnit()
             }
         }
-        if (city === selectedCity?.getCity()) return false
-        selectedCity = unitTable.worldScreen.selectedGameView.getForeignCityView(city)
+        if (city == selectedCity) return false
+        selectedCity = city
         return true
     }
 
@@ -41,9 +41,10 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
                 if (!worldScreen.canChangeState) return@onClick
+                val cityView = city.tryGetCityView() ?: return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
-                    cityView = worldScreen.selectedGameView.getCityView(city.getCity()),
+                    cityView = cityView,
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true

@@ -6,14 +6,15 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.pickerscreens.PromotionTree
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import com.unciv.logic.map.mapunit.actions.UnitActions
+import com.unciv.logic.map.mapunit.actions.UnitActionsFromUniques
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -248,5 +249,29 @@ class UnitUniquesTests {
         Assert.assertTrue(secondPayload.isTransported)
         Assert.assertEquals(transformed.currentTile, secondPayload.currentTile)
         Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
+    }
+    
+    @Test
+    fun takeOverCityStateVeniceTest() {
+        // when
+        game.makeHexagonalMap(1)
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
+
+        val mainCiv = game.addCiv(isPlayer = true)
+
+        val unitTile = game.getTile(1,0)
+        cityStateCapital.expansion.takeOwnership(unitTile)
+
+        val merchantOfVenice = game.addDefaultMeleeUnitWithUniques(
+            mainCiv,
+            unitTile,
+            "[This Unit] takes over the City-State owning the tile it's standing on <by consuming this unit>"
+        )
+
+        // then
+        UniqueTriggerActivation.triggerUnique(merchantOfVenice.getUniques().first(), merchantOfVenice)
+        Assert.assertTrue(cityStateCapital.civ == mainCiv)
     }
 }

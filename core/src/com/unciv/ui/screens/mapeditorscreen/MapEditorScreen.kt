@@ -22,6 +22,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -141,7 +142,6 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
                     mapToSave.assignContinents(TileMap.AssignContinentsMode.Reassign)
                     if (!isActive) return@startBackgroundJob
                     MapSaver.saveMap("Autosave", mapToSave)
-                    isDirty = false
                 } catch (ex: Exception) {
                     Log.error("Failed to autosave map", ex)
                 }
@@ -190,12 +190,14 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     }
 
     private fun recreateMapHolder(actionWhileRemoved: ()->Unit = {}) {
-        val savedScale = mapHolder.scaleX
-        clearOverlayImages()
-        mapHolder.remove()
-        actionWhileRemoved()
-        mapHolder = newMapHolder()
-        mapHolder.zoom(savedScale)
+        InputDisabling.withInputDisabled {
+            val savedScale = mapHolder.scaleX
+            clearOverlayImages()
+            mapHolder.remove()
+            actionWhileRemoved()
+            mapHolder = newMapHolder()
+            mapHolder.zoom(savedScale)
+        }
     }
 
     private fun newMapHolder(): EditorMapHolder {

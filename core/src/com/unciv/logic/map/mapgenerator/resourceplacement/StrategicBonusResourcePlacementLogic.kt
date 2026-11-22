@@ -348,7 +348,7 @@ object StrategicBonusResourcePlacementLogic {
                 val fallbackRule = if (terrain.type == TerrainType.TerrainFeature)
                     Unique("RULE <in [${terrain.name}] tiles>")
                 else
-                    Unique("RULE <in [Featureless] [${terrain.name}] tiles>")
+                    Unique("RULE <in [{Featureless} {${terrain.name}}] tiles>")
                 if (ruleLists.keys.none { it.text == fallbackRule.text }) // Need to do text comparison since the uniques will not be equal otherwise
                     ruleLists[fallbackRule] = ArrayList()
             }

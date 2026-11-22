@@ -20,12 +20,22 @@ class TradesOverviewTab(
 
     init {
         defaults().pad(10f)
-        val diplomaciesWithPendingTrade = viewingPlayer.getCiv().diplomacy.values.filter { it.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.getCiv().civID } }
+        val diplomaciesWithPendingTrade = viewingPlayer.getCiv().diplomacy.values
+            .filter { it.otherCiv.tradeRequests
+                .any { trade -> trade.requestingCiv == viewingPlayer.getCiv().civID } }
+            // the pending trades that will be evaluated first are shown at the top:
+            // civs take their turns in list order, starting with the one after us
+            .sortedBy {
+                val civs = gameInfo.civilizations
+                (civs.indexOf(it.otherCiv) - civs.indexOf(viewingPlayer.getCiv())).mod(civs.size)
+            }
         if (diplomaciesWithPendingTrade.isNotEmpty())
             add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithPendingTrade) {
-            for (tradeRequest in diplomacy.otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.getCiv().civID })
+            for (tradeRequest in diplomacy.otherCiv.tradeRequests
+                .filter { it.requestingCiv == viewingPlayer.getCiv().civID }) {
                 add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv)).row()
+            }
         }
 
         val diplomaciesWithExistingTrade = viewingPlayer.getCiv().diplomacy.values.filter { it.trades.isNotEmpty() }

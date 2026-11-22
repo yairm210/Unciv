@@ -1,0 +1,9 @@
+Multiple "automate promotions" options - "for automated units". "for all units", "for no units"
+
+Rendering performance improvements
+
+Show available specialist slots in building list - By neolabs120-mobile
+
+Sort pending trades by turn order - By unciv-loof
+
+Keep Civilopedia entry names visible when selecting entries - By Kilo-cy

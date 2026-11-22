@@ -1,4 +1,4 @@
-name: Generate mkdocs from docs folder
+name: Deploy docs and web build to gh-pages
 on:
   workflow_dispatch:
   push:
@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -25,8 +25,47 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-awesome-pages-plugin
       - run: mkdocs build --site-dir site
-      - uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: site
+          name: docs-site
+          path: site
+          if-no-files-found: error
+
+  web:
+    needs: docs
+    uses: ./.github/workflows/web.yml
+
+  deploy:
+    needs: [docs, web]
+    # Deploy docs even if the web build failed; the previously published /web is kept in that case
+    if: ${{ !cancelled() && needs.docs.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: published-site
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: site
+      - uses: actions/download-artifact@v4
+        if: needs.web.result == 'success'
+        with:
+          name: web-game
+          path: game-build
+      - name: Update docs and, if built, web
+        working-directory: published-site
+        run: |
+          rsync -a --delete --exclude=/web --exclude=/.git ../site/ ./
+          if [ "${{ needs.web.result }}" = "success" ]; then
+            mkdir -p web
+            rsync -a --delete ../game-build/ web/
+          fi
+          touch .nojekyll
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Deploy docs and web build"
+          git push origin gh-pages

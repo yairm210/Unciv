@@ -1,13 +1,17 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.ModCategories
+import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.components.extensions.addSeparator
@@ -21,6 +25,7 @@ import com.unciv.ui.screens.basescreen.SceneDebugMode
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
+import com.unciv.utils.launchOnGLThread
 
 internal class DebugTab(
     optionsPopup: OptionsPopup
@@ -33,6 +38,7 @@ internal class DebugTab(
         addCheckbox("Show coordinates on tiles", DebugUtils::SHOW_TILE_COORDS, updateWorld = true)
         addCheckbox("Show settler scores on tiles", DebugUtils::SHOW_SETTLER_SCORES, updateWorld = true)
         addCheckbox("Show tile image locations", DebugUtils::SHOW_TILE_IMAGE_LOCATIONS, updateWorld = true)
+        addCheckbox("Show FPS", DebugUtils::SHOW_FPS, updateWorld = true)
 
         val curGameInfo = game.gameInfo
         if (curGameInfo != null) {
@@ -65,6 +71,20 @@ internal class DebugTab(
         val loadAsHotseatFromClipboardButton = "Load online multiplayer game as hotseat from clipboard".toTextButton()
         loadAsHotseatFromClipboardButton.onClick(::loadAsHotseatFromClipboard)
         add(loadAsHotseatFromClipboardButton).colspan(2).row()
+
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            val updateModCategoriesButton = "Update Mod categories".toTextButton()
+            updateModCategoriesButton.onClick {
+                updateModCategoriesButton.setText(Constants.working.tr())
+                Concurrency.run("GithubTopicQuery") {
+                    val result = ModCategories.mergeOnline()
+                    launchOnGLThread {
+                        updateModCategoriesButton.setText(result.tr())
+                    }
+                }
+            }
+            add(updateModCategoriesButton).colspan(2).row()
+        }
 
         addSeparator()
         add("* Crash Unciv! *".toTextButton(skin.get("negative", TextButtonStyle::class.java)).onClick {

@@ -23,9 +23,9 @@ object DiplomacyTurnManager {
         updateHasOpenBorders()
         nextTurnDiplomaticModifiers()
         nextTurnFlags()
-        if (civInfo.isCityState && otherCiv.isMajorCiv())
+        if (civInfo.isCityState && otherCiv.isMajorCiv)
             nextTurnCityStateInfluence()
-        if (civInfo.isMajorCiv())
+        if (civInfo.isMajorCiv)
             saveSmoothedOpinionOfOtherCiv()
     }
 
@@ -92,6 +92,15 @@ object DiplomacyTurnManager {
             val increment = getCityStateInfluenceRecovery()
             setInfluence(min(restingPoint, influence + increment))
         }
+        
+        if (civInfo.cityStateFunctions.getTributeWillingness(otherCiv) > 0
+            && otherCiv.hasUnique(UniqueType.CityStateInfluenceGainWhenAfraid)) {
+            var scaredInfluenceGain = 0.0f
+            otherCiv.forEachMatchingUnique(UniqueType.CityStateInfluenceGainWhenAfraid) {
+                    unique -> scaredInfluenceGain += unique.params[0].toFloat()
+            }
+            addInfluence(scaredInfluenceGain)
+        }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val notificationActions = civInfo.cityStateFunctions.getNotificationActions()
@@ -109,7 +118,7 @@ object DiplomacyTurnManager {
             if (getInfluence() < 30  // We usually don't want to bully our friends
                 && !hasFlag(DiplomacyFlags.NotifiedAfraid)
                 && civInfo.cityStateFunctions.getTributeWillingness(otherCiv) > 0
-                && otherCiv.isMajorCiv()
+                && otherCiv.isMajorCiv
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
@@ -144,7 +153,7 @@ object DiplomacyTurnManager {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv.isCityState &&
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv && otherCiv.isCityState &&
                 civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv.isAtWarWith(it) }) {
                 for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
@@ -341,7 +350,8 @@ object DiplomacyTurnManager {
 
         if (!otherCiv.isCityState) return
 
-        if (isRelationshipLevelLT(RelationshipLevel.Friend)) {
+        // Only a major can be a city-state's patron: friendly city-states must not gift each other units
+        if (!civInfo.isMajorCiv || isRelationshipLevelLT(RelationshipLevel.Friend)) {
             if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
                 removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             return

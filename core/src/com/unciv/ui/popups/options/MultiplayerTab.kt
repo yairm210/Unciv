@@ -11,6 +11,7 @@ import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
@@ -190,7 +191,7 @@ internal class MultiplayerTab(
                     }
 
                     Concurrency.runOnGLThread {
-                        authStatusLabel.setText(newAuthStatusText)
+                        authStatusLabel.setText(newAuthStatusText.tr())
                     }
                 }
             }

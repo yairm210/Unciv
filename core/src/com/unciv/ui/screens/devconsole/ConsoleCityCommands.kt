@@ -13,7 +13,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
 
         "add" to ConsoleAction("city add <civName>") { console, params ->
             val civ = console.getCivByName(params[0])
-            if (!civ.isMajorCiv() && !civ.isCityState)
+            if (!civ.isMajorCiv && !civ.isCityState)
                 throw ConsoleErrorException("Can only add cities to major civs or city states")
             val selectedTile = console.getSelectedTile()
             if (selectedTile.isCityCenter())
@@ -49,7 +49,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
                 throw ConsoleErrorException("Tile is not adjacent to any tile already owned by the city")
             if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot transfer city center")
             val radius = params.getOrNull(1)?.toInt() ?: 0
-            for (tile in selectedTile.getTilesInDistance(radius)) {
+            selectedTile.forEachTileInDistance(radius) { tile ->
                 if (tile.getCity() != city && !tile.isCityCenter())
                     city.expansion.takeOwnership(tile)
             }

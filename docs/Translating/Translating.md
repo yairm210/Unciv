@@ -36,7 +36,7 @@ When you ask to 'edit' a file in yairm210/Unciv, these stages happen _automatica
 
 ## Help! There's a <span style="color:red">red "x"</span> next to my PR!
 
-Unciv automatically runs unit tests on every PR or push adding commits (inless you're new, in which case someone needs to start the workflows).
+Unciv automatically runs unit tests on every PR or push adding commits (unless you're new, in which case someone needs to start the workflows).
 These contain checks for the rules already described here - a failure means either you didn't follow all the rules (see [Pitfalls](#pitfalls)), or problems outside your control.
 
 To see what went wrong, open your PR, look for the "failing check" entry under "Some checks were not successful", and click the "..." menu and "View details" (or look for the red "x" near a commit ID and click that).
@@ -84,6 +84,8 @@ which is created on the fly in the [Private Use Area](https://en.wikipedia.org/w
 
 To activate this feature, set `diacritics_support = true` in your translation. There are a few additional "settings" - translation lines where the "translation" is some control instruction instead.
 All of these are optional, though your language may show glitches unless you define some. For example, Bangla _needs_ a definition for U+09CD, where the Unicode category does not fully define the required behaviour.
+
+These are overrides, omitting them determines processing from Unicode character classes. Note that "left" and "right" mean "this should be processed together with the preceding codepoint in the string", and "this should be processed together with the following codepoint in the string", respectively. You can't derive that order from how a text looks in an editor.
 
 Each of the following definitions represents zero or more characters, and can simply list them as one string.
 For readability, they can also be quoted (" surrounding the entire definition), characters can be separated by spaces, or you can use standard "U+xxxx" representations (these need space separators).

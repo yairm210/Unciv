@@ -40,6 +40,13 @@ open class VerticalFileListScrollPane(
     private var onChangeListener: ((FileHandle) -> Unit)? = null
     private var onDoubleClickListener: ((FileHandle) -> Unit)? = null
 
+    private var allFiles: List<FileHandle> = emptyList()
+    private var nameFilterTerms: List<String> = emptyList()
+    private var beforeRowCallback: ((FileHandle) -> Unit)? = null
+
+    /** Called on the GL thread after (re)loading, with the unfiltered number of files */
+    var onFilesLoaded: ((Int) -> Unit)? = null
+
     init {
         keyShortcuts.add(Input.Keys.UP) { onArrowKey(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { onArrowKey(1) }
@@ -79,22 +86,52 @@ open class VerticalFileListScrollPane(
 
             launchOnGLThread {
                 loadingImage.hide()
-                existingSavesTable.clear()
-                buttonIndex.clear()
-                buttonIndex.ensureCapacity(saves.size)
-                for ((index, saveGameFile) in saves.withIndex()) {
-                    val button = FileHandleButton(saveGameFile, index)
-                    buttonIndex.add(button)
-                    button.onClick {
-                        selectExistingSave(index)
-                    }
-                    button.onDoubleClick {
-                        selectExistingSave(index)
-                        onDoubleClickListener?.invoke(saveGameFile)
-                    }
-                    beforeRowCallback?.invoke(saveGameFile)
-                    existingSavesTable.add(button).pad(5f).row()
-                }
+                allFiles = saves
+                this@VerticalFileListScrollPane.beforeRowCallback = beforeRowCallback
+                populate()
+                onFilesLoaded?.invoke(saves.size)
+            }
+        }
+    }
+
+    /** Only show files whose name contains every space-delimited term in [text] (case-insensitive),
+     *  without reloading from disk */
+    fun setNameFilter(text: String) {
+        val terms = text.split(' ').filter { it.isNotEmpty() }
+        if (terms == nameFilterTerms) return
+        nameFilterTerms = terms
+        populate()
+        // A single match is the obvious choice - select it unless it already is
+        if (terms.isNotEmpty() && buttonIndex.size == 1 && selectedButton == null)
+            selectExistingSave(0)
+    }
+
+    private fun populate() {
+        val previouslySelected = selectedButton?.file
+        existingSavesTable.clear()
+        buttonIndex.clear()
+        selectedIndex = -1
+        selectedButton = null
+
+        val shownFiles = if (nameFilterTerms.isEmpty()) allFiles
+            else allFiles.filter { file -> nameFilterTerms.all { file.name().contains(it, ignoreCase = true) } }
+        buttonIndex.ensureCapacity(shownFiles.size)
+        for ((index, saveGameFile) in shownFiles.withIndex()) {
+            val button = FileHandleButton(saveGameFile, index)
+            buttonIndex.add(button)
+            button.onClick {
+                selectExistingSave(index)
+            }
+            button.onDoubleClick {
+                selectExistingSave(index)
+                onDoubleClickListener?.invoke(saveGameFile)
+            }
+            beforeRowCallback?.invoke(saveGameFile)
+            existingSavesTable.add(button).pad(5f).row()
+            if (saveGameFile == previouslySelected) { // keep the highlight, without re-firing onChange
+                selectedIndex = index
+                selectedButton = button
+                button.color = Color.GREEN
             }
         }
     }

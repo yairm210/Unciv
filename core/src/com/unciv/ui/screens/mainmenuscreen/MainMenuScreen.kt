@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -163,32 +162,28 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         column1.add(quickstartTable).row()
 
         val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame) {
-            InputDisabling.disableInput()
-            game.pushScreen(NewGameScreen()) 
+            game.pushScreen { NewGameScreen() } 
         }
         column1.add(newGameButton).row()
 
         val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad) {
-            InputDisabling.disableInput()
-            game.pushScreen(LoadGameScreen())
+            game.pushScreen { LoadGameScreen() }
         }
         column1.add(loadGameTable).row()
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer) {
-            InputDisabling.disableInput()
-            game.pushScreen(MultiplayerScreen())
+            if (game.supportsOnlineMultiplayer) game.pushScreen { MultiplayerScreen() }
+            else ToastPopup("Online multiplayer is unavailable in the browser preview.", this)
         }
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor) {
-            InputDisabling.disableInput()
-            game.pushScreen(MapEditorScreen())
+            game.pushScreen { MapEditorScreen() }
         }
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager) {
-            InputDisabling.disableInput()
-            game.pushScreen(ModManagementScreen())
+            game.pushScreen { ModManagementScreen() }
         }
         column2.add(modsTable).row()
 
@@ -351,7 +346,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 val gameInfo = GameSetupInfo.fromSettings("Chieftain")
                 if (gameInfo.gameParameters.victoryTypes.isEmpty()) {
                     val ruleSet = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
-                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.selectableVictories().map { it.name })
                 }
                 newGame = GameStarter.startNewGame(gameInfo)
 

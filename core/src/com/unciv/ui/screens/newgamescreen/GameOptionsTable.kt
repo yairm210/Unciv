@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -110,7 +109,8 @@ class GameOptionsTable(
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
-        checkboxTable.addIsOnlineMultiplayerCheckbox()
+        if (UncivGame.Current.supportsOnlineMultiplayer)
+            checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer){
             checkboxTable.addAnyoneCanSpectateCheckbox()
             selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
@@ -122,6 +122,7 @@ class GameOptionsTable(
 
         val expander = ExpanderTab(
             "Advanced Settings",
+            icon = ImageGetter.getImage("OtherIcons/Settings").apply { setSize(20f, 20f) },
             startsOutOpened = gameParameters.enableRandomNationsPool,
             persistenceID = "GameOptionsTable.Advanced"
         ) {
@@ -395,7 +396,7 @@ class GameOptionsTable(
         }
         slider.isDisabled = locked
         val snapValues = floatArrayOf(100f,150f,200f,250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
-        slider.setSnapToValues(threshold = 125f, *snapValues)
+        slider.setSnapToValues(threshold = 125f, *snapValues, editLabel = "{Max Turns}:")
         return slider
     }
 
@@ -474,7 +475,7 @@ class GameOptionsTable(
         defaultHourValue: Int,
         defaultMinuteValue: Int
     ) {
-        add(title.toLabel(hideIcons = true)).right()
+        add(title.toLabel(hideIcons = true)).colspan(3).left().row()
 
         val selector = DurationSelector(gameParameters, param, defaultDayValue, defaultHourValue, defaultMinuteValue)
 
@@ -493,16 +494,19 @@ class GameOptionsTable(
         private val minuteValues: Array<Int> = arrayOf(0,3,5,10,15,20,25,30,35,40,45,50)
         
     ) {
-        val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "d")
-        val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "h")
-        val minuteBox: SelectBox<String> = createTimeCell(minuteValues, defaultMinuteValue, "m")
+        val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "Days")
+        val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "Hours")
+        val minuteBox: SelectBox<String> = createTimeCell(minuteValues, defaultMinuteValue, "Minutes")
         val boxes: List<SelectBox<String>> = listOf(dayBox, hourBox, minuteBox)
 
         init { for (box in boxes) {box.onChange {preventNullTime(); updateGameParameter()}} }
 
         fun preventNullTime() {
-            if (dayBox.selected == "0d" && hourBox.selected == "0h" && minuteBox.selected == "0m") {
-                minuteBox.selected ="3m"
+            if (dayValues[dayBox.selectedIndex] == 0
+                && hourValues[hourBox.selectedIndex] == 0
+                && minuteValues[minuteBox.selectedIndex] == 0
+            ) {
+                minuteBox.selectedIndex = minuteValues.indexOf(3)
             }
         }
             
@@ -514,11 +518,11 @@ class GameOptionsTable(
             param.set(gameParameters, value)
         }
         
-        fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
+        fun createTimeCell(intValues: Array<Int>, initialValue: Int, unit: String): SelectBox<String> {
             val timeBox = SelectBox<String>(BaseScreen.skin)
-            val stringValues =  Array(intValues.size) { i -> "${intValues[i]}" + suffix }
+            val stringValues = Array(intValues.size) { "[${intValues[it]}] $unit".tr() }
             timeBox.setItems(*stringValues)
-            timeBox.selected = "$initialValue" + suffix
+            timeBox.selectedIndex = intValues.indexOf(initialValue)
             return timeBox
         }
     }
@@ -527,7 +531,7 @@ class GameOptionsTable(
 
         // Create a checkbox for each VictoryType existing
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
-        for ((i, victoryType) in ruleset.victories.values.withIndex()) {
+        for ((i, victoryType) in ruleset.selectableVictories().withIndex()) {
             val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType.name)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
                 if (it) {
@@ -569,7 +573,7 @@ class GameOptionsTable(
         // Remove victory types which are not in the new ruleset, then default to all if none remain
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
-            gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+            gameParameters.victoryTypes.addAll(ruleset.selectableVictories().map { it.name })
 
         // Mod choices will change the number of available civs
         val maxMajorCivs = numberOfMajorCivs()
@@ -579,8 +583,10 @@ class GameOptionsTable(
         val maxCityStates = numberOfCityStates()
         if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
         if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
+        if (gameParameters.numberOfCityStates > maxCityStates) gameParameters.numberOfCityStates = maxCityStates
 
         (previousScreen as? NewGameScreen)?.refreshExampleMap()
+        update()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
@@ -593,7 +599,6 @@ class GameOptionsTable(
         val activeMods = gameParameters.getModsAndBaseRuleset()
         UncivGame.Current.translations.translationActiveMods = activeMods
         reloadRuleset()
-        update()
 
         var desiredCiv = ""
         val rng = GameContext(gameInfo = UncivGame.Current.gameInfo).stateBasedRandom("GameOptionsTable.onChooseMod", mod.hashCode())

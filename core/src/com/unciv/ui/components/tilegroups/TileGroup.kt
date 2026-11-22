@@ -7,7 +7,6 @@ import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
-import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -21,7 +20,9 @@ open class TileGroup(
     var tileView: TileView = tileView
         private set
 
-    val tile: Tile get() = tileView.getTile()
+    /** Explored neighbors of [tileView]. Computed once per [update] and shared by all layers, which read it only from within their own update */
+    var neighbors: List<TileView> = tileView.getNeighbors().toList()
+        private set
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -42,7 +43,6 @@ open class TileGroup(
     val hexagonImageOriginY = sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2))
     val hexagonImagePosition = Pair(-hexagonImageOriginX / 3f, -hexagonImageOriginY / 4f)
 
-    var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
@@ -79,7 +79,7 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    fun isViewable(viewingCiv: CivView) = isForceVisible
+    fun isViewable(viewingCiv: CivView) = tileView.isForceVisible()
             || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
 
@@ -102,12 +102,15 @@ open class TileGroup(
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
             if (tileView.getCivView() != null)
-                tileView = TileMapView(tile.tileMap, null).getTile(tile)
+                throw Exception("Shouldn't be able to get from civ-view to null-view -" +
+                        " civ-view is for games, null-view is for map editor and single-tile visualization!")
         } else {
             val newTileMapView = viewingCiv.gameView.tileMapView
-            if (tileView.tileMapView !== newTileMapView)
-                tileView = newTileMapView.getTile(tile)
+            if (tileView.tileMapView !== newTileMapView) 
+                // We switched viewers - e.g. spectator changing who it's spectating as
+                tileView = viewingCiv.gameView.getTile(tileView)
         }
+        neighbors = tileView.getNeighbors().toList()
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
@@ -115,8 +118,10 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
-            if (tileView.getVisibleNeighbors().none()) {
+        if (viewingCiv != null && !(tileView.isForceVisible() || viewingCiv.hasExplored(tileView))) {
+            // Layers are about to be hidden/reset, so their cached update keys no longer describe their state
+            for (layer in allLayers) layer.invalidate()
+            if (neighbors.isEmpty()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {

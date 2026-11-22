@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
+import com.unciv.logic.map.mapunit.actions.UnitActionModifiers
 import yairm210.purity.annotations.Readonly
 import java.lang.Integer.min
 import kotlin.math.roundToInt
@@ -116,7 +116,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun faithForPantheon(additionalCivs: Int = 0): Int {
         val gameInfo = civInfo.gameInfo
-        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
+        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv && it.religionManager.religion != null }
         val cost = gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth
         return (cost * gameInfo.speed.faithCostModifier).roundToInt()
     }
@@ -127,7 +127,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun canFoundOrExpandPantheon(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState > ReligionState.Pantheon) return false
-        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.isMajorCiv) return false
         if (numberOfBeliefsAvailable(BeliefType.Pantheon) == 0)
             return false // no more available pantheons
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion }
@@ -144,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             // paid for the initial pantheon using faith
             storedFaith -= faithForPantheon()
         }
-        religion = Religion(beliefName, civInfo.gameInfo, civInfo)
+        religion = Religion(beliefName, civInfo.gameInfo, civInfo, civInfo.gameInfo.turns)
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
@@ -173,8 +173,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
             civInfo.gameInfo.speed.faithCostModifier
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
+        civInfo.forEachMatchingUnique(UniqueType.FaithCostOfGreatProphetChange) { unique ->
             faithCost *= unique.params[0].toPercent()
+        }
 
         return faithCost.toInt()
     }
@@ -185,7 +186,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
         if (!ignoreFaithAmount && storedFaith < faithForNextGreatProphet()) return false
-        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.isMajorCiv) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
         if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded
         return true
@@ -225,7 +226,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val ruleset = gameInfo.ruleset
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
+        val civCount = gameInfo.civilizations.count { it.isMajorCiv }
         return min(ruleset.religions.size, base + (civCount * multiplier).toInt())
     }
 
@@ -258,10 +259,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
+        val civCount = gameInfo.civilizations.count { it.isMajorCiv }
         val hideCivCount = civInfo.shouldHideCivCount()
         if (hideCivCount) {
-            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
+            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv }
             val estimatedCivCount = (
                     gameInfo.gameParameters.minNumberOfPlayers.coerceAtLeast(knownCivs) +
                             gameInfo.gameParameters.maxNumberOfPlayers - 1
@@ -297,7 +298,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
-        if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
+        if (!civInfo.isMajorCiv) return false // Only major civs may use religion
 
         if (remainingFoundableReligions() == 0)
             return false // Too bad, too many religions have already been founded
@@ -326,7 +327,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
-        if (!civInfo.isMajorCiv()) return false // Only major civs
+        if (!civInfo.isMajorCiv) return false // Only major civs
 
         if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
             return false // Mod maker did not provide enough follower beliefs
@@ -401,14 +402,15 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
         chooseBeliefToAdd(BeliefType.Follower, 1)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraBeliefs)) {
-            if (unique.params[2] != action) continue
-            val type = BeliefType.valueOf(unique.params[1])
-            chooseBeliefToAdd(type, unique.params[0].toInt())
+        civInfo.forEachMatchingUnique(UniqueType.FreeExtraBeliefs) { unique ->
+            if (unique.params[2] == action) {
+                val type = BeliefType.valueOf(unique.params[1])
+                chooseBeliefToAdd(type, unique.params[0].toInt())
+            }
         }
-        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraAnyBeliefs)) {
-            if (unique.params[1] != action) continue
-            chooseBeliefToAdd(BeliefType.Any, unique.params[0].toInt())
+        civInfo.forEachMatchingUnique(UniqueType.FreeExtraAnyBeliefs) { unique ->
+            if (unique.params[1] == action)
+                chooseBeliefToAdd(BeliefType.Any, unique.params[0].toInt())
         }
 
         for (type in freeBeliefsAsEnums())
@@ -433,27 +435,31 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         when (religionState) {
             ReligionState.None -> {
                 religionState = ReligionState.Pantheon
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
+                civInfo.forEachTriggeredUnique(UniqueType.TriggerUponFoundingPantheon, ignoreCities = false) { unique ->
                     UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                }
             }
             ReligionState.FoundingReligion -> {
                 religionState = ReligionState.Religion
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
+                civInfo.forEachTriggeredUnique(UniqueType.TriggerUponFoundingReligion, ignoreCities = false) { unique ->
                     UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                }
             }
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
+                civInfo.forEachTriggeredUnique(UniqueType.TriggerUponEnhancingReligion, ignoreCities = false) { unique ->
                     UniqueTriggerActivation.triggerUnique(unique, civInfo)
+                }
             }
             else -> {}
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponAdoptingPolicyOrBelief, ignoreCities = false) { unique ->
             for (belief in beliefs)
                 if (unique.getModifiers(UniqueType.TriggerUponAdoptingPolicyOrBelief).any { it.params[0] == belief.name})
                     UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
+        }
 
         for (belief in beliefs) {
             for (unique in belief.uniqueObjects) {
@@ -467,7 +473,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
 
     internal fun foundReligion(displayName: String, name: String) {
-        val newReligion = Religion(name, civInfo.gameInfo, civInfo)
+        val foundingTurn = religion?.foundingTurn // use the turn when we founded our pantheon
+            ?: civInfo.gameInfo.turns
+        val newReligion = Religion(name, civInfo.gameInfo, civInfo, foundingTurn)
         newReligion.displayName = displayName
         if (religion != null) {
             newReligion.addBeliefs(religion!!.getAllBeliefsOrdered().asIterable())
@@ -504,7 +512,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
-        if (!civInfo.isMajorCiv()) return false // Only major civs
+        if (!civInfo.isMajorCiv) return false // Only major civs
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
 
         val religion = missionary.civ.gameInfo.religions[missionary.religion] ?: return false

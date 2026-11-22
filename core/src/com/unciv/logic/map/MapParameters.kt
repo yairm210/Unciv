@@ -93,7 +93,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
 
     var seed: Long = System.currentTimeMillis()
     var tilesPerBiomeArea = 6
-    var maxCoastExtension = 2
+    var maxCoastExtension = 3
     var elevationExponent = 0.7f
     var temperatureintensity = 0.6f
     var vegetationRichness = 0.4f
@@ -140,7 +140,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     fun resetAdvancedSettings() {
         reseed()
         tilesPerBiomeArea = 6
-        maxCoastExtension = 2
+        maxCoastExtension = 3
         elevationExponent = 0.7f
         temperatureintensity = 0.6f
         temperatureShift = 0.0f

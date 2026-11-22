@@ -309,7 +309,7 @@ internal class ModCheckTab(
     }
 
     private fun openUniqueBuilder(combinedRuleset: Ruleset) {
-        UncivGame.Current.pushScreen(UniqueBuilderScreen(combinedRuleset))
+        UncivGame.Current.pushScreen { UniqueBuilderScreen(combinedRuleset) }
     }
 
     private fun autoUpdateUniques(screen: BaseScreen, mod: Ruleset, replaceableUniques: HashMap<String, String>) {

@@ -20,6 +20,11 @@ import com.unciv.models.translations.getPlaceholderText
 internal class ConsoleTriggerAction(
     topLevelCommand: String
 ) : ConsoleAction(getFormat(topLevelCommand), getAction(topLevelCommand)) {
+    override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
+        console.showUniqueBuilderButton()
+        return super.autocomplete(console, params)
+    }
+
     companion object {
         private fun getFormat(topLevelCommand: String): String {
             val capitalized = topLevelCommand.replaceFirstChar { c -> c.uppercase() }
@@ -73,7 +78,7 @@ internal class ConsoleTriggerAction(
             var uniqueText = paramStack.removeFirstOrNull()?.toMethod(CliInput.Method.Quoted)
                 ?: throw ConsoleErrorException("Parameter triggeredUnique missing")
             val uniqueType = getUniqueType(uniqueText, targetType)
-            if (paramStack.isNotEmpty() && uniqueText.equals(uniqueType.text)) {
+            if (paramStack.isNotEmpty() && !uniqueText.equals(uniqueType.text)) {
                 // Simplification: You either specify a fully formatted Unique as one parameter or the default text and a full set of replacements
                 val params = paramStack.map { it.originalUnquoted() }.toTypedArray()
                 uniqueText = CliInput(uniqueType.placeholderText.fillPlaceholders(*params), CliInput.Method.Quoted)
@@ -82,7 +87,7 @@ internal class ConsoleTriggerAction(
 
             // Validate the found Unique
             val validator = UniqueValidator(console.gameInfo.ruleset)
-            val errors = validator.checkUnique(unique, false, ConsoleRulesetObject(targetType))
+            val errors = validator.checkUnique(unique, ConsoleRulesetObject(targetType))
             if (!errors.isNotOK()) return unique to errors.getErrorText(true)
 
             // Errors - is deprecation the only problem?
@@ -90,7 +95,7 @@ internal class ConsoleTriggerAction(
                 it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly && "deprecated" in it.text
             }
             if (!onlyDeprecated)
-                throw ConsoleErrorException(errors.getErrorText(true))
+                throw ConsoleUniqueErrorException(errors.getErrorText(true))
 
             // Yes: Replace console text field with the deprecation annotation's recommendation
             var replaceWith = unique.type?.getDeprecationAnnotation()?.replaceWith?.expression
@@ -111,13 +116,13 @@ internal class ConsoleTriggerAction(
                 .filter { CliInput(it.placeholderText, param.method) == filterText }
                 .take(4).toList()
             if (uniqueTypes.isEmpty())
-                throw ConsoleErrorException("`$param` not found in UniqueTypes")
+                throw ConsoleUniqueErrorException("`$param` not found in UniqueTypes")
             if (uniqueTypes.size > 1)
-                throw ConsoleErrorException("`$param` has ambiguous UniqueType: ${uniqueTypes.joinToString(limit = 3) { it.text }}?")
+                throw ConsoleUniqueErrorException("`$param` has ambiguous UniqueType: ${uniqueTypes.joinToString(limit = 3) { it.text }}?")
             val uniqueType = uniqueTypes.first()
             if (uniqueType.canAcceptUniqueTarget(targetType))
                 return uniqueType
-            throw ConsoleErrorException("`$param` is not a Triggerable")
+            throw ConsoleUniqueErrorException("`$param` is not a Triggerable")
         }
 
         private class ConsoleRulesetObject(private val targetType: UniqueTarget) : RulesetObject() {

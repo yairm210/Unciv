@@ -3,9 +3,10 @@ package com.unciv.ui.screens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.unciv.ui.images.ImageWithCustomSize
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.popups.LoadingPopup
@@ -19,7 +20,7 @@ class LoadingScreen(
 
     init {
         screenshot = takeScreenshot(previousScreen)
-        val image = ImageWithCustomSize(
+        val image = object : Image(
             TextureRegion(
                 screenshot,
                 0,
@@ -27,7 +28,18 @@ class LoadingScreen(
                 screenshot.width,
                 -screenshot.height
             )
-        )
+        ) {
+            override fun draw(batch: Batch, parentAlpha: Float) {
+                // The screenshot RGB is already composited. Do not blend its alpha again.
+                val wasBlendingEnabled = batch.isBlendingEnabled
+                batch.disableBlending()
+                try {
+                    super.draw(batch, parentAlpha)
+                } finally {
+                    if (wasBlendingEnabled) batch.enableBlending()
+                }
+            }
+        }
         image.width = stage.width
         image.height = stage.height
         stage.addActor(image)
@@ -45,8 +57,11 @@ class LoadingScreen(
             previousScreen.render(Gdx.graphics.deltaTime)
         }
         val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight)
-        val screenshot = Texture(pixmap)
-        pixmap.dispose()
+        val screenshot = try {
+            Texture(pixmap)
+        } finally {
+            pixmap.dispose()
+        }
 
         if (previousScreen != null) {
             for (popup in previousScreen.popups) popup.isVisible = true

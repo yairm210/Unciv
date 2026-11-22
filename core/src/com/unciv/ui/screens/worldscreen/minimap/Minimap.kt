@@ -16,13 +16,12 @@ import com.unciv.ui.components.input.UncivActorGestureListener
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class TileLayerGroup: NonTransformGroup(){
+class TileLayerGroup: NonTransformGroup() {
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
@@ -30,14 +29,16 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     private val tileLayer = TileLayerGroup()
     private val borderLayer = NonTransformGroup()
     private val cityLayer = NonTransformGroup()
-            
+
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
-    private var lastViewingCiv: Civilization? = null
 
     private var tileSize = 0f
     private var tileMapWidth = 0f
     private var tileMapHeight = 0f
+
+    // Don't use AI exploredRegion in case some glitch passes us an AI civInfo
+    private val exploredRegion = civInfo?.takeIf { it.isHuman() }?.exploredRegion
 
     init {
         // Set fixed minimap size
@@ -64,11 +65,10 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             group.moveBy(padX, padY)
         }
 
-
         addActor(tileLayer)
         addActor(borderLayer)
         addActor(cityLayer)
-        
+
         val scrollIndicatorLayer = Group().apply { touchable = Touchable.disabled } // Do not block!
         scrollIndicatorLayer.setSize(width, height)
         scrollPositionIndicators = createScrollPositionIndicators()
@@ -77,6 +77,12 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
         addClickListener()
+
+        // This would belong in MinimapHolder.rebuild, not here, but we assume single consumer.
+        // To make this academically clean, one want need to allow parallel MiniMap instances,
+        // which could use a version counter instead of a flag to decouple them.
+        // Only then the call would really need to move there.
+        exploredRegion?.markMinimapUpdated()
     }
 
     @Readonly
@@ -85,9 +91,9 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         val width: Float
         val mapParameters = mapHolder.tileMap.mapParameters
 
-        if (civInfo != null) {
-            height = civInfo.exploredRegion.getHeight().toFloat()
-            width = civInfo.exploredRegion.getWidth().toFloat()
+        if (exploredRegion?.isEmpty() == false) {
+            height = exploredRegion.getHeight().toFloat()
+            width = exploredRegion.getWidth().toFloat()
         } else {
             if (mapParameters.shape != MapShape.rectangular) {
                 val diameter = mapParameters.mapSize.radius * 2f + 1f
@@ -142,7 +148,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         }
         return max
     }
-    
+
     private fun calcMinimapSize(minimapSize: Int): Vector2 {
         val minimapTileSize = calcMinTileSize(minimapSize)
         var height: Float
@@ -180,13 +186,13 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     }
 
     private fun createMinimapTiles(tileSize: Float): List<MinimapTile> {
-        val tiles = ArrayList<MinimapTile>()
+        val tiles = ArrayList<MinimapTile>(mapHolder.tileMap.tileList.size / 5) // at most 4 resizes
         val pad = if (mapHolder.tileMap.mapParameters.shape != MapShape.rectangular)
             mapHolder.tileMap.mapParameters.mapSize.radius * tileSize * 1.5f
         else
             (mapHolder.tileMap.mapParameters.mapSize.width - 1f) * tileSize * 0.75f
         val leftSide =
-                if (civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else -Float.MAX_VALUE
+            exploredRegion?.getMinimapLeft(tileSize) ?: -Float.MAX_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
             if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
             val minimapTile = MinimapTile(tileInfo, tileSize)
@@ -220,9 +226,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         worldHeight: Float,
         worldViewport: Rectangle
     ) {
-        @Pure
-        operator fun Rectangle.times(other: Vector2) =
-                Rectangle(x * other.x, y * other.y, width * other.x, height * other.y)
+        fun Rectangle.mul(other: Vector2) =
+            set(x * other.x, y * other.y, width * other.x, height * other.y)
 
         fun Actor.setViewport(rect: Rectangle) {
             x = rect.x
@@ -232,15 +237,15 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         }
 
         val worldToMiniFactor: Vector2
-        var miniViewport = worldViewport
+        val miniViewport = Rectangle(worldViewport) // it gets mutated
 
-        if (civInfo != null) {
-            if (civInfo.exploredRegion.shouldRecalculateCoords()) civInfo.exploredRegion.calculateStageCoords(
+        if (exploredRegion != null) {
+            if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(
                 worldWidth,
                 worldHeight
             )
 
-            val exploredRectangle = civInfo.exploredRegion.getRectangle()
+            val exploredRectangle = exploredRegion.getRectangle()
             worldToMiniFactor = Vector2(
                 tileMapWidth / exploredRectangle.width,
                 tileMapHeight / exploredRectangle.height
@@ -251,7 +256,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
             worldToMiniFactor =
                     Vector2(tileLayer.width / worldWidth, tileLayer.height / worldHeight)
 
-        miniViewport *= worldToMiniFactor
+        miniViewport.mul(worldToMiniFactor)
         miniViewport.x += (tileLayer.width - tileMapWidth) * 0.5f
         miniViewport.y += (tileLayer.height - tileMapHeight) * 0.5f
         // This _could_ place parts of the 'camera' icon outside the minimap if it were a standard Image, thus the ClippingImage helper class
@@ -275,7 +280,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
                 minimapTile.owningCiv = tileInfo.getOwner()
             }
 
-            val shouldBeUnrevealed = !viewingCiv.hasExplored(tileInfo) && !viewingCiv.isSpectator()
+            val shouldBeUnrevealed = !viewingCiv.hasExplored(tileInfo) && !viewingCiv.isSpectator
             val revealStatusChanged = minimapTile.isUnrevealed != shouldBeUnrevealed
             if (revealStatusChanged || ownerChanged) {
                 minimapTile.updateColor(shouldBeUnrevealed)
@@ -290,8 +295,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
             minimapTile.updateBorders().updateActorsIn(borderLayer)
         }
-        
-        lastViewingCiv = viewingCiv
     }
 
 

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.components.extensions.getCloseButton
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -70,6 +71,8 @@ class EmpireOverviewScreen(
 
         tabbedPager.setFillParent(true)
         stage.addActor(tabbedPager)
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
    }
 
     override fun recreate(): BaseScreen {

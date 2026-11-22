@@ -7,6 +7,9 @@ import com.unciv.utils.debug
 import io.ktor.http.*
 import java.io.BufferedReader
 import java.io.DataOutputStream
+import java.io.FilterInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.DatagramSocket
 import java.net.HttpURLConnection
@@ -22,6 +25,35 @@ object SimpleHttp {
     }
 
     fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, header: Map<String, String>? = null, action: SendRequestCallback) {
+        val response = try {
+            openStream(method, url, content, timeout, header)
+        } catch (ex: HttpStatusException) {
+            debug("Returning error message [%s]", ex.message)
+            action(false, ex.message, ex.code)
+            return
+        }
+
+        val text = try {
+            response.body.use { BufferedReader(InputStreamReader(it, Charsets.UTF_8)).readText() }
+        } catch (ex: IOException) {
+            debug("Error while reading HTTP response", ex)
+            action(false, ex.message ?: "Unknown error", response.code)
+            return
+        }
+        action(true, text, response.code)
+    }
+
+    /** A successful response: [body] must be closed by the caller, which also disconnects. */
+    class HttpResponse(val code: Int, val body: InputStream)
+
+    /** Thrown by [openStream] on a bad URL or error response. [code] is null if there was no HTTP status. */
+    class HttpStatusException(val code: Int?, override val message: String) : Exception(message)
+
+    /**
+     * Sends the request and returns as soon as the response headers arrive, so the body can be processed as it arrives.
+     * @throws HttpStatusException on a bad URL or error response (with the error body, if any, as message)
+     */
+    fun openStream(method: String, url: String, content: String, timeout: Int = 5000, header: Map<String, String>? = null): HttpResponse {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
@@ -30,8 +62,7 @@ object SimpleHttp {
             urlObj = uri.toURL()
         } catch (t: Throwable) {
             Log.debug("Bad URL", t)
-            action(false, "Bad URL", null)
-            return
+            throw HttpStatusException(null, "Bad URL")
         }
 
         with(urlObj.openConnection() as HttpURLConnection) {
@@ -54,15 +85,19 @@ object SimpleHttp {
                     outputStream.flush()
                 }
 
-                val text = BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8)).readText()
-                action(true, text, responseCode)
+                val body = object : FilterInputStream(inputStream) {
+                    override fun close() {
+                        try { super.close() } finally { disconnect() }
+                    }
+                }
+                return HttpResponse(responseCode, body)
             } catch (t: Throwable) {
                 debug("Error during HTTP request", t)
-                val errorMessageToReturn =
-                    if (errorStream != null) BufferedReader(InputStreamReader(errorStream, Charsets.UTF_8)).readText()
-                    else t.message!!
-                debug("Returning error message [%s]", errorMessageToReturn)
-                action(false, errorMessageToReturn, responseCode)
+                val errorMessage = errorStream?.use { BufferedReader(InputStreamReader(it, Charsets.UTF_8)).readText() }
+                    ?: t.message ?: "Unknown error"
+                val code = try { responseCode } catch (_: IOException) { null }
+                disconnect()
+                throw HttpStatusException(code, errorMessage)
             }
         }
     }

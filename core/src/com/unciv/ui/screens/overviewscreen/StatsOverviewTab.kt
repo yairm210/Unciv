@@ -218,7 +218,7 @@ class StatsOverviewTab(
         for ((unit, points) in greatGeneralPoints) {
             val pointsToGreatGeneral = pointsForNextGreatGeneral[unit]
             add(unit.toLabel()).left()
-            add("$points/$pointsToGreatGeneral".toLabel())
+            add("$points/$pointsToGreatGeneral".toLabel()).row()
         }
 
         pack()

@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,6 +48,19 @@ class CityCivFilterTests {
         )
     }
     
+    /** #15946: no religion on either side must not count as "following our religion" */
+    @Test
+    fun testFollowingOurReligionNeedsAReligion() {
+        val conditional = Unique("[+1 Culture] <in cities following our religion>")
+        Assert.assertFalse(city.matchesFilter("in cities following our religion", civ))
+        Assert.assertFalse(conditional.conditionalsApply(city.state))
+
+        val religion = game.addReligion(civ)
+        city.religion.addPressure(religion.name, 1000)
+        Assert.assertTrue(city.matchesFilter("in cities following our religion", civ))
+        Assert.assertTrue(conditional.conditionalsApply(city.state))
+    }
+
     @Test
     fun testBuildingFilters() {
         val testCultureBuilding = game.createBuilding("[+1 Culture]")

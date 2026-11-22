@@ -75,6 +75,34 @@ object MultiplayerHelpers {
                 .firstOrNull{ it.playerId == UncivGame.Current.settings.multiplayer.getUserId() }?.civName ?: "Unknown"
 
             descriptionText.appendLine("{$playerCivName}, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}".tr())
+
+            /** Use average turn time data to estimate time until our turn */
+            fun estimateTimeUntilOurTurn(): String? {
+                // ignore AIs, spectators, and defeated players
+                val players = preview.civilizations.filter { it.isAlive == true && it.isPlayerCivilization() && it.civID != Constants.spectator }
+                val playerCivIDs = players.map { it.civID }
+                val fromIndex = playerCivIDs.indexOf(preview.currentPlayer)
+                val untilIndex = playerCivIDs.indexOf(playerCivName)
+                if (players.size < 4 // no estimate for small games
+                    || playerCivName == preview.currentPlayer // no estimate if it's our turn
+                    || fromIndex == -1 // just in case - should not happen 
+                    || untilIndex == -1 // ensure we are alive
+                ) return null
+                // how many players left until our turn
+                val numRemainingPlayers = Math.floorMod(untilIndex - fromIndex, players.size)
+                if (players.any { it.turnsPlayedAsHuman < 5 }) // don't show time estimate if insufficient data
+                    return "There are [$numRemainingPlayers] players until our turn"
+                // list player civs between current player and ourselves, wrapping around if needed
+                val remainingPlayers = (players.drop(fromIndex) + players.take(untilIndex)).take(numRemainingPlayers)
+                val estimatedSecondsRemaining = remainingPlayers.sumOf { it.totalTurnTimeSeconds / it.turnsPlayedAsHuman }
+                val timeRemaining = Duration.ofSeconds(estimatedSecondsRemaining.toLong())
+                return "There are [$numRemainingPlayers] players and an estimated [${timeRemaining.formatShort()}] until our turn"
+            }
+
+            val timeUntilOurTurnText = estimateTimeUntilOurTurn()
+            if (timeUntilOurTurnText != null)
+                descriptionText.appendLine(timeUntilOurTurnText.tr())
+
             descriptionText.appendLine("{Base ruleset:} ${preview.gameParameters.baseRuleset}".tr())
             if (preview.gameParameters.mods.isNotEmpty())
                 descriptionText.appendLine(("{Mods:} " + preview.gameParameters.mods.joinToString()).tr())

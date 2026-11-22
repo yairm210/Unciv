@@ -128,7 +128,7 @@ internal object QuestTargetHelpers {
     fun Civilization.getCivilizationToFindForQuest(challenger: Civilization): Civilization? {
         @Suppress("DEPRECATION")
         val civilizationsToFind = challenger.getKnownCivs()
-            .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+            .filter { it.isAlive() && it.isMajorCiv && !challenger.hasMetCivTerritory(it) }
             .toList()
 
         return civilizationsToFind.randomOrNull(getRandom(challenger))

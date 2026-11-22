@@ -20,7 +20,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.espionage.EspionageScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
@@ -62,7 +62,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         fogOfWarButton.label.setFontSize(30)
         fogOfWarButton.labelCell.pad(10f)
         fogOfWarButton.pack()
-        fogOfWarButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
+        fogOfWarButtonHolder.onActivation(UncivSound.Paper) {
             worldScreen.fogOfWar = !worldScreen.fogOfWar
             worldScreen.shouldUpdate = true
         }
@@ -71,7 +71,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
-            game.pushScreen(TechPickerScreen(viewingCiv.getCiv()))
+            game.pushScreen { TechPickerScreen(viewingCiv.getCiv()) }
         }
 
         undoButton.add(ImageGetter.getImage("OtherIcons/Undo")).size(30f).pad(15f)
@@ -81,12 +81,12 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         policyScreenButton.add(ImageGetter.getImage("OtherIcons/Policies")).size(30f).pad(15f)
         policyButtonHolder.onActivation(binding = KeyboardBinding.SocialPolicies) {
-            game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
+            game.pushScreen { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
         }
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
         diplomacyButtonHolder.onActivation(binding = KeyboardBinding.Diplomacy) {
-            game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.civView))
+            game.pushScreen { DiplomacyScreen(worldScreen.selectedGameView.civView) }
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {
@@ -97,7 +97,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
                 if (worldScreen.bottomUnitTable.selectedSpy != null) {
                     worldScreen.bottomUnitTable.selectSpy(null)
                 }
-                game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+                game.pushScreen { EspionageScreen(worldScreen.selectedCiv, worldScreen) }
             }
         }
     }
@@ -173,7 +173,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateDiplomacyButton(): Boolean {
         return if (viewingCiv.isDefeated() || viewingCiv.isSpectator()
-                || !viewingCiv.hasMetAnyMajorCiv()
+                || viewingCiv.getKnownCivs().none { it != viewingCiv && !it.isBarbarian() }
         ) {
             diplomacyButtonHolder.touchable = Touchable.disabled
             diplomacyButtonHolder.actor = null

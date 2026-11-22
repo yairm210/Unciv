@@ -91,7 +91,7 @@ class CityConquestFunctions(val city: City) {
                 city.cityConstructions.removeBuilding(building)
 
             // Check if we exceed MaxNumberBuildable for any buildings
-            for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+            building.forEachMatchingUnique(UniqueType.MaxNumberBuildable, GameContext.EmptyState) { unique ->
                 if (city.civ.cities
                         .count {
                             it.cityConstructions.containsBuildingOrEquivalent(building.name)
@@ -142,7 +142,7 @@ class CityConquestFunctions(val city: City) {
             city.removeFlag(CityFlags.Resistance)
         }
 
-        for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv))) {
+        conqueredCiv.forEachTriggeredUnique(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv), ignoreCities = false) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
     }
@@ -190,7 +190,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
-        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
             if (thirdPartyCiv.isAtWarWith(oldCiv)) // Shared Enemies should like us more
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
@@ -250,7 +250,7 @@ class CityConquestFunctions(val city: City) {
             100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
-        if (foundingCiv.isMajorCiv()) {
+        if (foundingCiv.isMajorCiv) {
             if (foundingCiv.isDefeated()) { // resurrected civ
                 for (diploManager in foundingCiv.diplomacy.values) {
                     if (diploManager.diplomaticStatus == DiplomaticStatus.War)
@@ -277,7 +277,7 @@ class CityConquestFunctions(val city: City) {
             // Liberating a city state gives a large amount of influence, and peace
             // as per discussion in #15226 
             val maxOtherInfluence = foundingCiv.diplomacy.values
-                .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv() && it.otherCiv.isAlive() }
+                .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv && it.otherCiv.isAlive() }
                 .fold(MINOR_FRIENDSHIP_AT_WAR) { a, b -> a.coerceAtLeast(b.getInfluence()) }
             val diplomacy = foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
             val liberatorOldInfluence = diplomacy.getInfluence()
@@ -285,8 +285,15 @@ class CityConquestFunctions(val city: City) {
                 .plus(MINOR_LIBERATION_FRIENDSHIP)
                 .coerceAtLeast(60f)  // TODO that should be a const val, hardcoded in several places
             diplomacy.setInfluence(liberatorNewInfluence)
-            if (foundingCiv.isAtWarWith(conqueringCiv)) {
-                val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
+            // Peace with anyone else the city state is stuck at war with
+            // Note that currently, a liberated city state does NOT automatically declare war against other civs 
+            //   the liberator may be at war with - if it just returned to life it's weird to have it immediately 
+            //   be at war, IMO, even if it will autojoin any wars declared from here on as per regular ally rules
+            val civsToMakePeaceWith = foundingCiv.diplomacy.values
+                .filter { it.diplomaticStatus == DiplomaticStatus.War && it.otherCiv.isAlive() }
+                .map { it.otherCiv }
+            for (civ in civsToMakePeaceWith) {
+                val tradeLogic = TradeLogic(foundingCiv, civ)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = conqueringCiv.gameInfo.speed))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = conqueringCiv.gameInfo.speed))
                 tradeLogic.acceptTrade(false)
@@ -294,7 +301,7 @@ class CityConquestFunctions(val city: City) {
         }
 
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
-        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv && it != conqueredCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at it! =D
         }
@@ -369,6 +376,7 @@ class CityConquestFunctions(val city: City) {
         }
 
         city.resetDisabledConstructions()
+        city.resetSpecialistsControl()
 
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()

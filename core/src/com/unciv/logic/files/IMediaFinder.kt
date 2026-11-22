@@ -15,7 +15,6 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.isRunFromJar
-import kotlin.reflect.full.declaredMemberProperties
 
 /**
  *  Encapsulate how media files are found and enumerated.
@@ -154,9 +153,7 @@ interface IMediaFinder {
         override fun getInternalMediaNames(folder: FileHandle) = uncivSoundNames.asSequence() + unitAttackSounds
 
         protected companion object {
-            // Warning: reflection monster to enumerate a non-enum.
-            fun uncivSoundNames() = UncivSound.Companion::class.declaredMemberProperties.asSequence()
-                .map { (it.get(UncivSound.Companion) as UncivSound).fileName }
+            fun uncivSoundNames() = UncivSound.builtInSounds.asSequence().map { it.fileName }
 
             // Extract Unit attack sounds from the larger vanilla ruleset
             // Remember this replaces enumeration over *bundled* assets - not necessary for mods

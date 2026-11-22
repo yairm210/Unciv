@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
+import com.unciv.view.isCivilian
+import com.unciv.view.isPreparingAirSweep
+import com.unciv.view.isPreparingParadrop
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
@@ -68,7 +71,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 if (!worldScreen.canChangeState) return@onClick
                 UnitRenamePopup(
                     screen = worldScreen,
-                    unit = unit.getUnit(),
+                    unit = unit,
                     actionOnClose = {
                         unitNameLabel.setText(buildNameLabelText(unit))
                         shouldUpdate = true
@@ -101,11 +104,11 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 descriptionTable.add("XP".toLabel().apply {
                     onClick {
                         if (selectedUnit == null) return@onClick
-                        worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
+                        worldScreen.game.pushScreen { PromotionPickerScreen(unit) }
                     }
                 })
                 descriptionTable.add(
-                    unit.getPromotions().XP.tr() + "/" + unit.getPromotions().xpForNextPromotion().tr()
+                    unit.xp.tr() + "/" + unit.xpForNextPromotion().tr()
                 )
             }
 
@@ -114,7 +117,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 descriptionTable.add((baseUnit.religiousStrength - unit.religiousStrengthLost).tr())
             }
 
-            if (unit.getPromotions().promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
+            if (unit.getPromotionNames().size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 shouldUpdate = true
         } else with(unitTable) { // multiple selected units
             nameLabelText = ""
@@ -127,9 +130,9 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         // single selected unit
         if (selectedUnits.size == 1) with(unitTable) {
 
-            unitIconHolder.add(UnitIconGroup(unit.getUnit(), 30f)).pad(5f)
+            unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
 
-            for (promotion in unit.getPromotions().getPromotions(true))
+            for (promotion in unit.getPromotions())
                 if (!promotion.hasUnique(UniqueType.NotShownOnWorldScreen))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
                         .padBottom(2f)
@@ -148,7 +151,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             // Since Clear also clears the listeners, we need to re-add them every time
             promotionsTable.onClick {
                 if (selectedUnit == null || promotionsTable.children.isEmpty) return@onClick
-                worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
+                worldScreen.game.pushScreen { PromotionPickerScreen(unit) }
             }
 
             unitIconHolder.onClick {
@@ -156,14 +159,14 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             }
         } else { // multiple selected units
             for (selectedUnitView in selectedUnits)
-                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView.getUnit(), 30f)).pad(5f)
+                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView, 30f)).pad(5f)
         }
     }
 
     @Readonly
     private fun buildNameLabelText(unit: MapUnitView) : String {
         var nameLabelText = unit.displayName().tr(true)
-        if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
+        if (unit.unitHealth < 100) nameLabelText += " (${unit.unitHealth.tr()})"
         return nameLabelText
     }
 

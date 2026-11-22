@@ -1,28 +1,44 @@
 package com.unciv.view
 
 import com.unciv.logic.city.City
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.pathingmap.PathingMap
+import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileInterface
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.DebugUtils
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
 class TileView internal constructor(private val tile: Tile, val tileMapView: TileMapView,
                viewer: Civilization?,
-               spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode) {
+               spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode), TileInterface<TileView> {
 
     // Navigation
-    @Readonly fun getTile(): Tile = tile
     @Readonly fun getCivView(): CivView? = tileMapView.gameView?.civView
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
+        return toForeignCityView(city)
+    }
+    /** The city whose center is this tile, if any */
+    @Readonly fun getCity(): ForeignCityView? {
+        val city = tile.getCity() ?: return null
         return toForeignCityView(city)
     }
     @Readonly fun getWorkingCity(): ForeignCityView? {
@@ -37,11 +53,12 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun getOwner(): ForeignCivView? {
         val owner = tile.getOwner() ?: return null
         if (viewer == null) return null
-        return ForeignCivView(owner, viewer, spectatorMode)
+        val gameView = tileMapView.gameView ?: return null
+        return gameView.getForeignCivView(owner)
     }
     @Readonly private fun isVisible(unit: MapUnit): Boolean {
         if (viewer == null) return false
-        return unit.isVisibleTo(viewer)
+        return DebugUtils.VISIBLE_MAP || unit.isVisibleTo(viewer)
     }
     @Readonly private fun toForeignMapUnitView(unit: MapUnit): ForeignMapUnitView =
         tileMapView.gameView!!.getForeignMapUnitView(unit)
@@ -64,6 +81,21 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { toForeignMapUnitView(it) }
             .toList()
     }
+    @Readonly fun getCombatant(): CombatantView? {
+        if (viewer == null) return null
+        if (!isExplored()) return null
+        val gameView = tileMapView.gameView ?: return null
+        if (tile.isCityCenter())
+            return gameView.getForeignCityView(tile.getCity()!!).asCombatant()
+
+        val militaryUnit = tile.militaryUnit
+        if (militaryUnit != null && isVisible(militaryUnit))
+            return toForeignMapUnitView(militaryUnit).asCombatant()
+        val civilianUnit = tile.civilianUnit
+        if (civilianUnit != null && isVisible(civilianUnit))
+            return toForeignMapUnitView(civilianUnit).asCombatant()
+        return null
+    }
 
     // Data retrieval
     @Readonly fun position() = tile.position
@@ -72,21 +104,80 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
      * That means that *in order to allow clicking on an unexplored tile* we currently need to accept tileviews of unexplored tiles
      * */
     @Readonly fun isExplored() = viewer == null || tile.isExplored(viewer)
-    @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
+    /** Actively observed by [viewer] (no fog of war) */
+    @Readonly fun isVisible(): Boolean = viewer == null || tile.isVisible(viewer)
+    /** `true` when this tile should be shown regardless of exploration/tech: there's no real [viewer] (e.g. civilopedia/map editor previews),
+     * debug mode has the whole map revealed, or [getCivView] is watching a defeated game play out.
+     * TODO: Replace all usages with altering the view function called, to reveal data where relevant */
+    @Readonly fun isForceVisible(): Boolean = viewer == null || DebugUtils.VISIBLE_MAP || getCivView()?.isMapRevealed() == true
+    /** Neighbors the viewer has explored */
+    @Readonly override fun getNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
-    @Readonly fun getVisibleTilesInDistance(distance: Int): Sequence<TileView> =
+    // Maybe we can move this to hexmath, will require extra input of map width/radius
+    @Readonly fun getNeighborClockPosition(neighbor: TileView): Int = tile.tileMap.getNeighborTileClockPosition(tile, neighbor.unwrap())
+    // This is an odd one - ideally the API should expose terrains, not...this, this is a specific performance boost 
+    //. that's not really relevant for the API
+    // We should see if we can avoid this entirely
+    @Readonly internal fun getCachedTerrainNameSet(): Set<String> = tile.cachedTerrainData.terrainNameSet
+    @Readonly fun getExploredTilesAtDistance(distance: Int): Sequence<TileView> =
+        tile.getTilesAtDistance(distance)
+            .filter { viewer == null || it.isExplored(viewer) }
+            .map { tileMapView.getTile(it) }
+    /** Views only expose explored tiles, so unexplored tiles at [distance] are estimated as a full hex ring (6 * [distance]) minus the explored ones.
+     * Overestimates near the true map edge, where tiles beyond the edge are counted as unexplored. */
+    @Readonly fun estimateUnexploredTilesAtDistance(distance: Int): Int =
+        (6 * distance - getExploredTilesAtDistance(distance).count()).coerceAtLeast(0)
+    @Readonly fun getExploredTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
+    @Readonly fun getContinent(): Int = tile.getContinent()
+    @Readonly fun isAdjacentToRiver(): Boolean = tile.isAdjacentToRiver()
+    /** `true` if the viewer treats this tile as road-connected: has an unpillaged road, or forest/jungle that count as roads for them */
+    @Readonly fun hasConnection(): Boolean = viewer != null && tile.hasConnection(viewer)
+    /** `true` if a road could be planned through this tile by [viewer] */
+    @Readonly fun isValidRoadPathTile(): Boolean = viewer != null && MapPathing.isValidRoadPathTile(viewer, tile)
+    @Readonly @Suppress("purity")
+    private fun getRoadPathingMap(viewer: Civilization, cache: RoadPathingCache): PathingMapView = cache.getOrPut(this) {
+        PathingMapView(PathingMap.createRoadPathingMap(viewer, tile), tileMapView, viewer)
+    }
+    /** Best road path from this tile to [destination], or `null` if there is none.
+     *  Uses A* if the settings say so, with the pathing map kept in [cache] so repeated queries from this tile are cheap.
+     *  Otherwise uses the simple connection search, always run from the lower-indexed tile so both directions give the same road. */
+    @Readonly fun getRoadPath(destination: TileView, cache: RoadPathingCache): List<TileView>? {
+        val viewer = viewer ?: return null
+        if (UncivGame.Current.settings.useAStarPathfinding)
+            return getRoadPathingMap(viewer, cache).getShortestPath(destination)
+        val (start, end) = if (tile.zeroBasedIndex < destination.tile.zeroBasedIndex) tile to destination.tile else destination.tile to tile
+        return MapPathing.getRoadPath(viewer, start, end)?.map { tileMapView.getTile(it) }
+    }
+    /** Best road path from this tile to any of [destinations], or `null` if none is reachable. Pathing maps are kept in [cache]. */
+    @Readonly fun getRoadPathToAny(destinations: Set<TileView>, maxBfsReachPadding: Int, cache: RoadPathingCache): List<TileView>? {
+        val viewer = viewer ?: return null
+        // TODO: replace with multi-target AStar
+        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(this) }
+        val pathingMap = getRoadPathingMap(viewer, cache)
+        val otherCity = pathingMap.bfsUntilMatchingTile(maxTurns) { it in destinations } ?: return null
+        return pathingMap.getShortestPath(otherCity) // this just reads from cached results
+    }
     @Readonly fun isWorked(): Boolean = tile.isWorked()
     @Readonly fun isBlockaded(): Boolean = tile.isBlockaded()
     @Readonly fun providesYield(): Boolean = tile.providesYield()
     @Readonly fun isLocked(): Boolean = tile.isLocked()
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
+    @Readonly fun canPillageTileImprovement(): Boolean = tile.canPillageTileImprovement()
+    @Readonly fun canPillageRoad(): Boolean = tile.canPillageRoad()
+    @Readonly fun getRoadOwner(): ForeignCivView? {
+        val owner = tile.getRoadOwner() ?: return null
+        if (viewer == null) return null
+        return tileMapView.gameView?.getForeignCivView(owner)
+    }
+    @Readonly fun isBarbarianEncampment(): Boolean = tile.isBarbarianEncampment()
+    @Readonly fun isFriendlyTerritory(): Boolean = viewer != null && tile.isFriendlyTerritory(viewer)
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
     @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.unwrap())
@@ -106,21 +197,107 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val improvement: String? get() = tile.improvement
-    val tileImprovement: TileImprovement? get() = tile.tileImprovement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
+    val tileHeight: Int get() = tile.tileHeight
+    @Readonly fun getImprovementToRepair(): TileImprovement? = tile.getImprovementToRepair()
     @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
+    val isWater: Boolean get() = tile.isWater
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
-    @Readonly fun isPillaged(): Boolean = tile.isPillaged()
-    @Readonly fun getBaseTerrain(): Terrain = tile.getBaseTerrain()
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
         val city = cityView?.unwrap() ?: tile.getCity()
         return tile.stats.getTileStats(city, viewingCiv?.unwrap())
+    }
+    @Readonly fun getTileStatsBreakdown(
+        viewingCiv: CivView?,
+        cityView: CityView? = null,
+    ): List<Pair<String, Stats>> {
+        val city = cityView?.unwrap() ?: tile.getCity()
+        return tile.stats.getTileStatsBreakdown(city, viewingCiv?.unwrap())
+    }
+    /** Base terrain, natural wonder (if any), then terrain features, in order - the last one is the "top" terrain */
+    @Readonly fun getAllTerrains(): List<Terrain> = tile.allTerrains.toList()
+    /** [pretendLastTerrainRemoved] checks against a copy of this tile with its top terrain feature removed */
+    @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, unitView: MapUnitView, pretendLastTerrainRemoved: Boolean = false): Set<ImprovementBuildingProblem> {
+        val tileToCheck = if (pretendLastTerrainRemoved) getTileWithoutLastTerrain() else tile
+        return tileToCheck.improvementFunctions.getImprovementBuildingProblems(improvement, unitView.unwrap().cache.state).toSet()
+    }
+    /** Whether the viewing civ can currently build [improvement] on this tile.
+     *  If [unitView] is given, its unit's own context is taken into account as well. */
+    @Readonly fun canBuildImprovement(improvement: TileImprovement, unitView: MapUnitView? = null): Boolean {
+        if (unitView == null)
+            return viewer != null && tile.improvementFunctions.canBuildImprovement(improvement, viewer.state)
+        val unit = unitView.unwrap()
+        return tile.improvementFunctions.canBuildImprovement(improvement, GameContext(civInfo = unit.civ, unit = unit, tile = tile))
+    }
+    /** A copy of this tile with [removeTerrainFeature] and/or the improvement removed, for evaluating changes without applying them.
+     *  Not cached and not part of the map - only meant to be queried.
+     *  TODO: Not sure what to do with "alternative tiles", it's a Hard Problem, a lot of 
+     *  */
+    @Readonly fun withRemovals(removeTerrainFeature: String?, removeImprovement: Boolean): TileView {
+        @LocalState val alternative = tile.clone(addUnits = false)
+        alternative.setTerrainTransients()
+        if (removeTerrainFeature != null) alternative.removeTerrainFeature(removeTerrainFeature)
+        if (removeImprovement) alternative.removeImprovement()
+        return TileView(alternative, tileMapView, viewer, spectatorMode)
+    }
+    /** Fresh copy of [tile] with its top terrain feature removed - not cached, since the tile can change */
+    @Readonly private fun getTileWithoutLastTerrain(): Tile {
+        @LocalState val newTile = tile.clone(addUnits = false)
+        newTile.setTerrainTransients()
+        newTile.removeTerrainFeature(newTile.lastTerrain.name)
+        return newTile
+    }
+    /** Stat difference between this tile and an alternative version of it, for evaluating changes without applying them.
+     *  Modifications apply in order: [removeTerrainFeature], [removeImprovement], then [setImprovement].
+     *  Evaluated from the [viewer]'s perspective; empty if there is no viewer.
+     *  [currentTileStats] can be provided for performance. */
+    @Readonly fun getStatDiffForAlternative(
+        removeTerrainFeature: String? = null,
+        removeImprovement: Boolean = false,
+        setImprovement: TileImprovement? = null,
+        currentTileStats: Stats? = null
+    ): Stats {
+        val civ = viewer ?: return Stats()
+        val city = tile.getCity()
+        val currentStats = currentTileStats ?: tile.stats.getTileStats(city, civ)
+
+        @LocalState val alternative = tile.clone(addUnits = false)
+        alternative.setTerrainTransients()
+        if (removeTerrainFeature != null) alternative.removeTerrainFeature(removeTerrainFeature)
+        if (removeImprovement) alternative.removeImprovement()
+        if (setImprovement != null) alternative.setImprovement(setImprovement.name)
+        @LocalState val futureStats = alternative.stats.getTileStats(city, civ)
+        return futureStats.minus(currentStats)
+    }
+    /** Per-turn maintenance of [improvement] on this tile as negative stats, matching [com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
+    // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
+    @Readonly fun getImprovementMaintenance(improvement: TileImprovement, civView: CivView): Stats {
+        val civ = civView.unwrap()
+        val maintenance = Stats()
+        if (civ.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
+                .any { tile.matchesFilter(it.params[0], civ) }
+        ) return maintenance
+
+        val context = GameContext(civ, tile = tile)
+        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance, context) +
+            // ImprovementMaintenance only applies inside city territory; ImprovementAllMaintenance applies everywhere.
+            (if (tile.getOwner() == civ) improvement.getMatchingUniques(UniqueType.ImprovementMaintenance, context) else emptySequence())
+        for (maintenanceUnique in maintenanceUniques) {
+            val amount = maintenanceUnique.params[0].toFloat()
+            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
+            maintenance.add(statName, -amount)
+        }
+
+        civ.forEachMatchingUnique(UniqueType.RoadMaintenance) { unique ->
+            maintenance.timesInPlace(unique.params[0].toPercent())
+        }
+        return maintenance
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 
@@ -134,3 +311,14 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         }
     }
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun TileView.getBaseTerrain(): Terrain = getRuleset().terrains[baseTerrain]!!
+@Readonly fun TileView.getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
+@Readonly fun TileView.isHill(): Boolean = getAllTerrains().any { it.isHill }
+/** Only considers explored neighbors */
+@Readonly fun TileView.isAdjacentToCoast(): Boolean = isLand && getNeighbors().any { it.getBaseTerrain().isCoast }
+@Readonly fun TileView.isNaturalWonder(): Boolean = naturalWonder != null
+@Readonly fun TileView.terrainHasUnique(uniqueType: UniqueType): Boolean = getAllTerrains().any { it.hasUnique(uniqueType) }
+@Readonly fun TileView.getTerrainMatchingUniques(uniqueType: UniqueType): Sequence<Unique> =
+    getAllTerrains().asSequence().flatMap { it.getMatchingUniques(uniqueType) }

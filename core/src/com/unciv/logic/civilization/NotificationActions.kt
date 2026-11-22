@@ -13,12 +13,11 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.espionage.EspionageScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.view.ForeignCivView
 
 
 /** defines what to do if the user clicks on a notification */
@@ -63,7 +62,7 @@ class LocationAction(private val location: HexCoord = HexCoord.Zero) : Notificat
 class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
-        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.selectedCiv, tech))
+        worldScreen.game.pushScreen { TechPickerScreen(worldScreen.selectedGameView.civView.getCiv(), tech) }
     }
 }
 
@@ -73,8 +72,8 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         val cityView = worldScreen.selectedGameView.getCityView(cityObject)
-        if (worldScreen.selectedGameView.civView.isOwnerOf(cityView))
-            worldScreen.game.pushScreen(CityScreen(cityView))
+        if (cityView.isOwnedByViewer())
+            worldScreen.game.pushScreen { CityScreen(cityView) }
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
@@ -118,7 +117,12 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.getCivView(currentCiv), ForeignCivView(otherCiv, currentCiv), showTrade = showTrade))
+        worldScreen.game.pushScreen {
+            DiplomacyScreen(
+            worldScreen.selectedGameView.civView,
+            worldScreen.selectedGameView.getForeignCivView(otherCiv),
+            showTrade = showTrade)
+        }
     }
 }
 
@@ -148,7 +152,7 @@ class MapUnitAction(
         else null
         if (unit != null) {
             val unitLocation = unit.currentTile.position.toHexCoord()
-            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = unit)
+            worldScreen.mapHolder.setCenterPosition(unitLocation, forceSelectUnit = worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView())
         }
         else {
             worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = id == Constants.NO_ID)
@@ -187,7 +191,7 @@ class PromoteUnitAction(
             val tile = worldScreen.gameInfo.tileMap[location]
             tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
         } ?: return
-        worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+        worldScreen.game.pushScreen { PromotionPickerScreen(worldScreen.selectedGameView.getMapUnitView(unit)) }
     }
 }
 
@@ -206,14 +210,14 @@ class PolicyAction(
     private val select: String? = null
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select))
+        worldScreen.game.pushScreen { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState, select) }
     }
 }
 
-/** Open [EspionageOverviewScreen] */
+/** Open [EspionageScreen] */
 class EspionageAction : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+        worldScreen.game.pushScreen { EspionageScreen(worldScreen.selectedCiv, worldScreen) }
     }
     companion object {
         fun withLocation(location: HexCoord?): Sequence<NotificationAction> =

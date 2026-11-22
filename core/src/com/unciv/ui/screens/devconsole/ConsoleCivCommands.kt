@@ -25,15 +25,19 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
 
         "setplayertype" to ConsoleAction("civ setplayertype <civName> <ai/human>") { console, params ->
             val civ = console.getCivByName(params[0])
-            if (!civ.isMajorCiv())
+            if (!civ.isMajorCiv)
                 throw ConsoleErrorException("Can only change player type for major civs")
             civ.playerType = params[1].enumValue<PlayerType>()
+            if (civ.playerType == PlayerType.Human) {
+                // Current one is empty (AI's don't update it) or stale (earlier civ setplayertype)
+                civ.exploredRegion.rebuildFor(console.gameInfo.tileMap, civ)
+            }
             DevConsoleResponse.OK
         },
 
         "revealmap" to ConsoleAction("civ revealmap [civName]") { console, params ->
             val civ = console.getCivByNameOrSelected(params.getOrNull(0))
-            civ.gameInfo.tileMap.values.asSequence()
+            civ.gameInfo.tileMap.values
                 .forEach { it.setExplored(civ, true) }
             DevConsoleResponse.OK
         },
@@ -65,7 +69,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             }
         },
 
-        "addtech" to ConsoleAction("civ addtechnology <civName> <techName>") { console, params ->
+        "addtechnology" to ConsoleAction("civ addtechnology <civName> <techName>") { console, params ->
             val civ = console.getCivByName(params[0])
             val tech = console.findCliInput<Technology>(params[1])
                 ?: throw ConsoleErrorException("Unrecognized technology")
@@ -77,7 +81,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             }
         },
 
-        "removetech" to ConsoleAction("civ removetechnology <civName> <techName>") { console, params ->
+        "removetechnology" to ConsoleAction("civ removetechnology <civName> <techName>") { console, params ->
             val civ = console.getCivByName(params[0])
             val tech = console.findCliInput<Technology>(params[1])
                 ?: throw ConsoleErrorException("Unrecognized technology")
@@ -109,7 +113,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 ?: throw ConsoleErrorException("No allowed Settler units in the ruleset")
             val civ = Civilization(nation)
             if (nation.isCityState) {
-                val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv() }.map { it.nation }
+                val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv }.map { it.nation }
                 val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("DevConsole civ add")
                 if (!civ.cityStateFunctions.initCityState(ruleset, gameInfo.gameParameters.startingEra, usedMajorCivs, rng))
                     throw ConsoleErrorException("City-state not allowed in this game")
@@ -165,6 +169,43 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 annihilate()
             else
                 ConfirmPopup(console.screen, msg, "Yes", action = ::annihilate).open(true)
+            DevConsoleResponse.OK
+        },
+
+        "addgpp" to ConsoleAction("civ addgpp <gpName> <amount> [civName]") { console, params ->
+            val civ = console.getCivByNameOrSelected(params.getOrNull(2))
+            val greatPerson = params[0].find(civ.greatPeople.getGreatPeople())
+            val amount = params[1].toInt()
+            if (greatPerson.isGreatPersonOfType("War")) {
+                civ.greatPeople.greatGeneralPointsCounter[greatPerson.name] += amount
+            } else {
+                civ.greatPeople.addGreatPersonPoints(greatPerson.name, amount)
+            }
+            DevConsoleResponse.OK
+        },
+
+        "addquest" to ConsoleAction("civ addquest <cityState> <quest> [civName]") { console, params ->
+            val cityState = console.getCivByName(params[0])
+            require(cityState.isCityState)
+            val manager = cityState.questManager
+            val quest = params[1].find(console.gameInfo.ruleset.quests.values)
+            if (quest.isGlobal()) {
+                val assignees = console.gameInfo.civilizations.filter { manager.canAssignAQuestTo(it) }
+                manager.assignNewQuest(quest, assignees)
+            } else {
+                val assignee = console.getCivByNameOrSelected(params.getOrNull(2))
+                if (!manager.canAssignAQuestTo(assignee))
+                    return@ConsoleAction DevConsoleResponse.error("Cannot assign quest to ${assignee.civName}")
+                manager.assignNewQuest(quest, listOf(assignee))
+            }
+            DevConsoleResponse.OK
+        },
+
+        "removequests" to ConsoleAction("civ removequests <cityState> [civName]") { console, params ->
+            val cityState = console.getCivByName(params[0])
+            require(cityState.isCityState)
+            val assignee = console.getCivByNameOrSelected(params.getOrNull(1))
+            cityState.questManager.removeQuestsFor(assignee)
             DevConsoleResponse.OK
         }
     )

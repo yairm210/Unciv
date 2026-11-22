@@ -30,7 +30,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 
-class LoadGameScreen : LoadOrSaveScreen() {
+class LoadGameScreen : LoadOrSaveScreen(searchable = true) {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
     
     /** Inheriting here again exposes [getLoadExceptionMessage] and [loadMissingMods] to

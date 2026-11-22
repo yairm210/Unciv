@@ -3,12 +3,17 @@ package com.unciv.ui.components.input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.unciv.Constants.DEFAULT_HALF_TAP_SQUARE_SIZE
 import com.unciv.UncivGame
 
 /**
  *  Wraps Gdx ActorGestureListener, pulling [multiTapInterval] and [longPressDelay] from settings
  */
-abstract class UncivActorGestureListener : ActorGestureListener(20f, multiTapInterval, longPressDelay, Int.MAX_VALUE.toFloat()) {
+abstract class UncivActorGestureListener(
+    halfTapSquareSize: Float = DEFAULT_HALF_TAP_SQUARE_SIZE
+) : ActorGestureListener(halfTapSquareSize, multiTapInterval, longPressDelay, Int.MAX_VALUE.toFloat()) {
+    // All of these default to the same values as Gdx (halfTapSquareSize = 20, tapCountInterval = 0.4f, longPressDuration = 1.1f, maxFlingDelay = Integer.MAX_VALUE)
+
     fun reloadSettings() {
         gestureDetector.setLongPressSeconds(longPressDelay)
         gestureDetector.setTapCountInterval(multiTapInterval)
@@ -23,9 +28,7 @@ abstract class UncivActorGestureListener : ActorGestureListener(20f, multiTapInt
 /**
  *  An ActorGestureListener routing taps, right-clicks, double-taps and long-presses to [ActorAttachments]
  */
-open class ActivationListener : UncivActorGestureListener() {
-    // Gdx defaults are: halfTapSquareSize = 20, tapCountInterval = 0.4f, longPressDuration = 1.1f, maxFlingDelay = Integer.MAX_VALUE
-
+open class ActivationListener(halfTapSquareSize: Float) : UncivActorGestureListener(halfTapSquareSize) {
     override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
         val actor = event?.listenerActor ?: return
         val type = ActivationTypes.entries.firstOrNull {

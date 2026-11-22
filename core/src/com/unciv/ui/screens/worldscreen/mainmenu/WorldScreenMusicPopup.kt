@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.components.extensions.MusicControls
 import com.unciv.ui.components.extensions.setSize
@@ -18,7 +17,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import yairm210.purity.annotations.Readonly
 
 class WorldScreenMusicPopup(
     worldScreen: WorldScreen
@@ -26,10 +24,9 @@ class WorldScreenMusicPopup(
 
     companion object {
         // 3/4 of the screen is just a bit too small on small screen settings
-        @Readonly
-        private fun calcSize(worldScreen: WorldScreen) = when(worldScreen.game.settings.screenSize) {
-            ScreenSize.Tiny -> 0.95f
-            ScreenSize.Small -> 0.85f
+        private fun calcSize(worldScreen: WorldScreen) = when {
+            worldScreen.game.settings.screenSize.getHeight() <= 500f -> 0.95f
+            worldScreen.game.settings.screenSize.getHeight() <= 600f -> 0.85f
             else -> 0.75f
         }
     }

@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.JsonReader
 import com.unciv.Constants
+import com.unciv.json.json
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
@@ -160,6 +162,8 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
+        private val copyParametersButton = "Copy to clipboard".toTextButton()
+        private val pasteParametersButton = "Paste from clipboard".toTextButton()
         val mapParametersTable = MapParametersTable(null, parent.editorScreen.newMapParameters, MapGeneratedMainType.generated, forMapEditor = true) {
             parent.replacePage(0, this)  // A kludge to get the ScrollPanes to recognize changes in vertical layout??
         }
@@ -168,14 +172,56 @@ class MapEditorGenerateTab(
             top()
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
+            add(Table().apply {
+                add(copyParametersButton).padRight(15f)
+                add(pasteParametersButton)
+            }).row()
             add(mapParametersTable).row()
             add(generateButton).padTop(15f).row()
             generateButton.onClick { parent.generate(MapGeneratorSteps.All) }
+            copyParametersButton.onClick {
+                Gdx.app.clipboard.contents = json().toJson(parent.editorScreen.newMapParameters)
+            }
+            pasteParametersButton.onClick { pasteParameters() }
+            attachResourceSettingSync()
+        }
+
+        /** Attaches the resource painting sync to the current resource select box -
+         *  [MapParametersTable.update] replaces it, so this needs repeating after each rebuild */
+        private fun attachResourceSettingSync() {
             mapParametersTable.resourceSelectBox.onChange {
                 parent.editorScreen.run {
                     // normally the 'new map' parameters are independent, this needs to be an exception so strategic resource painting will use it
                     tileMap.mapParameters.mapResources = newMapParameters.mapResources
                 }
+            }
+        }
+
+        /** Rebuilds all controls bound to [MapEditorScreen.newMapParameters] after its contents were replaced */
+        private fun updateParameterControls() {
+            mapParametersTable.update()
+            attachResourceSettingSync()
+            // readFields also replaced the mod set instance the Mods tab is bound to
+            parent.editorScreen.tabs.mods.updateControls()
+        }
+
+        private fun pasteParameters() {
+            val editorScreen = parent.editorScreen
+            // Back up the settings so a malformed payload can't leave partially applied values behind
+            val previousParameters = json().toJson(editorScreen.newMapParameters)
+            try {
+                json().readFields(
+                    editorScreen.newMapParameters,
+                    JsonReader().parse(Gdx.app.clipboard.contents.trim())
+                )
+                updateParameterControls()
+                // Resource painting reads this setting from the active map's parameters
+                editorScreen.tileMap.mapParameters.mapResources = editorScreen.newMapParameters.mapResources
+            } catch (exception: Exception) {
+                json().readFields(editorScreen.newMapParameters, JsonReader().parse(previousParameters))
+                updateParameterControls()
+                Log.error("Could not load map generation settings", exception)
+                ToastPopup("Could not load map!", editorScreen)
             }
         }
     }

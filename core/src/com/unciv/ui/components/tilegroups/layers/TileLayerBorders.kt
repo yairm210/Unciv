@@ -5,6 +5,7 @@ import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
 import com.unciv.view.TileView
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.mix
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.PI
 import kotlin.math.atan
@@ -38,10 +39,9 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val tileView = tileGroup.tileView
         val tileOwner = tileView.getOwner()
-        val tileOwnerCiv = tileOwner?.getCiv()
 
         // If owner changed - clear previous borders
-        if (previousTileOwner?.getCiv() !== tileOwnerCiv)
+        if (previousTileOwner != tileOwner)
             reset()
 
         previousTileOwner = tileOwner
@@ -55,25 +55,25 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         // Setup new borders
         val civOuterColor = tileOwner.getOuterColor()
         val civInnerColor = tileOwner.getInnerColor()
-        for (neighbor in tileView.getVisibleNeighbors()) {
+        for (neighbor in tileGroup.neighbors) {
             var shouldRemoveBorderSegment = false
             var shouldAddBorderSegment = false
 
             var borderSegmentShouldBeLeftConcave = false
             var borderSegmentShouldBeRightConcave = false
 
-            val neighborOwnerCiv = neighbor.getOwner()?.getCiv()
-            if (neighborOwnerCiv === tileOwnerCiv && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
+            val neighborOwner = neighbor.getOwner()
+            if (neighborOwner == tileOwner && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
                 shouldRemoveBorderSegment = true
             }
-            else if (neighborOwnerCiv !== tileOwnerCiv) {
+            else if (neighborOwner != tileOwner) {
                 val leftSharedNeighbor = tileMapView.getLeftSharedNeighbor(tileView, neighbor)
                 val rightSharedNeighbor = tileMapView.getRightSharedNeighbor(tileView, neighbor)
 
                 // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
                 // This is because we do not draw borders against non-existing tiles either.
-                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
-                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
+                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() == tileOwner
+                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() == tileOwner
 
                 if (!borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
                     shouldAddBorderSegment = true
@@ -134,6 +134,22 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             }
         }
 
+    }
+
+    // Inputs of updateBorders: our owner, and the owners of each visible neighbor and of the two tiles it shares with us
+    // (which decide concave/convex, and may themselves be unexplored, so they're not necessarily among the visible neighbors).
+    // Owner colors are constant per civ, and a change of owner is reflected in the owner name.
+    override fun getUpdateKey(viewingCiv: CivView?): Long {
+        val tileView = tileGroup.tileView
+        val tileOwner = tileView.getOwner() ?: return 0L // no owner - no borders; nothing else is read
+        val tileMapView = tileView.getTileMap()
+        var key = 1L.mix(tileOwner.civName)
+        for (neighbor in tileGroup.neighbors) {
+            key = key.mix(neighbor.position()).mix(neighbor.getOwner()?.civName)
+                .mix(tileMapView.getLeftSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+                .mix(tileMapView.getRightSharedNeighbor(tileView, neighbor)?.getOwner()?.civName)
+        }
+        return key
     }
 
     override fun doUpdate(viewingCiv: CivView?) {

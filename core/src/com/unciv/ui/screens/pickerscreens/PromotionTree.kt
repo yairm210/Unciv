@@ -2,12 +2,20 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.logic.map.mapunit.AvailablePromotion
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
+import com.unciv.view.MapUnitView
 
-class PromotionTree(val unit: MapUnit) {
+class PromotionTree(
+    private val availablePromotions: List<AvailablePromotion>,
+    /** Whether the unit has enough XP to buy the next `count` non-free promotions - queried live */
+    private val canAffordPromotions: (count: Int) -> Boolean
+) {
+    constructor(unit: MapUnit) : this(unit.promotions.getPromotionTreeCandidates(), unit.promotions::canAffordPromotions)
+    constructor(unit: MapUnitView) : this(unit.getAvailablePromotions(), unit::canAffordPromotions)
+
     /** Ordered set of Promotions to show - by Json column/row and translated name */
     // Not using SortedSet - that uses needlessly complex implementations that remember the comparator
     lateinit var possiblePromotions: LinkedHashSet<Promotion>
@@ -63,16 +71,11 @@ class PromotionTree(val unit: MapUnit) {
 
     fun update() {
         val collator = GUI.getSettings().getCollatorFromLocale()
-        val rulesetPromotions = unit.civ.gameInfo.ruleset.unitPromotions.values
-        val unitType = unit.baseUnit.unitType
-        val adoptedPromotions = unit.promotions.promotions
 
         // The following sort is mostly redundant with our vanilla rulesets.
         // Still, want to make sure processing left to right, top to bottom will be usable.
-        possiblePromotions = rulesetPromotions.asSequence()
-            .filter {
-                unitType in it.unitTypes || it.name in adoptedPromotions
-            }
+        possiblePromotions = availablePromotions.asSequence()
+            .map { it.promotion }
             .sortedWith(
                 // Remember to make sure row=0/col=0 stays on top while those without explicit pos go to the end
                 // Also remember the names are historical, row means column on our current screen design.
@@ -86,9 +89,12 @@ class PromotionTree(val unit: MapUnit) {
             )
             .toCollection(linkedSetOf())
 
+        val adopted = availablePromotions.filter { it.isAdopted }.map { it.promotion.name }.toSet()
+        val blockedByUniques = availablePromotions.filter { it.isBlockedByUniques }.map { it.promotion.name }.toSet()
+
         // Create incomplete node objects
         nodes = possiblePromotions.asSequence()
-            .map { it.name to PromotionNode(it, it.name in adoptedPromotions) }
+            .map { it.name to PromotionNode(it, it.name in adopted) }
             .toMap(LinkedHashMap(possiblePromotions.size))
 
         // Fill parent/child relations, ignoring prerequisites not in possiblePromotions
@@ -104,17 +110,12 @@ class PromotionTree(val unit: MapUnit) {
         }
 
         // Determine unreachable / disabled nodes
-        val state = unit.cache.state
         for (node in nodes.values) {
             // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
             if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
                 node.unreachable = true
 
-            // Slight copy from UnitPromotions.isAvailable
-            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .any { !it.conditionalsApply(state) })
-                node.unreachable = true
-            if (node.promotion.hasUnique(UniqueType.Unavailable, state)) node.unreachable = true
+            if (node.promotion.name in blockedByUniques) node.unreachable = true
         }
 
         // Calculate depth and distanceToAdopted - nonrecursively, shallows first.
@@ -178,12 +179,12 @@ class PromotionTree(val unit: MapUnit) {
     private fun getReachableNode(promotion: Promotion): PromotionNode? =
         nodes[promotion.name]?.takeUnless { it.distanceToAdopted == Int.MAX_VALUE }
 
-    fun canBuyUpTo(promotion: Promotion): Boolean = unit.promotions.run {
+    fun canBuyUpTo(promotion: Promotion): Boolean {
         val node = getReachableNode(promotion) ?: return false
         if (node.isAdopted) return false
         // Free promotions don't consume XP; only count non-free promotions in the path
         val nonFreeCount = getPathTo(promotion).count { !it.hasUnique(UniqueType.FreePromotion) }
-        return XP >= xpForNextNPromotions(nonFreeCount)
+        return canAffordPromotions(nonFreeCount)
     }
 
     fun getPathTo(promotion: Promotion): List<Promotion> {

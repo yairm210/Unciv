@@ -1,5 +1,7 @@
 package com.unciv.logic.automation.city
 
+import com.unciv.view.GameView
+import com.unciv.view.TileView
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -75,7 +77,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     private val allTechsAreResearched = civInfo.tech.allTechsAreResearched()
 
     private val isAtWar = civInfo.isAtWar()
-    private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
+    private val buildingsForVictory = civInfo.victoryManager.getAvailableVictories()
             .mapNotNull { civInfo.victoryManager.getNextMilestone(it) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
             .map { it.params[0] }
@@ -166,7 +168,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var modifier = 1 + sqrt(unitsToCitiesRatio) / 2
         if (isAtWar) modifier *= 2
 
-        if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
+        if (Automation.afraidOfBarbarians(GameView(civInfo.gameInfo, civInfo).civView)) modifier = 2f // military units are pro-growth if pressured by barbs
         if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
         val civilianUnit = city.getCenterTile().civilianUnit
@@ -184,7 +186,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
-                    && Automation.allowAutomatedConstruction(civInfo, city, it)
+                    && Automation.allowAutomatedConstruction(GameView(civInfo.gameInfo, civInfo).civView, city, it)
             }.filterBuildable()
             .toSet()
         if (buildableWorkboatUnits.isEmpty()) return
@@ -200,11 +202,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         // Define what makes a tile worth sending a Workboat to
         // todo Prepare for mods that allow improving water tiles without a resource?
+        val gameView = GameView(civInfo.gameInfo, civInfo)
+        val civView = gameView.civView
         @Readonly
-        fun Tile.isWorthImproving(): Boolean {
-            if (getOwner() != civInfo) return false
-            if (!WorkerAutomation.hasWorkableSeaResource(this, civInfo)) return false
-            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civInfo)
+        fun TileView.isWorthImproving(): Boolean {
+            if (getOwner() != civView) return false
+            if (!WorkerAutomation.hasWorkableSeaResource(this, civView)) return false
+            return WorkerAutomation.isNotBonusResourceOrWorkable(this, civView)
         }
 
         // Search for a tile justifying producing a Workboat
@@ -212,10 +216,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         @Readonly
         fun findTileWorthImproving(): Boolean {
             val searchMaxTiles = civInfo.gameInfo.ruleset.modOptions.constants.workboatAutomationSearchMaxTiles
-            val bfs = BFS(city.getCenterTile()) {
+            val bfs = BFS(gameView.getTile(city.getCenterTile())) {
                 (it.isWater || it.isCityCenter())
-                    && (it.getOwner() == null || it.isFriendlyTerritory(civInfo))
-                    && it.isExplored(civInfo)  // Sending WB's through unexplored terrain would be cheating
+                    && (it.getOwner() == null || it.isFriendlyTerritory())
+                    && it.isExplored()  // Sending WB's through unexplored terrain would be cheating
             }
             do {
                 val tile = bfs.nextStep() ?: break
@@ -233,7 +237,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val workerEquivalents = units
             .filter {
                 it.hasUnique(UniqueType.BuildImprovements)
-                        && Automation.allowAutomatedConstruction(civInfo, city, it)
+                        && Automation.allowAutomatedConstruction(GameView(civInfo.gameInfo, civInfo).civView, city, it)
             }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
@@ -326,7 +330,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
 
-        for (experienceUnique in building.getMatchingUniques(UniqueType.UnitStartingExperience, cityState)) {
+        building.forEachMatchingUnique(UniqueType.UnitStartingExperience, cityState) { experienceUnique ->
             var modifier = experienceUnique.params[1].toFloat() / 5
             modifier *= if (cityIsOverAverageProduction) 1f else 0.2f // You shouldn't be cranking out units anytime soon
             modifier *= personality.modifierFocus(PersonalityValue.Military, 0.3f)
@@ -359,7 +363,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             buildingStats[stat] *= personality.scaledFocus(PersonalityValue[stat])
         }
 
-        return Automation.rankStatsValue(buildingStats.clone(), civInfo)
+        return Automation.rankStatsValue(buildingStats.clone(), GameView(civInfo.gameInfo, civInfo).civView)
     }
 
     // NOT readonly safe, since it alters the tile ownership of real tiles
@@ -387,14 +391,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     @Readonly
     private fun getBuildingStatsFromUniques(building: Building, buildingStats: Stats) : Stats {
         val stats = Stats()
-        for (unique in building.getMatchingUniques(UniqueType.StatPercentBonusCities, cityState)) {
+        building.forEachMatchingUnique(UniqueType.StatPercentBonusCities, cityState) { unique ->
             val statType = Stat.valueOf(unique.params[1])
             val relativeAmount = unique.params[0].toFloat() / 100f
             val amount = civInfo.stats.statsForNextTurn[statType] * relativeAmount
             stats[statType] += amount
         }
 
-        for (unique in building.getMatchingUniques(UniqueType.CarryOverFood, cityState)) {
+        building.forEachMatchingUnique(UniqueType.CarryOverFood, cityState) { unique ->
             if (city.matchesFilter(unique.params[1]) && unique.params[0].toInt() != 0) {
                 val foodGain = cityStats.currentCityStats.food + buildingStats.food
                 val relativeAmount = unique.params[0].toFloat() / 100f

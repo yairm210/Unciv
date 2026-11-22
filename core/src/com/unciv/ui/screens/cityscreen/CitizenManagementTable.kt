@@ -30,7 +30,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             resetCell.touchable = Touchable.enabled
             resetCell.onActivation(binding = KeyboardBinding.ResetCitizens) {
                 cityView.tryReassignPopulation(resetLocked = true)
-                cityScreen.update()
+                cityScreen.updateAsync()
             }
         }
         resetCell.background = BaseScreen.skinStrings.getUiBackground(
@@ -46,7 +46,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             avoidCell.touchable = Touchable.enabled
             avoidCell.onActivation(binding = KeyboardBinding.AvoidGrowth) {
                 cityView.tryToggleAvoidGrowth()
-                cityScreen.update()
+                cityScreen.updateAsync()
             }
         }
         avoidCell.background = BaseScreen.skinStrings.getUiBackground(
@@ -78,7 +78,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 val binding = if (cityView.getCityFocus() == focus) focus.binding else KeyboardBinding.None
                 cell.onActivation(binding = binding) {
                     cityView.trySetCityFocus(focus)
-                    cityScreen.update()
+                    cityScreen.updateAsync()
                 }
             }
             cell.background = BaseScreen.skinStrings.getUiBackground(

@@ -1,7 +1,9 @@
 package com.unciv.ui.components.fonts
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import kotlinx.coroutines.flow.Flow
 
 interface FontImplementation {
     fun setFontFamily(fontFamilyData: FontFamilyData, size: Int)
@@ -19,6 +21,9 @@ interface FontImplementation {
     fun getCharPixmap(symbolString: String): Pixmap
 
     fun getSystemFonts(): Sequence<FontFamilyData>
+
+    /** Default NIO scanner; Android callers must retain the API 26 guard. */
+    fun getModFonts(modsDir: FileHandle): Flow<FontFamilyData> = ModFonts.scan(modsDir)
 
     fun getBitmapFont(): BitmapFont {
         val fontData = NativeBitmapFontData(this)

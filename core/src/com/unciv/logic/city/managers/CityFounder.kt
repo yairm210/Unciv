@@ -88,11 +88,13 @@ class CityFounder {
         addStartingBuildings(city, civInfo, startingEra)
         
         city.resetDisabledConstructions()
+        city.resetSpecialistsControl()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
-            GameContext(civInfo, city, unit)
-        ))
+        civInfo.forEachTriggeredUnique(UniqueType.TriggerUponFoundingCity,
+            GameContext(civInfo, city, unit), ignoreCities = false
+        ) { unique ->
             UniqueTriggerActivation.triggerUnique(unique, civInfo, city, unit, triggerNotificationText = "due to founding a city")
+        }
         if (unit != null)
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
                 GameContext(civInfo, city, unit)))
@@ -175,7 +177,7 @@ class CityFounder {
     ): String? {
         val rng = foundingCiv.state.stateBasedRandom("CityFounder.borrowCityName")
         val aliveMajorNations: Sequence<Nation> =
-                aliveCivs.asSequence().filter { civ -> civ.isMajorCiv() }.map { civ -> civ.nation }
+                aliveCivs.asSequence().filter { civ -> civ.isMajorCiv }.map { civ -> civ.nation }
 
         /*
         We take the last unused city name for each other major nation in this game,
@@ -240,7 +242,7 @@ class CityFounder {
     private fun triggerCitiesSettledNearOtherCiv(city: City) {
         val citiesWithin6Tiles =
                 city.civ.gameInfo.civilizations.asSequence()
-                    .filter { it.isMajorCiv() && it != city.civ }
+                    .filter { it.isMajorCiv && it != city.civ }
                     .flatMap { it.cities }
                     .filter { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 6 }
         val civsWithCloseCities =

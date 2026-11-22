@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.Disableable
+import com.unciv.Constants.DEFAULT_HALF_TAP_SQUARE_SIZE
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 
@@ -27,6 +28,7 @@ val Actor.keyShortcuts
 /** Routes input events of type [type] to your handler [action].
  *  Will also be activated for events [equivalent][ActivationTypes.isEquivalent] to [type] unless [noEquivalence] is `true`.
  *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  Note: [allowEventPropagation] and [halfTapSquareSize] are only used for the first time any activation (except pure [keyboard][ActivationTypes.Keystroke]) is attached to this actor.
  *  @return `this` to allow chaining
  */
 fun Actor.onActivation(
@@ -34,9 +36,10 @@ fun Actor.onActivation(
     sound: UncivSound = UncivSound.Click,
     noEquivalence: Boolean = false,
     allowEventPropagation: Boolean = true,
+    halfTapSquareSize: Float = DEFAULT_HALF_TAP_SQUARE_SIZE,
     action: ActivationAction
 ): Actor {
-    ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action, allowEventPropagation)
+    ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action, allowEventPropagation, halfTapSquareSize)
     return this
 }
 
@@ -71,10 +74,10 @@ fun Actor.onActivation(action: ActivationAction): Actor =
  *  @return `this` to allow chaining
  */
 fun Actor.onClick(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
-    onActivation(ActivationTypes.Tap, sound, noEquivalence = true, allowEventPropagation = true, action)
+    onActivation(ActivationTypes.Tap, sound, noEquivalence = true, allowEventPropagation = true, action = action)
 
 fun Actor.onClickSuppressive(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
-    onActivation(ActivationTypes.Tap, sound, noEquivalence = true,  allowEventPropagation = false,action)
+    onActivation(ActivationTypes.Tap, sound, noEquivalence = true,  allowEventPropagation = false, action = action)
 
 /** Routes clicks to your handler [action], ignoring [keyboard shortcuts][keyShortcuts].
  *  A [Click sound][UncivSound.Click] will be played (concurrently).
@@ -103,7 +106,7 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  @return `this` to allow chaining
  */
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
-    onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, allowEventPropagation = true, action)
+    onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, allowEventPropagation = true, action = action)
 
 /** Clears activation actions for a specific [type], and, if [noEquivalence] is `true`,
  *  its [equivalent][ActivationTypes.isEquivalent] types.

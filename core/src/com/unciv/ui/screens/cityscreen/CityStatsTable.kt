@@ -1,5 +1,8 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.unciv.view.currentConstructionName
+import com.unciv.view.isGrowing
+import com.unciv.view.isStarving
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
@@ -126,7 +129,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 cityView.getFreePopulation().tr() + "/" + cityView.getPopulationCount().tr()
         val unassignedPopLabel = unassignedPopString.toLabel()
         if (cityScreen.canChangeState)
-            unassignedPopLabel.onClick { cityView.tryReassignPopulation(); cityScreen.update() }
+            unassignedPopLabel.onClick { 
+                cityView.tryReassignPopulation()
+                cityScreen.updateAsync()
+            }
 
         var turnsToExpansionString =
                 if (cityView.getCurrentCityStats().culture > 0 && cityView.hasChoosableTiles()) {
@@ -180,7 +186,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         for ((resource, amount) in resourceCounter) {
             if (resource.isCityWide) {
-                var resourceIcon = Table()
+                val resourceIcon = Table()
                 resourceIcon.addTooltip(resource.name, targetAlign = Align.bottom)
                 resourceIcon.onClick { cityScreen.openCivilopedia(resource.makeLink()) }
                 resourceIcon.add(ImageGetter.getResourcePortrait(resource.name, 20f)).padRight(5f)
@@ -193,7 +199,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
 
         if (resourceTable.cells.notEmpty())
-            tableWithIcons.add(resourceTable)
+            tableWithIcons.add(resourceTable).row()
 
         val (wltkIcon: Actor?, wltkLabel: Label?) = when {
             cityView.isWeLoveTheKingDayActive() ->
@@ -228,7 +234,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     }
 
     private fun addReligionInfo() {
-        val expanderTab = CityReligionInfoTable(cityView.religion()).asExpander { onContentResize() }
+        val expanderTab = CityReligionInfoTable(cityView).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
@@ -282,6 +288,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
     }
 
+    /**
+     * Lists a building's yields and available specialist slots so players can inspect what it provides
+     * without mistaking city-wide specialist assignments for occupancy in this particular building.
+     */
     private fun addBuildingButton(building: Building, destinationTable: Table) {
 
         val button = Table()
@@ -300,23 +310,17 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
         statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
 
-        val assignedSpec = cityView.getNewSpecialists().clone()
-
-        val specialistIcons = Table()
-        for ((specialistName, amount) in building.newSpecialists()) {
-            val specialist = cityView.getRuleset().specialists[specialistName]
-                ?: continue // probably a mod that doesn't have the specialist defined yet
-            repeat(amount) {
-                if (assignedSpec[specialistName] > 0) {
-                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
-                        .size(20f)
-                    assignedSpec.add(specialistName, -1)
-                } else {
-                    specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
+        if (building.newSpecialists().any()) {
+            val specialistIcons = Table()
+            for ((specialistName, amount) in building.newSpecialists()) {
+                val specialist = cityView.getRuleset().specialists[specialistName]
+                    ?: continue // probably a mod that doesn't have the specialist defined yet
+                repeat(amount) {
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)
                 }
             }
+            statsAndSpecialists.add(specialistIcons).right()
         }
-        statsAndSpecialists.add(specialistIcons).right()
 
         info.add(statsAndSpecialists).right()
 
@@ -325,7 +329,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         button.onClick {
             cityScreen.selectConstruction(building)
-            cityScreen.update()
+            cityScreen.updateAsync()
         }
 
         destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
@@ -417,8 +421,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             clear()
             val selected = BaseScreen.skin.getColor("selection")
             for (stat in Stat.entries) {
-                val amount = cityView.getCurrentCityStats()[stat]
                 if (stat == Stat.Faith && !cityView.viewingCiv().isReligionEnabled()) continue
+                val amount = cityView.getCurrentCityStats()[stat]
                 val icon = Table()
                 val focus = CityFocus.safeValueOf(stat)
                 val toggledFocus = if (focus == cityView.getCityFocus()) {
@@ -431,7 +435,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 if (cityScreen.canCityBeChanged()) {
                     icon.onActivation(binding = toggledFocus.binding) {
                         cityView.trySetCityFocus(toggledFocus)
-                        cityScreen.update()
+                        cityScreen.updateAsync()
                     }
                 }
                 add(icon).size(27f).padRight(3f)

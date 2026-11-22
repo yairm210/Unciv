@@ -6,11 +6,9 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.websocket.*
-import io.ktor.client.plugins.websocket.cio.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
@@ -42,7 +40,7 @@ open class ApiV2Wrapper(baseUrl: String) {
     }.toString()
 
     // HTTP client to handle the server connections, logging, content parsing and cookies
-    internal val client = HttpClient(CIO) {
+    internal val client = HttpClient {
         // Do not add install(HttpCookies) because it will break Cookie handling
         install(ContentNegotiation) {
             json(Json {
@@ -159,7 +157,7 @@ open class ApiV2Wrapper(baseUrl: String) {
 
         coroutineScope {
             try {
-                val session = client.webSocketRawSession {
+                val session = client.uncivWebSocketRawSession {
                     authHelper.add(this)
                     url {
                         protocol = if (Url(baseServer).protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS

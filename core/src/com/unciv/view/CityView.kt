@@ -1,6 +1,8 @@
 package com.unciv.view
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
@@ -8,9 +10,7 @@ import com.unciv.logic.city.StatTreeNode
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
-import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Religion
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.logic.map.tile.RoadStatus
 import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of the viewer's [gameView]. UI should use this and not city directly.
@@ -31,14 +32,14 @@ import yairm210.purity.annotations.Readonly
 class CityView(city: City,
                viewer: Civilization,
                spectatorMode: Boolean = false,
-               override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+               gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
     // Navigation
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
     @Readonly fun viewingCiv(): CivView = gameView.civView
 
     /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
     @Readonly fun getViewableCities(): List<CityView> {
-        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
+        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator
         return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
             .filter { it.civ != viewer }
             .map { gameView.getCityView(it) }
@@ -46,10 +47,13 @@ class CityView(city: City,
     }
 
     // Data retrieval
+    /** Cities of the same civ within [maxDistance] of this city */
+    @Readonly fun getNeighboringOwnCities(maxDistance: Int = 12): List<CityView> =
+        city.getNeighboringCities(maxDistance).filter { it.civ == city.civ }.map { gameView.getCityView(it) }
+    @Readonly fun getRoadTypeOfConnectionToCapital(): RoadStatus = city.cityStats.getRoadTypeOfConnectionToCapital()
     @Readonly fun isInRange(tileView: TileView): Boolean = tileView.unwrap() in city.tilesInRange
 
-    @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
+    @Deprecated("Scheduled for removal")
     @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
@@ -59,7 +63,6 @@ class CityView(city: City,
         city.expansion.getGoldCostOfTile(getTile(tileView), extraTiles)
     // Population
     @Readonly fun getFreePopulation(): Int = city.population.getFreePopulation()
-    @Readonly fun getPopulationCount(): Int = city.population.population
     @Readonly fun getFoodStored(): Int = city.population.foodStored
     @Readonly fun getFoodToNextPopulation(): Int = city.population.getFoodToNextPopulation()
     @Readonly fun getMaxSpecialists(): Counter<String> = city.population.getMaxSpecialists()
@@ -67,15 +70,10 @@ class CityView(city: City,
     val manualSpecialists: Boolean get() = city.manualSpecialists
     @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
     @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+    @Readonly fun foodForNextTurn(): Int = city.foodForNextTurn()
     @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
-    @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
-    @Readonly fun religion(): CityReligionManager = city.religion
-    @Readonly fun isStarving(): Boolean = city.isStarving()
-    @Readonly fun isGrowing(): Boolean = city.isGrowing()
-    @Readonly fun isInResistance(): Boolean = city.isInResistance()
-    @Readonly fun isWeLoveTheKingDayActive(): Boolean = city.isWeLoveTheKingDayActive()
     val demandedResource: String get() = city.demandedResource
     @Readonly fun getFlag(flag: CityFlags): Int = city.getFlag(flag)
     @Readonly fun getCityFocus(): CityFocus = city.getCityFocus()
@@ -96,9 +94,7 @@ class CityView(city: City,
 
     // Constructions
     val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView, viewer, spectatorMode)
-    @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
-    @Readonly fun isPuppet(): Boolean = city.isPuppet
     @Readonly fun hasMatchingUnique(uniqueType: UniqueType): Boolean = city.getMatchingUniques(uniqueType).any()
     @Readonly fun getDisabledConstructions(): Set<String> = city.disabledConstructions
     @Readonly fun isStatRelated(stat: Stat, building: Building): Boolean = building.isStatRelated(stat, city)
@@ -117,10 +113,7 @@ class CityView(city: City,
     @Readonly fun hasSoldBuildingThisTurn(): Boolean = city.hasSoldBuildingThisTurn
     @Readonly fun isGodModeEnabled(): Boolean = city.civ.gameInfo.gameParameters.godMode
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
-    @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
-    @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
-    @Readonly fun isCapital(): Boolean = city.isCapital()
-    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { gameView.getMapUnitView(it) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
     @Readonly fun chooseNewTileToOwn(): TileView? = city.expansion.chooseNewTileToOwn()?.let { gameView.tileMapView.getTile(it) }
@@ -137,18 +130,12 @@ class CityView(city: City,
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 
     @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
-    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
-    @Readonly fun getYourReligion(): Religion? = viewer.religionManager.religion
     @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
         construction.canBePurchasedWithAnyStat(city)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
     @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
-    @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
-        tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)
-    @Readonly fun rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, city.civ)
     @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
@@ -195,9 +182,17 @@ class CityView(city: City,
         if (!canChangeState()) return null
         return city.cityConstructions.lowerPriority(index)
     }
-    fun updateTileStats() = city.cityStats.updateTileStats()
+    // TODO Citystats being stateful breaks the "stateless" ideal of View API, think about this :/
+    fun updateTileStats(): Boolean {
+        city.cityStats.updateTileStats()
+        return true
+    }
 
-    fun updateCityStats() = city.cityStats.update()
+    // TODO Citystats being stateful breaks the "stateless" ideal of View API, think about this :/
+    fun updateCityStats(): Boolean {
+        city.cityStats.update()
+        return true
+    }
     fun tryRenameCity(name: String): Boolean {
         if (!canChangeState()) return false
         city.name = name
@@ -228,29 +223,35 @@ class CityView(city: City,
         city.sellBuilding(construction)
         return true
     }
-    fun tryMoveEntryToTop(index: Int) {
-        if (!canChangeState()) return
+    fun tryMoveEntryToTop(index: Int): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.moveEntryToTop(index)
+        return true
     }
-    fun tryMoveEntryToEnd(index: Int) {
-        if (!canChangeState()) return
+    fun tryMoveEntryToEnd(index: Int): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.moveEntryToEnd(index)
+        return true
     }
-    fun tryAddToQueueConstruction(construction: IConstruction, addToTop: Boolean = false) {
-        if (!canChangeState()) return
+    fun tryAddToQueueConstruction(construction: IConstruction, addToTop: Boolean = false): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.addToQueue(construction, addToTop = addToTop)
+        return true
     }
-    fun tryRemoveAllByName(name: String) {
-        if (!canChangeState()) return
+    fun tryRemoveAllByName(name: String): Boolean {
+        if (!canChangeState()) return false
         city.cityConstructions.removeAllByName(name)
+        return true
     }
-    fun tryDisableConstruction(name: String) {
-        if (!canChangeState()) return
+    fun tryDisableConstruction(name: String): Boolean {
+        if (!canChangeState()) return false
         city.disabledConstructions.add(name)
+        return true
     }
-    fun tryEnableConstruction(name: String) {
-        if (!canChangeState()) return
+    fun tryEnableConstruction(name: String): Boolean {
+        if (!canChangeState()) return false
         city.disabledConstructions.remove(name)
+        return true
     }
     fun tryReassignPopulation(resetLocked: Boolean = false): Boolean {
         if (!canChangeState()) return false
@@ -295,4 +296,17 @@ class CityView(city: City,
         return true
     }
 
+    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done. */
+    fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
+        Battle.attackOrNuke(CityCombatant(city), attackableTileView.unwrap())
+
 }
+
+// Helpers built on top of the view API, rather than being part of it
+@Readonly fun CityView.isStarving(): Boolean = foodForNextTurn() < 0
+@Readonly fun CityView.isGrowing(): Boolean = foodForNextTurn() > 0
+@Readonly fun CityView.currentConstructionName(): String = constructions.currentConstructionName()
+
+/** Explored tiles in work range that belong to this city's civ and could be worked */
+@Readonly fun CityView.getWorkableTiles(): Sequence<TileView> =
+    getCenterTile().getExploredTilesInDistance(getWorkRange()).filter { it.getOwner() == owningCiv() }

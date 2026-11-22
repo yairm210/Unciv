@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
@@ -17,7 +16,6 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
-import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -27,6 +25,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -48,7 +47,6 @@ import com.unciv.utils.isRunFromJar
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
-import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,12 +54,6 @@ import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.isDirectory
-import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.pathString
 
 internal class AdvancedTab(
     optionsPopup: OptionsPopup
@@ -97,7 +89,6 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
-        addUpdateModCategories()
         addScreenhotGeneration()
 
         super.lateInitialize()
@@ -168,41 +159,14 @@ internal class AdvancedTab(
     }
 
     private fun addFontFamilySelect() {
-        /** Build provider for [addAsyncSelectBox]: per-mod scan */
-        @Suppress("NewApi")
-        fun loadModFonts(mod: Path) = flow {
-            kotlin.io.path.fileVisitor {  }
-            if (!mod.isDirectory()) return@flow
-            val fontsPath = mod.resolve("fonts")
-            if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
-            java.nio.file.Files.list(fontsPath).use { stream->
-                for (file in stream) {
-                    if (file.extension.lowercase() != "ttf") continue
-                    emit(FontFamilyData(
-                        "${file.nameWithoutExtension} (${mod.name})",
-                        file.nameWithoutExtension,
-                        file.pathString
-                    ))
-                }
-            }
-        }.flowOn(Dispatchers.IO)
-
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
         @Suppress("NewApi")
         fun loadFonts() = flow {
             // Add default font
             emit(FontFamilyData.default)
             // List mod fonts
-            val modsDir = UncivGame.Current.files.getModsFolder()
-            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26) {
-                if (modsDir.type() == Files.FileType.External) {
-                    val modNio = modsDir.file().toPath()
-                    java.nio.file.Files.list(modNio).use { stream ->
-                        for (mod in stream)
-                            emitAll(loadModFonts(mod))
-                    }
-                }
-            }
+            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26)
+                emitAll(Fonts.fontImplementation.getModFonts(UncivGame.Current.files.getModsFolder()))
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)
@@ -256,6 +220,8 @@ internal class AdvancedTab(
         if (Gdx.app.type != Application.ApplicationType.Desktop) return
 
         val generateTranslationsButton = "Generate translation files".toTextButton()
+        generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
+        generateTranslationsButton.addTooltip("F12", 18f)
 
         // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
         val entries = listOf("All mods") +
@@ -263,20 +229,34 @@ internal class AdvancedTab(
             RulesetCache.keys.filter { mod -> BaseRuleset.entries.none { it.fullName == mod } }.sorted()
         val modSelect = TranslatedSelectBox(entries, "All mods")
 
-        generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
-        generateTranslationsButton.addTooltip("F12", 18f)
+        val backupCheckBox = "backup".toCheckBox()
+        modSelect.onChange {
+            backupCheckBox.isDisabled = modSelect.selected.value == BaseRuleset.Civ_V_GnK.fullName
+        }
 
-        add(generateTranslationsButton)
-        add(modSelect).maxWidth(stage.width / 2).row()
+        addWrapped {
+            defaults().space(10f)
+            add(generateTranslationsButton)
+            add(modSelect).maxWidth(this@AdvancedTab.stage.width / 2)
+            add(backupCheckBox)
+        }
         val resultCell = add().colspan(2)
         row()
+
+        if (entries.size == 1) {
+            // nothing to do - neither builtin translations nor mods
+            generateTranslationsButton.disable()
+            modSelect.isDisabled = true
+            backupCheckBox.isDisabled = true
+            return
+        }
 
         generateTranslationsButton.onActivation {
             resultCell.setActor(null)
             generateTranslationsButton.setText(Constants.working.tr())
             generateTranslationsButton.disable()
             Concurrency.run("WriteTranslations") {
-                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value)
+                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value, backup = backupCheckBox.isChecked)
                 launchOnGLThread {
                     if (stage == null) return@launchOnGLThread // Guard the width below in case the user closed the Options in the mean time
                     // notify about completion
@@ -287,21 +267,6 @@ internal class AdvancedTab(
                 }
             }
         }
-    }
-
-    private fun addUpdateModCategories() {
-        val updateModCategoriesButton = "Update Mod categories".toTextButton()
-        updateModCategoriesButton.onActivation {
-            updateModCategoriesButton.setText(Constants.working.tr())
-            Concurrency.run("GithubTopicQuery") {
-                val result = ModCategories.mergeOnline()
-                launchOnGLThread {
-                    updateModCategoriesButton.setText(result)
-                }
-            }
-        }
-        add(updateModCategoriesButton).colspan(2).row()
-
     }
 
     private fun addScreenhotGeneration() {
@@ -385,8 +350,8 @@ internal class AdvancedTab(
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
-            val clipboardContents = Gdx.app.clipboard.contents.trim()
-            if (clipboardContents.isUUID()) {
+            val clipboardContents = Gdx.app.clipboard.contents?.trim()
+            if (clipboardContents != null && clipboardContents.isUUID()) {
                 ConfirmPopup(
                     stage,
                     "Doing this will reset your current user ID to the clipboard contents - are you sure?",

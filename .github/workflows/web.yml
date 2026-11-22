@@ -1,0 +1,91 @@
+name: Browser build and validation
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/web.yml
+      - android/assets/**
+      - build.gradle.kts
+      - buildSrc/**
+      - core/**
+      - desktop/src/com/unciv/app/desktop/ImagePacker.kt
+      - gradle/**
+      - gradle.properties
+      - settings.gradle.kts
+      - tests/**
+      - web/**
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.1'
+      - name: Test and build the pinned browser target
+        run: |
+          set -o pipefail
+          mkdir -p web/build/validation/ci
+          gradle -Pweb -PwebCompilerMemory=8192 '-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1g' \
+            :web:test :web:preparePages --max-workers=2 --no-daemon --console=plain \
+            -Pkotlin.compiler.execution.strategy=in-process 2>&1 | tee web/build/validation/ci/gradle.log
+      - name: Check generated JavaScript and record inputs
+        run: |
+          node --check web/build/pages/game/app.js
+          cp web/dependencies.lock.properties web/build/pages/game/dependencies.lock.properties
+          git rev-parse HEAD > web/build/pages/game/SOURCE_COMMIT
+          touch web/build/pages/game/.nojekyll
+      - name: Install browser test dependencies
+        run: |
+          npm install --prefix web/build/validation/headless-browser --no-save playwright@1.57.0
+          web/build/validation/headless-browser/node_modules/.bin/playwright install --with-deps chromium
+          sudo apt-get install -y fonts-dejavu-core
+      - name: Test browser fonts and generated game
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/web/build/validation/headless-browser/node_modules/playwright
+          WEB_FONT_TEST_TTF: /usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf
+          WEB_FONT_PROFILE: ${{ github.workspace }}/web/build/validation/ci/font-profile
+        run: |
+          set -o pipefail
+          node web/validation/web-font/run.cjs 2>&1 | tee web/build/validation/ci/web-font.log
+          python3 -m http.server 18081 --bind 127.0.0.1 --directory web/build/pages/game \
+            > web/build/validation/ci/preview-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:18081/; then break; fi
+            sleep 1
+          done
+          curl --fail --silent --output /dev/null http://127.0.0.1:18081/app.js
+          node web/validation/web-font/run-game.cjs 2>&1 | tee web/build/validation/ci/web-font-game.log
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-test-evidence
+          path: |
+            web/build/validation/ci/*.log
+            web/build/test-results/test/
+            web/build/reports/tests/test/
+          if-no-files-found: ignore
+      - name: Upload deployable game
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-game
+          path: web/build/pages/game/
+          if-no-files-found: error

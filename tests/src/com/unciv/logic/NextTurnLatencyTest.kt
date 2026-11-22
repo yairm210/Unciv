@@ -66,6 +66,12 @@ class NextTurnLatencyTest {
 
         @BeforeClass @JvmStatic
         fun setup() {
+            val savePath = System.getProperty(SAVE_FILE_PROPERTY)
+            Assume.assumeTrue(
+                "Set -D$SAVE_FILE_PROPERTY=/path/to/save to run this test",
+                savePath != null
+            )
+
             UncivGame.Current = UncivGame()
             UncivGame.Current.settings = GameSettings()
             UncivGame.Current.files = UncivFiles(Gdx.files)
@@ -77,10 +83,6 @@ class NextTurnLatencyTest {
     @RedirectOutput(RedirectPolicy.Show)
     fun nextTurnLatency() {
         val savePath = System.getProperty(SAVE_FILE_PROPERTY)
-        Assume.assumeTrue(
-            "Set -D$SAVE_FILE_PROPERTY=/path/to/save to run this test",
-            savePath != null
-        )
 
         val saveFile = File(savePath!!)
         require(saveFile.exists()) { "Save file not found: $savePath" }

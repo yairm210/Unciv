@@ -107,7 +107,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                     startStealingTech()
             }
             SpyAction.Surveillance -> {
-                if (!getCity().civ.isMajorCiv()) return
+                if (!getCity().civ.isMajorCiv) return
                 if (canStealTech() != CanStealTech.Yes) return // nope
                 setAction(SpyAction.StealingTech) // There are new techs to steal!
             }
@@ -223,7 +223,16 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         spyResult -= getSkillModifierPercent()
         // Subtract the experience of the counter intelligence spies
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
-        spyResult += defendingSpy?.getSkillModifierPercent() ?: 0
+        val defendingModifierUniques = if (defendingSpy == null) emptySequence()
+        else city.getMatchingUniques(UniqueType.CounterIntelligenceEffectiveness, city.state, includeCivUniques = true)
+        var defendingModifier = defendingModifierUniques
+            .filter { city.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+        defendingModifier += civInfo.getMatchingUniques(UniqueType.EnemyCounterEffectiveness)
+            .filter { city.matchesFilter(it.params[1], civInfo) }
+            .sumOf { it.params[0].toInt() }
+        val defendingEffectiveness = (defendingSpy?.getSkillModifierPercent() ?: 0)  * (defendingModifier / 100.0 + 1)
+        spyResult += defendingEffectiveness.toInt()
 
         val detectionString = when {
             spyResult >= 200 -> { // The spy was killed in the attempt (should be able to happen even if there's nothing to steal?)
@@ -298,7 +307,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
                 if (civ == allyCiv || civ == civInfo) continue
                 civ.addNotification("A spy from [${civInfo.civName}] successfully staged a coup in [${cityState.civName}]!", getCity().location,
                         NotificationCategory.Espionage, civInfo.civName,  NotificationIcon.Spy, cityState.civName)
-                if (civ.isSpectator()) continue
+                if (civ.isSpectator) continue
                 cityState.getDiplomacyManager(civ)!!.reduceInfluence(10f) // Guess
             }
             setAction(SpyAction.RiggingElections, 10)
@@ -424,14 +433,11 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val maxRank = civInfo.gameInfo.ruleset.modOptions.constants.maxSpyRank
         var effective = rank
         val city = getCityOrNull() ?: return effective.coerceIn(1, maxRank)
-        effective += city.getMatchingUniques(
-            UniqueType.CounterIntelligenceSpyRankBonus,
-            city.state,
-            includeCivUniques = true
-        ).filter {
-            city.matchesFilter(it.params[0], viewingCiv = civInfo) &&
-                it.params[2].equals(action.displayString, ignoreCase = true)
-        }.sumOf { it.params[1].toInt() }
+        city.forEachMatchingUnique(UniqueType.CounterIntelligenceSpyRankBonus, city.state, includeCivUniques = true) { unique ->
+            if (city.matchesFilter(unique.params[0], viewingCiv = civInfo) &&
+                unique.params[2].equals(action.displayString, ignoreCase = true))
+                effective += unique.params[1].toInt()
+        }
         return effective.coerceIn(1, maxRank)
     }
 
@@ -466,8 +472,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
         }
         var totalEfficiency = 1.0
-        totalEfficiency *= (100.0 + friendlyUniques.sumOf { it.params[0].toInt() }) / 100
-        totalEfficiency *= (100.0 + enemyUniques.sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + friendlyUniques
+            .filter { city == null || city.matchesFilter(it.params[1], civInfo) }
+            .sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + enemyUniques
+            .filter { city != null && city.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }) / 100
         return totalEfficiency.coerceAtLeast(0.0)
     }
 

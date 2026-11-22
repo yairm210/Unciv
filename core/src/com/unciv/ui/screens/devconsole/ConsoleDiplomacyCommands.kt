@@ -63,7 +63,7 @@ internal class ConsoleDiplomacyCommands : ConsoleCommandNode {
         },
         "setinfluence" to ConsoleAction("diplomacy setinfluence <civName> <civName> <amount>") { console, params ->
             val diplo = getDiplomacy(console, params)!!
-            if (!diplo.civInfo.isCityState || !diplo.otherCiv.isMajorCiv())
+            if (!diplo.civInfo.isCityState || !diplo.otherCiv.isMajorCiv)
                 throw ConsoleErrorException("first civ must be the city-state, second a major civ")
             val amount = params[2].toFloat()
             diplo.setInfluence(amount)
