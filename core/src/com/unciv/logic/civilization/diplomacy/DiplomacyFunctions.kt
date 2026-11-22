@@ -26,16 +26,16 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun makeCivilizationsMeet(otherCiv: Civilization, warOnContact: Boolean = false) {
         meetCiv(otherCiv, warOnContact)
         otherCiv.diplomacyFunctions.meetCiv(civInfo, warOnContact)
-        // As in Civ V, city-state influence starts at its resting point (e.g. from policies or religion),
-        // since Civ V already moves influence toward it before the two civs have met
-        val (cityState, major) = if (civInfo.isCityState) civInfo to otherCiv else otherCiv to civInfo
-        if (!warOnContact && cityState.isCityState && major.isMajorCiv)
-            cityState.getDiplomacyManager(major)?.run { setInfluence(getCityStateInfluenceRestingPoint()) }
     }
 
     private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
         civInfo.diplomacy[otherCiv.civID] = DiplomacyManager(civInfo, otherCiv)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
+
+        // As in Civ V, city-state influence starts at its resting point (e.g. from policies or religion),
+        // since Civ V already moves influence toward it before the two civs have met
+        if (civInfo.isCityState && otherCiv.isMajorCiv && !warOnContact)
+            civInfo.getDiplomacyManager(otherCiv)!!.run { setInfluence(getCityStateInfluenceRestingPoint()) }
 
         if (!otherCiv.isSpectator)
             otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civInfo.civID))
