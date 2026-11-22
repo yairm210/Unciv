@@ -348,6 +348,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableWonders = ArrayList<Table>()
                 val buildableNationalWonders = ArrayList<Table>()
                 val buildableBuildings = ArrayList<Table>()
+                val buildableInternationalProjects = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
                 val blacklisted = ArrayList<Table>()
                 val disabledAutoAssignConstructions: Set<String> = cityView.getDisabledConstructions()
