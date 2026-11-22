@@ -695,7 +695,7 @@ object Battle {
 
         city.hasJustBeenConquered = true
         city.getCenterTile().apply {
-            if (militaryUnit != null) militaryUnit!!.destroy()
+            for (unit in militaryUnits()) unit.destroy()
             if (civilianUnit != null) BattleUnitCapture.captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
@@ -761,7 +761,7 @@ object Battle {
     @Readonly
     fun getMapCombatantOfTile(tile: Tile): ICombatant? {
         if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
-        if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)
+        tile.bestDefender()?.let { return MapUnitCombatant(it) }
         if (tile.civilianUnit != null) return MapUnitCombatant(tile.civilianUnit!!)
         return null
     }

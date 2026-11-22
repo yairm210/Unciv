@@ -74,6 +74,12 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             if (!isVisible(unit)) return null
             return toForeignMapUnitView(unit)
         }
+    val secondMilitaryUnit: ForeignMapUnitView?
+        get() {
+            val unit = tile.secondMilitaryUnit ?: return null
+            if (!isVisible(unit)) return null
+            return toForeignMapUnitView(unit)
+        }
     @Readonly fun getVisibleUnits(): List<ForeignMapUnitView> {
         if (viewer == null) return emptyList()
         return tile.getUnits()
@@ -88,8 +94,9 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         if (tile.isCityCenter())
             return gameView.getForeignCityView(tile.getCity()!!).asCombatant()
 
-        val militaryUnit = tile.militaryUnit
-        if (militaryUnit != null && isVisible(militaryUnit))
+        // The battle's own choice of defender among the visible military units (Battle.getMapCombatantOfTile).
+        val militaryUnit = tile.bestDefender(tile.militaryUnits().filter { isVisible(it) })
+        if (militaryUnit != null)
             return toForeignMapUnitView(militaryUnit).asCombatant()
         val civilianUnit = tile.civilianUnit
         if (civilianUnit != null && isVisible(civilianUnit))

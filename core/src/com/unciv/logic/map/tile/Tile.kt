@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -42,6 +43,10 @@ import kotlin.random.Random
 class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
     //region Serialized fields
     var militaryUnit: MapUnit? = null
+    /** As in Civ V (CvGameQueries::AreUnitsSameType), a military unit of the other domain may share the tile: a ship with a
+     *  land unit (embarked at sea, or in a city) of the same owner. [militaryUnit] is filled first and is never empty
+     *  while this one holds a unit. */
+    var secondMilitaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>(0)
 
@@ -239,6 +244,7 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
         toReturn.isOcean = isOcean
         if (addUnits) {
             if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
+            if (secondMilitaryUnit != null) toReturn.secondMilitaryUnit = secondMilitaryUnit!!.clone()
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
             toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
         }
@@ -284,10 +290,24 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
 
         return sequence {
             if (militaryUnit != null) yield(militaryUnit!!)
+            if (secondMilitaryUnit != null) yield(secondMilitaryUnit!!)
             if (civilianUnit != null) yield(civilianUnit!!)
             if (airUnits.isNotEmpty()) yieldAll(airUnits)
         }
     }
+
+    @Readonly fun militaryUnits(): List<MapUnit> = when {
+        militaryUnit == null -> emptyList()
+        secondMilitaryUnit == null -> listOf(militaryUnit!!)
+        else -> listOf(militaryUnit!!, secondMilitaryUnit!!)
+    }
+    /** The military unit here of [unit]'s domain (sea, or land including embarked), the one it cannot share the tile with. */
+    @Readonly fun militaryUnitOfDomain(unit: MapUnit): MapUnit? =
+        militaryUnits().firstOrNull { it.baseUnit.isWaterUnit == unit.baseUnit.isWaterUnit }
+    /** Civ V's best defender: of the military units here, the strongest defence at its current health. Combat estimates and
+     *  battles both take it, so they agree. */
+    @Readonly fun bestDefender(candidates: List<MapUnit> = militaryUnits()): MapUnit? = if (candidates.size < 2) candidates.firstOrNull()
+        else candidates.maxByOrNull { MapUnitCombatant(it).getDefendingStrength(null).toFloat() * it.health }
 
     /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */
     @Readonly
@@ -482,11 +502,11 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
         // For water tiles need also to check neighbors:
         // enemy military naval units blockade all adjacent water tiles.
         for (neighbor in neighbors.filter { it.isWater }) {
-            val neighborUnit = neighbor.militaryUnit ?: continue
-
-            // Embarked units do not blockade adjacent tiles
-            if (neighborUnit.civ.isAtWarWith(owner) && !neighborUnit.isEmbarked())
-                return true
+            for (neighborUnit in neighbor.militaryUnits()) {
+                // Embarked units do not blockade adjacent tiles
+                if (neighborUnit.civ.isAtWarWith(owner) && !neighborUnit.isEmbarked())
+                    return true
+            }
         }
         return false
     }
@@ -1026,7 +1046,9 @@ class Tile : IsPartOfGameInfoSerialization, TileInterface<Tile> {
         when {
             airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
-            militaryUnit == mapUnit -> militaryUnit = null
+            // The second military unit moves up, so [militaryUnit] is empty only when the tile has none.
+            militaryUnit == mapUnit -> { militaryUnit = secondMilitaryUnit; secondMilitaryUnit = null }
+            secondMilitaryUnit == mapUnit -> secondMilitaryUnit = null
         }
     }
 

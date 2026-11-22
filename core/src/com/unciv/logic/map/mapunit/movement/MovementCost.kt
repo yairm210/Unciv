@@ -202,8 +202,8 @@ object MovementCost {
                         return true
             } else if (neighbor.militaryUnit != null) {
                 if (neighbor.aerialDistanceTo(to) == 1
-                    && (neighbor.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !neighbor.militaryUnit!!.isEmbarked()))
-                    && unit.civ.isAtWarWith(neighbor.militaryUnit!!.civ))
+                    && neighbor.militaryUnits().any { (it.type.isWaterUnit() || (unit.type.isLandUnit() && !it.isEmbarked()))
+                        && unit.civ.isAtWarWith(it.civ) })
                         return true
             }
         }

@@ -242,10 +242,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         val civUnit = selectedTileView.civilianUnit
         val milUnit = selectedTileView.militaryUnit
+        // A ship and a land unit may share the tile; repeated clicks cycle military, second military, civilian.
+        val milUnit2 = selectedTileView.secondMilitaryUnit
 
         val nextUnitView: ForeignMapUnitView?
         val priorityUnit = when {
             milUnit != null && milUnit.isEligible() -> milUnit
+            milUnit2 != null && milUnit2.isEligible() -> milUnit2
             civUnit != null && civUnit.isEligible() -> civUnit
             else -> null
         }
@@ -253,7 +256,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         nextUnitView = when {
             curUnit == null -> priorityUnit
             curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
-            curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
+            curUnit == milUnit && milUnit2 != null && milUnit2.isEligible() -> milUnit2
+            (curUnit == milUnit || curUnit == milUnit2 && milUnit2 != null) && civUnit != null && civUnit.isEligible() -> civUnit
             else -> priorityUnit
         }
 

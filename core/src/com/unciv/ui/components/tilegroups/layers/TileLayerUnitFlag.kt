@@ -19,10 +19,12 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     private var civilianUnitIcon: UnitIconGroup? = null
     private var militaryUnitIcon: UnitIconGroup? = null
+    private var secondMilitaryUnitIcon: UnitIconGroup? = null
 
     private fun clearSlots() {
         civilianUnitIcon?.let { removeOwnedActor(it) }
         militaryUnitIcon?.let { removeOwnedActor(it) }
+        secondMilitaryUnitIcon?.let { removeOwnedActor(it) }
     }
 
     private fun setIconPosition(slot: Int, icon: UnitIconGroup) {
@@ -97,12 +99,15 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             return civilianUnitIcon
         else if (militaryUnitIcon?.unitView == unitView)
             return militaryUnitIcon
+        else if (secondMilitaryUnitIcon?.unitView == unitView)
+            return secondMilitaryUnitIcon
         return null
     }
 
     private fun highlightRed() {
         civilianUnitIcon?.highlightRed()
         militaryUnitIcon?.highlightRed()
+        secondMilitaryUnitIcon?.highlightRed()
     }
 
     private fun fillSlots(viewingCiv: CivView?) {
@@ -113,6 +118,10 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
         civilianUnitIcon = newUnitIcon(0, tileGroup.tileView.civilianUnit, isCivilianShown, viewingCiv)
         militaryUnitIcon = newUnitIcon(1, tileGroup.tileView.militaryUnit, isMilitaryShown, viewingCiv)
+        // A ship and a land unit sharing the tile stand side by side in the military slot.
+        secondMilitaryUnitIcon = newUnitIcon(1, tileGroup.tileView.secondMilitaryUnit, isMilitaryShown, viewingCiv)
+        val first = militaryUnitIcon; val second = secondMilitaryUnitIcon
+        if (first != null && second != null) { first.x -= first.width / 2; second.x += second.width / 2 }
     }
 
     override fun doUpdate(viewingCiv: CivView?) {
@@ -132,9 +141,10 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         clearSlots()
         civilianUnitIcon = null
         militaryUnitIcon = null
+        secondMilitaryUnitIcon = null
     }
 
     override fun determineVisibility() {
-        isVisible = civilianUnitIcon != null || militaryUnitIcon != null
+        isVisible = civilianUnitIcon != null || militaryUnitIcon != null || secondMilitaryUnitIcon != null
     }
 }

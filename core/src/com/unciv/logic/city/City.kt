@@ -258,7 +258,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isGarrisoned() = getGarrison() != null
     @Readonly
     fun getGarrison(): MapUnit? =
-            getCenterTile().militaryUnit?.takeIf {
+            getCenterTile().militaryUnits().firstOrNull {
                 it.civ == this.civ && it.canGarrison()
             }
 

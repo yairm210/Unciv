@@ -397,7 +397,7 @@ class UnitMovement(val unit: MapUnit) {
         val escortedUnit = if (checkEscorted && unit.isEscorting()) unit.getOtherEscortUnit() else null // Only isEscorting has the actual flag check
         fun MapUnit.getMatchInReachableTile() =
             if (isCivilian()) reachableTile.civilianUnit
-            else reachableTile.militaryUnit
+            else reachableTile.militaryUnitOfDomain(this)
         val otherUnit =
             unit.getMatchInReachableTile()
             ?: escortedUnit?.getMatchInReachableTile()
@@ -652,7 +652,7 @@ class UnitMovement(val unit: MapUnit) {
             if (unit.isCivilian())
                 destination.civilianUnit
             else
-                destination.militaryUnit
+                destination.militaryUnitOfDomain(unit)
             )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
         otherUnit.stopEscorting()
         val ourOldPosition = unit.getTile()
@@ -695,9 +695,9 @@ class UnitMovement(val unit: MapUnit) {
 
     private fun swapMoveEscortPair(destination: Tile) {
         val escortedUnit = unit.getOtherEscortUnit() ?: return
-        val destinationWasEscortingUnit = destination.militaryUnit?.takeIf { it.isEscorting() }
+        val destinationWasEscortingUnit = destination.militaryUnits().firstOrNull { it.isEscorting() }
         unit.stopEscorting() // If a moveToTile comes first - it would try to keep the escort and fail
-        fun MapUnit.needsSwapTo() = (if (isCivilian()) destination.civilianUnit else destination.militaryUnit) != null
+        fun MapUnit.needsSwapTo() = (if (isCivilian()) destination.civilianUnit else destination.militaryUnitOfDomain(this)) != null
         fun MapUnit.swapOrMoveToDestination() =
             if (needsSwapTo()) movement.swapMoveToTile(destination)
             else movement.moveToTile(destination)
@@ -757,7 +757,9 @@ class UnitMovement(val unit: MapUnit) {
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
         // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
+            // As in Civ V, a ship and a land unit (embarked, or in a city) of one owner may share a tile; two of one domain may not.
+            (tile.militaryUnit == null || (allowSwap && tile.militaryUnitOfDomain(unit)?.owner == unit.owner)
+                || (tile.secondMilitaryUnit == null && tile.militaryUnit!!.owner == unit.owner && tile.militaryUnitOfDomain(unit) == null))
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
 
         if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
@@ -803,7 +805,7 @@ class UnitMovement(val unit: MapUnit) {
     /** Military or civilian unit standing on [tile] that a swap would move away. */
     @Readonly
     private fun unitLeavingOnSwap(tile: Tile): MapUnit? {
-        val departing = if (unit.isCivilian()) tile.civilianUnit else tile.militaryUnit
+        val departing = if (unit.isCivilian()) tile.civilianUnit else tile.militaryUnitOfDomain(unit)
         if (departing == null || departing == unit) return null
         if (departing.owner != unit.owner) return null
         return departing
@@ -841,10 +843,8 @@ class UnitMovement(val unit: MapUnit) {
                 return null // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
-        if (tile.militaryUnit != null) {
-            val unitAtDestination = tile.militaryUnit!!
-            if (unitAtDestination.canTransport(unit)) return null
-        }
+        // A carrier may share its tile with an embarked land unit, in either slot.
+        if (tile.militaryUnits().any { it.canTransport(unit) }) return null
         return CannotMoveToReason.NoAirUnitTransport
     }
 

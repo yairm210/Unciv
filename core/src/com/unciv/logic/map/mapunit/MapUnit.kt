@@ -774,8 +774,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun getOtherEscortUnit(): MapUnit? {
         if (!::currentTile.isInitialized) return null // In some cases we might not have the unit placed on the map yet
-        if (isCivilian()) return getTile().militaryUnit
-        if (isMilitary()) return getTile().civilianUnit
+        // With a ship and a land unit on one tile, a civilian pairs with the one of its own domain, and only that one with it.
+        if (isCivilian()) return getTile().militaryUnitOfDomain(this)
+        if (isMilitary()) return getTile().civilianUnit?.takeIf { getTile().militaryUnitOfDomain(it) == this }
         return null
     }
 
@@ -1064,6 +1065,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             }
             baseUnit.isAirUnit() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
+            tile.militaryUnit != null && tile.militaryUnit != this -> tile.secondMilitaryUnit = this // the other domain's (canMoveTo)
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
