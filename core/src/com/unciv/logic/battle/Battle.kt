@@ -715,8 +715,9 @@ object Battle {
             return
         }
 
-        if (city.isOriginalCapital && city.foundingCivObject == attackerCiv) {
-            // retaking old capital
+        // Retaking a city we founded: it simply rejoins us, as in Civ V (CvPlayer::acquireCity asks only when the city's
+        // original owner is someone else). A civ that may not annex keeps the choice, except for its old capital.
+        if (city.foundingCivObject == attackerCiv && (city.isOriginalCapital || !attackerCiv.hasUnique(UniqueType.MayNotAnnexCities))) {
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()

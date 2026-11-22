@@ -187,7 +187,9 @@ class CityConquestFunctions(val city: City) {
         if (!conqueringCiv.knows(oldCiv))
             conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(oldCiv)
 
-        oldCiv.getDiplomacyManager(conqueringCiv)!!
+        // Civ V awards no warmongering for retaking a city one founded (CvPlayer::acquireCity)
+        val retaking = city.foundingCivObject == conqueringCiv
+        if (!retaking) oldCiv.getDiplomacyManager(conqueringCiv)!!
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv }) {
@@ -195,7 +197,7 @@ class CityConquestFunctions(val city: City) {
             if (thirdPartyCiv.isAtWarWith(oldCiv)) // Shared Enemies should like us more
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                         .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at it! =D
-            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
+            else if (!retaking) thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
                     .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
         }
     }
