@@ -205,7 +205,7 @@ object BattleUnitCapture {
             .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
             .any { unique -> unique.params[0] == "Land" } }
             ?: return null
-        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit, capturedUnit.id)
+        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit, capturedUnit.id)?.also { it.currentMovement = 0f }
             ?.currentTile?.position
     }
 
