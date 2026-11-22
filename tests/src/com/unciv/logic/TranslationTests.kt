@@ -339,9 +339,11 @@ class TranslationTests {
 
         var allTranslationsCheckedOut = true
         for ((language, translation) in translationEntry) {
-            if (!translation.startsWith("\"")
+            // An empty translation is valid: a literal "" in the file means intentionally empty (no word boundary)
+            val isEmpty = translation.isEmpty()
+            if (!isEmpty && (!translation.startsWith("\"")
                 || !translation.endsWith("\"")
-                || translation.count { it == '\"' } != 2
+                || translation.count { it == '\"' } != 2)
             ) {
                 allTranslationsCheckedOut = false
                 println("Translation of the word boundary in $language was incorrectly formatted")
