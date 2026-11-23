@@ -179,7 +179,7 @@ object UnitActions {
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.FortifyUntilHealed,
             action = { unit.fortifyUntilHealed() }
-                .takeIf { !unit.isFortifyingUntilHealed() && unit.getHealAmountForTile(tile) > 0 },
+                .takeIf { !unit.isFortifyingUntilHealed() && unit.healingAmountForTile(tile) > 0 },
         ))
     }
 
@@ -194,7 +194,7 @@ object UnitActions {
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                .takeIf { !unit.isSleepingUntilHealed() && unit.getHealAmountForTile(tile) > 0 }
+                .takeIf { !unit.isSleepingUntilHealed() && unit.healingAmountForTile(tile) > 0 }
         ))
     }
 
