@@ -1225,16 +1225,27 @@
 		"uniques": ["Unbuildable", "Only available <when religion is enabled>"]
 	},
     {
-        "name": "International space station",
+        "name": "World's Fair",
         "isInternationalProject": true,
-        "cost": 2,
+        "cost": 20,
         "uniques": [
             "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
             "Free Social Policy <if contribution is above [33]%>",
-            "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>",
-            "[+10 Production] [in all cities]"
+            "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>"
         ],
         "requiredTech": "Agriculture",
-        "quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
-    }
+        "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
+    },
+  {
+    "name": "International Space Station",
+    "isInternationalProject": true,
+    "cost": 20,
+    "uniques": [
+      "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
+      "Free Social Policy <if contribution is above [33]%>",
+      "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>"
+    ],
+    "requiredTech": "Agriculture",
+    "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
+  }
 ]

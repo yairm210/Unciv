@@ -172,7 +172,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         val purchaseReason = canBePurchasedWithStatReasons(null, stat)
-        if (purchaseReason != PurchaseReason.UniqueAllowed && stat == Stat.Gold && isAnyWonder()) return false
+        if (purchaseReason != PurchaseReason.UniqueAllowed && stat == Stat.Gold && (isAnyWonder() || isInternationalProject)) return false
         if (city == null) return purchaseReason.purchasable
 
         val conditionalState = city.state
