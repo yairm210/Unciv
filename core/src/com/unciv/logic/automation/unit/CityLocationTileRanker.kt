@@ -40,8 +40,8 @@ object CityLocationTileRanker {
             else civ.cities().minOf { it.getCenterTile().aerialDistanceTo(unitTile) }
             (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
         }
-        // Only cities on tiles we have explored are known to us
-        val nearbyCities = unitTile.getExploredTilesInDistance(7 + range).mapNotNull { it.getCity() }.toList()
+        // Only cities whose center tile we have explored are known to us; each counted once, not per tile it owns
+        val nearbyCities = unitTile.getExploredTilesInDistance(7 + range).filter { it.isCityCenter() }.mapNotNull { it.getCity() }.toList()
 
         // Tile-specific conditionals of the founding uniques can't be checked through the view, so we only know whether the unit can found cities at all
         val canFoundCity = (unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)).any()
