@@ -8,8 +8,11 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.view.CivView
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
@@ -30,6 +33,11 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
         newProject.isClaimed = isClaimed
         newProject.contributions.putAll(contributions)
         return newProject
+    }
+    fun setTransients(gameInfo: GameInfo) {
+        this.gameInfo = gameInfo
+        val building = getBuilding()
+        projectUniqueMap = UniqueMap(building?.uniqueObjects?.asSequence() ?: emptySequence())
     }
     @Readonly
     private fun getBuilding():Building? {
@@ -73,17 +81,37 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
         return true
     }
     @Readonly
+    fun isInternationalProjectAvailable(viewingPlayer: CivView): Boolean {
+        val civ = viewingPlayer.getCiv()
+        val building = viewingPlayer.ruleset.buildings[name] ?: return false
+        if (isConstructed()) return true
+        if (civ.gameInfo.isUnavailableBySettingsCached(building)) return false
+        if (building.requiredTechs().any { !civ.tech.isResearched(it) }) return false
+
+        for (unique in building.uniqueObjects) {
+            when (unique.type) {
+                UniqueType.Unavailable ->
+                    if (unique.conditionalsApply(civ.state)) return false
+
+                UniqueType.OnlyAvailable,
+                UniqueType.CanOnlyBeBuiltWhen ->
+                    if (unique.modifiers.any { !Conditionals.conditionalApplies(unique, it, civ.state) })
+                        return false
+
+                else -> {}
+            }
+        }
+
+        if (building.uniqueTo != null && !civ.matchesFilter(building.uniqueTo!!, civ.state)) return false
+        if (civ.cache.uniqueBuildings.any { it.replaces == building.name }) return false
+
+        return true
+    }
+    @Readonly
     fun getCost(): Int {
         val building = getBuilding() ?: return 0
         var productionCost = building.cost.toFloat() * gameInfo.civilizations.count { it.isMajorCiv }
         productionCost *= gameInfo.speed.productionCostModifier
         return productionCost.toInt()
-    }
-    
-    
-    fun setTransients(gameInfo: GameInfo) {
-        this.gameInfo = gameInfo
-        val building = getBuilding()
-        projectUniqueMap = UniqueMap(building?.uniqueObjects?.asSequence() ?: emptySequence())
     }
 }

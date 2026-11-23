@@ -18,39 +18,11 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.view.CivView
 import kotlin.math.min
 
-internal fun isInternationalProjectAvailable(
-    viewingPlayer: CivView,
-    project: InternationalProject
-): Boolean {
-    val civ = viewingPlayer.getCiv()
-    val building = viewingPlayer.ruleset.buildings[project.name] ?: return false
-    if (project.isConstructed()) return true
-    if (civ.gameInfo.isUnavailableBySettingsCached(building)) return false
-    if (building.requiredTechs().any { !civ.tech.isResearched(it) }) return false
 
-    for (unique in building.uniqueObjects) {
-        when (unique.type) {
-            UniqueType.Unavailable ->
-                if (unique.conditionalsApply(civ.state)) return false
-
-            UniqueType.OnlyAvailable,
-            UniqueType.CanOnlyBeBuiltWhen ->
-                if (unique.modifiers.any { !Conditionals.conditionalApplies(unique, it, civ.state) })
-                    return false
-
-            else -> {}
-        }
-    }
-
-    if (building.uniqueTo != null && !civ.matchesFilter(building.uniqueTo!!, civ.state)) return false
-    if (civ.cache.uniqueBuildings.any { it.replaces == building.name }) return false
-
-    return true
-}
 
 internal fun hasAvailableInternationalProjects(viewingPlayer: CivView): Boolean =
     viewingPlayer.getCiv().gameInfo.internationalProjects.values.any {
-        isInternationalProjectAvailable(viewingPlayer, it)
+        it.isInternationalProjectAvailable(viewingPlayer)
     }
 
 class InternationalProjectsOverviewTab(
@@ -82,7 +54,7 @@ class InternationalProjectsOverviewTab(
     private fun updateProjectsTable() {
         projectsTable.clear()
         val projects = gameInfo.internationalProjects.values
-            .filter { isInternationalProjectAvailable(viewingPlayer, it) }
+            .filter { it.isInternationalProjectAvailable(viewingPlayer) }
             .toList()
         if (projects.isEmpty()) {
             projectsTable.add("No international projects in this game.".toLabel()).row()
