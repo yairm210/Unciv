@@ -166,6 +166,26 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isUnavailableBySettingsCached(obj: IHasUniques): Boolean =
         settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
+    @Readonly
+    fun getInternationalProject(name: String): InternationalProject =
+        checkNotNull(internationalProjects[name])
+
+    fun getOrCreateInternationalProject(name: String): InternationalProject {
+        val project = internationalProjects.getOrPut(name) { InternationalProject(name) }
+        project.setTransients(this)
+        return project
+    }
+
+    fun initializeInternationalProjects() {
+        for (project in internationalProjects.values)
+            project.setTransients(this)
+
+        for (building in ruleset.buildings.values) {
+            if (building.isInternationalProject)
+                getOrCreateInternationalProject(building.name)
+        }
+    }
+
     @Transient
     lateinit var speed: Speed
 
@@ -772,6 +792,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // combinedGlobalUniques needs to be set before tileMap.setTransients!
         setGlobalTransients()
+        initializeInternationalProjects()
 
         tileMap.setTransients(ruleset)
 
@@ -790,9 +811,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         } else currentPlayerCiv = getCivilization(currentPlayer)
 
         for (religion in religions.values) religion.setTransients(this)
-
-        for (internationalProject in internationalProjects.values) internationalProject.setTransients(this)
-
 
         for (civInfo in civilizations) civInfo.setTransients()
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity

@@ -16,7 +16,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
-import com.unciv.models.InternationalProject
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -362,9 +361,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         // Track contributions globally for International Projects
         if (construction is Building && construction.isInternationalProject) {
-            val project = city.civ.gameInfo.internationalProjects.getOrPut(constructionName) {
-                InternationalProject(constructionName).apply { setTransients(city.civ.gameInfo) }
-            }
+            val project = city.civ.gameInfo.getOrCreateInternationalProject(constructionName)
             val civName = city.civ.civName
             project.contributions[civName] = (project.contributions[civName] ?: 0) + productionToAdd
             return

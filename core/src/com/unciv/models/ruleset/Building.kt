@@ -130,7 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // International projects have a different cost calculation
         if (isInternationalProject) {
             // https://civilization.fandom.com/wiki/International_Project_(Civ5)#Strategy
-            return civInfo.gameInfo.internationalProjects[name]?.getCost() ?: 0
+            return civInfo.gameInfo.getInternationalProject(name).getCost()
         }
         
         var productionCost = cost.toFloat()
