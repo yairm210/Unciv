@@ -674,7 +674,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     ) : Sequence<Unique> = sequence {
         // Gathering all uniques into a list first since triggers can add e.g. buildings 
         // which contain triggers, causing concurrent modification errors.
-        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        // Cannot use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
         yieldAll(nation.uniqueMap.getAllUniques())
         yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
