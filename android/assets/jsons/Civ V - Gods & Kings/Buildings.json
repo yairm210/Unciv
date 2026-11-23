@@ -1229,9 +1229,9 @@
         "isInternationalProject": true,
         "cost": 2,
         "uniques": [
-            "[+100]% [Culture] <for [20] turns>", // <if greatest contribution>",
-            "Free Social Policy", // <if contribution is above [33]%>",
-            "Instantly gain [500] [Golden Age points]", // <if contribution is above [16]%>",
+            "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
+            "Free Social Policy <if contribution is above [33]%>",
+            "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>",
             "[+10 Production] [in all cities]"
         ],
         "requiredTech": "Agriculture",

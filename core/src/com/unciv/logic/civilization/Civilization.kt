@@ -675,18 +675,18 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Gathering all uniques into a list first since triggers can add e.g. buildings 
         // which contain triggers, causing concurrent modification errors.
         // Cannot use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
-        yieldAll(nation.uniqueMap.getAllUniques())
-        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
+        yieldAll(nation.uniqueMap.getAllUniques().map { it to gameContext })
+        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }.map { it to gameContext })
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
-        yieldAll(policies.policyUniques.getAllUniques())
-        yieldAll(tech.techUniques.getAllUniques())
-        yieldAll(getEra().uniqueMap.getAllUniques())
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
-        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { project -> project.projectUniqueMap.getAllUniques() })
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques().map { it to gameContext })
+        yieldAll(policies.policyUniques.getAllUniques().map { it to gameContext })
+        yieldAll(tech.techUniques.getAllUniques().map { it to gameContext })
+        yieldAll(getEra().uniqueMap.getAllUniques().map { it to gameContext })
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques().map { it to gameContext })
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { project -> project.projectUniqueMap.getAllUniques().map { it to gameContext.copy(internationalProject = project) } })
     }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
-        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
-        .flatMap { it.getMultiplied(gameContext) }
+        .filter { (unique, gameContext) -> unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext) }
+        .flatMap { (unique, gameContext) -> unique.getMultiplied(gameContext) }
 
     @Readonly
     @Deprecated(message = "forEachTriggeredUnique is faster. If not viable, then this can still be used",
