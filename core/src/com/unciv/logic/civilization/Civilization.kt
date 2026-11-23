@@ -639,7 +639,15 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
         yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
-        yieldAll(gameInfo.internationalProjects.filter { it.value.isConstructed() }.flatMap { it.value.projectUniqueMap.getMatchingUniques(uniqueType, gameContext) })
+        yieldAll(gameInfo.internationalProjects.values
+            .filter { it.isConstructed() }
+            .flatMap { project ->
+                project.projectUniqueMap.getMatchingUniques(
+                    uniqueType,
+                    gameContext.copy(internationalProject = project)
+                ) 
+            }
+        )
     }
 
     @Readonly
@@ -655,7 +663,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
         civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
         gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
-        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { it.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { project -> project.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext.copy(internationalProject = project), op) }
     }
 
     @Readonly
@@ -675,7 +683,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getAllUniques())
         yieldAll(getEra().uniqueMap.getAllUniques())
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
-        yieldAll(gameInfo.internationalProjects.values.asSequence().filter { it.isConstructed() }.flatMap { it.projectUniqueMap.getAllUniques() })
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { project -> project.projectUniqueMap.getAllUniques() })
     }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
         .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }

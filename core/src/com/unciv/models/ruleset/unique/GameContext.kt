@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.InternationalProject
 import com.unciv.models.stats.Stat
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
@@ -27,6 +28,8 @@ data class GameContext(
     val combatAction: CombatAction? = null,
 
     val otherCiv: Civilization? = null,
+
+    val internationalProject: InternationalProject? = null,
 
     val region: Region? = null,
     // tile and region do not deduce gameInfo because that field is not set during MapGeneration,
