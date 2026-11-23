@@ -46,7 +46,10 @@ fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(
  */
 fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
     try {
-        return fromJson(tClass, file)
+        // Gdx's JsonReader fails on the byte order mark that some Windows editors put at the start
+        // of a UTF-8 file, for example a mod's json saved with Notepad
+        val text = file.readString(Charsets.UTF_8.name()).removePrefix("\uFEFF")
+        return fromJson(tClass, text)
     } catch (exception: Exception) {
         throw Exception("Could not parse json of file ${file.name()}", exception)
     }
