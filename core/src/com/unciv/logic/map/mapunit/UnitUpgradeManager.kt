@@ -149,7 +149,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
     }
 
     /** Whether [upgrade] can be performed right now: free upgrades only need to be available at all,
-     *  paid ones also need gold, movement, own territory, not being embarked and all requirements and resources met. */
+     *  paid ones also need gold, movement, own territory and all requirements and resources met. */
     @Readonly
     fun canPerformUpgrade(upgrade: PossibleUpgrade, isFree: Boolean): Boolean {
         if (isFree) return upgrade.availability != UpgradeAvailability.Unavailable
@@ -157,7 +157,6 @@ class UnitUpgradeManager(val unit: MapUnit) {
             && unit.civ.gold >= upgrade.goldCostOfUpgrade
             && unit.hasMovement()
             && unit.currentTile.getOwner() == unit.civ
-            && !unit.isEmbarked()
     }
 
     /** _Perform_ an upgrade, assuming validity checks were already passed.
