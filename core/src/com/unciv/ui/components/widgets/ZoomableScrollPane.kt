@@ -266,11 +266,12 @@ open class ZoomableScrollPane(
         }
 
         override fun scrolled(amountX: Float, amountY: Float): Boolean {
-            // Trackpads send fractional, often diagonal scroll events. Horizontal drift
-            // must not reverse vertical zoom, and tiny movements must stay tiny.
-            if (!amountY.isFinite() || amountY == 0f) return false
-            val multiplier = 0.82f.pow(abs(amountY).coerceAtMost(4f))
-            if (amountY > 0) zoomOut(multiplier) else zoomIn(multiplier)
+            // Trackpads send fractional, often diagonal scroll events: zoom by the larger axis,
+            // so slight drift on the other axis cannot reverse it, and tiny movements stay tiny.
+            val amount = if (abs(amountY) >= abs(amountX)) amountY else amountX
+            if (!amount.isFinite() || amount == 0f) return false
+            val multiplier = 0.82f.pow(abs(amount).coerceAtMost(4f))
+            if (amount > 0) zoomOut(multiplier) else zoomIn(multiplier)
             return true
         }
     }
