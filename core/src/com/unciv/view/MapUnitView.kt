@@ -247,9 +247,10 @@ class MapUnitView internal constructor(
         AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
-    /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType] */
-    fun canInvokeUnitAction(unitActionType: UnitActionType): Boolean =
-        UnitActions.getUnitActions(unit, unitActionType).any { it.action != null }
+    /** `true` if [tryInvokeUnitAction] would currently find an enabled action of type [unitActionType]
+     *  @param tile Check as if the unit were performing the action on this tile (defaults to the unit's current tile) - not all action types respect it */
+    fun canInvokeUnitAction(unitActionType: UnitActionType, tile: TileView? = null): Boolean =
+        UnitActions.getUnitActions(unit, unitActionType, tile?.unwrap() ?: unit.getTile()).any { it.action != null }
     /** The actions this unit has, enabled or not (see [UnitActionView.available]) - pass them to [tryInvokeUnitAction] to invoke them */
     fun getActions(): List<UnitActionView> =
         UnitActions.getUnitActions(unit).map { UnitActionView(it.type, it.id, it.action != null, it.title, it.isCurrentAction, it.confirmation,

@@ -60,14 +60,15 @@ object UnitActions {
      *  Get all instances of [UnitAction] of the [unitActionType] type for [unit].
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
+     *  @param tile The tile the action would be performed on - only respected by actions with a mapped getter, others always use the unit's tile
      */
-    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType): Sequence<UnitAction> {
+    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType, tile: Tile = unit.getTile()): Sequence<UnitAction> {
         val singleFunction = actionTypeToSingleFunctions[unitActionType]
         if (singleFunction != null)                  // we have a mapped getter for a single action...
-            return sequenceOf(singleFunction(unit, unit.getTile())).filterNotNull()
+            return sequenceOf(singleFunction(unit, tile)).filterNotNull()
         val multiFunction = actionTypeToMultiFunctions[unitActionType]
         if (multiFunction != null)                   // ...or for a collection - call it...
-            return multiFunction(unit, unit.getTile())
+            return multiFunction(unit, tile)
         return sequence {
             addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
         }.filter { it.type == unitActionType }       // ...and take ones matching the type.
