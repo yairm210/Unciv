@@ -1230,8 +1230,8 @@
         "cost": 20,
         "uniques": [
             "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
-            "Free Social Policy <if contribution is above [33]%>",
-            "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>"
+            "Free Social Policy <if contribution is above [33] Production>",
+            "Instantly gain [500] [Golden Age points] <if contribution is above [16] Production>"
         ],
         "requiredTech": "Agriculture",
         "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
@@ -1242,8 +1242,8 @@
     "cost": 20,
     "uniques": [
       "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
-      "Free Social Policy <if contribution is above [33]%>",
-      "Instantly gain [500] [Golden Age points] <if contribution is above [16]%>"
+      "Free Social Policy <if contribution is above [33] Production>",
+      "Instantly gain [500] [Golden Age points] <if contribution is above [16] Production>"
     ],
     "requiredTech": "Agriculture",
     "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
