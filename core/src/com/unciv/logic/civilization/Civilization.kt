@@ -644,7 +644,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             .flatMap { project ->
                 project.projectUniqueMap.getMatchingUniques(
                     uniqueType,
-                    gameContext.copy(internationalProject = project)
+                    gameContext
                 ) 
             }
         )
@@ -663,7 +663,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
         civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
         gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
-        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { project -> project.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext.copy(internationalProject = project), op) }
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { project -> project.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
     }
 
     @Readonly
@@ -675,18 +675,18 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Gathering all uniques into a list first since triggers can add e.g. buildings 
         // which contain triggers, causing concurrent modification errors.
         // Cannot use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
-        yieldAll(nation.uniqueMap.getAllUniques().map { it to gameContext })
-        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }.map { it to gameContext })
+        yieldAll(nation.uniqueMap.getAllUniques())
+        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques().map { it to gameContext })
-        yieldAll(policies.policyUniques.getAllUniques().map { it to gameContext })
-        yieldAll(tech.techUniques.getAllUniques().map { it to gameContext })
-        yieldAll(getEra().uniqueMap.getAllUniques().map { it to gameContext })
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques().map { it to gameContext })
-        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { project -> project.projectUniqueMap.getAllUniques().map { it to gameContext.copy(internationalProject = project) } })
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { it.projectUniqueMap.getAllUniques() })
     }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
-        .filter { (unique, gameContext) -> unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext) }
-        .flatMap { (unique, gameContext) -> unique.getMultiplied(gameContext) }
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     @Readonly
     @Deprecated(message = "forEachTriggeredUnique is faster. If not viable, then this can still be used",

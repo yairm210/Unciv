@@ -392,16 +392,16 @@ object Conditionals {
 
             UniqueType.ConditionalInternationalProjectPlurality -> {
                 val civName = state.civInfo?.civName ?: return false
-                val project = state.internationalProject ?: return false
+                val sourceName = unique?.sourceObjectName ?: return false
+                val project = state.internationalProject ?: state.gameInfo?.internationalProjects[sourceName] ?: return false
                 (project.contributions[civName] == project.contributions.values.max()) // Civ 5 gives first player priority if tied, we give bonus to all tied players instead
             }
             UniqueType.ConditionalInternationalProjectContributionAbove -> {
                 val civName = state.civInfo?.civName ?: return false
-                val project = state.internationalProject ?: return false
+                val sourceName = unique?.sourceObjectName ?: return false
+                val project = state.internationalProject ?: state.gameInfo?.internationalProjects[sourceName] ?: return false
                 val contribution = project.contributions[civName] ?: return false
                 val getCost = project.getCost()
-                println(contribution.toFloat()/getCost)
-                println(conditional.params[0].toFloat()/100)
                 getCost != 0 && contribution.toFloat()/getCost >= conditional.params[0].toFloat()/100
             }
 

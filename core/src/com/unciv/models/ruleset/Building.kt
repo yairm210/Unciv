@@ -55,7 +55,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     lateinit var ruleset: Ruleset
 
-    override fun getUniqueTarget() = if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building
+    override fun getUniqueTarget() = when {
+        isInternationalProject -> UniqueTarget.InternationalProject
+        isAnyWonder() -> UniqueTarget.Wonder
+        else -> UniqueTarget.Building
+    }
 
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
 
