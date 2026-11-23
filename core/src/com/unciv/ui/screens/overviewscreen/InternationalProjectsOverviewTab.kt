@@ -22,26 +22,37 @@ class InternationalProjectsOverviewTab(
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
+    private val headerTable = Table()
+    private val projectsTable = Table()
+
+    override fun getFixedContent() = headerTable
+
     init {
-        defaults().pad(20f).align(Align.top)
-        top()
+        headerTable.apply {
+            defaults().pad(5f)
+            align(Align.top)
+            add("International Projects".toLabel(fontSize = Constants.headingFontSize)).row()
+            addSeparator()
+        }
+
+        projectsTable.defaults().pad(15f).align(Align.center)
+
+        defaults().pad(5f)
+        align(Align.top)
+        add(projectsTable).growX()
         update()
     }
 
     private fun update() {
-        clear()
+        projectsTable.clear()
         val projects = gameInfo.internationalProjects.values.toList()
         if (projects.isEmpty()) {
-            add("No international projects in this game.".toLabel()).row()
+            projectsTable.add("No international projects in this game.".toLabel()).row()
         } else {
-            val mainTable = Table()
-            mainTable.defaults().pad(15f).align(Align.center)
-
             for (project in projects) {
                 val building = viewingPlayer.ruleset.buildings[project.name]
-                mainTable.add(createProjectTable(project, building)).growX().maxWidth(750f).row()
+                projectsTable.add(createProjectTable(project, building)).growX().maxWidth(750f).row()
             }
-            add(mainTable).growX().align(Align.top)
         }
     }
 
