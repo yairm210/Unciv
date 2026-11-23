@@ -18,8 +18,6 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.view.CivView
 import kotlin.math.min
 
-
-
 internal fun hasAvailableInternationalProjects(viewingPlayer: CivView): Boolean =
     viewingPlayer.getCiv().gameInfo.internationalProjects.values.any {
         it.isInternationalProjectAvailable(viewingPlayer)
