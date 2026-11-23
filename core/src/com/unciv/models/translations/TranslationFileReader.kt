@@ -23,7 +23,10 @@ object TranslationFileReader {
 
     fun read(file: FileHandle): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
-        file.reader(charset).forEachLine { line ->
+        file.reader(charset).forEachLine { fileLine ->
+            // A file saved with a UTF-8 byte order mark (Notepad can do this) starts with U+FEFF,
+            // which would otherwise become part of the first key
+            val line = fileLine.removePrefix("\uFEFF")
             if (line.isCommentLine()) return@forEachLine
             val splitLine = line.split(keyValueSeparator, limit = 2)
             if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
