@@ -1,0 +1,89 @@
+package com.unciv.models
+
+import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Readonly
+
+class InternationalProject(val name: String = "") : IsPartOfGameInfoSerialization {
+    var contributions: HashMap<String, Int> = hashMapOf()
+    var isClaimed: Boolean = false // Ensures only one city sends out the project completed message
+
+    @Transient
+    lateinit var gameInfo: GameInfo
+    @Transient
+    var projectUniqueMap = UniqueMap()
+
+    @Cache
+    private var isConstructedCache: Boolean = false
+
+    fun clone(): InternationalProject {
+        val newProject = InternationalProject(name)
+        newProject.isClaimed = isClaimed
+        newProject.contributions.putAll(contributions)
+        return newProject
+    }
+    @Readonly
+    private fun getBuilding():Building? {
+        return gameInfo.ruleset.buildings[name]
+    }
+    @Readonly
+    fun isConstructed(): Boolean {
+        if (isConstructedCache) return true
+        val building = getBuilding() ?: return false
+        val totalCost = building.getProductionCost(gameInfo.civilizations.first(), null)
+        return contributions.values.sum() >= totalCost
+    }
+    fun completeConstruction(): Boolean {
+        isClaimed = true
+        val building = getBuilding() ?: return false
+
+        val buildingIcon = "BuildingIcons/${building.name}"
+        val pediaAction = CivilopediaAction(building.makeLink())
+        
+        val triggerNotificationText ="due to constructing [${building.name}]"
+        for (civ in gameInfo.civilizations) {
+            val stateForConditionals = civ.state
+            // Trigger any one-time uniques (e.g. Free Social Policy, Golden Age points)
+            for (unique in building.uniqueObjects) {
+                if (unique.hasTriggerConditional() || !unique.conditionalsApply(stateForConditionals)) continue
+                repeat(unique.getUniqueMultiplier(civ.state)) {
+                    UniqueTriggerActivation.triggerUnique(unique, civ, triggerNotificationText = triggerNotificationText)
+                }
+            }
+            for (city in civ.cities) {
+                city.cityConstructions.validateConstructionQueue()
+            }
+            civ.addNotification(
+                "The International Project [${building.name}] has been completed",
+                listOf(pediaAction),
+                NotificationCategory.General,
+                NotificationIcon.Construction,
+                buildingIcon
+            )
+        }
+        return true
+    }
+    @Readonly
+    fun getCost(): Int {
+        val building = getBuilding() ?: return 0
+        var productionCost = building.cost.toFloat() * gameInfo.civilizations.count { it.isMajorCiv }
+        productionCost *= gameInfo.speed.productionCostModifier
+        return productionCost.toInt()
+    }
+    
+    
+    fun setTransients(gameInfo: GameInfo) {
+        this.gameInfo = gameInfo
+        val building = getBuilding()
+        projectUniqueMap = UniqueMap(building?.uniqueObjects?.asSequence() ?: emptySequence())
+    }
+}
