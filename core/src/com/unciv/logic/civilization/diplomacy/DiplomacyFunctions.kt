@@ -33,9 +33,11 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         // As in Civ V, city-state influence starts at its resting point (e.g. from policies or religion),
-        // since Civ V already moves influence toward it before the two civs have met
+        // since Civ V already moves influence toward it before the two civs have met.
+        // The ally is updated on the city-state's next turn: a new ally declares war on its enemies,
+        // which needs both sides to have met already.
         if (civInfo.isCityState && otherCiv.isMajorCiv && !warOnContact)
-            civInfo.getDiplomacyManager(otherCiv)!!.run { setInfluence(getCityStateInfluenceRestingPoint()) }
+            civInfo.getDiplomacyManager(otherCiv)!!.run { influence = getCityStateInfluenceRestingPoint() }
 
         if (!otherCiv.isSpectator)
             otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civInfo.civID))
