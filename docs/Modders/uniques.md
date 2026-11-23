@@ -3840,8 +3840,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if greatest contribution&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;if contribution is above [amount]%&gt;"
-	Example: "&lt;if contribution is above [3]%&gt;"
+??? example  "&lt;if contribution is above [amount] Production&gt;"
+	Example: "&lt;if contribution is above [3] Production&gt;"
 
 	Applicable to: Conditional
 

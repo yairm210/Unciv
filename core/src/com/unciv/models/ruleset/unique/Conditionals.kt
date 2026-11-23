@@ -401,8 +401,7 @@ object Conditionals {
                 val sourceName = unique?.sourceObjectName ?: return false
                 val project = state.internationalProject ?: state.gameInfo?.internationalProjects[sourceName] ?: return false
                 val contribution = project.contributions[civName] ?: return false
-                val getCost = project.getCost()
-                getCost != 0 && contribution.toFloat()/getCost >= conditional.params[0].toFloat()/100
+                contribution >= conditional.params[0].toInt()
             }
 
             else -> false

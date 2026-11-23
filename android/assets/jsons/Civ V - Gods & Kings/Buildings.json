@@ -1227,23 +1227,39 @@
     {
         "name": "World's Fair",
         "isInternationalProject": true,
-        "cost": 20,
+        "cost": 700,
         "uniques": [
             "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
-            "Free Social Policy <if contribution is above [33] Production>",
-            "Instantly gain [500] [Golden Age points] <if contribution is above [16] Production>"
+            "Free Social Policy <if contribution is above [350] Production>",
+            "Instantly gain [500] [Golden Age points] <if contribution is above [175] Production>"
         ],
         "requiredTech": "Agriculture",
         "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
     },
   {
+    "name": "International Games",
+    "isInternationalProject": true,
+    "cost": 1440,
+    "uniques": [
+      "[+100]% [Tourism] <for [20] turns> <if greatest contribution>",
+      "Free Social Policy <if greatest contribution>",
+      "[+3 Happiness] <if contribution is above [720] Production>",
+      // Currently unmoddable
+      "Increase influence with [all] City States by [30] <if contribution is above [720] Production>",
+      "[+3 Happiness] <if contribution is above [360] Production>"
+    ],
+    "requiredTech": "Agriculture",
+    "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
+  },
+  {
     "name": "International Space Station",
     "isInternationalProject": true,
-    "cost": 20,
+    "cost": 1700,
     "uniques": [
-      "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
-      "Free Social Policy <if contribution is above [33] Production>",
-      "Instantly gain [500] [Golden Age points] <if contribution is above [16] Production>"
+      "Gain a free [International Space Station wonder] [in capital] <if greatest contribution>",
+      "Free [Great Scientist] appears <if contribution is above [850] Production>",
+      // Unclear how big this one should be
+      "One-time Research boost <if contribution is above [475] Production>"
     ],
     "requiredTech": "Agriculture",
     "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
