@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.models.InternationalProject
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
@@ -16,6 +17,41 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.view.CivView
 import kotlin.math.min
+
+internal fun isInternationalProjectAvailable(
+    viewingPlayer: CivView,
+    project: InternationalProject
+): Boolean {
+    val civ = viewingPlayer.getCiv()
+    val building = viewingPlayer.ruleset.buildings[project.name] ?: return false
+    if (project.isConstructed()) return true
+    if (civ.gameInfo.isUnavailableBySettingsCached(building)) return false
+    if (building.requiredTechs().any { !civ.tech.isResearched(it) }) return false
+
+    for (unique in building.uniqueObjects) {
+        when (unique.type) {
+            UniqueType.Unavailable ->
+                if (unique.conditionalsApply(civ.state)) return false
+
+            UniqueType.OnlyAvailable,
+            UniqueType.CanOnlyBeBuiltWhen ->
+                if (unique.modifiers.any { !Conditionals.conditionalApplies(unique, it, civ.state) })
+                    return false
+
+            else -> {}
+        }
+    }
+
+    if (building.uniqueTo != null && !civ.matchesFilter(building.uniqueTo!!, civ.state)) return false
+    if (civ.cache.uniqueBuildings.any { it.replaces == building.name }) return false
+
+    return true
+}
+
+internal fun hasAvailableInternationalProjects(viewingPlayer: CivView): Boolean =
+    viewingPlayer.getCiv().gameInfo.internationalProjects.values.any {
+        isInternationalProjectAvailable(viewingPlayer, it)
+    }
 
 class InternationalProjectsOverviewTab(
     viewingPlayer: CivView,
@@ -40,12 +76,14 @@ class InternationalProjectsOverviewTab(
         defaults().pad(5f)
         align(Align.top)
         add(projectsTable).growX()
-        update()
+        updateProjectsTable()
     }
 
-    private fun update() {
+    private fun updateProjectsTable() {
         projectsTable.clear()
-        val projects = gameInfo.internationalProjects.values.toList()
+        val projects = gameInfo.internationalProjects.values
+            .filter { isInternationalProjectAvailable(viewingPlayer, it) }
+            .toList()
         if (projects.isEmpty()) {
             projectsTable.add("No international projects in this game.".toLabel()).row()
         } else {

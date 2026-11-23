@@ -73,9 +73,14 @@ enum class EmpireOverviewCategories(
     Projects("OtherIcons/ConstructionCircle", 'I', Align.top) {
         override fun createTab(viewingPlayer: CivView, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 InternationalProjectsOverviewTab(viewingPlayer, overviewScreen)
-        override fun testState(viewingPlayer: CivView) =
-            if (viewingPlayer.getCiv().gameInfo.internationalProjects.isEmpty()) EmpireOverviewTabState.Hidden
-            else EmpireOverviewTabState.Normal
+        override fun testState(viewingPlayer: CivView): EmpireOverviewTabState {
+            val projects = viewingPlayer.getCiv().gameInfo.internationalProjects
+            return when {
+                projects.isEmpty() -> EmpireOverviewTabState.Hidden
+                !hasAvailableInternationalProjects(viewingPlayer) -> EmpireOverviewTabState.Disabled
+                else -> EmpireOverviewTabState.Normal
+            }
+        }
     },
     Notifications("OtherIcons/Notifications", 'N', Align.top) {
         override fun createTab(viewingPlayer: CivView, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =

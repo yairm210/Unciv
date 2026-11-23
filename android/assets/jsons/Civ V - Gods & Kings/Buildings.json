@@ -1256,6 +1256,7 @@
     "isInternationalProject": true,
     "cost": 1700,
     "uniques": [
+      "Unavailable",
       "Gain a free [International Space Station wonder] [in capital] <if greatest contribution>",
       "Free [Great Scientist] appears <if contribution is above [850] Production>",
       // Unclear how big this one should be
