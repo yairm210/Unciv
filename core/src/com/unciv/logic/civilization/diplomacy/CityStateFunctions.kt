@@ -415,6 +415,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             city.espionage.removeAllPresentSpies(SpyFleeReason.CityTakenOverByMarriage)
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
+            // As in Civ V, the city starts with no production orders, so it does not finish the city-state's units
+            city.cityConstructions.removeAll()
         }
         civInfo.destroy(notificationLocation.toHexCoord())
     }
@@ -473,6 +475,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             city.espionage.removeAllPresentSpies(SpyFleeReason.CityBought)
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
+            // As in Civ V, the city starts with no production orders, so it does not finish the city-state's units
+            city.cityConstructions.removeAll()
         }
         civInfo.destroy(notificationLocation.toHexCoord())
     }
