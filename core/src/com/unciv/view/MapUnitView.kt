@@ -77,6 +77,8 @@ class MapUnitView internal constructor(
         return true
     }
     @Readonly fun getAvailablePromotions(): List<AvailablePromotion> = unit.promotions.getPromotionTreeCandidates()
+    val numberOfPromotions: Int get() = unit.promotions.numberOfPromotions
+    @Readonly fun canIntercept(): Boolean = unit.canIntercept()
     @Readonly fun canAffordPromotions(count: Int): Boolean = unit.promotions.canAffordPromotions(count)
     /** `true` if this unit stands in a non-puppet city of its own civ, so its promotions can be saved as the city's default. */
     @Readonly fun canSaveDefaultPromotions(): Boolean {
