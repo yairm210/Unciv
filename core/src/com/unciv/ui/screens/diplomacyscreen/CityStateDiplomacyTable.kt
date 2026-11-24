@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
@@ -67,7 +68,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
         if (!viewingCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
-                diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv)).row()
+                diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
             else diplomacyTable.add(diplomacyScreen.getDeclareWarButton(diplomacyManager, otherCiv)).row()
         }
 
@@ -241,7 +242,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         return protectionButton
     }
 
-    private fun getNegotiatePeaceCityStateButton(otherCiv: Civilization): TextButton {
+    private fun getNegotiatePeaceCityStateButton(
+        otherCiv: Civilization,
+        otherCivDiplomacyManager: DiplomacyManager
+    ): TextButton {
         val peaceButton = "Negotiate Peace".toTextButton()
         peaceButton.onClick {
             ConfirmPopup(
@@ -265,8 +269,13 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val cityStatesAlly = otherCiv.allyCiv
         val atWarWithItsAlly = viewingCiv.getKnownCivs()
             .any { it == cityStatesAlly && it.isAtWarWith(viewingCiv) }
-        // As in Civ V (CvMinorCivAI::IsPeaceBlocked), only an ally at war with us blocks peace - there is no minimum war duration
         if (diplomacyScreen.isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
+
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
+            peaceButton.disable() // Can't trade for 10 turns after war was declared
+            val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
+            peaceButton.setText(peaceButton.text.toString() + "\n${turnsLeft.tr()}" + Fonts.turn)
+        }
 
         return peaceButton
     }
