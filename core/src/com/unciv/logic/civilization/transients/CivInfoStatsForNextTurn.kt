@@ -232,9 +232,10 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         // negative gold hurts science
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
-        val goldSum = statMap.values.map { it.gold }.sum()
-        if (civInfo.gold + goldSum < 0) {
-            val scienceDeficit = max(civInfo.gold + goldSum,
+        // Rounded as the treasury settles it (TurnManager adds the income as an Int)
+        val uncoveredGold = civInfo.gold + statMap.values.map { it.gold }.sum().toInt()
+        if (uncoveredGold < 0) {
+            val scienceDeficit = max(uncoveredGold.toFloat(),
                 1 - statMap.values.map { it.science }.sum()
             )// Leave at least 1
             statMap["Treasury deficit"] = Stats(science = scienceDeficit)
