@@ -131,9 +131,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getProductionCost(civInfo: Civilization, city: City?): Int {
-        // International projects have a different cost calculation
+        // International projects have a different cost calculation, see
+        // https://civilization.fandom.com/wiki/International_Project_(Civ5)#Strategy
         if (isInternationalProject) {
-            // https://civilization.fandom.com/wiki/International_Project_(Civ5)#Strategy
             return civInfo.gameInfo.getInternationalProject(name)!!.getCost()
         }
         
