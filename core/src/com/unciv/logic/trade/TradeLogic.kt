@@ -45,8 +45,8 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         
         if (civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(otherCiv)
             && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
-            && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
-            && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
+            // As Civ V (CvDeal::IsPossibleToTradeItem): one side holding the technology is enough
+            && (civInfo.hasUnique(UniqueType.EnablesOpenBorders) || otherCiv.hasUnique(UniqueType.EnablesOpenBorders))) {
             offers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
         }
 

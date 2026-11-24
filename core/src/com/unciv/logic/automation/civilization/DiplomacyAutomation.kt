@@ -172,13 +172,12 @@ object DiplomacyAutomation {
 
     internal fun offerOpenBorders(civView: CivView) {
         val civInfo = civView.getCiv()
-        if (!civView.hasUnique(UniqueType.EnablesOpenBorders)) return
 
         val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs().filter {
             val ourDiploManager = civInfo.getDiplomacyManager(it)!!
             it.isMajorCiv
                 && !civInfo.isAtWarWith(it) 
-                && it.hasUnique(UniqueType.EnablesOpenBorders)
+                && (civView.hasUnique(UniqueType.EnablesOpenBorders) || it.hasUnique(UniqueType.EnablesOpenBorders))
                 && !ourDiploManager.hasOpenBorders
                 && !ourDiploManager.otherCivDiplomacy().hasOpenBorders
                 && civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(it)

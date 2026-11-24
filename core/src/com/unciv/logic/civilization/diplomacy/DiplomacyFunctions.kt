@@ -165,7 +165,6 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     @Readonly
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv) return false
-        if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
         if (civInfo.tech.allTechsAreResearched()) return false
         return true
     }
@@ -175,6 +174,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement()
             && otherCiv.diplomacyFunctions.canSignResearchAgreement()
+            // As Civ V (CvDeal::IsPossibleToTradeItem): one side holding the technology is enough
+            && (civInfo.hasUnique(UniqueType.EnablesResearchAgreements) || otherCiv.hasUnique(UniqueType.EnablesResearchAgreements))
             && meetsEmbassyRequirementFor(otherCiv)
             && ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiploManager.hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -199,7 +200,6 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     @Readonly
     fun canSignDefensivePact(): Boolean {
         if (!civInfo.isMajorCiv) return false
-        if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
         return true
     }
 
@@ -208,6 +208,8 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
             && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            // As Civ V (CvDeal::IsPossibleToTradeItem): one side holding the technology is enough
+            && (civInfo.hasUnique(UniqueType.EnablesDefensivePacts) || otherCiv.hasUnique(UniqueType.EnablesDefensivePacts))
             && meetsEmbassyRequirementFor(otherCiv)
             && ourDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
