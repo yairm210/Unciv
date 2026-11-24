@@ -44,7 +44,7 @@ class GameStarter private constructor(
             GameStarter(gameSetupInfo).gameInfo
     }
 
-    private val gameInfo = GameInfo()
+    private val gameInfo = GameInfo().apply { greatPersonPointsInCities = true }
     private val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("GameStarter")
     private val ruleset: Ruleset
     private lateinit var tileMap: TileMap

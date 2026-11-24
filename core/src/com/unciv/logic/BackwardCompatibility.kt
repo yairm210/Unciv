@@ -86,6 +86,10 @@ object BackwardCompatibility {
             for (key in civ.greatPeople.greatPersonPointsCounter.keys.toList())
                 if (!ruleset.units.containsKey(key))
                     civ.greatPeople.greatPersonPointsCounter.remove(key)
+            for (city in civ.cities)
+                for (key in city.storedGreatPersonPoints.keys.toList())
+                    if (!ruleset.units.containsKey(key))
+                        city.storedGreatPersonPoints.remove(key)
         }
     }
 

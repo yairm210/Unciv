@@ -360,12 +360,13 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         val greatPeopleTable = Table()
 
         val gppBreakdown = cityView.getGreatPersonPointsBreakdown()
-        if (gppBreakdown.allNames.isEmpty())
-            return
+        val civWidePoints = cityView.owningCivView.getCivWideGreatPersonPoints()
+        val gppStored = civWidePoints ?: cityView.getStoredGreatPersonPoints()
+        val names = if (civWidePoints == null) gppBreakdown.allNames + gppStored.keys else gppBreakdown.allNames
+        if (names.isEmpty()) return
         val greatPersonPoints = gppBreakdown.sum()
 
-        // Iterating over allNames instead of greatPersonPoints will include those where the aggregation had points but ended up zero
-        for (greatPersonName in gppBreakdown.allNames) {
+        for (greatPersonName in names) {
             val gppPerTurn = greatPersonPoints[greatPersonName]
 
             val info = Table()
@@ -375,8 +376,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
-            val gppCurrent = cityView.viewingCiv().getGreatPersonPoints(greatPersonName)
-            val gppNeeded = cityView.viewingCiv().getPointsRequiredForGreatPerson(greatPersonName)
+            val gppCurrent = gppStored[greatPersonName] ?: 0
+            val gppNeeded = cityView.owningCivView.getPointsRequiredForGreatPerson(greatPersonName)
 
             val percent = gppCurrent / gppNeeded.toFloat()
 

@@ -592,7 +592,7 @@ enum class UniqueType(
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
     GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit,
-        docDescription = "Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP."),
+        docDescription = "Great People in the same group share a cost. Each birth from Great Person points increases the group's base cost by 100 in games with per-city points and doubles it in older games. Game speed scales the resulting cost."),
 
     //endregion
 

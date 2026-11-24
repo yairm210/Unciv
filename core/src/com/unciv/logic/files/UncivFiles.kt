@@ -180,7 +180,7 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+            game.version = CompatibilityVersion.forGame(game)
             FileConversions.writeJson(file, game, saveZipped)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -485,7 +485,7 @@ class UncivFiles(
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
-            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+            game.version = CompatibilityVersion.forGame(game)
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)

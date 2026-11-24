@@ -364,6 +364,7 @@
     "civilopediaText": [
         {"text": "Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen."},
         {"text": "Alternatively, the Great Person points breakdown per city can be viewed in each City Screen (see UI Tips article)."},
+        {"text": "In new games each city accumulates its own Great Person points, and the Great Person is born in that city."},
         {"text": "Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now."},
         {"text": "Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"},
         {"text": "See also: [Specialists]","link": "Tutorials/Specialists"}

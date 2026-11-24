@@ -21,11 +21,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: Civilization
 
-    /** Base points, without speed modifier */
-    var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
+    /** Base cost per group in games with civ-wide points, before applying game speed. */
+    var pointsForNextGreatPersonCounter = Counter<String>()
+    /** How many Great People of each Great Person group (see [UniqueType.GPPointPool]) count towards the points required for the next one */
+    var greatPeopleGainedCounter = Counter<String>()
     var pointsForNextGreatGeneral = 200
     var pointsForNextGreatGeneralCounter = Counter<String>() // Initial values assigned when needed
 
+    /** Accumulated points by unit in games started with the civ-wide rules. */
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
@@ -40,6 +43,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
         toReturn.pointsForNextGreatPersonCounter = pointsForNextGreatPersonCounter.clone()
+        toReturn.greatPeopleGainedCounter = greatPeopleGainedCounter.clone()
         toReturn.pointsForNextGreatGeneralCounter = pointsForNextGreatGeneralCounter.clone()
         toReturn.greatGeneralPointsCounter = greatGeneralPointsCounter.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
@@ -55,16 +59,42 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         // An empty string is used to indicate the Unique wasn't found
         .firstOrNull()?.params?.get(0) ?: ""
     
-    @Readonly @Suppress("purity") 
+    @Readonly
+    private fun civWideBaseCost(group: String) =
+        if (group in pointsForNextGreatPersonCounter) pointsForNextGreatPersonCounter[group] else 100
+
+    @Readonly
     fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
-        val key = getPoolKey(greatPerson)
-        if (pointsForNextGreatPersonCounter[key] == 0) {
-            pointsForNextGreatPersonCounter[key] = 100
-        }
-        return (pointsForNextGreatPersonCounter[key] * civInfo.gameInfo.speed.modifier).toInt()
+        val group = getPoolKey(greatPerson)
+        val baseCost = if (civInfo.gameInfo.greatPersonPointsInCities) 100 + 100 * greatPeopleGainedCounter[group]
+            else civWideBaseCost(group)
+        return (baseCost * civInfo.gameInfo.speed.modifier).toInt()
     }
 
-    fun getNewGreatPerson(): String? {
+    fun startTurn() {
+        while (true) {
+            val unit = getNewCivWideGreatPerson() ?: break
+            civInfo.units.addUnit(unit)
+        }
+
+        if (!civInfo.gameInfo.greatPersonPointsInCities) return
+        for (city in civInfo.cities) {
+            if (city.isInResistance()) continue // Its Great People will be born once the resistance is over
+            val ready = city.storedGreatPersonPoints.filter { (unit, points) -> points >= getPointsRequiredForGreatPerson(unit) }
+            if (ready.isEmpty()) continue
+
+            // Resolve simultaneous births in ruleset order. An earlier birth may raise a later one's cost.
+            for (greatPerson in civInfo.gameInfo.ruleset.units.keys) {
+                val points = ready[greatPerson] ?: continue
+                if (points < getPointsRequiredForGreatPerson(greatPerson)) continue
+                if (civInfo.units.addUnit(greatPerson, city) == null) continue // No room to place it - try again next turn
+                city.storedGreatPersonPoints.remove(greatPerson) // Points beyond the cost are lost, like in Civ V
+                greatPeopleGainedCounter.add(getPoolKey(greatPerson), 1)
+            }
+        }
+    }
+
+    private fun getNewCivWideGreatPerson(): String? {
         for ((unit, value) in greatGeneralPointsCounter) {
             if (pointsForNextGreatGeneralCounter[unit] == 0) {
                 pointsForNextGreatGeneralCounter[unit] = 200
@@ -76,26 +106,27 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
                 return unit
             }
         }
-
-        for ((greatPerson, value) in greatPersonPointsCounter) {
-            val requiredPoints = getPointsRequiredForGreatPerson(greatPerson)
-            if (value >= requiredPoints) {
-                greatPersonPointsCounter.add(greatPerson, -requiredPoints)
-                pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
-                return greatPerson
-            }
+        if (civInfo.gameInfo.greatPersonPointsInCities) return null
+        for ((unit, points) in greatPersonPointsCounter) {
+            val required = getPointsRequiredForGreatPerson(unit)
+            if (points < required) continue
+            greatPersonPointsCounter.add(unit, -required)
+            val group = getPoolKey(unit)
+            pointsForNextGreatPersonCounter[group] = civWideBaseCost(group) * 2
+            return unit
         }
         return null
     }
 
-    /** Add [toAdd] points, defaults to [getGreatPersonPointsForNextTurn] */
-    fun addGreatPersonPoints(toAdd: Counter<String> = getGreatPersonPointsForNextTurn()) {
-        greatPersonPointsCounter.add(toAdd)
+    fun addGreatPersonPoints() {
+        if (civInfo.gameInfo.greatPersonPointsInCities) {
+            for (city in civInfo.cities) city.storedGreatPersonPoints.add(city.getGreatPersonPoints())
+        } else {
+            val income = Counter<String>()
+            for (city in civInfo.cities) income.add(city.getGreatPersonPoints())
+            greatPersonPointsCounter.add(income)
+        }
     }
-
-    /** Add [amount] points for [name] (used in dev console) */
-    fun addGreatPersonPoints(name: String, amount: Int) =
-        addGreatPersonPoints(Counter<String>().apply { this[name] = amount })
 
     fun triggerMayanGreatPerson() {
         if (civInfo.isSpectator) return
@@ -149,12 +180,5 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             longCountGPPool.remove(choice.name)
         }
         return unit
-    }
-
-    @Readonly
-    fun getGreatPersonPointsForNextTurn(): Counter<String> {
-        val greatPersonPoints = Counter<String>()
-        for (city in civInfo.cities) greatPersonPoints.add(city.getGreatPersonPoints())
-        return greatPersonPoints
     }
 }

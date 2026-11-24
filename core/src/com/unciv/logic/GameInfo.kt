@@ -58,7 +58,7 @@ import kotlin.time.Instant
  *
  * #### Compatibility:
  * When you change the structure of any class with this interface in a way which makes it impossible
- * to load the new saves from an older game version, increment [CompatibilityVersion.CURRENT_COMPATIBILITY_NUMBER]!
+ * to load the new saves from an older game version, update the required format in [CompatibilityVersion].
  * And don't forget to add backwards compatibility for the previous format.
  *
  * #### Rules:
@@ -137,6 +137,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @see [com.unciv.logic.map.tile.TileHistory]
      */
     var historyStartTurn = -1
+
+    /** Set by [GameStarter] for new games. Saves without this field keep their civ-wide rules. */
+    var greatPersonPointsInCities = false
 
     /**
      * Keep track of a custom location this game was saved to _or_ loaded from, using it as the default custom location for any further save/load attempts.
@@ -217,6 +220,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
+        toReturn.greatPersonPointsInCities = greatPersonPointsInCities
         toReturn.lastUnitId = lastUnitId
         toReturn.unitNamesTaken.addAll(unitNamesTaken)
 

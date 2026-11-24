@@ -204,13 +204,24 @@ class StatsOverviewTab(
         add("Current points".toLabel())
         add("Points per turn".toLabel()).row()
 
-        val greatPersonPoints = viewingPlayer.getGreatPersonPointsCounter()
-        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
-        for ((greatPerson, points) in greatPersonPoints) {
-            val pointsToGreatPerson = viewingPlayer.getPointsRequiredForGreatPerson(greatPerson)
-            add(greatPerson.toLabel()).left()
-            add("$points/$pointsToGreatPerson".toLabel())
-            add(greatPersonPointsPerTurn[greatPerson].toLabel()).right().row()
+        fun addPointsRow(greatPerson: String, label: String, points: Int, perTurn: Int) {
+            add(label.toLabel()).left()
+            add("$points/${viewingPlayer.getPointsRequiredForGreatPerson(greatPerson)}".toLabel())
+            add(perTurn.toLabel()).right().row()
+        }
+        val pointsPerTurnByCity = viewingPlayer.cities().associateWith { it.getGreatPersonPointsBreakdown().sum() }
+        val civWidePoints = viewingPlayer.getCivWideGreatPersonPoints()
+        if (civWidePoints != null) {
+            for ((unit, points) in civWidePoints)
+                addPointsRow(unit, unit, points, pointsPerTurnByCity.values.sumOf { it[unit] })
+        } else {
+            val greatPeople = pointsPerTurnByCity.flatMap { (city, rate) -> city.getStoredGreatPersonPoints().keys + rate.keys }.toSet()
+            for (unit in greatPeople) {
+                // On a tie, show the city generating the most points.
+                val (city, rate) = pointsPerTurnByCity.entries.maxWith(
+                    compareBy({ it.key.getStoredGreatPersonPoints()[unit] ?: 0 }, { it.value[unit] }))
+                addPointsRow(unit, "{$unit} ({${city.name}})", city.getStoredGreatPersonPoints()[unit] ?: 0, rate[unit])
+            }
         }
 
         val greatGeneralPoints = viewingPlayer.getGreatGeneralPointsCounter()
