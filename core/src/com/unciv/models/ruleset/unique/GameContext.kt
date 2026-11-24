@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.InternationalProject
 import com.unciv.models.stats.Stat
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
