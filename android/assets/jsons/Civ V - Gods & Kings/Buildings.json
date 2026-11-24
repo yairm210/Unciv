@@ -1224,13 +1224,16 @@
 		"happiness": 2,
 		"uniques": ["Unbuildable", "Only available <when religion is enabled>"]
 	},
-  // International Projects, should be [Initial [Major] Civilizations], but that's not moddable yet
+]
+  /*
+  // International Projects for BNW
     {
         "name": "World's Fair",
         "isInternationalProject": true,
-        "cost": 6,
+        "cost": 350,
         "uniques": [
-            "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
+            "[+100]% [Culture] <for [20] turns> <if greatest contribution>"
+            // should be [Initial [Major] Civilizations], but that's not moddable yet,
             "Free Social Policy <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
             "Instantly gain [500] [Golden Age points] <if contribution is above [[50] / [Remaining [Major] Civilizations]]%>"
         ],
@@ -1240,7 +1243,7 @@
   {
     "name": "International Games",
     "isInternationalProject": true,
-    "cost": 1440,
+    "cost": 720,
     "uniques": [
       //"[+100]% [Tourism] <for [20] turns> <if greatest contribution>",
       "Free Social Policy <if greatest contribution>",
@@ -1255,7 +1258,7 @@
   {
     "name": "International Space Station",
     "isInternationalProject": true,
-    "cost": 1700,
+    "cost": 850,
     "uniques": [
       "Gain a free [International Space Station wonder] [in capital] <if greatest contribution>",
       "Free [Great Scientist] appears <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
@@ -1266,3 +1269,4 @@
     "quote": "The International Space Station has been completed and launched into outer space, marking a new frontier in the achievement of mankind."
   }
 ]
+*/
