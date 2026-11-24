@@ -244,7 +244,7 @@ object UnitActionsFromUniques {
 
             val unitAction = fun (): (()->Unit)? {
                 if (!unit.hasMovement()) return null
-                val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = unit.currentTile)
+                val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = tile)
                     ?: return null
                 return { // This is the *action* that will be triggered!
                     repeat(unique.getUniqueMultiplier(unit.cache.state)) {
@@ -353,7 +353,7 @@ object UnitActionsFromUniques {
     }
 
     internal fun getTransformActions(unit: MapUnit, tile: Tile) = sequence {
-        val unitTile = unit.getTile()
+        val unitTile = tile
         val civInfo = unit.civ
         val stateForConditionals = unit.cache.state
 
@@ -423,8 +423,7 @@ object UnitActionsFromUniques {
     }
 
     @Readonly
-    internal fun getRepairTurns(unit: MapUnit): Int {
-        val tile = unit.currentTile
+    internal fun getRepairTurns(unit: MapUnit, tile: Tile = unit.currentTile): Int {
         if (!tile.isPillaged()) return 0
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
         val repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civ, unit)
@@ -436,11 +435,10 @@ object UnitActionsFromUniques {
     }
 
     // Public - used in WorkerAutomation
-    fun getRepairAction(unit: MapUnit) : UnitAction? {
-        if (!unit.currentTile.ruleset.tileImprovements.containsKey(Constants.repair)) return null
+    fun getRepairAction(unit: MapUnit, tile: Tile = unit.currentTile) : UnitAction? {
+        if (!tile.ruleset.tileImprovements.containsKey(Constants.repair)) return null
         if (!unit.cache.hasUniqueToBuildImprovements) return null
         if (unit.isEmbarked()) return null
-        val tile = unit.getTile()
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
         val uniques = unit.getMatchingUniques(UniqueType.BuildImprovements)
@@ -457,13 +455,13 @@ object UnitActionsFromUniques {
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
             && !tile.isEnemyTerritory(unit.civ)
                 // Are there any other improvement building problems that should block repair?
-            && ImprovementFunctions.getImprovementBuildingProblems(unit.currentTile.getImprovementToRepair()!!, GameContext(civInfo = unit.civ, unit = unit, tile = tile))
+            && ImprovementFunctions.getImprovementBuildingProblems(tile.getImprovementToRepair()!!, GameContext(civInfo = unit.civ, unit = unit, tile = tile))
                 .none { it == ImprovementBuildingProblem.OutsideBorders }
 
-        val turnsToBuild = getRepairTurns(unit)
+        val turnsToBuild = getRepairTurns(unit, tile)
 
         return UnitAction(UnitActionType.Repair,
-            title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
+            title = "${UnitActionType.Repair} [${tile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
             associatedUnique = uniques.first(),
             action = {
                 tile.queueImprovement(Constants.repair, turnsToBuild)
