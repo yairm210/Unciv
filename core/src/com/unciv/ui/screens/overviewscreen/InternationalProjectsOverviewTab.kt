@@ -176,7 +176,7 @@ class InternationalProjectsOverviewTab(
             addContributionRow(contributionsTable, civName, amount, civColor, totalCost, goals)
         }
 
-        val totalContributions = project.contributions.values.sum()
+        val totalContributions = project.getTotalContributions()
         addContributionRow(contributionsTable, "Total", totalContributions, Color.WHITE, totalCost, goals, withNotches = false)
 
         return contributionsTable

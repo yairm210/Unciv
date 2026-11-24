@@ -44,11 +44,14 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
         return gameInfo.ruleset.buildings[name]
     }
     @Readonly
+    fun getTotalContributions(): Int = contributions.values.sum()
+
+    @Readonly
     fun isConstructed(): Boolean {
         if (isConstructedCache) return true
         val building = getBuilding() ?: return false
         val totalCost = building.getProductionCost(gameInfo.civilizations.first(), null)
-        return contributions.values.sum() >= totalCost
+        return getTotalContributions() >= totalCost
     }
     @Readonly
     fun getContribution(civ: Civilization): Int? =
