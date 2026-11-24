@@ -79,7 +79,7 @@ class InternationalProjectsOverviewTab(
         }
         headerTable.add(nameLabel).expandX().left()
 
-        val statusText = if (project.isConstructed()) "Completed".tr() else "In Progress".tr()
+        val statusText = if (project.isConstructed()) "Completed" else "In Progress"
         val statusLabel = statusText.toLabel(if (project.isConstructed()) Color.LIME else Color.YELLOW)
         headerTable.add(statusLabel).right()
 
@@ -173,11 +173,12 @@ class InternationalProjectsOverviewTab(
         for ((civName, amount) in sortedContributions) {
             val civ = gameInfo.civilizations.firstOrNull { it.civName == civName }
             val civColor = civ?.nation?.getOuterColor() ?: Color.WHITE
-            addContributionRow(contributionsTable, civName, amount, civColor, totalCost, goals)
+            val displayName = civName.tr()
+            addContributionRow(contributionsTable, displayName, amount, civColor, totalCost, goals)
         }
 
         val totalContributions = project.getTotalContributions()
-        addContributionRow(contributionsTable, "Total", totalContributions, Color.WHITE, totalCost, goals, withNotches = false)
+        addContributionRow(contributionsTable, "Total".tr(), totalContributions, Color.WHITE, totalCost, goals, withNotches = false)
 
         return contributionsTable
     }
