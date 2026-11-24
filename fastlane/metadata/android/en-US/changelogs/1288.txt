@@ -1,38 +1,13 @@
-
-
-unify getHealAmountForTile and healingAmountForTile
-
-refactor: Make all unit actions respect the tile input, so we can check "is this action available over there" without actually going over there
-
-View implementation - SpecificUnitAutomation final functions - see 
-
-View implementation - Available promotions contain data required for promotion automation - see 
-
-Fixed tests for latest changes 2
-
-Fixed tests for latest changes
-
-chore: Remove GUI import from UnitActions
+Unit "heal" actions respect terrain damage as "negative healing" 
 
 Fix potential zip-slip when unzipping folders from mods
 
-resolved  - "" in translation files is treated as empty string
+"" in translation files is treated as empty string
 
-resolved  - conquering CS and destroying their civ should move us to -120 influence with them - relevant if someone revives them
-
-resolved  - translate intimidation bonus for CS tribute modifiers
-
-ci: Add "new contributor" marking automatically, I find myself adding this manually all the time
+conquering CS and destroying their civ should move us to -120 influence with them - relevant if someone revives them
 
 Read the first entry of translation files that start with a UTF-8 byte order mark - By SwastikTripathi
 
-By Qualia-Li:
-- Gods & Kings AI unhappiness matches Civ V's G&K handicaps 
-- Settler site ranking counts each nearby city once 
-- Embarked units can upgrade in their own territory, as in Civ V 
-- A conquered city keeps half its population, as in Civ V 
-- City-state influence starts at its resting point when first met 
+Many minor Civ V discrepancies - By Qualia-Li
 
 captureOrconvertToWorker movement bugfix - By O-spin
-
-Web: Fix app crashing to black with Hindi/Bangla text - By SomeTroglodyte
