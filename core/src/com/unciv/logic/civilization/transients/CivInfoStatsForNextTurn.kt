@@ -222,15 +222,6 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             statMap.add("Policies", excessHappinessConversion)
         }
 
-        // negative gold hurts science
-        // if we have - or 0, then the techs will never be complete and the tech button
-        // will show a negative number of turns and int.max, respectively
-        if (statMap.values.map { it.gold }.sum() < 0 && civInfo.gold < 0) {
-            val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
-                1 - statMap.values.map { it.science }.sum()
-            )// Leave at least 1
-            statMap["Treasury deficit"] = Stats(science = scienceDeficit)
-        }
         val goldDifferenceFromTrade = civInfo.diplomacy.values.sumOf { it.goldPerTurn() }
         if (goldDifferenceFromTrade != 0)
             statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
@@ -238,6 +229,16 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value)
 
+        // negative gold hurts science
+        // if we have - or 0, then the techs will never be complete and the tech button
+        // will show a negative number of turns and int.max, respectively
+        val goldSum = statMap.values.map { it.gold }.sum()
+        if (civInfo.gold + goldSum < 0) {
+            val scienceDeficit = max(civInfo.gold + goldSum,
+                1 - statMap.values.map { it.science }.sum()
+            )// Leave at least 1
+            statMap["Treasury deficit"] = Stats(science = scienceDeficit)
+        }
         return statMap
     }
 

@@ -303,8 +303,8 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         if (! civInfo.isBarbarian) {
-            // disband military units until there are none left OR the gold values are normal
-            while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
+            // disband military units until there are none left OR the treasury covers the deficit
+            while (civInfo.gold + nextTurnStats.gold.toInt() < 0) {
                 // prioritize units inside our territory, because disbanding them yields gold, and inexperienced units
                 val priorities = compareByDescending<MapUnit> { it.currentTile.getOwner() == civInfo }
                     .thenBy { it.promotions.valueOfPromotionsAndXp() }
@@ -322,6 +322,8 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         civInfo.addGold(nextTurnStats.gold.toInt() )
+        // As in Civ V (CvTreasury::DoGold), the treasury never goes below zero; the uncovered deficit costs science instead
+        if (civInfo.gold < 0) civInfo.addGold(-civInfo.gold)
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.endTurn(nextTurnStats.science.toInt())
