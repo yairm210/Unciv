@@ -2,14 +2,15 @@ package com.unciv.logic.map.mapunit.actions
 
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PossibleUpgrade
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade {
 
-    fun getUpgradeActions(unit: MapUnit) = sequence<UnitAction> {
-        if (unit.getTile().getOwner() != unit.civ) return@sequence
+    fun getUpgradeActions(unit: MapUnit, tile: Tile = unit.getTile()) = sequence<UnitAction> {
+        if (tile.getOwner() != unit.civ) return@sequence
 
         for (upgrade in unit.upgrade.getUpgradesOfKind(isSpecial = false)) {
             // Upgrades we lack only the resources for are shown, but disabled
