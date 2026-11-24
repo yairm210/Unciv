@@ -198,9 +198,9 @@ class CityConquestFunctionsTest {
         CityConquestFunctions(smallCity).puppetCity(attackerCiv)
 
         // then
-        assertEquals(7, defenderCity.population.population)
-        assertEquals(14, largeCity.population.population)
-        assertEquals(3, smallCity.population.population)
+        assertEquals(5, defenderCity.population.population)
+        assertEquals(10, largeCity.population.population)
+        assertEquals(2, smallCity.population.population)
     }
 
     @Test

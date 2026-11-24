@@ -1,3 +1,19 @@
+## 5.0.3
+
+Unit "heal" actions respect terrain damage as "negative healing" 
+
+Fix potential zip-slip when unzipping folders from mods
+
+"" in translation files is treated as empty string
+
+conquering CS and destroying their civ should move us to -120 influence with them - relevant if someone revives them
+
+Read the first entry of translation files that start with a UTF-8 byte order mark - By SwastikTripathi
+
+Many minor Civ V discrepancies - By Qualia-Li
+
+captureOrconvertToWorker movement bugfix - By O-spin
+
 ## 5.0.2
 
 Background work on unit actions :)
