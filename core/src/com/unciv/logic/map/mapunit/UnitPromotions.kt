@@ -11,8 +11,10 @@ import yairm210.purity.annotations.Readonly
 
 /** A promotion that may appear in a promotion tree for a unit.
  *  @property isAdopted The unit already has this promotion
- *  @property isBlockedByUniques The promotion's own uniques currently disallow picking it (`Unavailable`, or unmet `OnlyAvailable` conditionals) */
-class AvailablePromotion(val promotion: Promotion, val isAdopted: Boolean, val isBlockedByUniques: Boolean)
+ *  @property isBlockedByUniques The promotion's own uniques currently disallow picking it (`Unavailable`, or unmet `OnlyAvailable` conditionals)
+ *  @property isAvailable The unit could pick this promotion right now (not adopted, prerequisites met, not blocked)
+ *  @property aiWeight Weight for AI random choice, evaluated in the context of the unit */
+class AvailablePromotion(val promotion: Promotion, val isAdopted: Boolean, val isBlockedByUniques: Boolean, val isAvailable: Boolean, val aiWeight: Float)
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
@@ -198,7 +200,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
                 val blocked = promotion.hasUnique(UniqueType.Unavailable, state)
                     || promotion.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                         .any { !it.conditionalsApply(state) }
-                AvailablePromotion(promotion, promotion.name in promotions, blocked)
+                AvailablePromotion(promotion, promotion.name in promotions, blocked, isAvailable(promotion), promotion.getWeightForAiDecision(state))
             }
     }
 
