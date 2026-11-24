@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unique
 
-import androidx.collection.emptyLongSet
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.Timers.Companion.timeThis
