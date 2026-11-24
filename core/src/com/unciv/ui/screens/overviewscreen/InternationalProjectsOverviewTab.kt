@@ -10,9 +10,9 @@ import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -124,7 +124,8 @@ class InternationalProjectsOverviewTab(
         color: Color,
         totalCost: Int,
         goals: List<Float>,
-        labelColor: Color = Color.WHITE
+        labelColor: Color = Color.WHITE,
+        withNotches: Boolean = true
     ) {
         val label = labelName.toLabel(labelColor, hideIcons = true)
 
@@ -138,17 +139,23 @@ class InternationalProjectsOverviewTab(
         val progressBar = ImageGetter.ProgressBar(barWidth, barHeight,  false)
         progressBar.setBackground(ImageGetter.CHARCOAL.cpy().apply { a = 0.9f })
         progressBar.setProgress(color, percentage)
-        progressBar.setLabel(Color.WHITE, "$amount / $totalCost")
+        val shadowedLabel = ShadowedLabel("$amount / $totalCost")
+        progressBar.addActor(shadowedLabel)
+        shadowedLabel.center(progressBar)
+        shadowedLabel.toFront()
 
         // Add notches for contribution goals
-        for (goalPercent in goals) {
-            val notch = ImageGetter.getWhiteDot()
-            notch.color = Color.CYAN
-            val notchWidth = 2f
-            notch.setSize(notchWidth, 4f)
-            val notchX = (goalPercent / 100f) * barWidth - notchWidth / 2f
-            notch.setPosition(notchX, barHeight)
-            progressBar.addActor(notch)
+        if (withNotches) {
+            for (goalPercent in goals) {
+                val notch = ImageGetter.getWhiteDot()
+                notch.color = Color.GRAY
+                val notchWidth = 4f
+                val notchHeight = 8f
+                notch.setSize(notchWidth, notchHeight)
+                val notchX = (goalPercent / 100f) * barWidth - notchWidth / 2f
+                notch.setPosition(notchX, barHeight - notchHeight / 2)
+                progressBar.addActor(notch)
+            }
         }
 
         civRow.add(progressBar).left().row()
@@ -170,7 +177,7 @@ class InternationalProjectsOverviewTab(
         }
 
         val totalContributions = project.contributions.values.sum()
-        addContributionRow(contributionsTable, "Total", totalContributions, Color.GOLD, totalCost, goals, Color.GOLD)
+        addContributionRow(contributionsTable, "Total", totalContributions, Color.WHITE, totalCost, goals, withNotches = false)
 
         return contributionsTable
     }
