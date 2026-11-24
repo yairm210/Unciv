@@ -639,15 +639,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
         yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
-        yieldAll(gameInfo.internationalProjects.values
-            .filter { it.isConstructed() }
-            .flatMap { project ->
-                project.projectUniqueMap.getMatchingUniques(
-                    uniqueType,
-                    gameContext
-                ) 
-            }
-        )
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { it.projectUniqueMap.getMatchingUniques(uniqueType, gameContext) })
     }
 
     @Readonly
@@ -663,7 +655,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
         civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
         gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
-        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { project -> project.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { it.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
     }
 
     @Readonly

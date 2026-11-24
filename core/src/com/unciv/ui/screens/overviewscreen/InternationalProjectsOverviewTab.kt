@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.InternationalProject
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.translations.tr
@@ -102,9 +103,15 @@ class InternationalProjectsOverviewTab(
     private fun extractContributionGoals(building: Building): List<Float> {
         val goals = mutableListOf<Float>()
         for (unique in building.uniqueObjects) {
-            if (unique.type == UniqueType.ConditionalInternationalProjectContributionAbove) {
-                val amount = unique.params.firstOrNull()?.toFloatOrNull()
-                if (amount != null) goals.add(amount)
+            for (conditional in unique.modifiers) {
+                if (conditional.type == UniqueType.ConditionalInternationalProjectContributionAbove) {
+                    val parameter = conditional.params.firstOrNull() ?: continue
+                    val amount = Countables.getCountableAmount(
+                        parameter,
+                        viewingPlayer.getCiv().state
+                    ) ?: continue
+                    goals.add(amount.toFloat().coerceIn(0f, 100f))
+                }
             }
         }
         return goals
@@ -127,7 +134,8 @@ class InternationalProjectsOverviewTab(
 
         val percentage = if (totalCost > 0) min(1f, amount.toFloat() / totalCost) else 0f
         val barWidth = 320f
-        val progressBar = ImageGetter.ProgressBar(barWidth, 30f, false)
+        val barHeight = 30f
+        val progressBar = ImageGetter.ProgressBar(barWidth, barHeight,  false)
         progressBar.setBackground(ImageGetter.CHARCOAL.cpy().apply { a = 0.9f })
         progressBar.setProgress(color, percentage)
         progressBar.setLabel(Color.WHITE, "$amount / $totalCost")
@@ -136,9 +144,10 @@ class InternationalProjectsOverviewTab(
         for (goalPercent in goals) {
             val notch = ImageGetter.getWhiteDot()
             notch.color = Color.CYAN
-            notch.setSize(20f, progressBar.height + 4f)
-            val notchX = (goalPercent / 100f) * barWidth
-            notch.setPosition(notchX, 0f)
+            val notchWidth = 2f
+            notch.setSize(notchWidth, 4f)
+            val notchX = (goalPercent / 100f) * barWidth - notchWidth / 2f
+            notch.setPosition(notchX, barHeight)
             progressBar.addActor(notch)
         }
 

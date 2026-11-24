@@ -134,7 +134,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // International projects have a different cost calculation
         if (isInternationalProject) {
             // https://civilization.fandom.com/wiki/International_Project_(Civ5)#Strategy
-            return civInfo.gameInfo.getInternationalProject(name).getCost()
+            return civInfo.gameInfo.getInternationalProject(name)!!.getCost()
         }
         
         var productionCost = cost.toFloat()
@@ -417,7 +417,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // International Projects
         if (isInternationalProject) {
             // Only reject if completed
-            val project = civ.gameInfo.internationalProjects[name]
+            val project = civ.gameInfo.getInternationalProject(name)
             if (project?.isConstructed() ?: false && project.isClaimed)
                 yield(RejectionReasonType.InternationalProjectAlreadyBuilt.toInstance())
         }

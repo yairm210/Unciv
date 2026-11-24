@@ -167,8 +167,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
     @Readonly
-    fun getInternationalProject(name: String): InternationalProject =
-        checkNotNull(internationalProjects[name])
+    fun getInternationalProject(name: String?): InternationalProject? =
+        internationalProjects[name]
 
     fun getOrCreateInternationalProject(name: String): InternationalProject {
         val project = internationalProjects.getOrPut(name) { InternationalProject(name) }

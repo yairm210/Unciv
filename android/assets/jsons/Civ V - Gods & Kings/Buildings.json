@@ -1224,14 +1224,15 @@
 		"happiness": 2,
 		"uniques": ["Unbuildable", "Only available <when religion is enabled>"]
 	},
+  // International Projects, should be [Initial [Major] Civilizations], but that's not moddable yet
     {
         "name": "World's Fair",
         "isInternationalProject": true,
-        "cost": 700,
+        "cost": 6,
         "uniques": [
             "[+100]% [Culture] <for [20] turns> <if greatest contribution>",
-            "Free Social Policy <if contribution is above [350] Production>",
-            "Instantly gain [500] [Golden Age points] <if contribution is above [175] Production>"
+            "Free Social Policy <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
+            "Instantly gain [500] [Golden Age points] <if contribution is above [[50] / [Remaining [Major] Civilizations]]%>"
         ],
         "requiredTech": "Printing Press",
         "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
@@ -1243,13 +1244,13 @@
     "uniques": [
       //"[+100]% [Tourism] <for [20] turns> <if greatest contribution>",
       "Free Social Policy <if greatest contribution>",
-      "[+3 Happiness] <if contribution is above [720] Production>",
+      "[+3 Happiness] <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
       // Currently unmoddable
-      "Increase influence with [all] City States by [30] <if contribution is above [720] Production>",
-      "[+3 Happiness] <if contribution is above [360] Production>"
+      "Increase influence with [all] City States by [30] <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
+      "[+3 Happiness] <if contribution is above [[50] / [Remaining [Major] Civilizations]]%>"
     ],
     "requiredTech": "Radio",
-    "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
+    "quote": "Athletes representing Civilizations from around the world have gathered to compete in feats of strength, skill and grace. As the world watches, Civilizations rise to glory with each medal earned in the International Games."
   },
   {
     "name": "International Space Station",
@@ -1257,11 +1258,11 @@
     "cost": 1700,
     "uniques": [
       "Gain a free [International Space Station wonder] [in capital] <if greatest contribution>",
-      "Free [Great Scientist] appears <if contribution is above [850] Production>",
+      "Free [Great Scientist] appears <if contribution is above [[100] / [Remaining [Major] Civilizations]]%>",
       // Unclear how big this one should be
-      "One-time Research boost <if contribution is above [475] Production>"
+      "One-time Research boost <if contribution is above [[50] / [Remaining [Major] Civilizations]]%>"
     ],
     "requiredTech": "Satellites",
-    "quote": "Thinkers and inventors from around the world have come together to share their ideas in the extravagant World's Fair."
+    "quote": "The International Space Station has been completed and launched into outer space, marking a new frontier in the achievement of mankind."
   }
 ]

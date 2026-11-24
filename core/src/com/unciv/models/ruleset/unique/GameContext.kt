@@ -29,8 +29,6 @@ data class GameContext(
 
     val otherCiv: Civilization? = null,
 
-    val internationalProject: InternationalProject? = null,
-
     val region: Region? = null,
     // tile and region do not deduce gameInfo because that field is not set during MapGeneration,
     // and querying if its initialized is non-trivial

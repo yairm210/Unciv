@@ -50,6 +50,23 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
         val totalCost = building.getProductionCost(gameInfo.civilizations.first(), null)
         return contributions.values.sum() >= totalCost
     }
+    @Readonly
+    fun getContribution(civ: Civilization): Int? =
+        contributions[civ.civName]
+
+    @Readonly
+    fun isGreatestContributor(civ: Civilization): Boolean {
+        val contribution = getContribution(civ) ?: return false
+        val greatest = contributions.values.maxOrNull() ?: return false
+        return contribution == greatest
+    }
+
+    @Readonly
+    fun hasContributionAbove(civ: Civilization, percentage: Int): Boolean {
+        val threshold = getCost() * percentage / 100
+        val contribution = getContribution(civ) ?: return false
+        return contribution > threshold
+    }
     fun completeConstruction(): Boolean {
         isClaimed = true
         val building = getBuilding() ?: return false

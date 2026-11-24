@@ -276,9 +276,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Readonly
     fun getWorkDone(constructionName: String): Int {
         val construction = getConstruction(constructionName)
-        // International projects are handled separately
         if (construction is Building && construction.isInternationalProject) {
-            return city.civ.gameInfo.internationalProjects[constructionName]?.contributions?.values?.sum() ?: 0
+            return city.civ.gameInfo.getInternationalProject(constructionName)?.contributions?.values?.sum() ?: 0
         }
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
         else 0
@@ -382,7 +381,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val construction = getConstruction(constructionName)
 
         // Check if this is an international project and the global project threshold has just been met
-        val internationalProject = city.civ.gameInfo.internationalProjects[constructionName]
+        val internationalProject = city.civ.gameInfo.getInternationalProject(constructionName)
         if ((construction is Building) && (construction.isInternationalProject) && (internationalProject?.isConstructed() == true && !internationalProject.isClaimed)) {
             internationalProject.completeConstruction()
             return@timeThis
