@@ -276,7 +276,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Readonly
     fun getWorkDone(constructionName: String): Int {
 
-        // International projects handled separately, this could be a reason to split them from buildings
+        // International projects are contributed to by all cities
         val construction = getConstruction(constructionName)
         if (construction is Building && construction.isInternationalProject) {
             return city.civ.gameInfo.getInternationalProject(constructionName)?.getTotalContributions() ?: 0
