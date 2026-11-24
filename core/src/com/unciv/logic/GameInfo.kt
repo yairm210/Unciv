@@ -815,7 +815,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (civInfo in civilizations) civInfo.setTransients()
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
 
-
         convertFortify()
 
         updateCivilizationState()
