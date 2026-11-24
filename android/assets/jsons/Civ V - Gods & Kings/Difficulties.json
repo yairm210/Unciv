@@ -144,7 +144,7 @@
 		"aiFreeTechs": ["Pottery"],
 		"aiMajorCivBonusStartingUnits": ["Era Starting Unit"],
 		"aiCityStateBonusStartingUnits": [],
-		"aiUnhappinessModifier": 0.9,
+		"aiUnhappinessModifier": 1,
 		"aisExchangeTechs": true,
 		"turnBarbariansCanEnterPlayerTiles": 0,
 		"clearBarbarianCampReward": 25
@@ -174,7 +174,7 @@
 		"aiFreeTechs": ["Pottery","Animal Husbandry"],
 		"aiMajorCivBonusStartingUnits": ["Era Starting Unit", "Scout"],
 		"aiCityStateBonusStartingUnits": [],
-		"aiUnhappinessModifier": 0.85,
+		"aiUnhappinessModifier": 0.9,
 		"aisExchangeTechs": true,
 		"turnBarbariansCanEnterPlayerTiles": 0,
 		"clearBarbarianCampReward": 25
@@ -204,7 +204,7 @@
 		"aiFreeTechs": ["Pottery","Animal Husbandry","Mining"],
 		"aiMajorCivBonusStartingUnits": ["Worker", "Scout", "Era Starting Unit", "Era Starting Unit"],
 		"aiCityStateBonusStartingUnits": [],
-		"aiUnhappinessModifier": 0.75,
+		"aiUnhappinessModifier": 0.85,
 		"aisExchangeTechs": true,
 		"turnBarbariansCanEnterPlayerTiles": 0,
 		"clearBarbarianCampReward": 25
@@ -234,7 +234,7 @@
 		"aiFreeTechs": ["Pottery","Animal Husbandry","Mining","The Wheel"],
 		"aiMajorCivBonusStartingUnits": ["Settler", "Worker", "Scout", "Era Starting Unit", "Era Starting Unit", "Era Starting Unit"],
 		"aiCityStateBonusStartingUnits": [],
-		"aiUnhappinessModifier": 0.6,
+		"aiUnhappinessModifier": 0.75,
 		"aisExchangeTechs": true,
 		"turnBarbariansCanEnterPlayerTiles": 0,
 		"clearBarbarianCampReward": 25
