@@ -21,7 +21,7 @@ import kotlin.math.min
 
 internal fun hasAvailableInternationalProjects(viewingPlayer: CivView): Boolean =
     viewingPlayer.getCiv().gameInfo.internationalProjects.values.any {
-        it.isInternationalProjectAvailable(viewingPlayer)
+        it.isInternationalProjectAvailable(viewingPlayer.getCiv())
     }
 
 class InternationalProjectsOverviewTab(
@@ -53,7 +53,7 @@ class InternationalProjectsOverviewTab(
     private fun updateProjectsTable() {
         projectsTable.clear()
         val projects = gameInfo.internationalProjects.values
-            .filter { it.isInternationalProjectAvailable(viewingPlayer) }
+            .filter { it.isInternationalProjectAvailable(viewingPlayer.getCiv()) }
             .toList()
         if (projects.isEmpty()) {
             projectsTable.add("No international projects in this game.".toLabel()).row()

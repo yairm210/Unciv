@@ -390,13 +390,13 @@ object Conditionals {
             }
 
             UniqueType.ConditionalInternationalProjectPlurality -> {
-                val civ = state.civInfo
+                val civ = state.relevantCiv
                 val sourceName = unique?.sourceObjectName
                 val project = state.gameInfo?.getInternationalProject(sourceName)
                 !(civ == null || project == null) && project.isGreatestContributor(civ) // Civ 5 gives first player priority if tied, we give bonus to all tied players instead
             }
             UniqueType.ConditionalInternationalProjectContributionAbove -> {
-                val civ = state.civInfo
+                val civ = state.relevantCiv
                 val sourceName = unique?.sourceObjectName
                 val project = state.gameInfo?.getInternationalProject(sourceName)
                 val percentage = Countables.getCountableAmount(conditional.params[0], state)

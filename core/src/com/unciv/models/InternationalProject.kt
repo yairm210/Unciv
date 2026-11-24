@@ -4,7 +4,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilopediaAction
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Building
@@ -12,7 +11,6 @@ import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.view.CivView
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
@@ -49,13 +47,12 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
     @Readonly
     fun isConstructed(): Boolean {
         if (isConstructedCache) return true
-        val building = getBuilding() ?: return false
-        val totalCost = building.getProductionCost(gameInfo.civilizations.first(), null)
-        return getTotalContributions() >= totalCost
+        isConstructedCache = getTotalContributions() >= getCost()
+        return isConstructedCache
     }
     @Readonly
     fun getContribution(civ: Civilization): Int? =
-        contributions[civ.civName]
+        contributions[civ.civID]
 
     @Readonly
     fun isGreatestContributor(civ: Civilization): Boolean {
@@ -101,9 +98,8 @@ class InternationalProject(val name: String = "") : IsPartOfGameInfoSerializatio
         return true
     }
     @Readonly
-    fun isInternationalProjectAvailable(viewingPlayer: CivView): Boolean {
-        val civ = viewingPlayer.getCiv()
-        val building = viewingPlayer.ruleset.buildings[name] ?: return false
+    fun isInternationalProjectAvailable(civ: Civilization): Boolean {
+        val building = gameInfo.ruleset.buildings[name] ?: return false
         if (isConstructed()) return true
         if (civ.gameInfo.isUnavailableBySettingsCached(building)) return false
         if (building.requiredTechs().any { !civ.tech.isResearched(it) }) return false

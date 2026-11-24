@@ -740,6 +740,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         tech.techUniques.forEachUnique(uniqueFilter, listOp)
         getEra().uniqueMap.forEachUnique(uniqueFilter, listOp)
         gameInfo.getGlobalUniques().uniqueMap.forEachUnique(uniqueFilter, listOp)
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { it.projectUniqueMap.forEachUnique(uniqueFilter, listOp) }
         // now its safe to do the op, which might mutate the lists
         uniqueList.forEach { it.forEachMultiplied(gameContext, op) }
     }
