@@ -385,7 +385,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         // Check if this is an international project and the global project threshold has just been met
         val internationalProject = city.civ.gameInfo.getInternationalProject(constructionName)
-        if ((construction is Building) && (construction.isInternationalProject) && (internationalProject?.isConstructed() == true && !internationalProject.isClaimed)) {
+        if ((construction is Building) && (construction.isInternationalProject) && (internationalProject?.isConstructed() ?: false)){
             internationalProject.completeConstruction()
             return@timeThis
         }
