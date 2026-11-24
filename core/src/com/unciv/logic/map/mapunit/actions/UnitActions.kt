@@ -43,8 +43,7 @@ object UnitActions {
     /**
      *  Get all currently possible instances of [UnitAction] for [unit].
      */
-    fun getUnitActions(unit: MapUnit) = sequence {
-        val tile = unit.getTile()
+    fun getUnitActions(unit: MapUnit, tile: Tile = unit.getTile()) = sequence {
 
         // Actions standardized with a directly callable invokeUnitAction
         for (getActionFunction in actionTypeToSingleFunctions.values)
@@ -53,23 +52,24 @@ object UnitActions {
             yieldAll(getActionsFunction(unit, tile))
 
         // Actions not migrated to the actionTypeTo*Functions maps
-        addUnmappedUnitActions(unit)
+        addUnmappedUnitActions(unit, tile)
     }
 
     /**
      *  Get all instances of [UnitAction] of the [unitActionType] type for [unit].
      *
      *  Includes optimization for direct creation of the needed instance type, falls back to enumerating [getUnitActions] to look for the given type.
+     *  @param tile The tile to check the action for, as if the unit were standing on it - invoking the action always acts on the unit's actual tile
      */
-    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType): Sequence<UnitAction> {
+    fun getUnitActions(unit: MapUnit, unitActionType: UnitActionType, tile: Tile = unit.getTile()): Sequence<UnitAction> {
         val singleFunction = actionTypeToSingleFunctions[unitActionType]
         if (singleFunction != null)                  // we have a mapped getter for a single action...
-            return sequenceOf(singleFunction(unit, unit.getTile())).filterNotNull()
+            return sequenceOf(singleFunction(unit, tile)).filterNotNull()
         val multiFunction = actionTypeToMultiFunctions[unitActionType]
         if (multiFunction != null)                   // ...or for a collection - call it...
-            return multiFunction(unit, unit.getTile())
+            return multiFunction(unit, tile)
         return sequence {
-            addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
+            addUnmappedUnitActions(unit, tile)       // No mapped getter: Enumerate all...
         }.filter { it.type == unitActionType }       // ...and take ones matching the type.
     }
 
@@ -81,7 +81,7 @@ object UnitActions {
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupAction,
         UnitActionType.Guard to UnitActionsFromUniques::getGuardAction,
         UnitActionType.FoundCity to UnitActionsFromUniques::getFoundCityAction,
-        UnitActionType.Repair to { unit, _ -> UnitActionsFromUniques.getRepairAction(unit) },
+        UnitActionType.Repair to UnitActionsFromUniques::getRepairAction,
         UnitActionType.HurryResearch to UnitActionsGreatPerson::getHurryResearchAction,
         UnitActionType.HurryPolicy to UnitActionsGreatPerson::getHurryPolicyAction,
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderAction,
@@ -103,8 +103,7 @@ object UnitActions {
         UnitActionType.TriggerUnique to UnitActionsFromUniques::getTriggerUniqueActions
     )
 
-    private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit) {
-        val tile = unit.getTile()
+    private suspend fun SequenceScope<UnitAction>.addUnmappedUnitActions(unit: MapUnit, tile: Tile) {
 
         // General actions
         addAutomateActions(unit)
@@ -118,10 +117,10 @@ object UnitActions {
                 unit.automated = false
             })
 
-        yieldAll(UnitActionsUpgrade.getUpgradeActions(unit))
+        yieldAll(UnitActionsUpgrade.getUpgradeActions(unit, tile))
 
         addSleepActions(unit, tile)
-        addFortifyActions(unit)
+        addFortifyActions(unit, tile)
 
         addExplorationActions(unit)
 
@@ -159,7 +158,7 @@ object UnitActions {
         })
     }
 
-    private suspend fun SequenceScope<UnitAction>.addFortifyActions(unit: MapUnit) {
+    private suspend fun SequenceScope<UnitAction>.addFortifyActions(unit: MapUnit, tile: Tile) {
         if (unit.isFortified()) {
             yield(UnitAction(
                 type = if (unit.isActionUntilHealed())
@@ -180,7 +179,7 @@ object UnitActions {
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.FortifyUntilHealed,
             action = { unit.fortifyUntilHealed() }
-                .takeIf { !unit.isFortifyingUntilHealed() && unit.canHealInCurrentTile() },
+                .takeIf { !unit.isFortifyingUntilHealed() && unit.healingAmountForTile(tile) > 0 },
         ))
     }
 
@@ -195,7 +194,7 @@ object UnitActions {
         if (unit.health == 100) return
         yield(UnitAction(UnitActionType.SleepUntilHealed,
             action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
+                .takeIf { !unit.isSleepingUntilHealed() && unit.healingAmountForTile(tile) > 0 }
         ))
     }
 

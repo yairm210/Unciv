@@ -473,10 +473,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun getAirUnitMovementRange(): Int = getRange() * 2
 
     @Readonly
-    fun isEmbarked(): Boolean {
+    fun isEmbarked(): Boolean = isEmbarkedAt(currentTile)
+
+    /** Whether this unit would be embarked if it were standing on [tile] */
+    @Readonly
+    fun isEmbarkedAt(tile: Tile): Boolean {
         if (!baseUnit.isLandUnit) return false
         if (cache.canMoveOnWater) return false
-        return currentTile.isWater
+        return tile.isWater
     }
 
     /** Whether this unit currently has an invisibility unique that hides it from [to] (ignores fog of war,
@@ -520,19 +524,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
-    @Readonly
-    fun getHealAmountForCurrentTile() = when {
-        isEmbarked() -> 0 // embarked units can't heal
-        health >= 100 -> 0 // No need to heal if at max health
-        hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
-        else -> healingAmountForTile(getTile(), noTerrainDamage = true)
-    }
-
-    @Readonly fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
+    @Readonly fun getHealAmountForCurrentTile() = healingAmountForTile(getTile(), noTerrainDamage = true)
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
     @Readonly
     fun healingAmountForTile(tile: Tile, noTerrainDamage: Boolean = false): Int {
+        if (isEmbarkedAt(tile)) return 0 // embarked units can't heal
+        if (health >= 100) return 0 // No need to heal if at max health
+        if (hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true)) return 0
+
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
         var healing = when {
@@ -562,7 +562,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             }
         }
 
-        val maxAdjacentHealingBonus = currentTile.neighbors
+        val maxAdjacentHealingBonus = tile.neighbors
             .flatMap { it.getUnits() }.filter { it.civ == civ }
             .maxOfOrNull { it.adjacentHealingBonus() }
         if (maxAdjacentHealingBonus != null)
