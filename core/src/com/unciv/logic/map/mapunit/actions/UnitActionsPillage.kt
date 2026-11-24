@@ -17,7 +17,7 @@ import kotlin.random.Random
 object UnitActionsPillage {
 
     internal fun getPillageAction(unit: MapUnit, tile: Tile): UnitAction? {
-        val improvementName = unit.currentTile.getImprovementToPillageName()
+        val improvementName = tile.getImprovementToPillageName()
         if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
             UnitActionType.Pillage,
@@ -25,8 +25,8 @@ object UnitActionsPillage {
             confirmation = UnitActionConfirmation(
                 "Are you sure you want to pillage this [$improvementName]?", "Pillage"),
             action = {
-                val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!  // can this differ from improvementName due to later execution???
-                val pillagingImprovement = unit.currentTile.canPillageTileImprovement()
+                val pillagedImprovement = tile.getImprovementToPillageName()!!  // can this differ from improvementName due to later execution???
+                val pillagingImprovement = tile.canPillageTileImprovement()
                 val pillageText = "An enemy [${unit.baseUnit.name}] has pillaged our [$pillagedImprovement]"
                 val icon = "ImprovementIcons/$pillagedImprovement"
                 tile.getOwner()?.addNotification(
@@ -68,7 +68,7 @@ object UnitActionsPillage {
         // Accumulate the loot
         var pillageYield = Stats()
         val stateForConditionals = unit.cache.state
-        val random = Random(unit.civ.gameInfo.turns * unit.getTile().position.hashCode().toLong())
+        val random = Random(unit.civ.gameInfo.turns * tile.position.hashCode().toLong())
         improvement.forEachMatchingUnique(UniqueType.PillageYieldRandom, stateForConditionals) { unique ->
             for ((stat, value) in unique.stats) {
                 var yieldsToAdd = Stats()
