@@ -401,24 +401,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy, otherCiv.civName)
 
-        for (unit in civInfo.units.getCivUnits())
-            unit.gift(otherCiv)
-
-
-        // Make sure this CS can never be liberated
-        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
-            it.foundingCivObject = null
-            it.isOriginalCapital = false
-        }
-
-        for (city in civInfo.cities) {
-            city.espionage.removeAllPresentSpies(SpyFleeReason.CityTakenOverByMarriage)
-            city.moveToCiv(otherCiv)
-            city.isPuppet = true // Human players get a popup that allows them to annex instead
-            // As in Civ V, the city starts with no production orders, so it does not finish the city-state's units
-            city.cityConstructions.removeAll()
-        }
-        civInfo.destroy(notificationLocation.toHexCoord())
+        takeOver(otherCiv, SpyFleeReason.CityTakenOverByMarriage)
     }
     
     fun hostileTakeover(otherCiv: Civilization) {
@@ -462,17 +445,24 @@ class CityStateFunctions(val civInfo: Civilization) {
                 )
         } */
 
+        takeOver(otherCiv, SpyFleeReason.CityBought)
+    }
+
+    /** Hands this city-state's units and cities to [otherCiv] as puppets, then destroys the city-state */
+    private fun takeOver(otherCiv: Civilization, spyFleeReason: SpyFleeReason) {
+        val notificationLocation = civInfo.getCapital()!!.location
+
         for (unit in civInfo.units.getCivUnits())
             unit.gift(otherCiv)
 
         // Make sure this CS can never be liberated
-        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
-            it.foundingCivObject = null
-            it.isOriginalCapital = false
+        for (city in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
+            city.foundingCivObject = null
+            city.isOriginalCapital = false
         }
 
         for (city in civInfo.cities) {
-            city.espionage.removeAllPresentSpies(SpyFleeReason.CityBought)
+            city.espionage.removeAllPresentSpies(spyFleeReason)
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
             // As in Civ V, the city starts with no production orders, so it does not finish the city-state's units
