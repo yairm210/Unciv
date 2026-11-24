@@ -1042,7 +1042,7 @@ class GlobalUniquesTests {
         val bullyTributeForce = CityStateFunctions(cityState)
             .getTributeModifiers(bullyCiv, false)["Military near City-State"]
         val bullyTributeExtra = CityStateFunctions(cityState)
-            .getTributeModifiers(bullyCiv, false)["From Uniques"]
+            .getTributeModifiers(bullyCiv, false)["Intimidation bonus"]
         
         // then
         Assert.assertTrue(bullyTributeRank != null

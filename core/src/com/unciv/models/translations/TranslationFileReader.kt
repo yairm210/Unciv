@@ -23,13 +23,19 @@ object TranslationFileReader {
 
     fun read(file: FileHandle): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
-        file.reader(charset).forEachLine { line ->
-            if (line.isCommentLine()) return@forEachLine
-            val splitLine = line.split(keyValueSeparator, limit = 2)
-            if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
-                val value = splitLine[1].replace("\\n","\n")
-                val key = splitLine[0].replace("\\n","\n")
-                translations[key] = value
+        file.reader(16384, charset).use { reader ->
+            // Skip a leading UTF-8 BOM (EF BB BF / U+FEFF); Notepad can write one.
+            reader.mark(1)
+            if (reader.read() != '\uFEFF'.code) reader.reset()
+            reader.forEachLine { line ->
+                if (line.isCommentLine()) return@forEachLine
+                val splitLine = line.split(keyValueSeparator, limit = 2)
+                if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
+                    // A literal "" means the translation is intentionally the empty string
+                    val value = if (splitLine[1] == "\"\"") "" else splitLine[1].replace("\\n","\n")
+                    val key = splitLine[0].replace("\\n","\n")
+                    translations[key] = value
+                }
             }
         }
         // TFW avoids offering the template for UniqueType.Comment, so we can hardcode this:

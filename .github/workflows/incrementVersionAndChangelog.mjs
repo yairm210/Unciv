@@ -137,16 +137,29 @@ async function parseCommits() {
 
     if (!reachedPreviousVersion) throw new Error("Did not find the previous version tag commit within the fetched commit history - fetch more commits");
 
+    const knownAuthors = getKnownAuthors(nextVersionString);
     for (const [author, commits] of Object.entries(ownerToCommits)) {
+        const authorText = author + (knownAuthors.has(author.toLowerCase()) ? "" : " (new contributor!)");
         if (commits.length === 1) {
-            commitSummary += "\n\n" + commits[0] + "- By " + author;
+            commitSummary += "\n\n" + commits[0] + "- By " + authorText;
         } else {
-            commitSummary += "\n\nBy " + author + ":";
+            commitSummary += "\n\nBy " + authorText + ":";
             commits.forEach(commitMessage => { commitSummary += "\n- " + commitMessage });
         }
     }
     console.log(commitSummary);
     return [nextVersionString, commitSummary];
+}
+
+// Authors credited anywhere in the existing changelog ("By X" lines), lowercased.
+// The section for the version being generated is skipped, so re-running doesn't turn its own authors into "known" ones.
+function getKnownAuthors(nextVersionString) {
+    const changelog = fs.readFileSync('changelog.md').toString();
+    const sections = changelog.split(/^## /m).filter(section => !section.startsWith(nextVersionString + "\n"));
+    const authors = new Set();
+    for (const match of sections.join("\n").matchAll(/\bBy ([A-Za-z0-9-]+)/g))
+        authors.add(match[1].toLowerCase());
+    return authors;
 }
 
 function writeChangelog(nextVersionString, changelogString){

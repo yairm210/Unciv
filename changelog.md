@@ -1,3 +1,35 @@
+## 5.0.3
+
+Unit "heal" actions respect terrain damage as "negative healing" 
+
+Fix potential zip-slip when unzipping folders from mods
+
+"" in translation files is treated as empty string
+
+conquering CS and destroying their civ should move us to -120 influence with them - relevant if someone revives them
+
+Read the first entry of translation files that start with a UTF-8 byte order mark - By SwastikTripathi
+
+Many minor Civ V discrepancies - By Qualia-Li
+
+captureOrconvertToWorker movement bugfix - By O-spin
+
+## 5.0.2
+
+Background work on unit actions :)
+
+Fix crash when two autosaves overlap - By ibrahim-iqbal
+
+Reject online saves whose game speed is missing locally - By mvanhorn
+
+Show damaged city's healthbar when it's out of sight - By Qualia-Li
+
+Wrap map descriptions within the new-game options column - By Qualia-Li
+
+Use religion display name instead of name in notification - By unciv-loof
+
+Refresh owned tile images when the owner's era or style changes - By SwastikTripathi (new contributor!)
+
 ## 5.0.1
 
 Avoid ANR when opening empire overview screen from top bar

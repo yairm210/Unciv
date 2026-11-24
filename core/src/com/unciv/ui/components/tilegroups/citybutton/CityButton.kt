@@ -159,7 +159,8 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         pack()
 
         // If city damaged - add health bar
-        if (isCityViewable && foreignCityView.getHealth() < foreignCityView.getMaxHealth().toFloat()) {
+        // As in Civ V, a known city shows its damage whether or not it is in sight
+        if (foreignCityView.getHealth() < foreignCityView.getMaxHealth().toFloat()) {
             val healthBar = ImageGetter.getHealthBar(foreignCityView.getHealth().toFloat(),
                 foreignCityView.getMaxHealth().toFloat(), 100f, 3f)
             addActor(healthBar)

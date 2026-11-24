@@ -136,18 +136,21 @@ object TranslationCache {
         /** Cloned in [getMutableFormatter] */
         private val formatterPrototype: DecimalFormat
     ) {
-        /** Format [value] - uses a thread-local version of [getNumberFormatter] without cloning every call */
-        @Readonly
-        fun format(value: Number): String = getMutableFormatter().format(value)
+        /** Per-thread formatter, seeded from [formatterPrototype]; avoids cloning on every [format]/[parse]/[reformat] call */
+        private val threadLocalFormatter = ThreadLocal.withInitial { formatterPrototype.clone() as DecimalFormat }
 
-        /** Parse [text] to a Number, updating [pos] - uses a thread-local version of [getNumberFormatter] without cloning every call */
+        /** Format [value] - uses a thread-local formatter without cloning every call */
         @Readonly
-        fun parse(text: String, pos: ParsePosition): Number? = getMutableFormatter().parse(text, pos)
+        fun format(value: Number): String = threadLocalFormatter.get().format(value)
+
+        /** Parse [text] to a Number, updating [pos] - uses a thread-local formatter without cloning every call */
+        @Readonly
+        fun parse(text: String, pos: ParsePosition): Number? = threadLocalFormatter.get().parse(text, pos)
 
         /** Reformat a number given as plain ASCII digits or in this language's format; null if it doesn't parse completely */
         @Readonly
         fun reformat(numericString: String): String? {
-            val formatter = getMutableFormatter()
+            val formatter = threadLocalFormatter.get()
             val pos = ParsePosition(0)
             val number = formatter.parse(numericString, pos) ?: return null
             return if (pos.index == numericString.length) formatter.format(number) else null
