@@ -75,6 +75,7 @@ allprojects {
 
             "java.text.ParsePosition.getIndex",
             "java.util.BitSet.clone",
+            "java.lang.ThreadLocal.get",
 
             "kotlin.collections.orEmpty",
             "kotlin.collections.toTypedArray",
