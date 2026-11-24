@@ -129,8 +129,9 @@ class CityConquestFunctions(val city: City) {
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.avoidGrowth = false // reset settings
         city.setCityFocus(CityFocus.NoFocus) // reset settings
+        // As in Civ V (CvPlayer::acquireCity, CITY_CAPTURE_POPULATION_PERCENT = 50): keep half the population, rounded down, at least 1
         if (city.population.population > 1)
-            city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            city.population.addPopulation(-city.population.population + maxOf(1, city.population.population / 2))
         city.reassignAllPopulation()
 
         if (!reconqueredCityWhileStillInResistance && city.foundingCivObject != receivingCiv) {

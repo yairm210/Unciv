@@ -59,7 +59,7 @@ class CityStateTributeTests {
             uniques = listOf("Units are [+25]% more effective at intimidating City-States")
         )
         val modifiers = scenario.assertWillingness(26)
-        assertEquals(31, modifiers["From Uniques"])
+        assertEquals(31, modifiers["Intimidation bonus"])
     }
 
     @Test
@@ -67,7 +67,7 @@ class CityStateTributeTests {
         val scenario = Scenario(uniques = listOf("Units are [+150]% more effective at intimidating City-States"))
         scenario.cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
         val modifiers = scenario.assertWillingness(90)
-        assertEquals(300, modifiers["From Uniques"])
+        assertEquals(300, modifiers["Intimidation bonus"])
     }
 
     @Test

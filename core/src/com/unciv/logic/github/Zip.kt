@@ -66,6 +66,12 @@ object Zip {
             val destFile = unzipDestination.child(currentEntry)
             val destinationParent = destFile.parent()
 
+            // Zip-slip guard: entry names like "../x" must not leave the destination folder
+            if (!destFile.file().canonicalFile.toPath().startsWith(unzipDestination.file().canonicalFile.toPath())) {
+                zip.close()
+                throw SecurityException("Zip entry escapes destination folder: $currentEntry")
+            }
+
             // create the parent directory structure if needed
             destinationParent.mkdirs()
             if (!entry.isDirectory) {
