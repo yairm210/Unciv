@@ -9,6 +9,9 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
 jobs:
 
   # We only need the minimum
@@ -17,21 +20,23 @@ jobs:
     name: Check code and run unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.1.0
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: 'temurin'
           java-version: 21
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@v4.0.4
         with:
           # The legacy 'tools' package was pulled from Google's SDK repository; only platform-tools is needed here
           packages: 'platform-tools'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -60,7 +65,7 @@ jobs:
 
       - name: Comment test failures on PR
         if: steps.run_checks.outputs.check_exit_code != '0' && github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v8.0.0
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |
