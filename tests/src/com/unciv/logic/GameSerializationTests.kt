@@ -106,6 +106,7 @@ class GameSerializationTests {
             UncivFiles.saveZipped = false
             game.turns = 123
             game.version = CompatibilityVersion.FIRST_WITHOUT
+            game.gameParameters.greatPersonPointsInCities = true
             game.getCivilization("Rome").cities.first().storedGreatPersonPoints["Great Scientist"] = 20
 
             UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
@@ -115,7 +116,8 @@ class GameSerializationTests {
             Assert.assertEquals(game.gameId, loadedGame.gameId)
             Assert.assertEquals(game.turns, loadedGame.turns)
             Assert.assertEquals(CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION, loadedGame.version)
-            Assert.assertTrue(loadedGame.greatPersonPointsInCities)
+            Assert.assertTrue(loadedGame.gameParameters.greatPersonPointsInCities)
+            Assert.assertTrue(GameSetupInfo(loadedGame).gameParameters.greatPersonPointsInCities)
             Assert.assertEquals(20, loadedGame.getCivilization("Rome").cities.first().storedGreatPersonPoints["Great Scientist"])
             Assert.assertEquals(
                 game.getCivilization("Rome").cities.size,
@@ -127,28 +129,38 @@ class GameSerializationTests {
     }
 
     @Test
-    fun legacyGameKeepsItsFormatAndCivWidePoints() {
-        // Older saves omit the mode field, including games that have yet to earn any points.
-        game.greatPersonPointsInCities = false
-        val before = UncivFiles.gameInfoToString(game, forceZip = false)
-        Assert.assertFalse(before.contains("greatPersonPointsInCities"))
-        val loaded = UncivFiles.gameInfoFromString(before).clone()
-        loaded.setTransients()
-        Assert.assertFalse(loaded.greatPersonPointsInCities)
-
-        val manager = loaded.getCivilization("Rome").greatPeople
+    fun upgradingAnOlderSaveKeepsCivWidePoints() {
+        game.version = CompatibilityVersion(4, Version("5.0.3", 1288))
+        val manager = game.getCivilization("Rome").greatPeople
         val cost = manager.getPointsRequiredForGreatPerson("Great Scientist")
         manager.greatPersonPointsCounter["Great Scientist"] = cost + 35
-        manager.startTurn()
+        val before = json().toJson(game)
+        Assert.assertFalse(before.contains("greatPersonPointsInCities"))
+        val loaded = UncivFiles.gameInfoFromString(before)
+        Assert.assertFalse(loaded.gameParameters.greatPersonPointsInCities)
+
+        loaded.getCivilization("Rome").greatPeople.startTurn()
         val uploaded = UncivFiles.gameInfoToString(loaded, forceZip = true, updateChecksum = true)
         val next = UncivFiles.gameInfoFromStream { uploaded.byteInputStream() }
 
-        Assert.assertEquals(4, next.version.number)
-        Assert.assertFalse(next.greatPersonPointsInCities)
+        Assert.assertEquals(CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION, next.version)
+        Assert.assertFalse(next.gameParameters.greatPersonPointsInCities)
         val rome = next.getCivilization("Rome")
         Assert.assertEquals(35, rome.greatPeople.greatPersonPointsCounter["Great Scientist"])
         Assert.assertEquals((200 * next.speed.modifier).toInt(), rome.greatPeople.getPointsRequiredForGreatPerson("Great Scientist"))
         Assert.assertTrue(rome.cities.all { it.storedGreatPersonPoints.isEmpty() })
+    }
+
+    @Test
+    fun newGameWithCivWidePointsUsesCurrentFormat() {
+        val setup = GameSetupInfo(game)
+        setup.gameParameters.greatPersonPointsInCities = false
+        val newGame = GameStarter.startNewGame(setup)
+        val upload = UncivFiles.gameInfoToString(newGame.clone(), forceZip = true)
+        val loaded = UncivFiles.gameInfoFromStream { upload.byteInputStream() }
+
+        Assert.assertEquals(CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION, loaded.version)
+        Assert.assertFalse(loaded.gameParameters.greatPersonPointsInCities)
     }
 
     @Test
@@ -157,14 +169,11 @@ class GameSerializationTests {
         try {
             UncivFiles.saveZipped = true
             game.turns = 123
-            game.greatPersonPointsInCities = false
 
             UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
             val loadedGame = UncivGame.Current.files.loadGameFromFile(FileHandle(saveFile))
 
             Assert.assertFalse(saveFile.readText().startsWith('{'))
-            Assert.assertEquals(4, loadedGame.version.number)
-            Assert.assertFalse(loadedGame.greatPersonPointsInCities)
             Assert.assertEquals(game.gameId, loadedGame.gameId)
             Assert.assertEquals(game.turns, loadedGame.turns)
             Assert.assertEquals(

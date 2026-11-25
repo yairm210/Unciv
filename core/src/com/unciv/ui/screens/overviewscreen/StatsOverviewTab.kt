@@ -211,17 +211,16 @@ class StatsOverviewTab(
         }
         val pointsPerTurnByCity = viewingPlayer.cities().associateWith { it.getGreatPersonPointsBreakdown().sum() }
         val civWidePoints = viewingPlayer.getCivWideGreatPersonPoints()
-        if (civWidePoints != null) {
-            for ((unit, points) in civWidePoints)
-                addPointsRow(unit, unit, points, pointsPerTurnByCity.values.sumOf { it[unit] })
-        } else {
-            val greatPeople = pointsPerTurnByCity.flatMap { (city, rate) -> city.getStoredGreatPersonPoints().keys + rate.keys }.toSet()
-            for (unit in greatPeople) {
-                // On a tie, show the city generating the most points.
-                val (city, rate) = pointsPerTurnByCity.entries.maxWith(
-                    compareBy({ it.key.getStoredGreatPersonPoints()[unit] ?: 0 }, { it.value[unit] }))
-                addPointsRow(unit, "{$unit} ({${city.name}})", city.getStoredGreatPersonPoints()[unit] ?: 0, rate[unit])
+        val greatPeople = civWidePoints.keys + pointsPerTurnByCity.flatMap { (city, rate) -> city.getStoredGreatPersonPoints().keys + rate.keys }
+        for (unit in greatPeople) {
+            if (!viewingPlayer.usesCityPoints(unit)) {
+                addPointsRow(unit, unit, civWidePoints[unit] ?: 0, pointsPerTurnByCity.values.sumOf { it[unit] })
+                continue
             }
+            // On a tie, show the city generating the most points.
+            val (city, rate) = pointsPerTurnByCity.entries.maxWithOrNull(
+                compareBy({ it.key.getStoredGreatPersonPoints()[unit] ?: 0 }, { it.value[unit] })) ?: continue
+            addPointsRow(unit, "{$unit} ({${city.name}})", city.getStoredGreatPersonPoints()[unit] ?: 0, rate[unit])
         }
 
         val greatGeneralPoints = viewingPlayer.getGreatGeneralPointsCounter()

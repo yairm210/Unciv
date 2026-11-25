@@ -1,11 +1,14 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
+import com.unciv.logic.BackwardCompatibility.reconcileGreatPersonPoints
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.HexCoord
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -24,7 +27,7 @@ class GreatPersonPointsTest {
 
     @Before
     fun setUp() {
-        testGame.gameInfo.greatPersonPointsInCities = true
+        testGame.gameInfo.gameParameters.greatPersonPointsInCities = true
         testGame.makeHexagonalMap(4)
         civ = testGame.addCiv()
         capital = testGame.addCity(civ, testGame.getTile(HexCoord.Zero))
@@ -47,6 +50,73 @@ class GreatPersonPointsTest {
 
         assertEquals(5, otherCity.storedGreatPersonPoints["Great Scientist"])
         assertEquals(0, capital.storedGreatPersonPoints["Great Scientist"])
+    }
+
+    @Test
+    fun `a nation's empire-wide engineer shares a cost with its city scientists`() {
+        val engineer = testGame.createBaseUnit("Civilian", "Great Person - [Production]",
+            "Is part of Great Person group [Great Person]", UniqueType.CivWideGreatPersonPoints.text)
+        engineer.replaces = "Great Engineer"
+        engineer.uniqueTo = civ.civName
+        civ.cache.setTransients()
+        addBuildingGeneratingPoints(capital, "Great Engineer", 60)
+        addBuildingGeneratingPoints(otherCity, "Great Engineer", 50)
+        addBuildingGeneratingPoints(capital, "Great Scientist", 100)
+        addBuildingGeneratingPoints(otherCity, "Great Scientist", 30)
+
+        civ.greatPeople.addGreatPersonPoints()
+        assertEquals(110, civ.greatPeople.greatPersonPointsCounter["Great Engineer"])
+        assertEquals(0, otherCity.storedGreatPersonPoints["Great Engineer"])
+        assertEquals(100, capital.storedGreatPersonPoints["Great Scientist"])
+        assertEquals(30, otherCity.storedGreatPersonPoints["Great Scientist"])
+
+        civ.greatPeople.startTurn()
+        assertEquals(1, unitsNamed(engineer.name).size)
+        assertTrue(unitsNamed("Great Scientist").isEmpty())
+        assertEquals(0, civ.greatPeople.greatPersonPointsCounter["Great Engineer"])
+        assertEquals(100, capital.storedGreatPersonPoints["Great Scientist"])
+        assertEquals(200, civ.greatPeople.getPointsRequiredForGreatPerson("Great Scientist"))
+
+        civ.greatPeople.addGreatPersonPoints()
+        civ.greatPeople.startTurn()
+        assertEquals(1, unitsNamed("Great Scientist").size)
+        assertEquals(60, otherCity.storedGreatPersonPoints["Great Scientist"])
+        assertEquals(110, civ.greatPeople.greatPersonPointsCounter["Great Engineer"])
+        assertEquals(300, civ.greatPeople.getPointsRequiredForGreatPerson("Great Engineer"))
+    }
+
+    @Test
+    fun `changing a unit's point scope in a mod preserves its accumulated points on load`() {
+        val pooled = testGame.createBaseUnit("Civilian", UniqueType.CivWideGreatPersonPoints.text)
+        capital.storedGreatPersonPoints[pooled.name] = 15
+        otherCity.storedGreatPersonPoints[pooled.name] = 30
+        civ.greatPeople.greatPersonPointsCounter["Great Scientist"] = 60
+
+        repeat(2) { testGame.gameInfo.reconcileGreatPersonPoints() }
+
+        assertEquals(45, civ.greatPeople.greatPersonPointsCounter[pooled.name])
+        assertEquals(0, capital.storedGreatPersonPoints[pooled.name])
+        assertTrue(otherCity.storedGreatPersonPoints.isEmpty())
+        assertEquals(60, capital.storedGreatPersonPoints["Great Scientist"])
+        assertEquals(0, civ.greatPeople.greatPersonPointsCounter["Great Scientist"])
+    }
+
+    @Test
+    fun `an inland city's points cannot spawn a naval unit in another city`() {
+        val game = TestGame()
+        game.gameInfo.gameParameters.greatPersonPointsInCities = true
+        game.makeHexagonalMap(4)
+        game.setTileTerrain(HexCoord(4, 0), Constants.coast)
+        val owner = game.addCiv()
+        val inland = game.addCity(owner, game.getTile(HexCoord.Zero))
+        val port = game.addCity(owner, game.getTile(3, 0))
+        inland.storedGreatPersonPoints["Great Admiral"] = 100
+
+        owner.greatPeople.startTurn()
+
+        assertTrue(port.isNaval())
+        assertTrue(owner.units.getCivUnits().none { it.name == "Great Admiral" })
+        assertEquals(100, inland.storedGreatPersonPoints["Great Admiral"])
     }
 
     @Test
@@ -138,7 +208,7 @@ class GreatPersonPointsTest {
     @Test
     fun `great person that cannot be placed keeps its points`() {
         val game = TestGame()
-        game.gameInfo.greatPersonPointsInCities = true
+        game.gameInfo.gameParameters.greatPersonPointsInCities = true
         val blockedCiv = game.addCiv()
         val city = game.addCity(blockedCiv, game.getTile(HexCoord.Zero))
         game.addUnit("Worker", blockedCiv, city.getCenterTile()) // The only tile, so there is no room for a civilian
@@ -170,8 +240,8 @@ class GreatPersonPointsTest {
     }
 
     @Test
-    fun `legacy cities combine points and carry overflow across successive births`() {
-        testGame.gameInfo.greatPersonPointsInCities = false
+    fun `civilization-wide mode combines points and carry overflow across successive births`() {
+        testGame.gameInfo.gameParameters.greatPersonPointsInCities = false
         addBuildingGeneratingPoints(capital, "Great Scientist", 180)
         addBuildingGeneratingPoints(otherCity, "Great Scientist", 150)
 

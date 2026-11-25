@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -28,7 +29,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     var pointsForNextGreatGeneral = 200
     var pointsForNextGreatGeneralCounter = Counter<String>() // Initial values assigned when needed
 
-    /** Accumulated points by unit in games started with the civ-wide rules. */
+    /** Points from cities for units whose progress is tracked across the civilization. */
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
@@ -58,7 +59,11 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         .getMatchingUniques(UniqueType.GPPointPool)
         // An empty string is used to indicate the Unique wasn't found
         .firstOrNull()?.params?.get(0) ?: ""
-    
+
+    @Readonly
+    fun usesCityPoints(greatPerson: String) = civInfo.gameInfo.gameParameters.greatPersonPointsInCities
+        && !civInfo.getEquivalentUnit(greatPerson).hasUnique(UniqueType.CivWideGreatPersonPoints)
+
     @Readonly
     private fun civWideBaseCost(group: String) =
         if (group in pointsForNextGreatPersonCounter) pointsForNextGreatPersonCounter[group] else 100
@@ -66,35 +71,40 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
         val group = getPoolKey(greatPerson)
-        val baseCost = if (civInfo.gameInfo.greatPersonPointsInCities) 100 + 100 * greatPeopleGainedCounter[group]
+        val baseCost = if (civInfo.gameInfo.gameParameters.greatPersonPointsInCities) 100 + 100 * greatPeopleGainedCounter[group]
             else civWideBaseCost(group)
         return (baseCost * civInfo.gameInfo.speed.modifier).toInt()
     }
 
     fun startTurn() {
         while (true) {
-            val unit = getNewCivWideGreatPerson() ?: break
+            val unit = takeNextCombatOrClassicGreatPerson() ?: break
             civInfo.units.addUnit(unit)
         }
 
-        if (!civInfo.gameInfo.greatPersonPointsInCities) return
+        if (!civInfo.gameInfo.gameParameters.greatPersonPointsInCities) return
+        spawnGreatPeopleFromPoints(greatPersonPointsCounter)
         for (city in civInfo.cities) {
             if (city.isInResistance()) continue // Its Great People will be born once the resistance is over
-            val ready = city.storedGreatPersonPoints.filter { (unit, points) -> points >= getPointsRequiredForGreatPerson(unit) }
-            if (ready.isEmpty()) continue
-
-            // Resolve simultaneous births in ruleset order. An earlier birth may raise a later one's cost.
-            for (greatPerson in civInfo.gameInfo.ruleset.units.keys) {
-                val points = ready[greatPerson] ?: continue
-                if (points < getPointsRequiredForGreatPerson(greatPerson)) continue
-                if (civInfo.units.addUnit(greatPerson, city) == null) continue // No room to place it - try again next turn
-                city.storedGreatPersonPoints.remove(greatPerson) // Points beyond the cost are lost, like in Civ V
-                greatPeopleGainedCounter.add(getPoolKey(greatPerson), 1)
-            }
+            spawnGreatPeopleFromPoints(city.storedGreatPersonPoints, city)
         }
     }
 
-    private fun getNewCivWideGreatPerson(): String? {
+    private fun spawnGreatPeopleFromPoints(points: Counter<String>, city: City? = null) {
+        if (points.none { (unit, amount) -> amount >= getPointsRequiredForGreatPerson(unit) }) return
+
+        // Resolve simultaneous births in ruleset order, checking the cost again after each birth.
+        for (unit in civInfo.gameInfo.ruleset.units.keys) {
+            if (unit !in points || points[unit] < getPointsRequiredForGreatPerson(unit)) continue
+            if (city != null && civInfo.getEquivalentUnit(unit).isWaterUnit && !city.isNaval()) continue
+            if (civInfo.units.addUnit(unit, city) == null) continue
+            points.remove(unit)
+            greatPeopleGainedCounter.add(getPoolKey(unit), 1)
+        }
+    }
+
+    /** Combat points apply in both modes. Classic games also spend their pooled points here. */
+    private fun takeNextCombatOrClassicGreatPerson(): String? {
         for ((unit, value) in greatGeneralPointsCounter) {
             if (pointsForNextGreatGeneralCounter[unit] == 0) {
                 pointsForNextGreatGeneralCounter[unit] = 200
@@ -106,7 +116,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
                 return unit
             }
         }
-        if (civInfo.gameInfo.greatPersonPointsInCities) return null
+        if (civInfo.gameInfo.gameParameters.greatPersonPointsInCities) return null
         for ((unit, points) in greatPersonPointsCounter) {
             val required = getPointsRequiredForGreatPerson(unit)
             if (points < required) continue
@@ -119,13 +129,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     fun addGreatPersonPoints() {
-        if (civInfo.gameInfo.greatPersonPointsInCities) {
-            for (city in civInfo.cities) city.storedGreatPersonPoints.add(city.getGreatPersonPoints())
-        } else {
-            val income = Counter<String>()
-            for (city in civInfo.cities) income.add(city.getGreatPersonPoints())
-            greatPersonPointsCounter.add(income)
+        val civWideIncome = Counter<String>()
+        for (city in civInfo.cities) {
+            for ((unit, points) in city.getGreatPersonPoints()) {
+                val counter = if (usesCityPoints(unit)) city.storedGreatPersonPoints else civWideIncome
+                counter.add(unit, points)
+            }
         }
+        greatPersonPointsCounter.add(civWideIncome)
     }
 
     fun triggerMayanGreatPerson() {

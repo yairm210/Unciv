@@ -178,7 +178,7 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             val amount = params[1].toInt()
             if (greatPerson.isGreatPersonOfType("War")) {
                 civ.greatPeople.greatGeneralPointsCounter[greatPerson.name] += amount
-            } else if (civ.gameInfo.greatPersonPointsInCities) {
+            } else if (civ.greatPeople.usesCityPoints(greatPerson.name)) {
                 val city = civ.getCapital() ?: throw ConsoleErrorException("This civilization has no cities")
                 city.storedGreatPersonPoints[greatPerson.name] += amount
             } else {
