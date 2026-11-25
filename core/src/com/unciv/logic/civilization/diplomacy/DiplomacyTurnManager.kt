@@ -311,6 +311,9 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
         revertToZero(DiplomaticModifiers.SpiedOnUs, 1 / 4f)
+        // Match the -100f floor used by other city-state grievance modifiers for loaded games
+        if (getModifier(DiplomaticModifiers.StoleOurAlly) < -100f)
+            setModifier(DiplomaticModifiers.StoleOurAlly, -100f)
         revertToZero(DiplomaticModifiers.StoleOurAlly, 1 / 2f) // Fair enough, don't like it but not directly against us per se
 
         // Positives
