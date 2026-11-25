@@ -161,8 +161,11 @@ class WorkerAutomation(
                 debug("WorkerAutomation: %s -> head towards undeveloped city %s", unitView, closestUndevelopedCity.name)
                 workersPerCity.add(unitView.closestCity(), -1)
                 workersPerCity.add(closestUndevelopedCity, +1)
+                val previousTile = unitView.getTile()
                 unitView.tryHeadTowards(closestUndevelopedCity.getCenterTile())
-                if (unitView.getTile() != currentTile) unitView.tryDoAction() // since we've moved, maybe we can do something here - automate
+                // re-trigger automation if we've arrived close
+                if (unitView.hasMovement() && unitView.getTile() != previousTile)
+                    unitView.tryDoAction()
                 return true
             }
             return false
