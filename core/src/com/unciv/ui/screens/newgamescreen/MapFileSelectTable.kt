@@ -36,9 +36,9 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.toGdxArray
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 
@@ -124,8 +124,9 @@ class MapFileSelectTable(
     private fun getMapFilesSequence() = getUnsortedMapFilesSequence().sortedByDescending { it.lastModified() }
 
     private fun addMapWrappersAsync() {
-        val mapFilesFlow = getMapFilesSequence().asFlow().map {
-            MapWrapper(it, MapSaver.loadMapPreview(it))
+        val mapFilesFlow = getMapFilesSequence().asFlow().mapNotNull {
+            try { MapWrapper(it, MapSaver.loadMapPreview(it)) }
+            catch (_: Throwable) { null }
         }
 
         loadingIcon.show()
@@ -137,7 +138,6 @@ class MapFileSelectTable(
                         addAsyncEntryToSelectBoxes(it)
                     }
                 }
-                .catch {}
                 .collect()
             Concurrency.runOnGLThread {
                 loadingIcon.hide {
