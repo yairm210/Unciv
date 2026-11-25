@@ -27,8 +27,8 @@ object TranslationFileReader {
             // Skip a leading UTF-8 BOM (EF BB BF / U+FEFF); Notepad can write one.
             reader.mark(1)
             if (reader.read() != '\uFEFF'.code) reader.reset()
-            reader.forEachLine { line ->
-                if (line.isCommentLine()) return@forEachLine
+            reader.lineSequence().forEach { line ->
+                if (line.isCommentLine()) return@forEach
                 val splitLine = line.split(keyValueSeparator, limit = 2)
                 if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
                     // A literal "" means the translation is intentionally the empty string

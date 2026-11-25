@@ -2,6 +2,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
@@ -44,6 +45,8 @@ import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.Log
+import java.io.BufferedReader
+import java.io.StringReader
 import java.io.Writer
 import java.security.MessageDigest
 import org.junit.Assert
@@ -108,6 +111,25 @@ class TranslationTests {
         Assert.assertTrue("This test will only pass if there are translations",
             translations.isNotEmpty()
         )
+    }
+
+    @Test
+    fun translationFileReaderClosesOnceWithOrWithoutBom() {
+        for (bom in listOf("", "\uFEFF")) {
+            var closeCalls = 0
+            val content = bom + "First = uno\n# comment\nCafé = 東京\n"
+            val file = object : FileHandle("memory") {
+                override fun reader(bufferSize: Int, charset: String) = object : BufferedReader(StringReader(content), bufferSize) {
+                    override fun close() {
+                        closeCalls++
+                        super.close()
+                    }
+                }
+            }
+            val result = TranslationFileReader.read(file)
+            Assert.assertEquals(linkedMapOf("First" to "uno", "Café" to "東京", UniqueType.Comment.text to "[comment]"), result)
+            Assert.assertEquals("reader close count for BOM='$bom'", 1, closeCalls)
+        }
     }
 
 
