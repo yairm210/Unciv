@@ -917480,12 +917480,12 @@ culau_WorkerAutomation_fillWorkersPerCity = ($this, $unitView) => {
     $rt_nativeThread().push($this, $unitView, $$this$filter$iv, var$3, $destination$iv$iv, $element$iv$iv, $unit, $it, var$8, $ptr);
 },
 culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $currentTile) => {
-    let $this_$iv, $name$iv, $this_$iv$iv, $unitView_0, $$this$none$iv, $tile, $value$iv$iv$iv, $answer$iv$iv$iv, $civ, var$12, $$this$sortedBy$iv, $$this$firstOrNull$iv, $closestUndevelopedCity, $element$iv, var$17, var$18, $it, var$20, $$this$any$iv, $element$iv_0, $unit, $$je, $ptr, $tmp;
+    let $this_$iv, $name$iv, $this_$iv$iv, $unitView_0, $civ, $value$iv$iv$iv, $answer$iv$iv$iv, var$10, $$this$sortedBy$iv, $$this$firstOrNull$iv, $element$iv, $closestUndevelopedCity, var$15, var$16, $it, var$18, $previousTile, $$this$any$iv, $element$iv_0, $tile, $$this$none$iv, $unit, $$this$getOrPut$iv$iv$iv, $$je, $ptr, $tmp;
     $ptr = 0;
     if ($rt_resuming()) {
         let $thread = $rt_nativeThread();
-        $ptr = $thread.pop();$unit = $thread.pop();$element$iv_0 = $thread.pop();$$this$any$iv = $thread.pop();var$20 = $thread.pop();$it = $thread.pop();var$18 = $thread.pop();var$17 = $thread.pop();$element$iv = $thread.pop();$closestUndevelopedCity = $thread.pop();$$this$firstOrNull$iv = $thread.pop();$$this$sortedBy$iv = $thread.pop();var$12 = $thread.pop();$civ = $thread.pop();$answer$iv$iv$iv = $thread.pop();$value$iv$iv$iv = $thread.pop();$tile = $thread.pop();$$this$none$iv = $thread.pop();$unitView_0
-        = $thread.pop();$this_$iv$iv = $thread.pop();$name$iv = $thread.pop();$this_$iv = $thread.pop();$currentTile = $thread.pop();$unitView = $thread.pop();$this = $thread.pop();
+        $ptr = $thread.pop();$$this$getOrPut$iv$iv$iv = $thread.pop();$unit = $thread.pop();$$this$none$iv = $thread.pop();$tile = $thread.pop();$element$iv_0 = $thread.pop();$$this$any$iv = $thread.pop();$previousTile = $thread.pop();var$18 = $thread.pop();$it = $thread.pop();var$16 = $thread.pop();var$15 = $thread.pop();$closestUndevelopedCity = $thread.pop();$element$iv = $thread.pop();$$this$firstOrNull$iv = $thread.pop();$$this$sortedBy$iv = $thread.pop();var$10 = $thread.pop();$answer$iv$iv$iv = $thread.pop();$value$iv$iv$iv
+        = $thread.pop();$civ = $thread.pop();$unitView_0 = $thread.pop();$this_$iv$iv = $thread.pop();$name$iv = $thread.pop();$this_$iv = $thread.pop();$currentTile = $thread.pop();$unitView = $thread.pop();$this = $thread.pop();
     }
     main: while (true) { switch ($ptr) {
     case 0:
@@ -917503,15 +917503,15 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $ptr = 4;
             continue main;
         }
-        $$this$none$iv = $rt_nullCheck($this_$iv$iv.$spanTimesInMicroseconds);
+        $civ = $rt_nullCheck($this_$iv$iv.$spanTimesInMicroseconds);
         $ptr = 1;
     case 1:
-        jl_Object_monitorEnter($$this$none$iv);
+        jl_Object_monitorEnter($civ);
         if ($rt_suspending()) {
             break main;
         }
         try {
-            $tile = $rt_nullCheck(cula_Timers_getSpanTimesInMicroseconds($this_$iv$iv));
+            $this_$iv = $rt_nullCheck(cula_Timers_getSpanTimesInMicroseconds($this_$iv$iv));
             $ptr = 2;
             continue main;
         } catch ($$e) {
@@ -917519,13 +917519,13 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $unitView = $$je;
 
         }
-        jl_Object_monitorExit($$this$none$iv);
+        jl_Object_monitorExit($civ);
         $rt_throw($unitView);
     case 2:
         a: {
             b: {
                 try {
-                    $tmp = ju_HashMap_get($tile, $name$iv);
+                    $tmp = ju_HashMap_get($this_$iv, $name$iv);
                     if ($rt_suspending()) {
                         break main;
                     }
@@ -917542,10 +917542,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
 
                 }
             }
-            jl_Object_monitorExit($$this$none$iv);
+            jl_Object_monitorExit($civ);
             $rt_throw($unitView);
         }
-        jl_Object_monitorExit($$this$none$iv);
+        jl_Object_monitorExit($civ);
         if (!kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion))))
             kt_TimeSource$Monotonic_markNow_z9LOYto($rt_nullCheck(kt_TimeSource$Monotonic_INSTANCE));
         else
@@ -917557,7 +917557,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         a: {
             b: {
                 try {
-                    ju_HashMap_put($tile, $name$iv, $answer$iv$iv$iv);
+                    ju_HashMap_put($this_$iv, $name$iv, $answer$iv$iv$iv);
                     if ($rt_suspending()) {
                         break main;
                     }
@@ -917569,10 +917569,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
 
                 }
             }
-            jl_Object_monitorExit($$this$none$iv);
+            jl_Object_monitorExit($civ);
             $rt_throw($unitView);
         }
-        jl_Object_monitorExit($$this$none$iv);
+        jl_Object_monitorExit($civ);
         if (!kt_TimeSource$Monotonic$ValueTimeMark_equals_impl0($this_$iv$iv.$timingEnabledTimestamp, cula_Timers$Companion_getTIMING_DISABLED_z9LOYto($rt_nullCheck(cula_Timers_Companion))))
             kt_TimeSource$Monotonic_markNow_z9LOYto($rt_nullCheck(kt_TimeSource$Monotonic_INSTANCE));
         else
@@ -917600,8 +917600,8 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         if ($rt_suspending()) {
             break main;
         }
-        var$12 = $tmp;
-        if (!var$12) {
+        var$10 = $tmp;
+        if (!var$10) {
             $this_$iv = $rt_nullCheck($this.$workersPerCity);
             $ptr = 7;
             continue main;
@@ -917675,8 +917675,8 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             if ($rt_suspending()) {
                 break main;
             }
-            $closestUndevelopedCity = $tmp;
-            $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+            $currentTile = $tmp;
+            $currentTile = $rt_nullCheck($currentTile);
             $ptr = 12;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -917688,12 +917688,12 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
     case 12:
         a: {
             try {
-                $tmp = $closestUndevelopedCity.$hasNext();
+                $tmp = $currentTile.$hasNext();
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (var$12) {
+                var$10 = $tmp;
+                if (var$10) {
                     $ptr = 13;
                     continue main;
                 }
@@ -917720,10 +917720,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -917737,7 +917737,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         $rt_throw($unitView);
     case 13:
         try {
-            $tmp = $closestUndevelopedCity.$next();
+            $tmp = $currentTile.$next();
             if ($rt_suspending()) {
                 break main;
             }
@@ -917789,14 +917789,14 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (!var$12) {
+                var$10 = $tmp;
+                if (!var$10) {
                     $unitView = $rt_nullCheck($this.$workersPerCity);
                     $ptr = 17;
                     continue main;
                 }
                 if (!0) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -917822,10 +917822,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -917859,7 +917859,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             if ($rt_suspending()) {
                 break main;
             }
-            var$20 = $tmp;
+            var$10 = $tmp;
             $unitView = $this.$workersPerCity;
             $ptr = 19;
         } catch ($$e) {
@@ -917875,7 +917875,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             if ($rt_suspending()) {
                 break main;
             }
-            $tile = $tmp;
+            $name$iv = $tmp;
             $unitView = $rt_nullCheck($unitView);
             $ptr = 20;
         } catch ($$e) {
@@ -917887,7 +917887,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 20:
         try {
-            $tmp = cum_Counter_get($unitView, $tile);
+            $tmp = cum_Counter_get($unitView, $name$iv);
             if ($rt_suspending()) {
                 break main;
             }
@@ -917908,14 +917908,14 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (var$20 < var$12) {
+                var$18 = $tmp;
+                if (var$10 < var$18) {
                     $it = $rt_nullCheck($it);
                     $ptr = 30;
                     continue main;
                 }
                 if (!0) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -917941,10 +917941,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -917958,7 +917958,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         $rt_throw($unitView);
     case 22:
         try {
-            cuu_LogKt_debug($unitView, var$17);
+            cuu_LogKt_debug($unitView, var$15);
             if ($rt_suspending()) {
                 break main;
             }
@@ -917977,8 +917977,8 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             if ($rt_suspending()) {
                 break main;
             }
-            $tile = $tmp;
-            var$12 = (-1);
+            $currentTile = $tmp;
+            var$10 = (-1);
             $unitView = $rt_nullCheck($unitView);
             $ptr = 24;
         } catch ($$e) {
@@ -917990,12 +917990,12 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 24:
         try {
-            cum_Counter_add($unitView, $tile, var$12);
+            cum_Counter_add($unitView, $currentTile, var$10);
             if ($rt_suspending()) {
                 break main;
             }
             $unitView = $this.$workersPerCity;
-            var$12 = 1;
+            var$10 = 1;
             $unitView = $rt_nullCheck($unitView);
             $ptr = 25;
         } catch ($$e) {
@@ -918007,7 +918007,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 25:
         try {
-            cum_Counter_add($unitView, $closestUndevelopedCity, var$12);
+            cum_Counter_add($unitView, $closestUndevelopedCity, var$10);
             if ($rt_suspending()) {
                 break main;
             }
@@ -918021,11 +918021,11 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 26:
         try {
-            $tmp = cuv_ForeignCityView_getCenterTile($closestUndevelopedCity);
+            $tmp = cuv_ForeignMapUnitView_getTile($unitView_0);
             if ($rt_suspending()) {
                 break main;
             }
-            $unitView = $tmp;
+            $previousTile = $tmp;
             $ptr = 27;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -918036,10 +918036,11 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 27:
         try {
-            cuv_MapUnitView_tryHeadTowards($unitView_0, $unitView);
+            $tmp = cuv_ForeignCityView_getCenterTile($closestUndevelopedCity);
             if ($rt_suspending()) {
                 break main;
             }
+            $unitView = $tmp;
             $ptr = 28;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -918050,11 +918051,11 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
     case 28:
         try {
-            $tmp = cuv_ForeignMapUnitView_getTile($unitView_0);
+            cuv_MapUnitView_tryHeadTowards($unitView_0, $unitView);
             if ($rt_suspending()) {
                 break main;
             }
-            $unitView = $tmp;
+            $unitView = $unitView_0;
             $ptr = 29;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -918067,12 +918068,12 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         a: {
             b: {
                 try {
-                    $tmp = kji_Intrinsics_areEqual($unitView, $currentTile);
+                    $tmp = cuv_ForeignMapUnitViewKt_hasMovement($unitView);
                     if ($rt_suspending()) {
                         break main;
                     }
-                    var$12 = $tmp;
-                    if (!var$12)
+                    var$10 = $tmp;
+                    if (var$10)
                         break b;
                 } catch ($$e) {
                     $$je = $rt_wrapException($$e);
@@ -918125,9 +918126,9 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
                 break a;
 
             }
-            $$this$any$iv = $rt_nullCheck($unitView);
+            $name$iv = $rt_nullCheck($unitView);
             try {
-                $ptr = 33;
+                $ptr = 35;
                 continue main;
             } catch ($$e) {
                 $$je = $rt_wrapException($$e);
@@ -918139,6 +918140,53 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         jl_Object_monitorExit($this_$iv);
         $rt_throw($unitView);
     case 32:
+        try {
+            $tmp = cuv_ForeignMapUnitView_getTile($unitView_0);
+            if ($rt_suspending()) {
+                break main;
+            }
+            $unitView = $tmp;
+            $ptr = 33;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            $unitView = $$je;
+            jl_Object_monitorExit($this_$iv);
+            $rt_throw($unitView);
+
+        }
+    case 33:
+        a: {
+            b: {
+                try {
+                    $tmp = kji_Intrinsics_areEqual($unitView, $previousTile);
+                    if ($rt_suspending()) {
+                        break main;
+                    }
+                    var$10 = $tmp;
+                    if (!var$10)
+                        break b;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    $unitView = $$je;
+                    break a;
+
+                }
+                jl_Object_monitorExit($this_$iv);
+                return 1;
+            }
+            try {
+                $ptr = 34;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $unitView = $$je;
+                break a;
+
+            }
+        }
+        jl_Object_monitorExit($this_$iv);
+        $rt_throw($unitView);
+    case 34:
         try {
             cuv_MapUnitView_tryDoAction($unitView_0);
             if ($rt_suspending()) {
@@ -918153,24 +918201,24 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
         jl_Object_monitorExit($this_$iv);
         return 1;
-    case 33:
+    case 35:
         a: {
             try {
-                $tmp = ks_TransformingSequence$iterator$1_hasNext($$this$any$iv);
+                $tmp = ks_TransformingSequence$iterator$1_hasNext($name$iv);
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (var$12) {
-                    $ptr = 34;
-                    continue main;
-                }
-                if (0) {
+                var$10 = $tmp;
+                if (var$10) {
                     $ptr = 36;
                     continue main;
                 }
+                if (0) {
+                    $ptr = 38;
+                    continue main;
+                }
                 if (!0) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -918196,10 +918244,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -918211,29 +918259,29 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
         jl_Object_monitorExit($this_$iv);
         $rt_throw($unitView);
-    case 34:
+    case 36:
         a: {
             try {
-                $tmp = ks_TransformingSequence$iterator$1_next($$this$any$iv);
+                $tmp = ks_TransformingSequence$iterator$1_next($name$iv);
                 if ($rt_suspending()) {
                     break main;
                 }
                 $element$iv_0 = $tmp;
                 $tile = $rt_nullCheck($rt_castToClass($element$iv_0, cuv_TileView));
                 if (cuv_TileView_isLand($tile)) {
+                    $ptr = 37;
+                    continue main;
+                }
+                if (!0) {
                     $ptr = 35;
                     continue main;
                 }
-                if (!0) {
-                    $ptr = 33;
-                    continue main;
-                }
                 if (1) {
-                    $ptr = 36;
+                    $ptr = 38;
                     continue main;
                 }
                 if (!0) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -918259,10 +918307,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -918274,7 +918322,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
         jl_Object_monitorExit($this_$iv);
         $rt_throw($unitView);
-    case 35:
+    case 37:
         try {
             $tmp = cuv_TileView_getVisibleUnits($tile);
             if ($rt_suspending()) {
@@ -918284,11 +918332,11 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $$this$none$iv = $unitView;
             if ($rt_isInstance($$this$none$iv, ju_Collection)) {
                 $unitView = $rt_nullCheck($$this$none$iv);
-                $ptr = 39;
+                $ptr = 41;
                 continue main;
             }
             $$this$none$iv = $rt_nullCheck($$this$none$iv);
-            $ptr = 38;
+            $ptr = 40;
             continue main;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -918297,14 +918345,14 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $rt_throw($unitView);
 
         }
-    case 36:
+    case 38:
         try {
             $tmp = cuv_ForeignCityView_getCenterTile($it);
             if ($rt_suspending()) {
                 break main;
             }
             $unitView = $tmp;
-            $ptr = 37;
+            $ptr = 39;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             $unitView = $$je;
@@ -918312,16 +918360,16 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $rt_throw($unitView);
 
         }
-    case 37:
+    case 39:
         a: {
             try {
                 $tmp = cuv_MapUnitView_canReach($unitView_0, $unitView);
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (!(!var$12 ? 0 : 1)) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                var$10 = $tmp;
+                if (!(!var$10 ? 0 : 1)) {
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -918347,10 +918395,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -918362,15 +918410,15 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
         jl_Object_monitorExit($this_$iv);
         $rt_throw($unitView);
-    case 38:
+    case 40:
         try {
             $tmp = $$this$none$iv.$iterator();
             if ($rt_suspending()) {
                 break main;
             }
-            $$this$none$iv = $tmp;
-            $$this$none$iv = $rt_nullCheck($$this$none$iv);
-            $ptr = 40;
+            $this_$iv$iv = $tmp;
+            $this_$iv$iv = $rt_nullCheck($this_$iv$iv);
+            $ptr = 42;
             continue main;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -918379,224 +918427,15 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             $rt_throw($unitView);
 
         }
-    case 39:
+    case 41:
         a: {
             try {
                 $tmp = $unitView.$isEmpty();
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (!var$12) {
-                    $$this$none$iv = $rt_nullCheck($$this$none$iv);
-                    $ptr = 38;
-                    continue main;
-                }
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $unitView = $$je;
-                break a;
-
-            }
-            c: {
-                try {
-                    if (!1)
-                        var$12 = 0;
-                    else {
-                        if (!cuv_TileView_getImprovementIsPillaged($tile) && !cuv_TileView_getRoadIsPillaged($tile))
-                            break c;
-                        var$12 = 1;
-                    }
-                    if (!var$12) {
-                        $ptr = 33;
-                        continue main;
-                    }
-                    if (1) {
-                        $ptr = 36;
-                        continue main;
-                    }
-                    if (!0) {
-                        $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
-                        $ptr = 12;
-                        continue main;
-                    }
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    $unitView = $$je;
-                    break a;
-
-                }
-                g: {
-                    try {
-                        $closestUndevelopedCity = $rt_castToClass($element$iv, cuv_CityView);
-                        if ($closestUndevelopedCity !== null)
-                            break g;
-                    } catch ($$e) {
-                        $$je = $rt_wrapException($$e);
-                        $unitView = $$je;
-                        break a;
-
-                    }
-                    jl_Object_monitorExit($this_$iv);
-                    return 0;
-                }
-                try {
-                    $unitView = $rt_s(7882);
-                    var$17 = $rt_createArray(jl_Object, 2);
-                    var$18 = var$17.data;
-                    var$18[0] = $unitView_0;
-                    var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
-                    $ptr = 22;
-                    continue main;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    $unitView = $$je;
-                    break a;
-
-                }
-            }
-            try {
-                $ptr = 44;
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $unitView = $$je;
-                break a;
-
-            }
-        }
-        jl_Object_monitorExit($this_$iv);
-        $rt_throw($unitView);
-    case 40:
-        a: {
-            try {
-                $tmp = $$this$none$iv.$hasNext();
-                if ($rt_suspending()) {
-                    break main;
-                }
-                var$12 = $tmp;
-                if (var$12) {
-                    $ptr = 41;
-                    continue main;
-                }
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $unitView = $$je;
-                break a;
-
-            }
-            c: {
-                try {
-                    if (!1)
-                        var$12 = 0;
-                    else {
-                        if (!cuv_TileView_getImprovementIsPillaged($tile) && !cuv_TileView_getRoadIsPillaged($tile))
-                            break c;
-                        var$12 = 1;
-                    }
-                    if (!var$12) {
-                        $ptr = 33;
-                        continue main;
-                    }
-                    if (1) {
-                        $ptr = 36;
-                        continue main;
-                    }
-                    if (!0) {
-                        $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
-                        $ptr = 12;
-                        continue main;
-                    }
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    $unitView = $$je;
-                    break a;
-
-                }
-                g: {
-                    try {
-                        $closestUndevelopedCity = $rt_castToClass($element$iv, cuv_CityView);
-                        if ($closestUndevelopedCity !== null)
-                            break g;
-                    } catch ($$e) {
-                        $$je = $rt_wrapException($$e);
-                        $unitView = $$je;
-                        break a;
-
-                    }
-                    jl_Object_monitorExit($this_$iv);
-                    return 0;
-                }
-                try {
-                    $unitView = $rt_s(7882);
-                    var$17 = $rt_createArray(jl_Object, 2);
-                    var$18 = var$17.data;
-                    var$18[0] = $unitView_0;
-                    var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
-                    $ptr = 22;
-                    continue main;
-                } catch ($$e) {
-                    $$je = $rt_wrapException($$e);
-                    $unitView = $$je;
-                    break a;
-
-                }
-            }
-            try {
-                $ptr = 44;
-                continue main;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                $unitView = $$je;
-                break a;
-
-            }
-        }
-        jl_Object_monitorExit($this_$iv);
-        $rt_throw($unitView);
-    case 41:
-        try {
-            $tmp = $$this$none$iv.$next();
-            if ($rt_suspending()) {
-                break main;
-            }
-            $element$iv_0 = $tmp;
-            $unit = $rt_castToClass($element$iv_0, cuv_ForeignMapUnitView);
-            $ptr = 42;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            $unitView = $$je;
-            jl_Object_monitorExit($this_$iv);
-            $rt_throw($unitView);
-
-        }
-    case 42:
-        try {
-            cumru_UniqueType_$callClinit();
-            if ($rt_suspending()) {
-                break main;
-            }
-            $element$iv_0 = cumru_UniqueType_BuildImprovements;
-            var$12 = 0;
-            var$20 = 2;
-            $unitView = null;
-            $ptr = 43;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            $unitView = $$je;
-            jl_Object_monitorExit($this_$iv);
-            $rt_throw($unitView);
-
-        }
-    case 43:
-        a: {
-            try {
-                $tmp = cuv_ForeignMapUnitView_hasUnique$default($unit, $element$iv_0, var$12, var$20, $unitView);
-                if ($rt_suspending()) {
-                    break main;
-                }
-                var$12 = $tmp;
-                if (!var$12) {
+                var$10 = $tmp;
+                if (!var$10) {
                     $$this$none$iv = $rt_nullCheck($$this$none$iv);
                     $ptr = 40;
                     continue main;
@@ -918609,23 +918448,23 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             c: {
                 try {
-                    if (!0)
-                        var$12 = 0;
+                    if (!1)
+                        var$10 = 0;
                     else {
                         if (!cuv_TileView_getImprovementIsPillaged($tile) && !cuv_TileView_getRoadIsPillaged($tile))
                             break c;
-                        var$12 = 1;
+                        var$10 = 1;
                     }
-                    if (!var$12) {
-                        $ptr = 33;
+                    if (!var$10) {
+                        $ptr = 35;
                         continue main;
                     }
                     if (1) {
-                        $ptr = 36;
+                        $ptr = 38;
                         continue main;
                     }
                     if (!0) {
-                        $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                        $currentTile = $rt_nullCheck($currentTile);
                         $ptr = 12;
                         continue main;
                     }
@@ -918651,10 +918490,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
                 }
                 try {
                     $unitView = $rt_s(7882);
-                    var$17 = $rt_createArray(jl_Object, 2);
-                    var$18 = var$17.data;
-                    var$18[0] = $unitView_0;
-                    var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                    var$15 = $rt_createArray(jl_Object, 2);
+                    var$16 = var$15.data;
+                    var$16[0] = $unitView_0;
+                    var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                     $ptr = 22;
                     continue main;
                 } catch ($$e) {
@@ -918665,7 +918504,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
                 }
             }
             try {
-                $ptr = 44;
+                $ptr = 46;
                 continue main;
             } catch ($$e) {
                 $$je = $rt_wrapException($$e);
@@ -918676,24 +918515,233 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         }
         jl_Object_monitorExit($this_$iv);
         $rt_throw($unitView);
+    case 42:
+        a: {
+            try {
+                $tmp = $this_$iv$iv.$hasNext();
+                if ($rt_suspending()) {
+                    break main;
+                }
+                var$10 = $tmp;
+                if (var$10) {
+                    $ptr = 43;
+                    continue main;
+                }
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $unitView = $$je;
+                break a;
+
+            }
+            c: {
+                try {
+                    if (!1)
+                        var$10 = 0;
+                    else {
+                        if (!cuv_TileView_getImprovementIsPillaged($tile) && !cuv_TileView_getRoadIsPillaged($tile))
+                            break c;
+                        var$10 = 1;
+                    }
+                    if (!var$10) {
+                        $ptr = 35;
+                        continue main;
+                    }
+                    if (1) {
+                        $ptr = 38;
+                        continue main;
+                    }
+                    if (!0) {
+                        $currentTile = $rt_nullCheck($currentTile);
+                        $ptr = 12;
+                        continue main;
+                    }
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    $unitView = $$je;
+                    break a;
+
+                }
+                g: {
+                    try {
+                        $closestUndevelopedCity = $rt_castToClass($element$iv, cuv_CityView);
+                        if ($closestUndevelopedCity !== null)
+                            break g;
+                    } catch ($$e) {
+                        $$je = $rt_wrapException($$e);
+                        $unitView = $$je;
+                        break a;
+
+                    }
+                    jl_Object_monitorExit($this_$iv);
+                    return 0;
+                }
+                try {
+                    $unitView = $rt_s(7882);
+                    var$15 = $rt_createArray(jl_Object, 2);
+                    var$16 = var$15.data;
+                    var$16[0] = $unitView_0;
+                    var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                    $ptr = 22;
+                    continue main;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    $unitView = $$je;
+                    break a;
+
+                }
+            }
+            try {
+                $ptr = 46;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $unitView = $$je;
+                break a;
+
+            }
+        }
+        jl_Object_monitorExit($this_$iv);
+        $rt_throw($unitView);
+    case 43:
+        try {
+            $tmp = $this_$iv$iv.$next();
+            if ($rt_suspending()) {
+                break main;
+            }
+            $element$iv_0 = $tmp;
+            $unit = $rt_castToClass($element$iv_0, cuv_ForeignMapUnitView);
+            $ptr = 44;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            $unitView = $$je;
+            jl_Object_monitorExit($this_$iv);
+            $rt_throw($unitView);
+
+        }
     case 44:
+        try {
+            cumru_UniqueType_$callClinit();
+            if ($rt_suspending()) {
+                break main;
+            }
+            $$this$getOrPut$iv$iv$iv = cumru_UniqueType_BuildImprovements;
+            var$10 = 0;
+            var$18 = 2;
+            $unitView = null;
+            $ptr = 45;
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            $unitView = $$je;
+            jl_Object_monitorExit($this_$iv);
+            $rt_throw($unitView);
+
+        }
+    case 45:
+        a: {
+            try {
+                $tmp = cuv_ForeignMapUnitView_hasUnique$default($unit, $$this$getOrPut$iv$iv$iv, var$10, var$18, $unitView);
+                if ($rt_suspending()) {
+                    break main;
+                }
+                var$10 = $tmp;
+                if (!var$10) {
+                    $this_$iv$iv = $rt_nullCheck($this_$iv$iv);
+                    $ptr = 42;
+                    continue main;
+                }
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $unitView = $$je;
+                break a;
+
+            }
+            c: {
+                try {
+                    if (!0)
+                        var$10 = 0;
+                    else {
+                        if (!cuv_TileView_getImprovementIsPillaged($tile) && !cuv_TileView_getRoadIsPillaged($tile))
+                            break c;
+                        var$10 = 1;
+                    }
+                    if (!var$10) {
+                        $ptr = 35;
+                        continue main;
+                    }
+                    if (1) {
+                        $ptr = 38;
+                        continue main;
+                    }
+                    if (!0) {
+                        $currentTile = $rt_nullCheck($currentTile);
+                        $ptr = 12;
+                        continue main;
+                    }
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    $unitView = $$je;
+                    break a;
+
+                }
+                g: {
+                    try {
+                        $closestUndevelopedCity = $rt_castToClass($element$iv, cuv_CityView);
+                        if ($closestUndevelopedCity !== null)
+                            break g;
+                    } catch ($$e) {
+                        $$je = $rt_wrapException($$e);
+                        $unitView = $$je;
+                        break a;
+
+                    }
+                    jl_Object_monitorExit($this_$iv);
+                    return 0;
+                }
+                try {
+                    $unitView = $rt_s(7882);
+                    var$15 = $rt_createArray(jl_Object, 2);
+                    var$16 = var$15.data;
+                    var$16[0] = $unitView_0;
+                    var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                    $ptr = 22;
+                    continue main;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    $unitView = $$je;
+                    break a;
+
+                }
+            }
+            try {
+                $ptr = 46;
+                continue main;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                $unitView = $$je;
+                break a;
+
+            }
+        }
+        jl_Object_monitorExit($this_$iv);
+        $rt_throw($unitView);
+    case 46:
         a: {
             try {
                 $tmp = culau_WorkerAutomation_tileHasWorkToDo($this, $tile, $unitView_0);
                 if ($rt_suspending()) {
                     break main;
                 }
-                var$12 = $tmp;
-                if (!(!var$12 ? 0 : 1)) {
-                    $ptr = 33;
+                var$10 = $tmp;
+                if (!(!var$10 ? 0 : 1)) {
+                    $ptr = 35;
                     continue main;
                 }
                 if (1) {
-                    $ptr = 36;
+                    $ptr = 38;
                     continue main;
                 }
                 if (!0) {
-                    $closestUndevelopedCity = $rt_nullCheck($closestUndevelopedCity);
+                    $currentTile = $rt_nullCheck($currentTile);
                     $ptr = 12;
                     continue main;
                 }
@@ -918719,10 +918767,10 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
             }
             try {
                 $unitView = $rt_s(7882);
-                var$17 = $rt_createArray(jl_Object, 2);
-                var$18 = var$17.data;
-                var$18[0] = $unitView_0;
-                var$18[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
+                var$15 = $rt_createArray(jl_Object, 2);
+                var$16 = var$15.data;
+                var$16[0] = $unitView_0;
+                var$16[1] = cuv_ForeignCityView_getName($closestUndevelopedCity);
                 $ptr = 22;
                 continue main;
             } catch ($$e) {
@@ -918736,7 +918784,7 @@ culau_WorkerAutomation_tryHeadTowardsUndevelopedCity = ($this, $unitView, $curre
         $rt_throw($unitView);
     default: $rt_invalidPointer();
     }}
-    $rt_nativeThread().push($this, $unitView, $currentTile, $this_$iv, $name$iv, $this_$iv$iv, $unitView_0, $$this$none$iv, $tile, $value$iv$iv$iv, $answer$iv$iv$iv, $civ, var$12, $$this$sortedBy$iv, $$this$firstOrNull$iv, $closestUndevelopedCity, $element$iv, var$17, var$18, $it, var$20, $$this$any$iv, $element$iv_0, $unit, $ptr);
+    $rt_nativeThread().push($this, $unitView, $currentTile, $this_$iv, $name$iv, $this_$iv$iv, $unitView_0, $civ, $value$iv$iv$iv, $answer$iv$iv$iv, var$10, $$this$sortedBy$iv, $$this$firstOrNull$iv, $element$iv, $closestUndevelopedCity, var$15, var$16, $it, var$18, $previousTile, $$this$any$iv, $element$iv_0, $tile, $$this$none$iv, $unit, $$this$getOrPut$iv$iv$iv, $ptr);
 },
 culau_WorkerAutomation_startWorkOnCurrentTile = ($this, $unitView) => {
     let $currentTile, $tileRanking, $tileRanking_0, var$5, var$6, var$7, $ptr, $tmp;
