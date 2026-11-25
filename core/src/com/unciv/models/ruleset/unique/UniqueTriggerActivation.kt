@@ -974,7 +974,7 @@ object UniqueTriggerActivation {
                 val positions = ArrayList<HexCoord>()
 
                 var explorableTiles = tile.getTilesInDistance(radius)
-                    .filter { !it.isExplored(civInfo) && it.matchesFilter(filter) }
+                    .filter { !it.isExplored(civInfo) && it.matchesFilter(filter, civInfo) }
 
                 if (explorableTiles.none())
                     return null
