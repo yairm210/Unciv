@@ -169,7 +169,8 @@ class InternationalProjectsOverviewTab(
         val totalCost = project.getCost()
         val goals = building?.let { extractContributionGoals(it) } ?: emptyList()
 
-        val sortedContributions = project.contributions.entries.sortedByDescending { it.value }
+        var sortedContributions = project.contributions.entries.sortedByDescending { it.value }
+        if (!project.isConstructed()) sortedContributions = sortedContributions.filter { it.key == viewingPlayer.civID }
         for ((civName, amount) in sortedContributions) {
             val civ = gameInfo.civilizations.firstOrNull { it.civName == civName }
             val civColor = civ?.nation?.getOuterColor() ?: Color.WHITE
