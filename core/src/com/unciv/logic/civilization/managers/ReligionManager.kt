@@ -183,12 +183,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun canGenerateProphet(ignoreFaithAmount: Boolean = false): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
-        if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
         if (!ignoreFaithAmount && storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
-        if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded
+        // No pantheon needed, as in Civ V: a civ without a religion only needs one still to found,
+        // and picks its pantheon belief when founding
+        if (religionState < ReligionState.Religion && remainingFoundableReligions() == 0) return false // too many have been founded
         return true
     }
 
@@ -214,7 +215,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             if (birthCity != null) // e.g. mosque of djenne bonuses
                 prophetUnit.addConstructionBonuses(prophet, birthCity.cityConstructions)
-            prophet.religion = religion!!.name
+            prophet.religion = religion?.name
             storedFaith -= prophetCost
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
