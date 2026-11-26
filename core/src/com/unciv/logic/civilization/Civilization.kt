@@ -47,6 +47,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.managers.quests.QuestManager
+import kotlin.sequences.filter
 import kotlin.text.toFloat
 
 enum class Proximity : IsPartOfGameInfoSerialization {
@@ -638,6 +639,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
         yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { it.projectUniqueMap.getMatchingUniques(uniqueType, gameContext) })
     }
 
     @Readonly
@@ -653,6 +655,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
         civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
         gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { it.projectUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op) }
     }
 
     @Readonly
@@ -663,7 +666,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     ) : Sequence<Unique> = sequence {
         // Gathering all uniques into a list first since triggers can add e.g. buildings 
         // which contain triggers, causing concurrent modification errors.
-        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        // Cannot use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
         yieldAll(nation.uniqueMap.getAllUniques())
         yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
@@ -672,6 +675,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getAllUniques())
         yieldAll(getEra().uniqueMap.getAllUniques())
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.internationalProjects.values.filter { it.isConstructed() }.flatMap { it.projectUniqueMap.getAllUniques() })
     }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
         .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }
@@ -736,6 +740,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         tech.techUniques.forEachUnique(uniqueFilter, listOp)
         getEra().uniqueMap.forEachUnique(uniqueFilter, listOp)
         gameInfo.getGlobalUniques().uniqueMap.forEachUnique(uniqueFilter, listOp)
+        gameInfo.internationalProjects.values.filter { it.isConstructed() }.forEach { it.projectUniqueMap.forEachUnique(uniqueFilter, listOp) }
         // now its safe to do the op, which might mutate the lists
         uniqueList.forEach { it.forEachMultiplied(gameContext, op) }
     }

@@ -823,6 +823,9 @@ enum class UniqueType(
 
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
+    ConditionalInternationalProjectPlurality("if greatest contribution", UniqueTarget.Conditional),
+    ConditionalInternationalProjectContributionAbove("if contribution is above [countable]%", UniqueTarget.Conditional),
+
 
     // Supports also stockpileable resources (Gold, Faith, Culture, Science)
     ConditionalWhenAboveAmountStatResource("when above [amount] [stat/resource]", UniqueTarget.Conditional, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),

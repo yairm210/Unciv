@@ -275,6 +275,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getWorkDone(constructionName: String): Int {
+
+        // International projects are contributed to by all cities
+        val construction = getConstruction(constructionName)
+        if (construction is Building && construction.isInternationalProject) {
+            return city.civ.gameInfo.getInternationalProject(constructionName)?.getTotalContributions() ?: 0
+        }
+
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
             else 0
     }
@@ -354,6 +361,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             productionOverflow += productionToAdd
             return
         }
+        // Track contributions globally for International Projects
+        if (construction is Building && construction.isInternationalProject) {
+            val project = city.civ.gameInfo.getOrCreateInternationalProject(constructionName)
+            val civName = city.civ.civName
+            project.contributions[civName] = (project.contributions[civName] ?: 0) + productionToAdd
+            return
+        }
+        
         if (!inProgressConstructions.containsKey(constructionName))
             inProgressConstructions[constructionName] = 0
         inProgressConstructions[constructionName] = inProgressConstructions[constructionName]!! + productionToAdd
@@ -367,7 +382,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         val constructionName = currentConstructionName()
         val construction = getConstruction(constructionName)
-        if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+
+        // Check if this is an international project and the global project threshold has just been met
+        val internationalProject = city.civ.gameInfo.getInternationalProject(constructionName)
+        if ((construction is Building) && (construction.isInternationalProject) && (internationalProject?.isConstructed() ?: false)){
+            internationalProject.completeConstruction()
+            return@timeThis
+        }
+        else if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = (construction as INonPerpetualConstruction).getProductionCost(city.civ, city)
             if (inProgressConstructions.containsKey(constructionName)
@@ -403,7 +425,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun validateConstructionQueue() {
+    internal fun validateConstructionQueue() {
         // Validate a snapshot without holding a lock (it asks many questions), and publish the result only if nobody
         // replaced the queue meanwhile - otherwise their change would be lost, so validate the new queue instead.
         while (true) {

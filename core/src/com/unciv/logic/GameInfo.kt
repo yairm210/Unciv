@@ -36,6 +36,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.logic.files.FileConversions
+import com.unciv.models.InternationalProject
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
@@ -107,6 +108,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var civilizations = ArrayList<Civilization>()
     var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
+    var internationalProjects: HashMap<String, InternationalProject> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
@@ -164,6 +166,26 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isUnavailableBySettingsCached(obj: IHasUniques): Boolean =
         settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
+    @Readonly
+    fun getInternationalProject(name: String?): InternationalProject? =
+        internationalProjects[name]
+
+    fun getOrCreateInternationalProject(name: String): InternationalProject {
+        val project = internationalProjects.getOrPut(name) { InternationalProject(name) }
+        project.setTransients(this)
+        return project
+    }
+
+    fun initializeInternationalProjects() {
+        for (project in internationalProjects.values)
+            project.setTransients(this)
+
+        for (building in ruleset.buildings.values) {
+            if (building.isInternationalProject)
+                getOrCreateInternationalProject(building.name)
+        }
+    }
+
     @Transient
     lateinit var speed: Speed
 
@@ -205,6 +227,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
+        toReturn.internationalProjects.putAll(internationalProjects.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -769,6 +792,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // combinedGlobalUniques needs to be set before tileMap.setTransients!
         setGlobalTransients()
+        initializeInternationalProjects()
 
         tileMap.setTransients(ruleset)
 
@@ -788,10 +812,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (religion in religions.values) religion.setTransients(this)
 
-
         for (civInfo in civilizations) civInfo.setTransients()
         tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
-
 
         convertFortify()
 

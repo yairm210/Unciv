@@ -201,6 +201,7 @@ class RejectionReason(
             RejectionReasonType.Obsoleted,
             RejectionReasonType.WonderAlreadyBuilt,
             RejectionReasonType.NationalWonderAlreadyBuilt,
+            RejectionReasonType.InternationalProjectAlreadyBuilt,
             RejectionReasonType.CannotBeBuiltWith,
             RejectionReasonType.MaxNumberBuildable,
         )
@@ -228,6 +229,7 @@ class RejectionReason(
             RejectionReasonType.AlreadyBuilt,
             RejectionReasonType.WonderAlreadyBuilt,
             RejectionReasonType.NationalWonderAlreadyBuilt,
+            RejectionReasonType.InternationalProjectAlreadyBuilt,
             RejectionReasonType.DisabledBySetting,
             RejectionReasonType.UniqueToOtherNation,
             RejectionReasonType.ReplacedByOurUnique,
@@ -281,6 +283,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),
+    InternationalProjectAlreadyBuilt(false, "International Project already built"),
     WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
     CityStateWonder(false, "No Wonders for city-states"),
     PuppetWonder(false, "No Wonders for Puppets"),

@@ -42,6 +42,7 @@ enum class UniqueTarget(
     // City-specific
     Building(inheritsFrom = Global),
     Wonder(inheritsFrom = Building),
+    InternationalProject(inheritsFrom = Building),
 
     // Unit-specific
     UnitAction("Uniques that affect a unit's actions, and can be modified by UnitActionModifiers", inheritsFrom = UnitTriggerable),

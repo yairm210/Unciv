@@ -113,6 +113,7 @@ Allowed values:
 - `Wonder`, `Wonders`
 - `National Wonder`, `National`
 - `World Wonder`, `World` -- All wonders that are not national wonders
+- `International Project`, `International`
 - building name
 - The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
 - Matching [technologyfilter](#technologyfilter) for the tech this building requires - e.g. Modern Era

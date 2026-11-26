@@ -70,6 +70,18 @@ enum class EmpireOverviewCategories(
                 WonderOverviewTab(viewingPlayer, overviewScreen)
         override fun showDisabled(viewingPlayer: CivView) = (viewingPlayer.getCiv().naturalWonders.isEmpty() && viewingPlayer.getCiv().cities.isEmpty())
     },
+    Projects("OtherIcons/InternationalProjects", 'I', Align.top) {
+        override fun createTab(viewingPlayer: CivView, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                InternationalProjectsOverviewTab(viewingPlayer, overviewScreen)
+        override fun testState(viewingPlayer: CivView): EmpireOverviewTabState {
+            val projects = viewingPlayer.getCiv().gameInfo.internationalProjects
+            return when {
+                projects.isEmpty() -> EmpireOverviewTabState.Hidden
+                !hasAvailableInternationalProjects(viewingPlayer) -> EmpireOverviewTabState.Disabled
+                else -> EmpireOverviewTabState.Normal
+            }
+        }
+    },
     Notifications("OtherIcons/Notifications", 'N', Align.top) {
         override fun createTab(viewingPlayer: CivView, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData)

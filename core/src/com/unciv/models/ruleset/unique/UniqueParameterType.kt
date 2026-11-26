@@ -282,7 +282,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        override val staticKnownValues = setOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World") +
+        override val staticKnownValues = setOf("Building", "Buildings", "Wonder", "Wonders", "National Wonder", "National", "World Wonder", "World", "International Project", "International") +
             Stat.names() + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)

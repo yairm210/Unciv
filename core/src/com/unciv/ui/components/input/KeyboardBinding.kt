@@ -166,6 +166,7 @@ enum class KeyboardBinding(
     BuildBuildings(Category.CityScreen, "Buildable Buildings", 'l'),
     BuildWonders(Category.CityScreen, "Buildable Wonders", 'w'),
     BuildNationalWonders(Category.CityScreen, "Buildable National Wonders", 'n'),
+    BuildInternationalProjects(Category.CityScreen, "International Projects", 'i'),
     BuildOther(Category.CityScreen, "Other Constructions", 'o'),
     BuildDisabled(Category.CityScreen, "Disabled Constructions", KeyCharAndCode.ctrl('h')),
     NextCity(Category.CityScreen, Input.Keys.RIGHT),

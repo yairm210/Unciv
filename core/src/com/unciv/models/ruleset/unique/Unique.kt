@@ -161,6 +161,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             null -> ""
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(this)
             UniqueTarget.Wonder -> "Wonders"
+            UniqueTarget.InternationalProject -> "International Projects"
             UniqueTarget.Building -> "Buildings"
             UniqueTarget.Policy -> "Policies"
             UniqueTarget.CityState -> Constants.cityStates
