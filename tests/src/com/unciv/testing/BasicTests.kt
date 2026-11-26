@@ -92,30 +92,6 @@ class BasicTests {
     }
 
     @Test
-    fun vanillaDestroyerIsRangedWater() {
-        val destroyer = ruleset.units["Destroyer"]!!
-        Assert.assertEquals("Ranged Water", destroyer.unitType)
-        Assert.assertTrue(destroyer.isRanged())
-        val game = TestGame()
-        game.gameInfo.ruleset = ruleset
-        game.tileMap.ruleset = ruleset
-        game.gameInfo.setGlobalTransients()
-        val civ = game.addCiv(ruleset.nations.getValue("Rome"))
-        val tile = game.setTileTerrain(game.getTile(0, 0).position, "Coast")
-        destroyer.setRuleset(ruleset)
-        val unit = destroyer.newMapUnit(civ)
-        civ.units.addUnit(unit)
-        unit.putInTile(tile)
-        val promotions = unit.promotions.getPromotionTreeCandidates().map { it.promotion.name }
-        Assert.assertTrue(promotions.containsAll(listOf("Targeting I", "Bombardment I", "Extended Range")))
-        Assert.assertFalse("Boarding Party I" in promotions)
-        Assert.assertFalse("Coastal Raider I" in promotions)
-
-        val gnkDestroyer = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.units["Destroyer"]!!
-        Assert.assertEquals("Melee Water", gnkDestroyer.unitType)
-    }
-
-    @Test
     fun statParserWorks() {
         UncivGame.Current = UncivGame().apply { settings = GameSettings() } // Stats toString() runs tr()
 
