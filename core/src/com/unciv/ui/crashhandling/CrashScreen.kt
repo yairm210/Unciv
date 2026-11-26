@@ -19,6 +19,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -180,19 +181,26 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
     private fun makeActionButtonsTable(): Table {
         val copyButton = IconTextButton("Copy", fontSize = Constants.headingFontSize)
             .onClick {
-                try {
-                    Gdx.app.clipboard.contents = fullText
-                    copied = true
-                    ToastPopup(
-                        "Error report copied.",
-                        this@CrashScreen
-                    )
-                } catch(ex:Exception) {
-                    Log.debug("Could not copy to clipboard", ex)
-                    ToastPopup(
-                        "Could not copy to clipboard!",
-                        this@CrashScreen
-                    )
+                Concurrency.run {
+                    try {
+                        // This can take a while since it's json-ifying the saved game, and it's non-GL related
+                        Gdx.app.clipboard.contents = fullText
+                        copied = true
+                        Concurrency.runOnGLThread {
+                            ToastPopup(
+                                "Error report copied.",
+                                this@CrashScreen
+                            )
+                        }
+                    } catch(ex:Exception) {
+                        Log.debug("Could not copy to clipboard", ex)
+                        Concurrency.runOnGLThread {
+                            ToastPopup(
+                                "Could not copy to clipboard!",
+                                this@CrashScreen
+                            )
+                        }
+                    }
                 }
             }
         val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"),
