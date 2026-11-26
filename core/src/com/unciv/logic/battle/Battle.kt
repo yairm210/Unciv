@@ -239,7 +239,6 @@ object Battle {
         
         // Barbarians can't capture cities, instead raiding them for gold
         if (attacker.unit.civ.isBarbarian) {
-            defender.takeDamage(-1) // Back to 2 HP
             val ransom = min(200, defender.city.civ.gold)
             defender.city.civ.addGold(-ransom)
             defender.city.civ.addNotification(
