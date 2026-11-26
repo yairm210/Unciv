@@ -1,9 +1,12 @@
 package com.unciv.uniques
 
 import com.unciv.Constants
+import com.unciv.json.json
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
@@ -42,6 +45,199 @@ class CarrierTests {
         fighterInCity = game.addUnit(fighterBase.name, civ, city.getCenterTile())
         bomberInCity = game.addUnit(bomberBase.name, civ, city.getCenterTile())
         carrier = game.addUnit(carrierBase.name, civ, waterTile)
+    }
+
+    @Test
+    fun landUnitCanBoardAndDisembarkFromCarrier() {
+        val waterTile = carrier.currentTile
+        carrier = replaceCarrierWithLandCarrier(waterTile)
+
+        val landNeighbors = carrier.currentTile.neighbors.filter { it.isLand }.toList()
+        val landOrigin = landNeighbors.first()
+        val nextWater = landNeighbors.first { it != landOrigin && it.getUnits().none() }
+        val secondLandOrigin = landNeighbors.first {
+            it != landOrigin && it != nextWater && it.getUnits().none()
+        }
+        nextWater.baseTerrain = Constants.coast
+        nextWater.setTerrainTransients()
+        val passenger = createLandPassenger(landOrigin)
+
+        Assert.assertTrue(carrier.isTransportTypeOf(passenger))
+        Assert.assertTrue(carrier.canTransport(passenger))
+        Assert.assertTrue(
+            "Cannot board carrier: ${passenger.movement.getCannotMoveToReason(carrier.currentTile)}",
+            passenger.movement.canMoveTo(carrier.currentTile)
+        )
+        passenger.movement.moveToTile(carrier.currentTile)
+
+        Assert.assertSame(carrier, carrier.currentTile.militaryUnit)
+        Assert.assertTrue(passenger.isTransported)
+        Assert.assertTrue(carrier.currentTile.transportedUnits.contains(passenger))
+        Assert.assertEquals(0f, passenger.currentMovement, 0.001f)
+
+        val secondPassenger = createLandPassenger(secondLandOrigin)
+        Assert.assertFalse(secondPassenger.movement.canMoveTo(carrier.currentTile))
+
+        carrier.movement.moveToTile(nextWater)
+        Assert.assertSame(nextWater, carrier.currentTile)
+        Assert.assertSame(nextWater, passenger.currentTile)
+        Assert.assertTrue(nextWater.transportedUnits.contains(passenger))
+
+        val disembarkTile = nextWater.neighbors.first {
+            it.isLand && it != landOrigin && it != secondLandOrigin && it.getUnits().none()
+        }
+        passenger.currentMovement = 2f
+        passenger.movement.moveToTile(disembarkTile)
+
+        Assert.assertFalse(passenger.isTransported)
+        Assert.assertSame(passenger, disembarkTile.militaryUnit)
+        Assert.assertFalse(carrier.currentTile.transportedUnits.contains(passenger))
+    }
+
+    @Test
+    fun landPassengerPersistsInCarrierAfterSaveLoad() {
+        carrier = replaceCarrierWithLandCarrier()
+        val passenger = boardLandPassenger(
+            carrier,
+            carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() }
+        )
+        val savedTile = carrier.currentTile
+        val loadedGame = json().fromJson(GameInfo::class.java, json().toJson(game.gameInfo))
+        val loadedTile = loadedGame.tileMap.values.single {
+            it.transportedUnits.any { unit -> unit.name == passenger.name }
+        }
+        val loadedCarrier = loadedTile.militaryUnit!!
+        val loadedPassenger = loadedTile.transportedUnits.single()
+
+        Assert.assertEquals(carrier.name, loadedCarrier.name)
+        Assert.assertEquals(civ.civID, loadedCarrier.owner)
+        Assert.assertEquals(civ.civID, loadedPassenger.owner)
+        Assert.assertEquals(savedTile.position, loadedTile.position)
+        Assert.assertTrue(loadedPassenger.isTransported)
+    }
+
+    @Test
+    fun giftingCarrierAlsoGiftsLandPassenger() {
+        carrier = replaceCarrierWithLandCarrier()
+        val passenger = boardLandPassenger(carrier, carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() })
+        val recipient = game.addCiv()
+
+        carrier.gift(recipient)
+
+        Assert.assertSame(recipient, carrier.civ)
+        Assert.assertSame(recipient, passenger.civ)
+        Assert.assertTrue(passenger.isTransported)
+        Assert.assertSame(carrier.currentTile, passenger.currentTile)
+    }
+
+    @Test
+    fun destroyingCarrierAlsoDestroysLandPassenger() {
+        carrier = replaceCarrierWithLandCarrier()
+        val passenger = boardLandPassenger(carrier, carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() })
+        val carrierTile = carrier.currentTile
+
+        carrier.destroy()
+
+        Assert.assertTrue(carrier.isDestroyed)
+        Assert.assertTrue(passenger.isDestroyed)
+        Assert.assertFalse(carrierTile.transportedUnits.contains(passenger))
+    }
+
+    @Test
+    fun disbandingCarrierEvacuatesLandPassengerWithMovement() {
+        carrier = replaceCarrierWithLandCarrier()
+        val passenger = boardLandPassenger(carrier, carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() })
+        val carrierTile = carrier.currentTile
+        passenger.currentMovement = passenger.getMaxMovement().toFloat()
+
+        carrier.disband()
+
+        Assert.assertTrue(carrier.isDestroyed)
+        Assert.assertFalse(passenger.isDestroyed)
+        Assert.assertFalse(passenger.isTransported)
+        Assert.assertNotSame(carrierTile, passenger.currentTile)
+        Assert.assertTrue(passenger.currentTile.isLand)
+    }
+
+    @Test
+    fun disbandingCarrierAlsoDisbandsPassengerWithoutMovement() {
+        carrier = replaceCarrierWithLandCarrier()
+        val passenger = boardLandPassenger(carrier, carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() })
+
+        carrier.disband()
+
+        Assert.assertTrue(carrier.isDestroyed)
+        Assert.assertTrue(passenger.isDestroyed)
+    }
+
+    @Test
+    fun producingLandUnitDoesNotReplaceLoadedCarrierInCity() {
+        carrier = replaceCarrierWithLandCarrier(capacity = 2)
+        val passenger = boardLandPassenger(
+            carrier,
+            carrier.currentTile.neighbors.first { it.isLand && it.getUnits().none() }
+        )
+        val city = civ.cities.first()
+        val cityTile = city.getCenterTile()
+        carrier.movement.moveToTile(cityTile)
+
+        val producedBase = game.createBaseUnit(
+            "Melee",
+            "Can be carried by [All] units"
+        ).apply {
+            movement = 2
+            strength = 5
+        }
+        val producedUnit = civ.units.addUnit(producedBase, city)
+
+        Assert.assertNotNull(producedUnit)
+        Assert.assertSame(carrier, cityTile.militaryUnit)
+        Assert.assertTrue(passenger.isTransported)
+        Assert.assertSame(cityTile, passenger.currentTile)
+        Assert.assertNotSame(cityTile, producedUnit!!.currentTile)
+        Assert.assertFalse(producedUnit.isTransported)
+    }
+
+    @Test
+    fun swappingLoadedCarriersMovesLandPassengersWithThem() {
+        val firstWater = carrier.currentTile
+        carrier = replaceCarrierWithLandCarrier(firstWater)
+        val secondWater = firstWater.neighbors.first { it.getUnits().none() }.apply {
+            baseTerrain = Constants.coast
+            setTerrainTransients()
+        }
+        val secondCarrier = createLandCarrier(secondWater)
+        val firstPassenger = boardLandPassenger(
+            carrier,
+            firstWater.neighbors.first { it.isLand && it.getUnits().none() }
+        )
+        val secondPassenger = boardLandPassenger(
+            secondCarrier,
+            secondWater.neighbors.first { it.isLand && it.getUnits().none() && it != firstPassenger.currentTile }
+        )
+
+        Assert.assertTrue(carrier.movement.canUnitSwapTo(secondWater))
+        carrier.movement.swapMoveToTile(secondWater)
+
+        Assert.assertSame(secondWater, carrier.currentTile)
+        Assert.assertSame(secondWater, firstPassenger.currentTile)
+        Assert.assertSame(firstWater, secondCarrier.currentTile)
+        Assert.assertSame(firstWater, secondPassenger.currentTile)
+        Assert.assertTrue(firstPassenger.isTransported)
+        Assert.assertTrue(secondPassenger.isTransported)
+    }
+
+    @Test
+    fun cannotBeCarriedByOverridesCanBeCarriedBy() {
+        val blockedPassengerBase = game.createBaseUnit(
+            "Melee",
+            "Can be carried by [All] units",
+            "Cannot be carried by [All] units"
+        )
+        val blockedPassenger = game.addUnit(blockedPassengerBase.name, civ, null)
+
+        Assert.assertFalse(carrier.isTransportTypeOf(blockedPassenger))
+        Assert.assertFalse(carrier.canTransport(blockedPassenger))
     }
 
     @Test
@@ -95,10 +291,10 @@ class CarrierTests {
         for (unit in listOf(extraFighter, fighterInCity, bomberInCity)) {
             unit.removeFromTile()
             //unit.putInTile checks capacity, so avoid
-            carrier.getTile().airUnits.add(unit)
+            carrier.getTile().transportedUnits.add(unit)
             unit.isTransported = true
         }
-        Assert.assertEquals(6, carrier.getTile().airUnits.size)
+        Assert.assertEquals(6, carrier.getTile().transportedUnits.size)
 
         val remainingFighterCapacity = carrier.checkCarryCapacity(fighterInCity) // The unit is already on the carrier, but the function doesn't care, only filter matching is relevant
         val remainingBomberCapacity = carrier.checkCarryCapacity(bomberInCity)
@@ -107,5 +303,34 @@ class CarrierTests {
         Assert.assertEquals(-2, remainingFighterCapacity)
         // Should return there's a bomber over the allowed limit
         Assert.assertEquals(-1, remainingBomberCapacity)
+    }
+
+    private fun replaceCarrierWithLandCarrier(tile: Tile = carrier.currentTile, capacity: Int = 1): MapUnit {
+        carrier.removeFromTile()
+        civ.units.removeUnit(carrier)
+        return createLandCarrier(tile, capacity).also { carrier = it }
+    }
+
+    private fun createLandCarrier(tile: Tile, capacity: Int = 1): MapUnit {
+        val base = game.createBaseUnit("Aircraft Carrier", "Can carry [$capacity] [All] units").apply {
+            movement = 2
+            strength = 10
+        }
+        return game.addUnit(base.name, civ, tile)
+    }
+
+    private fun createLandPassenger(tile: Tile): MapUnit {
+        val base = game.createBaseUnit("Melee", "Can be carried by [All] units").apply {
+            movement = 2
+            strength = 5
+        }
+        return game.addUnit(base.name, civ, tile)
+    }
+
+    private fun boardLandPassenger(carrier: MapUnit, landTile: Tile): MapUnit {
+        val passenger = createLandPassenger(landTile)
+        passenger.movement.moveToTile(carrier.currentTile)
+        Assert.assertTrue("Passenger should have boarded the carrier", passenger.isTransported)
+        return passenger
     }
 }

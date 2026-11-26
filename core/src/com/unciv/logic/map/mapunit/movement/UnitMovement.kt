@@ -552,7 +552,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.isFortified() || unit.isGuarding() || unit.isSetUpForSiege() || unit.isSleeping())
             unit.action = null // un-fortify/un-setup/un-sleep after moving
 
-        // If this unit is a carrier, keep record of its air payload whereabouts.
+        // If this unit is a carrier, keep record of its transported payload.
         val origin = unit.getTile()
         var needToFindNewRoute = false
         // Cache this in case something goes wrong
@@ -583,6 +583,8 @@ class UnitMovement(val unit: MapUnit) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
                 unit.removeFromTile()
+                val carrierHere = tile.militaryUnit?.takeIf { it.owner == unit.owner && it.canTransport(unit) }
+                unit.isTransported = carrierHere != null
                 unit.putInTile(tile) // Required for ruins,
 
                 if (escortUnit != null) {
@@ -591,6 +593,10 @@ class UnitMovement(val unit: MapUnit) {
                 }
 
                 passingMovementSpent = 0f
+                if (carrierHere != null) {
+                    unit.currentMovement = 0f
+                    break
+                }
             }
 
             previousTile = tile
@@ -752,6 +758,20 @@ class UnitMovement(val unit: MapUnit) {
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return CannotMoveToReason.EscortCannotMove
 
+        val carrierOnTile = tile.militaryUnit?.takeIf {
+            it.owner == unit.owner && it.isTransportTypeOf(unit)
+        }
+        if (carrierOnTile != null) {
+            if (unit.isTransported) return null
+            val civilianSlotAvailable = when {
+                tile.civilianUnit == null -> true
+                unit.isCivilian() -> false
+                tile.civilianUnit!!.owner == unit.owner -> true
+                else -> false
+            }
+            if (civilianSlotAvailable && carrierOnTile.canTransport(unit)) return null
+        }
+
         val tileIsEmpty = if (unit.isCivilian())
             (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
@@ -790,7 +810,7 @@ class UnitMovement(val unit: MapUnit) {
 
         if (payload == null) {
             // Non-carriers never carry a payload. Checked before scanning the tile: canMoveTo is hot.
-            if (!unit.hasUnique(UniqueType.CarryAirUnits) && !unit.hasUnique(UniqueType.CarryExtraAirUnits))
+            if (!unit.hasUnique(UniqueType.CarryUnits) && !unit.hasUnique(UniqueType.CarryExtraUnits))
                 return false
             val livePayload = snapshotTransportedPassengers()
             if (livePayload.isEmpty()) return false
@@ -810,16 +830,16 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     /**
-     * Prospective transported occupancy is destination transported aircraft plus [payload].
-     * Passengers already on the destination, and aircraft a swap will take away, are not counted twice.
-     * Each incoming aircraft is checked against that group and added only after it fits.
+     * Prospective transported occupancy is destination transported units plus [payload].
+     * Passengers already on the destination, and units a swap will take away, are not counted twice.
+     * Each incoming passenger is checked against that group and added only after it fits.
      */
     @Readonly
     private fun carriedPayloadFits(tile: Tile, payload: List<MapUnit>, allowSwap: Boolean): Boolean {
         @LocalState
-        val projected = ArrayList<MapUnit>(payload.size + tile.airUnits.size)
+        val projected = ArrayList<MapUnit>(payload.size + tile.transportedUnits.size)
         val departing = if (allowSwap) unitLeavingOnSwap(tile) else null
-        for (occupant in tile.airUnits) {
+        for (occupant in tile.transportedUnits) {
             if (!occupant.isTransported) continue
             if (occupant in payload) continue
             if (departing != null && occupant.owner == departing.owner && departing.isTransportTypeOf(occupant))
@@ -837,7 +857,7 @@ class UnitMovement(val unit: MapUnit) {
     private fun getAirUnitCannotMoveToReason(tile: Tile, unit: MapUnit): CannotMoveToReason? {
         // landing in the city
         if (tile.isCityCenter()) {
-            if (tile.airUnits.filter { !it.isTransported }.size < tile.getCity()!!.getMaxAirUnits() && tile.getCity()?.civ == unit.civ)
+            if (tile.transportedUnits.filter { !it.isTransported }.size < tile.getCity()!!.getMaxAirUnits() && tile.getCity()?.civ == unit.civ)
                 return null // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
@@ -882,6 +902,10 @@ class UnitMovement(val unit: MapUnit) {
 
     @Readonly
     fun cannotPassThroughReason(tile: Tile, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
+        val carrierOnTile = if (unit.hasUnique(UniqueType.CanBeCarriedBy)) tile.militaryUnit else null
+        val canBoardCarrier = carrierOnTile != null && carrierOnTile.owner == unit.owner &&
+            (unit.isTransported && carrierOnTile.isTransportTypeOf(unit) || carrierOnTile.canTransport(unit))
+
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
@@ -901,13 +925,14 @@ class UnitMovement(val unit: MapUnit) {
                     .any { unit.matchesFilter(it.params[0]) }
         }
         if (tile.isWater && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) {
-            if (!unit.civ.tech.unitsCanEmbark) return CannotMoveToReason.CannotEmbark
-            if (unit.cache.cannotEmbark) return CannotMoveToReason.CannotEmbark
-            if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
+            if (!canBoardCarrier && !unit.civ.tech.unitsCanEmbark) return CannotMoveToReason.CannotEmbark
+            if (!canBoardCarrier && unit.cache.cannotEmbark) return CannotMoveToReason.CannotEmbark
+            if (!canBoardCarrier && tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return CannotMoveToReason.CannotEnterOcean
         }
         if (tile.isOcean && !unit.civ.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
-            if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return CannotMoveToReason.CannotEnterOcean
+            if (!canBoardCarrier && !unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles)
+                return CannotMoveToReason.CannotEnterOcean
         }
 
         if (unit.cache.canEnterCityStates && tile.getOwner()?.isCityState == true)

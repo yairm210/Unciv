@@ -1,7 +1,6 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.unciv.view.hasMovement
-import com.unciv.view.isAirUnit
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -40,10 +39,10 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             setIconPosition(slot, newIcon)
             addOwnedActor(newIcon)
 
-            // Display air unit table for carriers/transports
-            val airUnits = unit.getTile().getVisibleUnits().filter { it.isAirUnit() }
-            if (!unit.getTile().isCityCenter() && airUnits.any { unit.isTransportTypeOf(it) }) {
-                val table = getAirUnitTable(unit, airUnits.size)
+            // Display transported unit count for carriers/transports
+            val transportedUnits = unit.getTile().getVisibleUnits().filter { unit.isTransportTypeOf(it) }
+            if (!unit.getTile().isCityCenter() && transportedUnits.isNotEmpty()) {
+                val table = getTransportUnitTable(unit, transportedUnits.size)
                 newIcon.addActor(table)
                 table.toBack()
                 table.y = newIcon.height/2 - table.height/2
@@ -63,29 +62,29 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         return newIcon
     }
 
-    private fun getAirUnitTable(unit: ForeignMapUnitView, airUnitCount: Int): Table {
+    private fun getTransportUnitTable(unit: ForeignMapUnitView, transportedUnitCount: Int): Table {
 
         val iconColor = unit.civ().getOuterColor()
         val bgColor = unit.civ().getInnerColor()
 
-        val airUnitTable = Table()
-        airUnitTable.background = BaseScreen.skinStrings.getUiBackground(
+        val transportUnitTable = Table()
+        transportUnitTable.background = BaseScreen.skinStrings.getUiBackground(
             path="WorldScreen/AirUnitTable",
             "", bgColor
         )
-        airUnitTable.pad(0f).defaults().pad(0f)
-        airUnitTable.setSize(28f, 12f)
+        transportUnitTable.pad(0f).defaults().pad(0f)
+        transportUnitTable.setSize(28f, 12f)
 
         val table = Table()
 
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = iconColor
         table.add(aircraftImage).size(8f)
-        table.add(airUnitCount.tr().toLabel(iconColor, 10, alignment = Align.center))
+        table.add(transportedUnitCount.tr().toLabel(iconColor, 10, alignment = Align.center))
 
-        airUnitTable.add(table).expand().center().right()
+        transportUnitTable.add(table).expand().center().right()
 
-        return airUnitTable
+        return transportUnitTable
     }
 
     fun selectFlag(unitView: ForeignMapUnitView) {

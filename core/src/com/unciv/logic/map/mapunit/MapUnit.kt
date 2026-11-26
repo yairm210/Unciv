@@ -632,9 +632,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.isAirUnit()) return false
-        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
+        if (mapUnit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) })
+            return false
+        if (!mapUnit.baseUnit.isAirUnit() &&
+            mapUnit.getMatchingUniques(UniqueType.CanBeCarriedBy).none { matchesFilter(it.params[0]) })
+            return false
+        return getMatchingUniques(UniqueType.CarryUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     @Readonly
@@ -643,14 +646,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *  Returns the free capacity of [this] carrier for [unit] or units matching the same Unique filters.
      *
      *  - Uses an optimizing algorithm that ensures complex overlapping filters are used to the max.
-     *  - [carriedUnits] defaults to transported aircraft on the current tile. Movement passes the
+     *  - [carriedUnits] defaults to transported units on the current tile. Movement passes the
      *    destination's prospective transported occupants instead, so a whole payload can be checked
      *    before any unit changes tile.
      *  - See issue [#15087](https://github.com/yairm210/Unciv/issues/15087)
      */
     fun checkCarryCapacity(
         unit: MapUnit,
-        carriedUnits: Sequence<MapUnit> = currentTile.airUnits.asSequence().filter { it.isTransported }
+        carriedUnits: Sequence<MapUnit> = currentTile.transportedUnits.asSequence().filter { it.isTransported }
     ): Int {
         // Fetch ALL "slots", not only those the new unit could occupy - otherwise we couldn't count optimally
         @LocalState
@@ -660,8 +663,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 slots += CarrierSlotMatcher.SlotRule(unique.params[1], unique.params[0].toInt())
             }
         }
-        getSlotsFor(UniqueType.CarryAirUnits)
-        getSlotsFor(UniqueType.CarryExtraAirUnits)
+        getSlotsFor(UniqueType.CarryUnits)
+        getSlotsFor(UniqueType.CarryExtraUnits)
         if (slots.isEmpty()) return 0
 
         return CarrierSlotMatcher.availableCapacity(
@@ -672,14 +675,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    private fun cannotCarry(unit: MapUnit) =
-        unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }
-
-    @Readonly
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (cannotCarry(unit)) return false
         if (checkCarryCapacity(unit) <= 0) return false
         return true
     }
@@ -1062,7 +1060,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 val currentTile = if (hasTile()) currentTile else null
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}")
             }
-            baseUnit.isAirUnit() -> tile.airUnits.add(this)
+            isTransported || baseUnit.isAirUnit() -> tile.transportedUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
@@ -1152,10 +1150,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 continue
             }
             // if no "fuel" to escape, should be disbanded as well
-            if (unit.currentMovement < Constants.minimumMovementEpsilon)
+            if (unit.currentMovement < Constants.minimumMovementEpsilon) {
                 unit.disband()
+                continue
+            }
             // let's find closest city or another carrier where it can be evacuated
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getAirUnitMovementRange())
+            val evacuationRange = if (unit.baseUnit.isAirUnit()) unit.getAirUnitMovementRange()
+                else unit.getMaxMovement()
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(evacuationRange)
                     .filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
 
             if (tileCanMoveTo != null)
