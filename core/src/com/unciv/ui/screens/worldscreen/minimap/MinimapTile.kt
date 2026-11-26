@@ -70,7 +70,7 @@ class MinimapTile(val tile: Tile, tileSize: Float) {
                 continue
             }
             if (neighbor in neighborToBorderImage) {
-                neighborToBorderImage[neighbor]!!.color = owningCiv!!.nation.getInnerColor()
+                neighborToBorderImage[neighbor]!!.color = owningCiv.nation.getInnerColor()
                 continue
             }
 
@@ -97,7 +97,7 @@ class MinimapTile(val tile: Tile, tileSize: Float) {
                 -relativeWorldPosition.y * hexagonEdgeLength / 2
             )
             borderImage.rotateBy(angle)
-            borderImage.color = owningCiv!!.nation.getInnerColor()
+            borderImage.color = owningCiv.nation.getInnerColor()
             neighborToBorderImage[neighbor] = borderImage
         }
         val imagesAfter = neighborToBorderImage.values.toSet()

@@ -23,6 +23,7 @@ import com.unciv.ui.components.widgets.ScalingTableWrapper
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
+import com.unciv.utils.Concurrency
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private val worldScreen = mapHolder.worldScreen
@@ -102,11 +103,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     private fun rebuildAndUpdateMap(civInfo: Civilization?) {
-        InputDisabling.withInputDisabled {
-            rebuild(civInfo) // re-create views
-            civInfo?.let { minimap.update(it) } // update map
-            minimap.mapHolder.onViewportChanged() // update scroll position
-        }
+        rebuild(civInfo) // re-create views
+        civInfo?.let { minimap.update(it) } // update map
+        minimap.mapHolder.onViewportChanged() // update scroll position
     }
 
     private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
@@ -218,7 +217,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             if (newMinimapSize == minimapSize) return
             
             minimapSize = newMinimapSize
-            rebuildAndUpdateMap(civInfo)
+            Concurrency.runOnGLThread {
+                // Can take a while, avoid ANR if it takes too long
+                rebuildAndUpdateMap(civInfo)
+            }
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
             super.touchUp(event, x, y, pointer, button)
