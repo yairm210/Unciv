@@ -405,9 +405,10 @@ class CityStateFunctions(val civInfo: Civilization) {
             unit.gift(otherCiv)
 
 
-        // Make sure this CS can never be liberated
-        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
-            it.foundingCivObject = null
+        // Make sure this CS can never be liberated: as in Civ V (CvPlayer::acquireCity), every city it holds counts as founded
+        // by its new owner, and any it founded and lost earlier have no founder
+        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo || it.civ == civInfo }) {
+            it.foundingCivObject = if (it.civ == civInfo) otherCiv else null
             it.isOriginalCapital = false
         }
 
@@ -463,9 +464,10 @@ class CityStateFunctions(val civInfo: Civilization) {
         for (unit in civInfo.units.getCivUnits())
             unit.gift(otherCiv)
 
-        // Make sure this CS can never be liberated
-        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo }) {
-            it.foundingCivObject = null
+        // Make sure this CS can never be liberated: as in Civ V (CvPlayer::acquireCity), every city it holds counts as founded
+        // by its new owner, and any it founded and lost earlier have no founder
+        for (it in civInfo.gameInfo.getCities().filter { it.foundingCivObject == civInfo || it.civ == civInfo }) {
+            it.foundingCivObject = if (it.civ == civInfo) otherCiv else null
             it.isOriginalCapital = false
         }
 
