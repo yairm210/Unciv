@@ -9,6 +9,7 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.ensureUnitIds
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
+import com.unciv.logic.BackwardCompatibility.reconcileGreatPersonPoints
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -809,6 +810,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         migrateToTileHistory()
         migrateGreatGeneralPools()
+        reconcileGreatPersonPoints()
         ensureUnitIds()
     }
 

@@ -334,6 +334,9 @@ class CityConquestFunctions(val city: City) {
         // Stop WLTKD if it's still going
         city.resetWLTKD()
 
+        // The new owner doesn't get the Great Person points accumulated here
+        city.storedGreatPersonPoints.clear()
+
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
 

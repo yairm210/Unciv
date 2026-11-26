@@ -2614,9 +2614,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Is part of Great Person group [comment]"
-	Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP.
+	Great People in the same group share a cost. Each birth from Great Person points increases the group's base cost by 100 in games with per-city points and doubles it in games with civilization-wide points. Game speed scales the resulting cost.
 
 	Example: "Is part of Great Person group [comment]"
+
+	Applicable to: Unit
+
+??? example  "Great Person points for this unit accumulate empire-wide"
+	When per-city Great Person points are enabled, all cities contribute to one total for this unit. Its birth still resets its points and raises its group's base cost by 100.
+
+	This unique does not support conditionals.
 
 	Applicable to: Unit
 

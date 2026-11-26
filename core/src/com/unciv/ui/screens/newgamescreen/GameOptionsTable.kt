@@ -131,6 +131,7 @@ class GameOptionsTable(
             it.addNoBarbariansCheckbox()
             it.addRagingBarbariansCheckbox()
             it.addOneCityChallengeCheckbox()
+            it.addPerCityGreatPersonPointsCheckbox()
             it.addNuclearWeaponsCheckbox()
             it.addEnableEspionageCheckbox()
             it.addNoStartBiasCheckbox()
@@ -189,6 +190,10 @@ class GameOptionsTable(
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
             { gameParameters.oneCityChallenge = it }
+
+    private fun Table.addPerCityGreatPersonPointsCheckbox() =
+        addCheckbox("Accumulate Great Person points per city", gameParameters.greatPersonPointsInCities)
+        { gameParameters.greatPersonPointsInCities = it }
 
     private fun Table.addNuclearWeaponsCheckbox() =
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)

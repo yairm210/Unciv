@@ -65,6 +65,25 @@ object BackwardCompatibility {
         }
     }
 
+    /** A ruleset update can change where a unit's points accumulate in an ongoing game. */
+    fun GameInfo.reconcileGreatPersonPoints() {
+        if (!gameParameters.greatPersonPointsInCities) return
+        for (civ in civilizations) {
+            val manager = civ.greatPeople
+            val pooled = manager.greatPersonPointsCounter
+            for (city in civ.cities) {
+                val local = city.storedGreatPersonPoints
+                for (unit in local.keys.filterNot(manager::usesCityPoints))
+                    pooled.add(unit, local.remove(unit)!!)
+            }
+            // Previously pooled points have no city of origin.
+            for (unit in pooled.keys.filter(manager::usesCityPoints)) {
+                val capital = civ.getCapital() ?: break
+                capital.storedGreatPersonPoints.add(unit, pooled.remove(unit)!!)
+            }
+        }
+    }
+
     private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
             for (unit in tile.getUnits().toList()) {
@@ -86,6 +105,10 @@ object BackwardCompatibility {
             for (key in civ.greatPeople.greatPersonPointsCounter.keys.toList())
                 if (!ruleset.units.containsKey(key))
                     civ.greatPeople.greatPersonPointsCounter.remove(key)
+            for (city in civ.cities)
+                for (key in city.storedGreatPersonPoints.keys.toList())
+                    if (!ruleset.units.containsKey(key))
+                        city.storedGreatPersonPoints.remove(key)
         }
     }
 

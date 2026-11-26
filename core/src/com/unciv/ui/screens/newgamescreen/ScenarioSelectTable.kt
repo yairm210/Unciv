@@ -39,8 +39,12 @@ internal class ScenarioSelectTable(private val newGameScreen: NewGameScreen) : T
         for ((file, _) in scenarioFiles)
             scenarios[file.name()] = ScenarioData(file.name(), file)
 
-        scenarioSelectBox = TranslatedSelectBox(scenarios.keys.sorted(), scenarios.keys.first())
-        scenarioSelectBox!!.onChange { selectScenario() }
+        val selection = scenarioSelectBox?.selected?.value ?: scenarios.keys.first()
+        scenarioSelectBox = TranslatedSelectBox(scenarios.keys.sorted(), selection)
+        scenarioSelectBox!!.onChange {
+            selectScenario()
+            newGameScreen.updateTables()
+        }
         clear()
         add(scenarioSelectBox)
     }
@@ -52,8 +56,8 @@ internal class ScenarioSelectTable(private val newGameScreen: NewGameScreen) : T
             .apply { removeAll { it.chosenCiv == Constants.spectator } }
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = preload.gameParameters.baseRuleset
         newGameScreen.gameSetupInfo.gameParameters.mods = preload.gameParameters.mods
+        newGameScreen.gameSetupInfo.gameParameters.greatPersonPointsInCities = preload.gameParameters.greatPersonPointsInCities
         newGameScreen.tryUpdateRuleset(true)
-        newGameScreen.playerPickerTable.update()
         selectedScenario = scenario
     }
 

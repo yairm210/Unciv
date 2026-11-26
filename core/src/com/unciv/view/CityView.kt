@@ -126,6 +126,7 @@ class CityView(city: City,
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
     @Readonly fun getCityResourcesAvailableToCity(): ResourceSupplyList = CityResources.getCityResourcesAvailableToCity(city)
     @Readonly fun getGreatPersonPointsBreakdown(): GreatPersonPointsBreakdown = GreatPersonPointsBreakdown(city)
+    @Readonly fun getStoredGreatPersonPoints(): Map<String, Int> = city.storedGreatPersonPoints
     @Readonly fun getRuleset(): Ruleset = city.getRuleset()
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 

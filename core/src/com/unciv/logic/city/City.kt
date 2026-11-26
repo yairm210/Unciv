@@ -100,6 +100,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     var resourceStockpiles = Counter<String>()
 
+    /** Great Person points accumulated in this city, by Great Person unit name */
+    var storedGreatPersonPoints = Counter<String>()
+
     /** All tiles that this city controls */
     var tiles = HashSet<HexCoord>()
 
@@ -197,6 +200,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.storedGreatPersonPoints = storedGreatPersonPoints.clone()
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.hasSoldBuildingThisTurn = hasSoldBuildingThisTurn

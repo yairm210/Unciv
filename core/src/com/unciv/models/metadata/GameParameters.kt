@@ -27,6 +27,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var noBarbarians = false
     var ragingBarbarians = false
     var oneCityChallenge = false
+    var greatPersonPointsInCities = false
     var godMode = false
     var nuclearWeaponsEnabled = true
     var espionageEnabled = false
@@ -88,6 +89,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.noBarbarians = noBarbarians
         parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
+        parameters.greatPersonPointsInCities = greatPersonPointsInCities
         // godMode intentionally reset on clone
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.espionageEnabled = espionageEnabled
