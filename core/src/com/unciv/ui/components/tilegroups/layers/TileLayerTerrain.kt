@@ -192,13 +192,14 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         // In ownedActors, terrain images precede river images; new terrain replaces from index 0.
         val ownedInsertIdx = if (mapInsertIdx >= 0) 0 else -1
 
-        for (image in tileBaseImages) removeOwnedActor(image)
+        for (i in 0 until tileBaseImages.size) removeOwnedActor(tileBaseImages[i])
         tileBaseImages.clear()
 
         var nextMapIdx = mapInsertIdx
         var nextOwnedIdx = ownedInsertIdx
 
-        for (baseLocation in tileBaseImageLocations) {
+        for (locationIndex in 0 until tileBaseImageLocations.size) {
+            val baseLocation = tileBaseImageLocations[locationIndex]
             // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
             // so it stays consistent throughout the game
             if (!ImageGetter.imageExists(baseLocation)) continue
@@ -264,8 +265,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             else -> Color.WHITE.cpy()
         }
 
-        for ((index, image) in tileBaseImages.withIndex())
-            image.color = if (index == 0) baseTerrainColor else color
+        for (index in 0 until tileBaseImages.size)
+            tileBaseImages[index].color = if (index == 0) baseTerrainColor else color
     }
 
     private fun updateRivers(displayBottomRight: Boolean, displayBottom: Boolean, displayBottomLeft: Boolean) {
@@ -297,8 +298,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         //
         // Reapplying the colour with every update is fine, and doesn't cause the tiles to get darker with every click, because the colours are always reset in either TileGroup.updateTileColor() or the early exit by super.update()/TileGroup.update().
         // Mutating the Color() in-place seems dangerous, but GDX source already mutates even when Kotlin notation suggests it's replacing.
-        for (image in tileBaseImages) {
-            image.color.lerp(BaseScreen.clearColor, 1-brightness)
+        for (i in 0 until tileBaseImages.size) {
+            tileBaseImages[i].color.lerp(BaseScreen.clearColor, 1-brightness)
         }
     }
 
@@ -322,7 +323,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             .mix(tileView.getOwner()?.civName)
             .mix(tileView.owningCity() != null)
             .mix(tileView.hasBottomRightRiver).mix(tileView.hasBottomRiver).mix(tileView.hasBottomLeftRiver)
-        for (neighbor in tileGroup.neighbors) key = key.mix(neighbor.getCachedTerrainNameSet().hashCode())
+        val neighbors = tileGroup.neighbors
+        for (i in 0 until neighbors.size) key = key.mix(neighbors[i].getCachedTerrainNameSet().hashCode())
         return key
     }
 
