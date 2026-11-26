@@ -715,13 +715,13 @@ object Battle {
             return
         }
 
-        if (city.isOriginalCapital && city.foundingCivObject == attackerCiv) {
-            // retaking old capital
+        if (city.foundingCivObject == attackerCiv) {
+            // retaking a city we founded, as in Civ V (CvPlayer::acquireCity asks only when someone else founded it)
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()
         } else if (attackerCiv.isHuman() && UncivGame.Current.worldScreen?.autoPlay?.isAutoPlayingAndFullAutoPlayAI() == false) {
-            // we're not taking our former capital
+            // we're not taking back a city we founded
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else automateCityConquer(attackerCiv, city)
 
