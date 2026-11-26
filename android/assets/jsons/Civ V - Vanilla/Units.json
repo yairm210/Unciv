@@ -982,7 +982,7 @@
 	},
 	{
 		"name": "Destroyer",
-		"unitType": "Melee Water",
+		"unitType": "Ranged Water",
 		"movement": 6,
         "interceptRange": 2,
         "rangedStrength": 22,
