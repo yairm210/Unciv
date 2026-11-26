@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.addInTable
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -31,6 +30,17 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private var maximized = false
     private var lastCutoutSetting = false
     lateinit var minimap: Minimap
+
+    // Keep only the latest civilization request while a GL-thread rebuild is queued.
+    private var pendingRebuildCivInfo: Civilization? = null
+    private val minimapRebuildTask = CoalescedUiTask(
+        post = { action -> Concurrency.runOnGLThread { action() } },
+        action = {
+            val civInfo = pendingRebuildCivInfo
+            pendingRebuildCivInfo = null
+            rebuildAndUpdateMap(civInfo)
+        }
+    )
 
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
     val movementsImageButton = MapOverlayToggleButton(
@@ -108,6 +118,11 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimap.mapHolder.onViewportChanged() // update scroll position
     }
 
+    private fun scheduleRebuildAndUpdateMap(civInfo: Civilization?) {
+        pendingRebuildCivInfo = civInfo
+        minimapRebuildTask.schedule()
+    }
+
     private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
 
         // when maximized, collapse map when a location was clicked
@@ -122,7 +137,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             } else {
                 worldScreen.game.settings.minimapSize
             }
-            rebuildAndUpdateMap(civInfo)
+            scheduleRebuildAndUpdateMap(civInfo)
         }
 
         val table = Table()
@@ -217,10 +232,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
             if (newMinimapSize == minimapSize) return
             
             minimapSize = newMinimapSize
-            Concurrency.runOnGLThread {
-                // Can take a while, avoid ANR if it takes too long
-                rebuildAndUpdateMap(civInfo)
-            }
+            scheduleRebuildAndUpdateMap(civInfo)
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
             super.touchUp(event, x, y, pointer, button)
