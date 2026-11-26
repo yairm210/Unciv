@@ -122,7 +122,6 @@ class CityFounder {
      * @param aliveCivs Every civilization currently alive.
      * @return A new city name in [String]. Null if failed to generate a name.
      */
-    @Readonly
     private fun generateNewCityName(
         foundingCiv: Civilization,
         aliveCivs: Set<Civilization>
@@ -132,9 +131,15 @@ class CityFounder {
                     civilization.cities.asSequence().map { city -> city.name }
                 }.toSet()
 
-        // Attempt to return the first missing name from the list of city names
-        for (cityName in foundingCiv.nation.cities) {
-            if (cityName !in usedCityNames) return cityName
+        // Attempt to return the next missing name from the list of city names
+        val names = foundingCiv.nation.cities
+        for (offset in names.indices) {
+            val index = (foundingCiv.cityNameIndex + offset) % names.size
+            val cityName = names[index]
+            if (cityName !in usedCityNames) {
+                foundingCiv.cityNameIndex = (index + 1) % names.size
+                return cityName
+            }
         }
 
         // If all names are taken and this nation borrows city names,
@@ -146,14 +151,19 @@ class CityFounder {
         // If the nation doesn't have the unique above,
         // return the first missing name with an increasing number of prefixes attached
         // TODO: Make prefixes moddable per nation? Support suffixes?
+        val shiftedNames = names.subList(foundingCiv.cityNameIndex, names.size) + names.subList(0, foundingCiv.cityNameIndex)
         for (number in (1..10)) {
             for (prefix in NamingConstants.prefixes) {
-                val repeatedPredix = "$prefix [".repeat(number)
+                val repeatedPrefix = "$prefix [".repeat(number)
                 val suffix = "]".repeat(number)
-                val candidate = foundingCiv.nation.cities.asSequence()
-                    .map { repeatedPredix + it + suffix }
-                    .firstOrNull { it !in usedCityNames }
-                if (candidate != null) return candidate
+                val candidate = shiftedNames.asSequence()
+                    .map { repeatedPrefix + it + suffix }
+                    .withIndex()
+                    .firstOrNull { it.value !in usedCityNames }
+                if (candidate != null) {
+                    foundingCiv.cityNameIndex = (foundingCiv.cityNameIndex + candidate.index + 1) % names.size
+                    return candidate.value
+                }
             }
         }
 
