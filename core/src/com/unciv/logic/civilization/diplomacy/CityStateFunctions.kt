@@ -332,7 +332,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             )
             if (newAlly != null && oldAlly.knows(newAlly)){
                 val diplomacyManager = oldAlly.getDiplomacyManager(newAlly)!!
-                diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f)
+                // Match the -100f floor used by other city-state grievance modifiers
+                diplomacyManager.addModifier(DiplomaticModifiers.StoleOurAlly, -10f, limit = -100f)
             }
             oldAlly.cache.updateViewableTiles()
             oldAlly.cache.updateCivResources()

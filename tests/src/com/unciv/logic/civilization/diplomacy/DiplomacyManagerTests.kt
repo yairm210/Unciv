@@ -212,6 +212,7 @@ class DiplomacyManagerTests {
     fun `should make city state allied when over threshold and most influencial`() {
         // given
         val cityState = addCiv(cityStateType = "Militaristic")
+        meet(a, b)
         meet(a, cityState)
         meet(b, cityState)
         cityState.getDiplomacyManager(a)!!.addInfluence(61f)
@@ -222,6 +223,80 @@ class DiplomacyManagerTests {
         // then
         assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Friend))
         assertTrue(cityState.getDiplomacyManager(b)!!.isRelationshipLevelEQ(RelationshipLevel.Ally))
+        assertEquals(-10f, a.getDiplomacyManager(b)!!.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name])
+        assertFalse(b.getDiplomacyManager(a)!!.hasModifier(DiplomaticModifiers.StoleOurAlly))
+    }
+
+    @Test
+    fun `should cap stole city-state ally penalty at -100`() {
+        // given
+        val cityState = addCiv(cityStateType = "Militaristic")
+        meet(a, b)
+        meet(a, cityState)
+        meet(b, cityState)
+        cityState.getDiplomacyManager(a)!!.setInfluence(61f)
+        a.getDiplomacyManager(b)!!.setModifier(DiplomaticModifiers.StoleOurAlly, -95f)
+
+        // when
+        cityState.getDiplomacyManager(b)!!.setInfluence(70f)
+
+        // then
+        assertEquals(-100f, a.getDiplomacyManager(b)!!.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name])
+
+        // when stolen again while already at -100
+        cityState.getDiplomacyManager(a)!!.setInfluence(80f)
+        cityState.getDiplomacyManager(b)!!.setInfluence(90f)
+
+        // then it remains capped at -100
+        assertEquals(-100f, a.getDiplomacyManager(b)!!.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name])
+    }
+
+    @Test
+    fun `should cap stole city-state ally penalty after repeated alternating steals`() {
+        // given
+        val cityState = addCiv(cityStateType = "Militaristic")
+        meet(a, b)
+        meet(a, cityState)
+        meet(b, cityState)
+        var influence = 60f
+        cityState.getDiplomacyManager(a)!!.setInfluence(influence)
+
+        // when — twelve steals in each direction with no turns between them
+        repeat(12) {
+            influence += 10f
+            cityState.getDiplomacyManager(b)!!.setInfluence(influence)
+            influence += 10f
+            cityState.getDiplomacyManager(a)!!.setInfluence(influence)
+        }
+
+        // then
+        assertEquals(-100f, a.getDiplomacyManager(b)!!.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name])
+        assertEquals(-100f, b.getDiplomacyManager(a)!!.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name])
+    }
+
+    @Test
+    fun `should clamp legacy stole city-state ally penalty on next turn`() {
+        // given
+        meet(a, b)
+        meet(a, c)
+        meet(a, d)
+        val aToB = a.getDiplomacyManager(b)!!
+        val aToC = a.getDiplomacyManager(c)!!
+        val aToD = a.getDiplomacyManager(d)!!
+        aToB.setModifier(DiplomaticModifiers.StoleOurAlly, -272f)
+        aToC.setModifier(DiplomaticModifiers.StoleOurAlly, -40f)
+
+        // when
+        aToB.nextTurn()
+        aToC.nextTurn()
+        aToD.nextTurn()
+
+        // then
+        val clamped = aToB.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name]!!
+        assertTrue(clamped >= -100f && clamped < 0f)
+        val decayed = aToC.diplomaticModifiers[DiplomaticModifiers.StoleOurAlly.name]!!
+        assertTrue(decayed > -40f && decayed < 0f)
+        assertFalse(aToD.hasModifier(DiplomaticModifiers.StoleOurAlly))
     }
 
     @Test
