@@ -139,6 +139,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // and the civInfo is required for using `hasUnique` when determining its movement options
         unit.setTransients(civInfo.gameInfo.ruleset)
 
+        if (unit.hasUnique(UniqueType.SavesResourceWhenSpawned)) {
+            unit.savedScienceOfLast8TurnsWhenSpawned = unit.civ.tech.getScienceFromGreatScientist()
+            unit.savedCultureOfLast8TurnsWhenSpawned = unit.civ.policies.getCultureFromGreatWriter()
+        }
+
         return unit
     }
 
