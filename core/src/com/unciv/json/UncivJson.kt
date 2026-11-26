@@ -46,7 +46,12 @@ fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(
  */
 fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
     try {
-        return fromJson(tClass, file)
+        // Skip a leading UTF-8 BOM (U+FEFF) without loading the full file into memory
+        return file.reader(Charsets.UTF_8.name()).buffered().use { reader ->
+            reader.mark(1)
+            if (reader.read() != '\uFEFF'.code) reader.reset()
+            fromJson(tClass, reader)
+        }
     } catch (exception: Exception) {
         throw Exception("Could not parse json of file ${file.name()}", exception)
     }
