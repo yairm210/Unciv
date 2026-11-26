@@ -23,3 +23,21 @@ This part of Civ V visibility makes no sense, considering the otherwise well-str
 This is [a discrepancy in Civ V rules](https://github.com/yairm210/Unciv/issues/12261) - if all jungles are like roads, then they shouldn't be considered railroads for production purposes.
 
 The idea is that if you can quickly transport goods with railroads that yields a production bonus - moving fast through jungles may be possible, but not with industrial amounts of goods.
+
+## Peace with a city-state needs the minimum war duration
+
+In Civ V, peace with a city-state is only blocked while its ally is at war with you (`CvMinorCivAI::IsPeaceBlocked`), so you can declare war, take what you want and make peace on the same turn.
+
+Unciv applies the same minimum war duration as between major civilizations, so a war on a city-state has a cost.
+
+## The treasury can go below zero
+
+In Civ V the treasury is set to 0 when a turn would take it negative, and units are disbanded once the deficit reaches 5 gold (`CvTreasury::DoGold`).
+
+In Unciv the balance can go negative, and units are disbanded only once it reaches -200.
+
+## Open Borders, Defensive Pacts and Research Agreements need the enabling tech on both sides
+
+In Civ V these agreements are refused only when neither side has the enabling technology (`CvDeal::IsPossibleToTradeItem`).
+
+Unciv requires both sides to have it.
