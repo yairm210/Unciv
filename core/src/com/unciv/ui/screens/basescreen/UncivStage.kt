@@ -1,10 +1,12 @@
 package com.unciv.ui.screens.basescreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.UncivGame
 import com.unciv.logic.event.Event
@@ -119,14 +121,21 @@ class UncivStage(viewport: Viewport, batch: Batch = BaseScreen.batch) : Stage(vi
     override fun scrolled(amountX: Float, amountY: Float) =
             { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
 
-    override fun keyDown(keyCode: Int) =
-            { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
+    /** On Android, libgdx dispatches key events from inside a lock on the input object that the main thread also needs.
+     *  TextField handling can be slow (glyph rasterization for new characters), which would cause ANRs.
+     *  So while a TextField has keyboard focus, handle key events after the input lock is released, keeping their order. */
+    private fun deferKeyEvent(handler: () -> Boolean): Boolean {
+        if (Gdx.app?.type != Application.ApplicationType.Android || keyboardFocus !is TextField)
+            return handler.wrapCrashHandling()() ?: true
+        Gdx.app.postRunnable { handler.wrapCrashHandling()() }
+        return true
+    }
 
-    override fun keyUp(keyCode: Int) =
-            { super.keyUp(keyCode) }.wrapCrashHandling()() ?: true
+    override fun keyDown(keyCode: Int) = deferKeyEvent { super.keyDown(keyCode) }
 
-    override fun keyTyped(character: Char) =
-            { super.keyTyped(character) }.wrapCrashHandling()() ?: true
+    override fun keyUp(keyCode: Int) = deferKeyEvent { super.keyUp(keyCode) }
+
+    override fun keyTyped(character: Char) = deferKeyEvent { super.keyTyped(character) }
 
     class VisibleAreaChanged(
         val visibleArea: Rectangle
