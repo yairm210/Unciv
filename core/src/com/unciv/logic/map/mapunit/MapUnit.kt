@@ -634,6 +634,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
         if (!mapUnit.baseUnit.isAirUnit()) return false
+        if (cannotCarry(mapUnit)) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
@@ -679,7 +680,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (cannotCarry(unit)) return false
         if (checkCarryCapacity(unit) <= 0) return false
         return true
     }

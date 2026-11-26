@@ -108,4 +108,17 @@ class CarrierTests {
         // Should return there's a bomber over the allowed limit
         Assert.assertEquals(-1, remainingBomberCapacity)
     }
+
+    /** A unit the carrier can't carry, flagged as transported (e.g. upgraded while aboard), must stay behind. See #16107 */
+    @Test
+    fun carrierLeavesBehindUnitItCannotCarry() {
+        val stealthBase = game.createBaseUnit("Bomber", "MyBombers", "Cannot be carried by [Aircraft Carrier] units")
+        val cityTile = bomberInCity.currentTile
+        val stealth = game.addUnit(stealthBase.name, civ, cityTile)
+        stealth.isTransported = true
+
+        Assert.assertFalse(carrier.isTransportTypeOf(stealth))
+        carrier.movement.teleportTransportedUnitsTo(cityTile, carrier.currentTile)
+        Assert.assertEquals(cityTile, stealth.currentTile)
+    }
 }
