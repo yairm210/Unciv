@@ -144,8 +144,9 @@ class UnitTurnManager(val unit: MapUnit) {
 
 
     fun startTurn():Unit = timeThis("UnitTurnManager.startTurn") {
-        unit.movement.clearPathfindingCache()
         unit.currentMovement = unit.getMaxMovement().toFloat()
+        // After resetting movement: the cache is only valid for the movement it was cleared with
+        unit.movement.clearPathfindingCache()
         unit.attacksThisTurn = 0
         unit.due = true
 
