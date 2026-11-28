@@ -14,13 +14,13 @@
         "[-40]% unhappiness from the number of cities <when number of [[Terrain] Tiles] is more than [4900]>",
 
         "[+10]% Science cost of researching new Technologies <when number of [[Terrain] Tiles] is between [1200] and [2700]>",
-        "[+20]% Science cost of researching new Technologies <when number of [[Terrain] Tiles] is between [2700] and [4900]>",
+        "[+20]% Science cost of researching new Technologies <when number of [[Terrain] Tiles] is between [2701] and [4900]>",
         "[+30]% Science cost of researching new Technologies <when number of [[Terrain] Tiles] is more than [4900]>",
 
-        "Each city founded increases Science cost of Technologies [40]% less than normal <when number of [[Terrain] Tiles] is between [2700] and [4900]>",
+        "Each city founded increases Science cost of Technologies [40]% less than normal <when number of [[Terrain] Tiles] is between [2701] and [4900]>",
         "Each city founded increases Science cost of Technologies [60]% less than normal <when number of [[Terrain] Tiles] is more than [4900]>",
 
-        "Each city founded increases culture cost of policies [25]% less than normal <when number of [[Terrain] Tiles] is between [2700] and [4900]>",
+        "Each city founded increases culture cost of policies [25]% less than normal <when number of [[Terrain] Tiles] is between [2701] and [4900]>",
         "Each city founded increases culture cost of policies [50]% less than normal <when number of [[Terrain] Tiles] is more than [4900]>"
 
         // TODO: Implement the uniques below
